@@ -1924,7 +1924,8 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
    RESPONSIVE — Landing page
 ============================================= */
 @media(max-width:768px){
-  .hero-content{padding:60px 20px 40px;}
+  .hero-content{padding:80px 20px 40px;}
+  .hero-chips-row{flex-wrap:wrap;justify-content:center;}
   .hero-h1{font-size:clamp(28px,7vw,48px) !important;}
   .hiw-steps{grid-template-columns:1fr 1fr !important;}
   .testi-grid{grid-template-columns:1fr !important;}
@@ -2119,10 +2120,13 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
    HERO — no overflow/truncation on mobile
 ============================================= */
 .hero-section{overflow-x:hidden !important;}
+@media(max-width:768px){
+  .hero-section{min-height:auto;height:auto;padding-bottom:40px;}
+}
 .hero-h1{overflow-wrap:break-word;word-break:break-word;}
 .hero-sub{overflow-wrap:break-word;}
 @media(max-width:480px){
-  .hero-content{padding:50px 16px 32px !important;}
+  .hero-content{padding:72px 20px 32px !important;}
   .hero-h1{font-size:clamp(24px,8vw,40px) !important;}
   .hero-sub{font-size:14px;}
   .hero-searchbar-wrap{padding:0 4px;}
@@ -2149,7 +2153,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
 /* Hero H1 — max 2 lines on small screens */
 @media(max-width:480px){
-  .hero-h1{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:visible;font-size:clamp(22px,8vw,36px) !important;}
+  .hero-h1{font-size:clamp(22px,7.5vw,34px) !important;line-height:1.2;margin-bottom:14px;}
   .hero-br{display:none;}
 }
 
@@ -2179,6 +2183,11 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
 /* Sidebar logo visible in expanded */
 .db-sidebar:not(.collapsed) .db-logo{display:flex !important;}
+
+/* Hide floating cards on mobile — they overlap hero text */
+@media(max-width:768px){
+  .fcard{display:none !important;}
+}
 </style>
 </head>
 </head>
@@ -2267,7 +2276,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
     <!-- Hero content -->
     <div class="hero-content">
-      <h1 class="hero-h1">Book trusted property<br>services <span>with confidence.</span></h1>
+      <h1 class="hero-h1">Book trusted property services <span>with confidence.</span></h1>
       <p class="hero-sub">Describe your issue and we'll match you with vetted professionals — inspections, plumbing, compliance, and more.</p>
 
       <div class="hero-searchbar-wrap">
