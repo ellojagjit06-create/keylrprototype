@@ -3025,12 +3025,11 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
               <button onclick="document.getElementById('exploreAIInput').value='Find an electrician';document.getElementById('exploreAIInput').focus();" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:500;color:rgba(255,255,255,0.85);cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.12s;" onmouseover="this.style.borderColor='#94a3b8'" onmouseout="this.style.borderColor='#e2e8f0'">Find an electrician</button>
             </div>
             <!-- Search input -->
-            <div style="display:flex;align-items:center;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;padding:8px 8px 8px 16px;gap:8px;">
-              <input id="exploreAIInput" type="text" style="caret-color:#fff;" placeholder="Ask about any service..."
-                style="flex:1;background:transparent;border:none;outline:none;font-size:13.5px;color:#0f172a;font-family:'Inter',sans-serif;"
+            <div style="display:flex;align-items:center;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;padding:6px 6px 6px 14px;">
+              <input id="exploreAIInput" type="text" placeholder="Ask about any service..." style="flex:1;background:transparent;border:none;outline:none;font-size:13.5px;color:#fff;font-family:'Inter',sans-serif;caret-color:#fff;"
                 onkeydown="if(event.key==='Enter'){var v=this.value.trim();if(v){startNewChat();showPage('chat',null);sendFromSuggestion(v);this.value='';}}"
               />
-              <button onclick="var v=document.getElementById('exploreAIInput').value.trim();if(v){startNewChat();showPage('chat',null);sendFromSuggestion(v);document.getElementById('exploreAIInput').value='';}" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;" onmouseover="this.style.background='#1e40af'" onmouseout="this.style.background='#1d4ed8'">
+              <button onclick="var v=document.getElementById('exploreAIInput').value.trim();if(v){startNewChat();showPage('chat',null);sendFromSuggestion(v);document.getElementById('exploreAIInput').value='';}" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;margin-left:auto;" onmouseover="this.style.background='#1e40af'" onmouseout="this.style.background='#1d4ed8'">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 7h10M8 4l4 3-4 3"/></svg>
               </button>
             </div>
