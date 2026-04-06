@@ -2281,6 +2281,11 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .ud-card-actions{display:flex;gap:8px;margin-top:14px;}
 .ud-card-good{background:#0f172a;color:#fff;border:none;border-radius:10px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
 .ud-card-edit{background:#fff;color:#374151;border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
+
+/* Supplier cards — full width when in AI message */
+.ai-msg-wrap:has(.supplier-card){max-width:100% !important;width:100%;}
+/* Fallback for browsers without :has() */
+.supplier-grid-wrap{width:100%;max-width:none;}
 </style>
 </head>
 </head>
@@ -3333,7 +3338,12 @@ IMPORTANT: After this message, the system will automatically show "Enter details
 STEP 5.5 — SUPPLIER COUNT:
 Before searching, ask how many supplier quotes they want to compare. Use this EXACT format:
 {"message": "How many professionals would you like quotes from?\n\nMore options = better chances of finding the perfect price and availability.", "chips": ["Just 1 — quickest", "2–3 quotes", "4–5 quotes", "Show me up to 10"]}
-Wait for their answer before proceeding to STEP 6.
+Wait for their answer before proceeding to STEP 5.6.
+
+STEP 5.6 — PRICE RANGE:
+After the user answers how many quotes, ask for their budget. Use this EXACT format:
+{"message": "What's your budget for this job?\n\nWe'll prioritise suppliers that match your price range.", "chips": ["Under £50", "£50–£100", "£100–£200", "£200–£500", "No preference"]}
+Wait for their answer before proceeding to STEP 6. Use their price range to filter and sort suppliers.
 
 STEP 6 — SUPPLIER MATCHING:
 Based on their choice, say "Searching for the best pros near you... 🔍" then show supplier cards.
@@ -3743,6 +3753,14 @@ function addMessage(role, text, chips = []) {
   )) {
     setTimeout(showSupplierCountSlider, 400);
   }
+  // Auto-show price range widget when AI asks budget
+  if (role === 'ai' && text && (
+    text.toLowerCase().includes('budget') ||
+    text.toLowerCase().includes('price range') ||
+    text.toLowerCase().includes('price preference')
+  )) {
+    setTimeout(showPriceRangeWidget, 400);
+  }
 }
 
 function showTyping() {
@@ -3784,7 +3802,7 @@ function renderSupplierCards(suppText) {
   }
   if (!cards.length) return '';
   const colors = ['#6366f1','#0ea5e9','#10b981','#f59e0b','#ef4444','#8b5cf6'];
-  return '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px;">' +
+  return '<div class="supplier-grid-wrap" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px;width:100%;">' +
     cards.map((f,idx) => {
       const name = f['Name'] || 'Professional';
       const rating = parseFloat(f['Rating']) || 4.8;
@@ -3856,10 +3874,16 @@ function renderBookingConfirmed(bookText) {
       ${price ? `<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:1px solid #f0fdf4;"><span style="font-size:12px;color:#64748b;font-family:'Inter',sans-serif;font-weight:500;">Price</span><span style="font-size:15px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;">${escapeHtml(price)}</span></div>` : ''}
       ${address ? `<div style="display:flex;justify-content:space-between;align-items:flex-start;"><span style="font-size:12px;color:#64748b;font-family:'Inter',sans-serif;font-weight:500;">Address</span><span style="font-size:12.5px;font-weight:600;color:#0f172a;font-family:'Inter',sans-serif;text-align:right;max-width:60%;">${escapeHtml(address)}</span></div>` : ''}
     </div>
-    <button onclick="showBookingDetails('${confirmId}','${escapeHtml(service)}','${escapeHtml(pro)}','${escapeHtml(eta)}','${escapeHtml(price)}','${escapeHtml(address)}')" style="width:100%;margin-top:12px;background:#0f172a;color:#fff;border:none;border-radius:10px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="10" height="10" rx="2"/><path d="M5 5h4M5 7.5h4M5 10h2"/></svg>
-      View booking details
-    </button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
+      <button onclick="showBookingDetails('${confirmId}','${escapeHtml(service)}','${escapeHtml(pro)}','${escapeHtml(eta)}','${escapeHtml(price)}','${escapeHtml(address)}')" style="background:#fff;color:#0f172a;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 10px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;" onmouseover="this.style.borderColor='#94a3b8'" onmouseout="this.style.borderColor='#e2e8f0'">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><rect x="1.5" y="1.5" width="10" height="10" rx="2"/><path d="M4 4.5h5M4 6.5h5M4 8.5h3"/></svg>
+        View details
+      </button>
+      <button onclick="showPage('bookings',null)" style="background:#0f172a;color:#fff;border:none;border-radius:10px;padding:11px 10px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><rect x="1.5" y="2.5" width="10" height="9" rx="1.5"/><path d="M4.5 1v3M8.5 1v3M1.5 6h10"/></svg>
+        My Jobs →
+      </button>
+    </div>
   </div>`;
 }
 
@@ -4448,6 +4472,62 @@ function confirmSupplierCount(count) {
   var slider = document.getElementById('supplierSlider');
   if (slider) slider.remove();
   sendFromSuggestion('I want ' + count + ' quote' + (count > 1 ? 's' : '') + ' please');
+}
+
+function showPriceRangeWidget() {
+  var area = document.getElementById('chatArea');
+  if (!area || document.getElementById('priceRangeWidget')) return;
+  var wrap = document.createElement('div');
+  wrap.id = 'priceRangeWidget';
+  wrap.style.cssText = 'margin:4px 0 8px 44px;background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px 22px;max-width:400px;';
+  wrap.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:'Inter',sans-serif;">Your budget</div>
+      <div id="priceVal" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;font-size:13px;font-weight:700;font-family:'Inter',sans-serif;padding:4px 12px;border-radius:8px;">Up to £150</div>
+    </div>
+    <div style="position:relative;padding:8px 0 4px;">
+      <input type="range" id="priceRange" min="0" max="5" value="2"
+        style="width:100%;outline:none;border:none;cursor:pointer;accent-color:#1d4ed8;"
+        oninput="updatePriceLabel(this.value)"/>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;">
+        <span style="font-size:10px;color:#94a3b8;font-family:'Inter',sans-serif;">Any</span>
+        <span style="font-size:10px;color:#94a3b8;font-family:'Inter',sans-serif;">£500+</span>
+      </div>
+    </div>
+    <div id="priceHint" style="font-size:12px;color:#64748b;font-family:'Inter',sans-serif;text-align:center;padding:8px 10px;background:#f8fafc;border-radius:8px;margin:10px 0 14px;">Best value picks in the £100–£200 range</div>
+    <button onclick="confirmPriceRange()" style="width:100%;padding:11px;font-size:13px;font-weight:700;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+      Confirm budget <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M8 3.5l3 3-3 3"/></svg>
+    </button>`;
+  area.appendChild(wrap);
+  area.scrollTop = area.scrollHeight;
+}
+
+var _priceLabels = ['No preference','Under £50','£50–£100','Up to £150','£100–£200','£200–£500','£500+'];
+var _priceSend = ['No budget preference','Under £50','£50–£100','Up to £150','£100–£200','£200–£500','£500 or more'];
+var _priceHints = [
+  'We\'ll show all available professionals',
+  'Great for quick, simple jobs',
+  'Good for standard services',
+  'Best value picks in the £100–£200 range',
+  'Covers most property services',
+  'For specialist or larger jobs',
+  'Premium or complex work'
+];
+
+function updatePriceLabel(val) {
+  val = parseInt(val);
+  var pv = document.getElementById('priceVal');
+  var ph = document.getElementById('priceHint');
+  if (pv) pv.textContent = _priceLabels[val] || '';
+  if (ph) ph.textContent = _priceHints[val] || '';
+}
+
+function confirmPriceRange() {
+  var val = parseInt(document.getElementById('priceRange').value);
+  var label = _priceSend[val] || 'No preference';
+  var widget = document.getElementById('priceRangeWidget');
+  if (widget) widget.remove();
+  sendFromSuggestion('My budget is ' + label);
 }
 </script>
 
