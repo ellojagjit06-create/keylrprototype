@@ -760,7 +760,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .ai-bubble strong{font-weight:600;color:var(--navy);}
 
 /* AI message wrapper */
-.ai-msg-wrap{display:flex;flex-direction:column;gap:8px;max-width:80%;}
+.ai-msg-wrap{display:flex;flex-direction:column;gap:8px;max-width:86%;}
 
 /* AI response chips */
 .ai-chips-row{display:flex;flex-wrap:wrap;gap:6px;padding-left:2px;}
@@ -2325,6 +2325,12 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 /* Supplier cards full-width in ai-msg-wrap */
 .ai-msg-wrap:has(.supplier-card){max-width:100% !important;width:100%;}
 .ai-msg-wrap:has(.booking-confirmed-card){max-width:100% !important;width:100%;}
+
+.ai-row:has(.supplier-card) .ai-msg-wrap,
+.ai-msg-wrap:has([style*="grid-template-columns"]) {
+  max-width:100% !important;
+  width:100%;
+}
 </style>
 </head>
 </head>
@@ -3004,7 +3010,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           <!-- AI ASSISTANT CARD — matching Image 3 -->
           <div style="background:linear-gradient(135deg,#0f1c38 0%,#162845 50%,#1a3356 100%);border-radius:18px;padding:24px 26px 20px;margin-bottom:24px;position:relative;overflow:hidden;">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-              <div style="width:36px;height:36px;background:#1d4ed8;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <div style="width:36px;height:36px;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2"><path d="M8 2C5 2 2.5 4 2.5 6.5c0 1.3.6 2.5 1.6 3.3L3.5 13l3-1.3c.5.1 1 .2 1.5.2C11 11.9 13.5 9.7 13.5 7.2S11 2 8 2z"/></svg>
               </div>
               <div>
@@ -3020,11 +3026,11 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             </div>
             <!-- Search input -->
             <div style="display:flex;align-items:center;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;padding:8px 8px 8px 16px;gap:8px;">
-              <input id="exploreAIInput" type="text" placeholder="Ask about any service..."
+              <input id="exploreAIInput" type="text" style="caret-color:#fff;" placeholder="Ask about any service..."
                 style="flex:1;background:transparent;border:none;outline:none;font-size:13.5px;color:#0f172a;font-family:'Inter',sans-serif;"
                 onkeydown="if(event.key==='Enter'){var v=this.value.trim();if(v){startNewChat();showPage('chat',null);sendFromSuggestion(v);this.value='';}}"
               />
-              <button onclick="var v=document.getElementById('exploreAIInput').value.trim();if(v){startNewChat();showPage('chat',null);sendFromSuggestion(v);document.getElementById('exploreAIInput').value='';}" style="background:#1d4ed8;color:#fff;border:none;border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;" onmouseover="this.style.background='#1e40af'" onmouseout="this.style.background='#1d4ed8'">
+              <button onclick="var v=document.getElementById('exploreAIInput').value.trim();if(v){startNewChat();showPage('chat',null);sendFromSuggestion(v);document.getElementById('exploreAIInput').value='';}" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;" onmouseover="this.style.background='#1e40af'" onmouseout="this.style.background='#1d4ed8'">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 7h10M8 4l4 3-4 3"/></svg>
               </button>
             </div>
@@ -3254,7 +3260,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
         </div>
         <!-- Property grid — empty state showing structure -->
         <div class="prop-empty-grid">
-          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:56px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;margin-bottom:24px;">
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:56px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;margin-bottom:24px;width:100%;box-sizing:border-box;">
             <div style="width:72px;height:72px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">
               <svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#3b82f6" stroke-width="1.5"><path d="M4 28V15l13-10 13 10v13"/><path d="M12 28v-8h10v8"/></svg>
             </div>
@@ -3345,75 +3351,6 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     </div>
 
   
-    <!-- SIGNUP PAGE -->
-    <div id="page-signup">
-      <div style="flex:1;overflow-y:auto;display:flex;align-items:center;justify-content:center;background:var(--gray-50);padding:40px 20px;">
-        <div style="background:#fff;border-radius:20px;width:100%;max-width:440px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
-          <div style="background:linear-gradient(135deg,#12192A,#1E3A5F);padding:28px 32px 24px;">
-            <a href="javascript:void(0)" onclick="showPage('home',null);" style="display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.6);text-decoration:none;margin-bottom:20px;font-family:'Inter',sans-serif;">
-              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2L4 6.5 9 11"/></svg> Back
-            </a>
-            <div style="font-size:22px;font-weight:800;color:#fff;font-family:'Fraunces',serif;margin-bottom:4px;">Create your account</div>
-            <div style="font-size:13px;color:rgba(255,255,255,0.55);font-family:'Inter',sans-serif;">Join thousands of property managers</div>
-          </div>
-          <div style="padding:28px 32px 32px;">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
-              <div>
-                <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">First name</label>
-                <input type="text" placeholder="First name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'"/>
-              </div>
-              <div>
-                <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">Last name</label>
-                <input type="text" placeholder="Last name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'"/>
-              </div>
-            </div>
-            <div style="margin-bottom:14px;">
-              <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">Email address</label>
-              <input type="email" placeholder="your@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'"/>
-            </div>
-            <div style="margin-bottom:22px;position:relative;">
-              <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">Password</label>
-              <input id="signupPwd" type="password" placeholder="Create a password" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 40px 10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'"/>
-              <button type="button" onclick="var f=document.getElementById('signupPwd');f.type=f.type==='password'?'text':'password';" style="position:absolute;right:12px;bottom:10px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8" cy="8" rx="6" ry="3.5"/><circle cx="8" cy="8" r="1.5"/></svg>
-              </button>
-            </div>
-            <button onclick="showPage('home',null);" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:16px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Create account</button>
-            <p style="text-align:center;font-size:12.5px;color:#64748b;font-family:'Inter',sans-serif;margin:0;">Already have an account? <a href="javascript:void(0)" onclick="showPage('login',null);" style="color:#1d4ed8;font-weight:600;text-decoration:none;">Log in</a></p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- LOGIN PAGE -->
-    <div id="page-login">
-      <div style="flex:1;overflow-y:auto;display:flex;align-items:center;justify-content:center;background:var(--gray-50);padding:40px 20px;">
-        <div style="background:#fff;border-radius:20px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
-          <div style="background:linear-gradient(135deg,#12192A,#1E3A5F);padding:28px 32px 24px;">
-            <a href="javascript:void(0)" onclick="showPage('home',null);" style="display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.6);text-decoration:none;margin-bottom:20px;font-family:'Inter',sans-serif;">
-              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2L4 6.5 9 11"/></svg> Back
-            </a>
-            <div style="font-size:22px;font-weight:800;color:#fff;font-family:'Fraunces',serif;margin-bottom:4px;">Welcome back</div>
-            <div style="font-size:13px;color:rgba(255,255,255,0.55);font-family:'Inter',sans-serif;">Log in to your Keylr account</div>
-          </div>
-          <div style="padding:28px 32px 32px;">
-            <div style="margin-bottom:14px;">
-              <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">Email address</label>
-              <input type="email" placeholder="your@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'"/>
-            </div>
-            <div style="margin-bottom:22px;position:relative;">
-              <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">Password</label>
-              <input id="loginPwd" type="password" placeholder="Your password" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 40px 10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'"/>
-              <button type="button" onclick="var f=document.getElementById('loginPwd');f.type=f.type==='password'?'text':'password';" style="position:absolute;right:12px;bottom:10px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8" cy="8" rx="6" ry="3.5"/><circle cx="8" cy="8" r="1.5"/></svg>
-              </button>
-            </div>
-            <button onclick="showPage('home',null);" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:16px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Log in</button>
-            <p style="text-align:center;font-size:12.5px;color:#64748b;font-family:'Inter',sans-serif;margin:0;">No account? <a href="javascript:void(0)" onclick="showPage('signup',null);" style="color:#1d4ed8;font-weight:600;text-decoration:none;">Sign up for free</a></p>
-          </div>
-        </div>
-      </div>
-    </div>
 </main>
   <!-- Floating chat assistant button (shown on non-chat pages) -->
   
@@ -3480,7 +3417,10 @@ STEP 5.6 — PRICE RANGE:
 After supplier count answer, ask: {"message": "What's your budget for this job?\n\nWe'll prioritise suppliers in your range.", "chips": ["Under £50", "£50-£100", "£100-£200", "£200-£500", "No preference"]}
 
 STEP 6 — SUPPLIER MATCHING:
-Say "Searching for the best pros near you... 🔍" then show 2-3 supplier cards using SUPPLIERS: format.
+Show exactly the number of supplier cards the user chose in STEP 5.5.
+Say "Searching for the best pros near you... 🔍" then show ALL requested supplier cards using SUPPLIERS: format on ONE line.
+CRITICAL: If user asked for 6 quotes, show exactly 6 [Name:...|Rating:..|..] blocks.
+Example for 3 suppliers: SUPPLIERS: [Name: "Pro 1" | Rating: 4.9 | Reviews: 120 | ETA: "1 hr" | Price: "£80"] [Name: "Pro 2" | Rating: 4.7 | Reviews: 95 | ETA: "2 hrs" | Price: "£65"] [Name: "Pro 3" | Rating: 4.8 | Reviews: 110 | ETA: "90 mins" | Price: "£75"]
 chips: []
 
 STEP 7 — BOOKING CONFIRMATION:
@@ -3635,7 +3575,7 @@ function backToLanding(e) {
 // =============================================
 // SIDEBAR NAVIGATION
 // =============================================
-const pages = ['home','chat','explore','bookings','properties','pricing','signup','login'];
+const pages = ['home','chat','explore','bookings','properties','pricing'];
 
 function showPage(id, e) {
   if (e) e.preventDefault();
@@ -3945,7 +3885,7 @@ function renderSupplierCards(suppText) {
   if (!cards.length) return '';
   const colors = ['#6366f1','#0ea5e9','#10b981','#f59e0b','#ef4444','#8b5cf6'];
   // Wrapper: full width grid, 3 equal columns, each card same height
-  return '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:8px;width:100%;">' +
+  return '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:8px;width:100%;">' +
     cards.map((f, idx) => {
       const name = f['Name'] || 'Professional';
       const rating = parseFloat(f['Rating']) || 4.8;
@@ -4739,8 +4679,64 @@ function filterExplore(query) {
 }
 
 function showAuthPage(mode) {
-  showPage(mode === 'signup' ? 'signup' : 'login', null);
+  var existing = document.getElementById('authModal');
+  if (existing) existing.remove();
+  var isSignup = mode === 'signup';
+  var title = isSignup ? 'Create your account' : 'Welcome back';
+  var subtitle = isSignup ? 'Join thousands of property managers' : 'Log in to your Keylr account';
+  var btnLabel = isSignup ? 'Create account' : 'Log in';
+  var switchTxt = isSignup
+    ? 'Already have an account? <a href="#" id="authSwitch" style="color:#1d4ed8;font-weight:600;text-decoration:none;">Log in</a>'
+    : 'No account? <a href="#" id="authSwitch" style="color:#1d4ed8;font-weight:600;text-decoration:none;">Sign up free</a>';
+  var modal = document.createElement('div');
+  modal.id = 'authModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.55);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML =
+    '<div style="background:#fff;border-radius:20px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.22);animation:modalPop 0.22s ease;">' +
+      '<div style="background:linear-gradient(135deg,#12192A,#1E3A5F);padding:28px 32px 22px;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+          '<div>' +
+            '<div style="font-size:19px;font-weight:800;color:#fff;font-family:Fraunces,serif;margin-bottom:3px;">' + title + '</div>' +
+            '<div style="font-size:12px;color:rgba(255,255,255,0.5);font-family:Inter,sans-serif;">' + subtitle + '</div>' +
+          '</div>' +
+          '<button id="authClose" style="background:rgba(255,255,255,0.1);border:none;color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;">&times;</button>' +
+        '</div>' +
+      '</div>' +
+      '<div style="padding:26px 32px 28px;">' +
+        '<div style="margin-bottom:14px;">' +
+          '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Email address</label>' +
+          '<input id="authEmail" type="email" placeholder="your@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;"/>' +
+        '</div>' +
+        '<div style="margin-bottom:22px;position:relative;">' +
+          '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Password</label>' +
+          '<input id="authPwd" type="password" placeholder="' + (isSignup ? 'Create a password' : 'Your password') + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 40px 10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;"/>' +
+          '<button id="authPwdToggle" type="button" style="position:absolute;right:12px;bottom:11px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;align-items:center;">' +
+            '<svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg>' +
+          '</button>' +
+        '</div>' +
+        '<button id="authSubmit" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">' + btnLabel + '</button>' +
+        '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">' + switchTxt + '</p>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(modal);
+  // Wire events after DOM insertion
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  document.getElementById('authClose').onclick = function(){ modal.remove(); };
+  document.getElementById('authPwdToggle').onclick = function(){
+    var f = document.getElementById('authPwd');
+    f.type = f.type === 'password' ? 'text' : 'password';
+  };
+  // Focus styling
+  ['authEmail','authPwd'].forEach(function(id){
+    var el = document.getElementById(id);
+    el.addEventListener('focus', function(){ this.style.borderColor='#1d4ed8'; });
+    el.addEventListener('blur', function(){ this.style.borderColor='#e2e8f0'; });
+  });
+  var sw = document.getElementById('authSwitch');
+  if (sw) sw.onclick = function(e){ e.preventDefault(); modal.remove(); showAuthPage(isSignup?'login':'signup'); };
 }
+
+
 
 
 // =============================================
