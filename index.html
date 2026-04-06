@@ -3224,19 +3224,11 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             <div class="prop-title">My Properties</div>
             <div class="prop-sub">0 properties · 0 alerts</div>
           </div>
-          <button class="prop-add-btn" onclick="alert('Add property coming soon!')">
+          <button class="prop-add-btn" onclick="showAuthPage('signup')">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h10M7 2v10"/></svg>Add Property
           </button>
         </div>
-        <!-- Compliance alert — empty state -->
-        <div class="prop-compliance-alert">
-          <div class="pca-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#ef4444" stroke-width="2"><path d="M8 1L15 14H1L8 1z"/><path d="M8 6v4M8 11.5v.5"/></svg></div>
-          <div class="pca-content">
-            <div class="pca-title">Compliance alerts</div>
-            <div class="pca-empty">No compliance alerts — add properties to track certificates</div>
-          </div>
-        </div>
-        <!-- Stats row -->
+                <!-- Stats row -->
         <div class="prop-stats-row">
           <div class="prop-stat-card">
             <div class="prop-stat-icon" style="color:var(--blue);"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 18V9l8-6 8 6v9"/><path d="M7 18v-5h6v5"/></svg></div>
@@ -3262,32 +3254,21 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
         </div>
         <!-- Property grid — empty state showing structure -->
         <div class="prop-empty-grid">
-          <div class="prop-empty-placeholder">
-            <div class="pep-img-wrap">
-              <div class="pep-img-ph"></div>
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:56px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;margin-bottom:24px;">
+            <div style="width:72px;height:72px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">
+              <svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#3b82f6" stroke-width="1.5"><path d="M4 28V15l13-10 13 10v13"/><path d="M12 28v-8h10v8"/></svg>
             </div>
-            <div class="pep-body">
-              <div class="pep-name">Add your first property</div>
-              <div class="pep-addr">Click "+ Add Property" to get started</div>
-              <div class="pep-tags">
-                <span class="pep-tag">flat</span>
-                <span class="pep-tag">2 bed</span>
-                <span class="pep-tag">london</span>
-              </div>
-              <button class="prop-add-btn" style="margin-top:12px;font-size:12px;padding:7px 14px;" onclick="alert('Add property coming soon!')">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 6h10M6 1v10"/></svg>Add Property
-              </button>
+            <div style="font-size:19px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;margin-bottom:8px;">No properties yet</div>
+            <div style="font-size:13.5px;color:#64748b;max-width:290px;margin:0 auto 26px;line-height:1.65;">Add your first property to track compliance, certificates and all property services in one place.</div>
+            <button onclick="showAuthPage('signup')" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 1.5v11M1.5 7h11"/></svg>Add Property
+            </button>
+            <div style="display:flex;gap:18px;flex-wrap:wrap;justify-content:center;">
+              <span style="font-size:12px;color:#94a3b8;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Certificate tracking</span>
+              <span style="font-size:12px;color:#94a3b8;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Compliance alerts</span>
+              <span style="font-size:12px;color:#94a3b8;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Service history</span>
             </div>
           </div>
-          <div class="prop-empty-placeholder prop-empty-placeholder--faded">
-            <div class="pep-img-wrap"><div class="pep-img-ph"></div></div>
-            <div class="pep-body"><div class="pep-name pep-ghost"></div><div class="pep-addr pep-ghost pep-ghost--sm"></div></div>
-          </div>
-          <div class="prop-empty-placeholder prop-empty-placeholder--faded">
-            <div class="pep-img-wrap"><div class="pep-img-ph"></div></div>
-            <div class="pep-body"><div class="pep-name pep-ghost"></div><div class="pep-addr pep-ghost pep-ghost--sm"></div></div>
-          </div>
-        </div>
       </div></div>
       <!-- Fixed chat footer -->
       <div class="page-ai-footer">
