@@ -2308,7 +2308,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     </ul>
     <div class="nav-btns" id="navBtns">
       <button class="btn-ghost-light" id="navLoginBtn" onclick="showAuthPage("login")">Log in</button>
-      <button class="btn-teal" onclick="goToDashboard('',true)">Sign Up <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M8 4l3 2.5-3 2.5"/></svg></button>
+      <button class="btn-teal" onclick="showAuthPage('signup')">Sign Up <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M8 4l3 2.5-3 2.5"/></svg></button>
     </div>
     <!-- Hamburger -->
     <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleMobileNav()" aria-label="Open menu">
@@ -3502,16 +3502,19 @@ function showPage(id, e) {
     const el = document.getElementById('page-' + p);
     if (el) el.style.display = p === id ? 'flex' : 'none';
   });
-  // Update active nav — only mark active if explicitly clicked (e exists)
+  // Update active nav
   document.querySelectorAll('.db-nav-item').forEach(item => item.classList.remove('active'));
   if (e && e.currentTarget) {
     e.currentTarget.classList.add('active');
   } else {
-    // Find nav item whose onclick matches this page id
     document.querySelectorAll('.db-nav-item').forEach(item => {
       const oc = item.getAttribute('onclick') || '';
       if (oc.includes("'" + id + "'")) item.classList.add('active');
     });
+  }
+  // Refresh bookings tab when opened
+  if (id === 'bookings' && typeof refreshBkPage === 'function') {
+    setTimeout(refreshBkPage, 30);
   }
 }
 
@@ -4448,45 +4451,64 @@ function renderJobs(filter) {
     return true;
   });
   if(!jobs.length){
-    list.innerHTML='<div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:48px 24px;text-align:center;">' +
-      '<div style="width:56px;height:56px;background:#f8fafc;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">' +
-      '<svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#cbd5e1" stroke-width="1.5"><rect x="3" y="7" width="20" height="15" rx="3"/><path d="M8 7V5a5 5 0 0110 0v2"/><path d="M3 13h20"/></svg></div>' +
-      '<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Fraunces,serif;margin-bottom:6px;">No jobs yet</div>' +
-      '<div style="font-size:13px;color:#94a3b8;max-width:260px;margin:0 auto 20px;line-height:1.6;">Book your first service and it will appear here.</div>' +
-      '<button onclick="startNewChat();showPage(\'chat\',null);" style="background:#1d4ed8;color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Book a service</button></div>';
+    var features=['Real-time tracking','Vetted professionals','Job history & reports'];
+    var featHtml=features.map(function(t){return '<span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;"><svg width=\"11\" height=\"11\" viewBox=\"0 0 11 11\" fill=\"none\" stroke=\"#10b981\" stroke-width=\"2\"><path d=\"M1.5 5.5l3 3 5-5\"/></svg>'+t+'</span>';}).join('');
+    list.innerHTML='<div style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:60px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;">' +
+      '<div style="width:72px;height:72px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">' +
+      '<svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#3b82f6" stroke-width="1.5"><rect x="4" y="9" width="26" height="20" rx="3.5"/><path d="M10 9V7a7 7 0 0114 0v2"/><path d="M4 17h26"/><path d="M12 24h4M20 24h2"/></svg></div>' +
+      '<div style="font-size:19px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">No jobs yet</div>' +
+      '<div style="font-size:13.5px;color:#64748b;max-width:290px;margin:0 auto 26px;line-height:1.65;">Book your first property service and track all your jobs, progress and reports here.</div>' +
+      '<button onclick="startNewChat();showPage(\'chat\',null);" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;margin-bottom:20px;">' +
+      '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 1.5v11M1.5 7h11"/></svg>Book your first service</button>' +
+      '<div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;">'+featHtml+'</div>' +
+      '</div>';
     return;
   }
   list.innerHTML = jobs.map(function(j){
     var ic=jobServiceIcon(j.service);
     var prog={confirmed:20,active:55,scheduled:40,pending:15,completed:100}[j.status]||20;
     var isNew=j.isNew;
-    return '<div style="background:#fff;border:1.5px solid '+(isNew?'#93c5fd':'#e2e8f0')+';border-radius:16px;padding:18px 20px;margin-bottom:12px;position:relative;overflow:hidden;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow=\'0 4px 16px rgba(0,0,0,0.08)\'" onmouseout="this.style.boxShadow=\'none\'">' +
-      (isNew?'<div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:16px 16px 0 0;"></div>':'') +
-      '<div style="display:flex;align-items:flex-start;gap:14px;">' +
-        '<div style="width:44px;height:44px;border-radius:12px;background:'+ic.bg+';display:flex;align-items:center;justify-content:center;flex-shrink:0;color:'+ic.color+';">'+ic.svg+'</div>' +
+    var loc=j.address?j.address.split(',')[0]:'';
+    var bColor=isNew?'#bfdbfe':'#e2e8f0';
+    var bHover=isNew?'#93c5fd':'#c7d2fe';
+    return '<div style="background:#fff;border:1px solid '+bColor+';border-radius:16px;padding:18px 20px;margin-bottom:10px;position:relative;overflow:hidden;cursor:pointer;transition:box-shadow 0.15s,border-color 0.15s;" onmouseover="this.style.boxShadow=\'0 4px 18px rgba(0,0,0,0.07)\';this.style.borderColor=\''+bHover+'\'" onmouseout="this.style.boxShadow=\'none\';this.style.borderColor=\''+bColor+'\'">' +
+      (isNew?'<div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);"></div>':'') +
+      '<div style="display:flex;align-items:center;gap:14px;">' +
+        '<div style="width:46px;height:46px;border-radius:13px;background:'+ic.bg+';display:flex;align-items:center;justify-content:center;flex-shrink:0;color:'+ic.color+';position:relative;">' +
+          ic.svg +
+          (j.status==='active'?'<div style="position:absolute;top:-2px;right:-2px;width:10px;height:10px;background:#f59e0b;border-radius:50%;border:2px solid #fff;"></div>':'') +
+        '</div>' +
         '<div style="flex:1;min-width:0;">' +
-          '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:3px;">' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">' +
             '<div style="font-size:14.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+escapeHtml(j.service)+'</div>' +
-            '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">' +
-              jobBadge(j.status) +
-              (isNew?'<span style="background:#dbeafe;color:#1d4ed8;font-size:10px;font-weight:700;font-family:Inter,sans-serif;padding:2px 8px;border-radius:999px;">NEW</span>':'') +
+            '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">'+
+              jobBadge(j.status)+
+              (isNew?'<span style="background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;font-family:Inter,sans-serif;padding:2px 8px;border-radius:999px;">NEW</span>':'')+
+              '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#d1d5db" stroke-width="2"><path d="M5 3l4 4-4 4"/></svg>'+
+            '</div>'+
+          '</div>' +
+          '<div style="display:flex;align-items:center;gap:12px;margin-top:3px;">' +
+            (loc?'<span style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;display:flex;align-items:center;gap:3px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#94a3b8" stroke-width="1.6"><circle cx="5" cy="4" r="2"/><path d="M5 10S2 6.5 2 4a3 3 0 016 0c0 2.5-3 6-3 6z"/></svg>'+escapeHtml(loc)+'</span>':'') +
+            (j.pro?'<span style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">'+escapeHtml(j.pro)+'</span>':'') +
+          '</div>' +
+          '<div style="margin-top:12px;">' +
+            '<div style="display:flex;justify-content:space-between;font-size:11.5px;font-family:Inter,sans-serif;margin-bottom:5px;">' +
+              '<span style="color:#94a3b8;font-weight:500;">Progress</span><span style="color:#475569;font-weight:600;">'+prog+'%</span>' +
             '</div>' +
-          '</div>' +
-          '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:10px;">'+
-            (j.pro?'👤 '+escapeHtml(j.pro):'')+(j.address?' &nbsp;📍 '+escapeHtml(j.address.split(',')[0]):'')+(j.eta?' &nbsp;⏱ '+escapeHtml(j.eta):'') +
-          '</div>' +
-          '<div style="margin-bottom:8px;">' +
-            '<div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:4px;"><span>Progress</span><span>'+prog+'%</span></div>' +
             '<div style="background:#f1f5f9;border-radius:999px;height:5px;overflow:hidden;">' +
               '<div style="height:100%;width:'+prog+'%;background:linear-gradient(90deg,#1d4ed8,#0ea5e9);border-radius:999px;"></div>' +
             '</div>' +
           '</div>' +
-          '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-            '<div style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;">📅 '+escapeHtml(j.date)+(j.ref?' &nbsp;Ref: '+escapeHtml(j.ref):'')+'</div>' +
-            (j.price?'<div style="font-size:15px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+escapeHtml(j.price)+'</div>':'') +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">' +
+            '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:4px;">' +
+              '<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="2" width="9" height="8" rx="1.5"/><path d="M3.5 1v2M7.5 1v2M1 5h9"/></svg>' +
+              escapeHtml(j.date)+(j.ref?' &nbsp;·&nbsp; Ref: '+escapeHtml(j.ref):'') +
+            '</div>' +
+            (j.price?'<div style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+escapeHtml(j.price)+'</div>':'') +
           '</div>' +
         '</div>' +
-      '</div></div>';
+      '</div>' +
+    '</div>';
   }).join('');
 }
 
