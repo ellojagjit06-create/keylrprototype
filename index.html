@@ -1692,7 +1692,10 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
 /* Page layout — each page fills the main panel */
 #page-home,#page-explore,#page-bookings,#page-properties,#page-pricing,#page-chat {
+  position:absolute;inset:0;
+  display:none;
   flex-direction:column;
+  overflow:hidden;
 }
 .bk-scroll-area,.pr-scroll-area,.px-scroll-area {
   flex:1;
@@ -2307,7 +2310,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
       <li><a href="javascript:void(0)">Supplier Portal</a></li>
     </ul>
     <div class="nav-btns" id="navBtns">
-      <button class="btn-ghost-light" id="navLoginBtn" onclick="showAuthPage("login")">Log in</button>
+      <button class="btn-ghost-light" id="navLoginBtn" onclick="showAuthPage('login')">Log in</button>
       <button class="btn-teal" onclick="showAuthPage('signup')">Sign Up <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M8 4l3 2.5-3 2.5"/></svg></button>
     </div>
     <!-- Hamburger -->
@@ -2608,7 +2611,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
       <p class="db-auth-hint">Sign up or log in to access<br>all the features</p>
       <div class="db-auth-btns">
         <button class="db-signup-btn" onclick="showAuthPage('signup')">Sign up</button>
-        <button class="db-login-btn" onclick="showAuthPage("login")">Log in</button>
+        <button class="db-login-btn" onclick="showAuthPage('login')">Log in</button>
       </div>
     </div>
   </aside>
@@ -3730,6 +3733,14 @@ function addMessage(role, text, chips = []) {
   )) {
     setTimeout(showDetailActionButtons, 500);
   }
+  // Auto-show supplier count slider
+  if (role === 'ai' && text && (
+    text.toLowerCase().includes('how many professionals') ||
+    text.toLowerCase().includes('how many quotes') ||
+    text.toLowerCase().includes('how many supplier')
+  )) {
+    setTimeout(showSupplierCountSlider, 400);
+  }
 }
 
 function showTyping() {
@@ -3856,21 +3867,20 @@ function renderBookingConfirmed(bookText) {
 }
 
 function formatAIText(text) {
-  // Check for SUPPLIERS block
+  // SUPPLIERS: show only cards, strip all text
   if (text.includes('SUPPLIERS:')) {
-    const suppMatch = text.match(/SUPPLIERS:\s*([\s\S]*?)(?:\n\n|$)/);
-    const cleanText = text.replace(/SUPPLIERS:[\s\S]*?(?:\n\n|$)/, '').trim();
-    const cards = suppMatch ? renderSupplierCards(suppMatch[1]) : '';
-    const html = cleanText ? formatPlainText(cleanText) : '';
-    return (html ? html : '') + cards;
+    const blocks = text.match(/\[([^\]]+)\]/g) || [];
+    const cards = blocks.length ? renderSupplierCards(blocks.join(' ')) : '';
+    const heading = '<p style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 10px;font-weight:500;">Select a professional to book:</p>';
+    return heading + (cards || '<p>No suppliers found. Please try again.</p>');
   }
-  // Check for BOOKING_CONFIRMED block
+  // BOOKING_CONFIRMED
   if (text.includes('BOOKING_CONFIRMED:')) {
     const bookMatch = text.match(/BOOKING_CONFIRMED:\s*([\s\S]*?)(?:\n\n|$)/);
     const cleanText = text.replace(/BOOKING_CONFIRMED:[\s\S]*?(?:\n\n|$)/, '').trim();
     const card = bookMatch ? renderBookingConfirmed(bookMatch[1]) : '';
     const html = cleanText ? formatPlainText(cleanText) : '';
-    return (html ? html : '') + card;
+    return (html || '') + card;
   }
   return formatPlainText(text);
 }
@@ -4582,6 +4592,50 @@ function showAuthPage(mode) {
   if (existing) existing.remove();
   document.body.appendChild(modal);
   modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+}
+
+// =============================================
+// SUPPLIER COUNT SLIDER WIDGET
+// =============================================
+function showSupplierCountSlider() {
+  var area = document.getElementById('chatArea');
+  if (!area || document.getElementById('supplierSlider')) return;
+  var wrap = document.createElement('div');
+  wrap.id = 'supplierSlider';
+  wrap.style.cssText = 'margin:4px 0 8px 44px;background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px 22px;max-width:420px;box-shadow:0 2px 12px rgba(0,0,0,0.06);';
+  wrap.innerHTML =
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">' +
+      '<div style="font-size:13px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">Number of quotes</div>' +
+      '<div id="sliderVal" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;font-size:15px;font-weight:800;font-family:Fraunces,serif;padding:4px 14px;border-radius:8px;min-width:36px;text-align:center;">3</div>' +
+    '</div>' +
+    '<input type="range" id="supplierCountRange" min="1" max="10" value="3"' +
+      ' style="width:100%;accent-color:#1d4ed8;cursor:pointer;margin-bottom:8px;"' +
+      ' oninput="document.getElementById(\'sliderVal\').textContent=this.value;updateSliderHint(this.value)"/>' +
+    '<div style="display:flex;justify-content:space-between;margin-bottom:10px;">' +
+      '<span style="font-size:10.5px;color:#94a3b8;font-family:Inter,sans-serif;">1 — Fastest</span>' +
+      '<span style="font-size:10.5px;color:#94a3b8;font-family:Inter,sans-serif;">10 — Most choice</span>' +
+    '</div>' +
+    '<div id="sliderHint" style="text-align:center;font-size:12px;color:#64748b;font-family:Inter,sans-serif;background:#f8fafc;border-radius:8px;padding:8px;margin-bottom:14px;">3 quotes — good balance of choice</div>' +
+    '<button onclick="confirmSupplierCount(parseInt(document.getElementById(\'supplierCountRange\').value))"' +
+      ' style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;"' +
+      ' onmouseover="this.style.opacity=\'0.88\'" onmouseout="this.style.opacity=\'1\'">' +
+      'Confirm <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M8 3.5l3 3-3 3"/></svg>' +
+    '</button>';
+  area.appendChild(wrap);
+  area.scrollTop = area.scrollHeight;
+}
+
+var _sliderHints = {1:'1 quote — fastest booking',2:'2 quotes — quick comparison',3:'3 quotes — good balance of choice',4:'4 quotes — strong selection',5:'5 quotes — great variety',6:'6 quotes — thorough search',7:'7 quotes — broad market view',8:'8 quotes — maximum coverage',9:'9 quotes — best deal potential',10:'10 quotes — all available pros'};
+
+function updateSliderHint(val) {
+  var el = document.getElementById('sliderHint');
+  if (el) el.textContent = _sliderHints[parseInt(val)] || val + ' quotes';
+}
+
+function confirmSupplierCount(count) {
+  var s = document.getElementById('supplierSlider');
+  if (s) s.remove();
+  sendFromSuggestion('I want ' + count + ' quote' + (count > 1 ? 's' : '') + ' please');
 }
 </script>
 
