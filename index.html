@@ -3002,24 +3002,24 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
         <div style="max-width:900px;width:100%;margin:0 auto;padding:24px 28px 40px;">
 
           <!-- AI ASSISTANT CARD — matching Image 3 -->
-          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:20px 24px;margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+          <div style="background:linear-gradient(135deg,#0f1c38 0%,#162845 50%,#1a3356 100%);border-radius:18px;padding:24px 26px 20px;margin-bottom:24px;position:relative;overflow:hidden;">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
               <div style="width:36px;height:36px;background:#1d4ed8;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2"><path d="M8 2C5 2 2.5 4 2.5 6.5c0 1.3.6 2.5 1.6 3.3L3.5 13l3-1.3c.5.1 1 .2 1.5.2C11 11.9 13.5 9.7 13.5 7.2S11 2 8 2z"/></svg>
               </div>
               <div>
-                <div style="font-size:14.5px;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;">Keylr AI Assistant</div>
-                <div style="font-size:12px;color:#64748b;font-family:'Inter',sans-serif;">Ask me anything — I'll help you find the right service</div>
+                <div style="font-size:14.5px;font-weight:700;color:#fff;font-family:'Inter',sans-serif;">Keylr AI Assistant</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.55);font-family:'Inter',sans-serif;">Ask me anything — I'll help you find the right service</div>
               </div>
             </div>
             <!-- Quick chips -->
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
-              <button onclick="startNewChat();showPage('chat',null);sendFromSuggestion('What certificates do I need for my rental property?');" style="background:#fff;border:1px solid #e2e8f0;border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:500;color:#374151;cursor:pointer;font-family:'Inter',sans-serif;transition:border-color 0.12s;" onmouseover="this.style.borderColor='#94a3b8'" onmouseout="this.style.borderColor='#e2e8f0'">What certificates do I need?</button>
-              <button onclick="startNewChat();showPage('chat',null);sendFromSuggestion('How much does a Gas Safety Certificate cost?');" style="background:#fff;border:1px solid #e2e8f0;border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:500;color:#374151;cursor:pointer;font-family:'Inter',sans-serif;transition:border-color 0.12s;" onmouseover="this.style.borderColor='#94a3b8'" onmouseout="this.style.borderColor='#e2e8f0'">Gas Safety cost?</button>
-              <button onclick="startNewChat();showPage('chat',null);sendFromSuggestion('Find an electrician near me');" style="background:#fff;border:1px solid #e2e8f0;border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:500;color:#374151;cursor:pointer;font-family:'Inter',sans-serif;transition:border-color 0.12s;" onmouseover="this.style.borderColor='#94a3b8'" onmouseout="this.style.borderColor='#e2e8f0'">Find an electrician</button>
+              <button onclick="document.getElementById('exploreAIInput').value='What certificates do I need?';document.getElementById('exploreAIInput').focus();" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:500;color:rgba(255,255,255,0.85);cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.12s;" onmouseover="this.style.borderColor='#94a3b8'" onmouseout="this.style.borderColor='#e2e8f0'">What certificates do I need?</button>
+              <button onclick="document.getElementById('exploreAIInput').value='Gas Safety cost?';document.getElementById('exploreAIInput').focus();" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:500;color:rgba(255,255,255,0.85);cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.12s;" onmouseover="this.style.borderColor='#94a3b8'" onmouseout="this.style.borderColor='#e2e8f0'">Gas Safety cost?</button>
+              <button onclick="document.getElementById('exploreAIInput').value='Find an electrician';document.getElementById('exploreAIInput').focus();" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:500;color:rgba(255,255,255,0.85);cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.12s;" onmouseover="this.style.borderColor='#94a3b8'" onmouseout="this.style.borderColor='#e2e8f0'">Find an electrician</button>
             </div>
             <!-- Search input -->
-            <div style="display:flex;align-items:center;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:8px 8px 8px 16px;gap:8px;">
+            <div style="display:flex;align-items:center;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;padding:8px 8px 8px 16px;gap:8px;">
               <input id="exploreAIInput" type="text" placeholder="Ask about any service..."
                 style="flex:1;background:transparent;border:none;outline:none;font-size:13.5px;color:#0f172a;font-family:'Inter',sans-serif;"
                 onkeydown="if(event.key==='Enter'){var v=this.value.trim();if(v){startNewChat();showPage('chat',null);sendFromSuggestion(v);this.value='';}}"
@@ -3363,7 +3363,77 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
       </div></div>
     </div>
 
-  </main>
+  
+    <!-- SIGNUP PAGE -->
+    <div id="page-signup">
+      <div style="flex:1;overflow-y:auto;display:flex;align-items:center;justify-content:center;background:var(--gray-50);padding:40px 20px;">
+        <div style="background:#fff;border-radius:20px;width:100%;max-width:440px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+          <div style="background:linear-gradient(135deg,#12192A,#1E3A5F);padding:28px 32px 24px;">
+            <a href="javascript:void(0)" onclick="showPage('home',null);" style="display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.6);text-decoration:none;margin-bottom:20px;font-family:'Inter',sans-serif;">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2L4 6.5 9 11"/></svg> Back
+            </a>
+            <div style="font-size:22px;font-weight:800;color:#fff;font-family:'Fraunces',serif;margin-bottom:4px;">Create your account</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.55);font-family:'Inter',sans-serif;">Join thousands of property managers</div>
+          </div>
+          <div style="padding:28px 32px 32px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+              <div>
+                <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">First name</label>
+                <input type="text" placeholder="First name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'"/>
+              </div>
+              <div>
+                <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">Last name</label>
+                <input type="text" placeholder="Last name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'"/>
+              </div>
+            </div>
+            <div style="margin-bottom:14px;">
+              <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">Email address</label>
+              <input type="email" placeholder="your@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'"/>
+            </div>
+            <div style="margin-bottom:22px;position:relative;">
+              <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">Password</label>
+              <input id="signupPwd" type="password" placeholder="Create a password" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 40px 10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'"/>
+              <button type="button" onclick="var f=document.getElementById('signupPwd');f.type=f.type==='password'?'text':'password';" style="position:absolute;right:12px;bottom:10px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8" cy="8" rx="6" ry="3.5"/><circle cx="8" cy="8" r="1.5"/></svg>
+              </button>
+            </div>
+            <button onclick="showPage('home',null);" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:16px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Create account</button>
+            <p style="text-align:center;font-size:12.5px;color:#64748b;font-family:'Inter',sans-serif;margin:0;">Already have an account? <a href="javascript:void(0)" onclick="showPage('login',null);" style="color:#1d4ed8;font-weight:600;text-decoration:none;">Log in</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGIN PAGE -->
+    <div id="page-login">
+      <div style="flex:1;overflow-y:auto;display:flex;align-items:center;justify-content:center;background:var(--gray-50);padding:40px 20px;">
+        <div style="background:#fff;border-radius:20px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+          <div style="background:linear-gradient(135deg,#12192A,#1E3A5F);padding:28px 32px 24px;">
+            <a href="javascript:void(0)" onclick="showPage('home',null);" style="display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.6);text-decoration:none;margin-bottom:20px;font-family:'Inter',sans-serif;">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2L4 6.5 9 11"/></svg> Back
+            </a>
+            <div style="font-size:22px;font-weight:800;color:#fff;font-family:'Fraunces',serif;margin-bottom:4px;">Welcome back</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.55);font-family:'Inter',sans-serif;">Log in to your Keylr account</div>
+          </div>
+          <div style="padding:28px 32px 32px;">
+            <div style="margin-bottom:14px;">
+              <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">Email address</label>
+              <input type="email" placeholder="your@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'"/>
+            </div>
+            <div style="margin-bottom:22px;position:relative;">
+              <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">Password</label>
+              <input id="loginPwd" type="password" placeholder="Your password" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 40px 10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'"/>
+              <button type="button" onclick="var f=document.getElementById('loginPwd');f.type=f.type==='password'?'text':'password';" style="position:absolute;right:12px;bottom:10px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8" cy="8" rx="6" ry="3.5"/><circle cx="8" cy="8" r="1.5"/></svg>
+              </button>
+            </div>
+            <button onclick="showPage('home',null);" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:16px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Log in</button>
+            <p style="text-align:center;font-size:12.5px;color:#64748b;font-family:'Inter',sans-serif;margin:0;">No account? <a href="javascript:void(0)" onclick="showPage('signup',null);" style="color:#1d4ed8;font-weight:600;text-decoration:none;">Sign up for free</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+</main>
   <!-- Floating chat assistant button (shown on non-chat pages) -->
   
 
@@ -3584,7 +3654,7 @@ function backToLanding(e) {
 // =============================================
 // SIDEBAR NAVIGATION
 // =============================================
-const pages = ['home','chat','explore','bookings','properties','pricing'];
+const pages = ['home','chat','explore','bookings','properties','pricing','signup','login'];
 
 function showPage(id, e) {
   if (e) e.preventDefault();
@@ -3867,6 +3937,18 @@ function renderStars(rating) {
   return s;
 }
 
+function renderStars(rating) {
+  const full = Math.floor(rating);
+  const half = rating % 1 >= 0.5;
+  let s = '';
+  for (let i = 0; i < 5; i++) {
+    if (i < full) s += '<span style="color:#f59e0b;font-size:12px;">★</span>';
+    else if (i === full && half) s += '<span style="color:#f59e0b;font-size:10px;">½</span>';
+    else s += '<span style="color:#e2e8f0;font-size:12px;">★</span>';
+  }
+  return s;
+}
+
 function renderSupplierCards(suppText) {
   const cardRegex = /\[([^\]]+)\]/g;
   let match;
@@ -3881,7 +3963,8 @@ function renderSupplierCards(suppText) {
   }
   if (!cards.length) return '';
   const colors = ['#6366f1','#0ea5e9','#10b981','#f59e0b','#ef4444','#8b5cf6'];
-  return '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px;">' +
+  // Wrapper: full width grid, 3 equal columns, each card same height
+  return '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:8px;width:100%;">' +
     cards.map((f, idx) => {
       const name = f['Name'] || 'Professional';
       const rating = parseFloat(f['Rating']) || 4.8;
@@ -3890,29 +3973,29 @@ function renderSupplierCards(suppText) {
       const price = f['Price'] || '';
       const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
       const col = colors[idx % colors.length];
-      return `<div class="supplier-card" data-name="${escapeHtml(name)}" data-eta="${escapeHtml(eta)}" data-price="${escapeHtml(price)}" data-rating="${rating}" data-reviews="${reviews}" onclick="selectSupplier(this)" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:14px;cursor:pointer;display:flex;flex-direction:column;gap:10px;transition:border-color 0.15s,box-shadow 0.15s,transform 0.12s;" onmouseover="this.style.borderColor='#1d4ed8';this.style.boxShadow='0 4px 16px rgba(29,78,216,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.boxShadow='none';this.style.transform='none'">
-        <div style="display:flex;align-items:center;gap:9px;">
+      return `<div class="supplier-card" data-name="${escapeHtml(name)}" data-eta="${escapeHtml(eta)}" data-price="${escapeHtml(price)}" data-rating="${rating}" data-reviews="${reviews}" onclick="selectSupplier(this)" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:14px 12px;cursor:pointer;display:flex;flex-direction:column;gap:10px;box-sizing:border-box;min-width:0;transition:border-color 0.15s,box-shadow 0.15s,transform 0.12s;" onmouseover="this.style.borderColor='#1d4ed8';this.style.boxShadow='0 4px 16px rgba(29,78,216,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.boxShadow='none';this.style.transform='none'">
+        <div style="display:flex;align-items:flex-start;gap:8px;">
           <div style="width:38px;height:38px;border-radius:10px;background:${col};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;font-family:'Inter',sans-serif;">${initials}</div>
-          <div style="min-width:0;flex:1;">
-            <div style="font-size:13px;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(name)}</div>
-            <div style="display:flex;align-items:center;gap:3px;margin-top:1px;">
-              <span style="font-size:11px;">${renderStars(rating)}</span>
-              <span style="font-size:11px;color:#64748b;font-family:'Inter',sans-serif;">${rating} (${reviews})</span>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:12.5px;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(name)}</div>
+            <div style="display:flex;align-items:center;gap:3px;margin-top:2px;flex-wrap:wrap;">
+              <span>${renderStars(rating)}</span>
+              <span style="font-size:11px;color:#0f172a;font-weight:600;font-family:'Inter',sans-serif;">${rating}</span>
+              <span style="font-size:11px;color:#64748b;font-family:'Inter',sans-serif;">(${reviews})</span>
             </div>
           </div>
           <div style="text-align:right;flex-shrink:0;">
             <div style="font-size:15px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;line-height:1;">${escapeHtml(price)}</div>
-            <div style="font-size:10px;color:#94a3b8;font-family:'Inter',sans-serif;margin-top:1px;">est. price</div>
+            <div style="font-size:9.5px;color:#94a3b8;font-family:'Inter',sans-serif;margin-top:1px;">est. price</div>
           </div>
         </div>
-        <div style="display:flex;align-items:center;gap:6px;background:#f8fafc;border-radius:8px;padding:7px 10px;">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#64748b" stroke-width="1.6"><circle cx="6" cy="6" r="4.5"/><path d="M6 3.5v2.5l1.5 1"/></svg>
-          <span style="font-size:11.5px;color:#64748b;font-family:'Inter',sans-serif;">${escapeHtml(eta)}</span>
+        <div style="display:flex;align-items:center;gap:5px;background:#f8fafc;border-radius:7px;padding:6px 9px;">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#64748b" stroke-width="1.6"><circle cx="5.5" cy="5.5" r="4"/><path d="M5.5 3.5v2l1 1"/></svg>
+          <span style="font-size:11.5px;color:#475569;font-family:'Inter',sans-serif;font-weight:500;">${escapeHtml(eta)}</span>
         </div>
-        <button style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:8px;padding:8px;font-size:12.5px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">Book →</button>
+        <button style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:8px;padding:9px;font-size:12.5px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;box-sizing:border-box;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">Book →</button>
       </div>`;
-    }).join('') +
-  '</div>';
+    }).join('') + '</div>';
 }
 
 function renderBookingConfirmed(bookText) {
@@ -4675,39 +4758,9 @@ function filterExplore(query) {
 }
 
 function showAuthPage(mode) {
-  var title = mode === 'login' ? 'Log in to Keylr' : 'Create your Keylr account';
-  var modal = document.createElement('div');
-  modal.id = 'authModal';
-  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.55);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;';
-  var closeBtn = mode === 'login'
-    ? '<button onclick="document.getElementById(\'authModal\').remove()" style="background:rgba(255,255,255,0.1);border:none;color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;">\u00d7</button>'
-    : '<button onclick="document.getElementById(\'authModal\').remove()" style="background:rgba(255,255,255,0.1);border:none;color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;">\u00d7</button>';
-  var switchLink = mode === 'login'
-    ? '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">No account? <a href="#" onclick="document.getElementById(\'authModal\').remove();showAuthPage(\'signup\');return false;" style="color:#1d4ed8;font-weight:600;">Sign up</a></p>'
-    : '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">Already have one? <a href="#" onclick="document.getElementById(\'authModal\').remove();showAuthPage(\'login\');return false;" style="color:#1d4ed8;font-weight:600;">Log in</a></p>';
-  var nameField = mode === 'signup'
-    ? '<div style="margin-bottom:12px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Full name</label><input type="text" placeholder="Your name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;"/></div>'
-    : '';
-  modal.innerHTML = '<div style="background:#fff;border-radius:20px;width:100%;max-width:400px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.2);animation:modalPop 0.22s ease;">' +
-    '<div style="background:linear-gradient(135deg,#12192A,#1E3A5F);padding:24px 28px 20px;">' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;">' +
-        '<div style="font-size:17px;font-weight:700;color:#fff;font-family:Fraunces,serif;">' + title + '</div>' +
-        closeBtn +
-      '</div>' +
-    '</div>' +
-    '<div style="padding:24px 28px 28px;">' +
-      nameField +
-      '<div style="margin-bottom:12px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Email</label><input type="email" placeholder="your@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;"/></div>' +
-      '<div style="margin-bottom:20px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Password</label><input type="password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;"/></div>' +
-      '<button style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">' + (mode === 'login' ? 'Log in' : 'Create account') + '</button>' +
-      switchLink +
-    '</div>' +
-  '</div>';
-  var existing = document.getElementById('authModal');
-  if (existing) existing.remove();
-  document.body.appendChild(modal);
-  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  showPage(mode === 'signup' ? 'signup' : 'login', null);
 }
+
 
 // =============================================
 // SUPPLIER COUNT SLIDER WIDGET
