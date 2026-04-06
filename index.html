@@ -2286,6 +2286,10 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .ai-msg-wrap:has(.supplier-card){max-width:100% !important;width:100%;}
 /* Fallback for browsers without :has() */
 .supplier-grid-wrap{width:100%;max-width:none;}
+
+/* Booking confirmed card — full width */
+.ai-msg-wrap:has(.booking-confirmed-card){max-width:100% !important;width:100%;}
+.booking-confirmed-card{width:100%;}
 </style>
 </head>
 </head>
@@ -3057,54 +3061,49 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     <!-- BOOKINGS PAGE -->
     <div id="page-bookings" style="flex-direction:column;">
       <div style="flex:1;overflow-y:auto;min-height:0;">
-        <div style="max-width:800px;width:100%;margin:0 auto;padding:28px 28px 40px;">
+        <div style="max-width:800px;width:100%;margin:0 auto;padding:24px 28px 40px;">
 
           <!-- Header -->
-          <div style="margin-bottom:28px;">
-            <h2 style="font-size:26px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;margin:0 0 4px;">My Jobs</h2>
-            <p style="font-size:13px;color:#94a3b8;margin:0;">0 active · 0 completed</p>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+            <div>
+              <h2 style="font-size:24px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;margin:0 0 3px;">My Jobs</h2>
+              <p id="bkSubtitle" style="font-size:13px;color:#94a3b8;margin:0;">0 active · 0 completed</p>
+            </div>
+            <button onclick="startNewChat();showPage('chat',null);" style="background:#1d4ed8;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:7px;">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6.5 1v11M1 6.5h11"/></svg>
+              Book a service
+            </button>
           </div>
 
-          <!-- Stats grid -->
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;">
-            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:18px 16px;">
-              <div style="color:#3b82f6;margin-bottom:10px;"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 2L14 8.5h7l-5.5 4.5 2 7L11 16.5 5.5 20l2-7L2 8.5h7z"/></svg></div>
-              <div style="font-size:30px;font-weight:700;color:#3b82f6;line-height:1;">0</div>
-              <div style="font-size:12px;color:#94a3b8;margin-top:5px;">Active</div>
+          <!-- Stats row -->
+          <div id="bkStats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 14px;">
+              <div style="font-size:10.5px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;font-family:'Inter',sans-serif;margin-bottom:4px;">Active</div>
+              <div id="bkStatActive" style="font-size:24px;font-weight:800;color:#3b82f6;font-family:'Fraunces',serif;">0</div>
             </div>
-            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:18px 16px;">
-              <div style="color:#10b981;margin-bottom:10px;"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8.5"/><path d="M7.5 11l3 3 5-5"/></svg></div>
-              <div style="font-size:30px;font-weight:700;color:#10b981;line-height:1;">0</div>
-              <div style="font-size:12px;color:#94a3b8;margin-top:5px;">Completed</div>
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 14px;">
+              <div style="font-size:10.5px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;font-family:'Inter',sans-serif;margin-bottom:4px;">Completed</div>
+              <div id="bkStatDone" style="font-size:24px;font-weight:800;color:#10b981;font-family:'Fraunces',serif;">0</div>
             </div>
-            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:18px 16px;">
-              <div style="color:#64748b;margin-bottom:10px;"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="18" height="13" rx="2.5"/><path d="M6 6V4.5a5 5 0 0110 0V6"/><path d="M2 11h18"/></svg></div>
-              <div style="font-size:30px;font-weight:700;color:#0f172a;line-height:1;">£0</div>
-              <div style="font-size:12px;color:#94a3b8;margin-top:5px;">Total Spent</div>
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 14px;">
+              <div style="font-size:10.5px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;font-family:'Inter',sans-serif;margin-bottom:4px;">Total Spent</div>
+              <div id="bkStatSpend" style="font-size:24px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;">£0</div>
             </div>
-            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:18px 16px;">
-              <div style="color:#f59e0b;margin-bottom:10px;"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 2l2.5 7h7l-5.5 4 2 7L11 16l-6 4 2-7-5.5-4h7z"/></svg></div>
-              <div style="font-size:30px;font-weight:700;color:#f59e0b;line-height:1;">—</div>
-              <div style="font-size:12px;color:#94a3b8;margin-top:5px;">Avg Rating</div>
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 14px;">
+              <div style="font-size:10.5px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;font-family:'Inter',sans-serif;margin-bottom:4px;">This Month</div>
+              <div id="bkStatMonth" style="font-size:24px;font-weight:800;color:#f59e0b;font-family:'Fraunces',serif;">0</div>
             </div>
           </div>
 
           <!-- Filter tabs -->
-          <div style="display:flex;gap:4px;background:#f1f5f9;border-radius:10px;padding:4px;width:fit-content;margin-bottom:20px;">
-            <button style="background:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;color:#0f172a;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.08);">Active (0)</button>
-            <button style="background:transparent;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:500;color:#64748b;cursor:pointer;">Completed (0)</button>
-            <button style="background:transparent;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:500;color:#64748b;cursor:pointer;">All (0)</button>
+          <div style="display:flex;gap:4px;background:#f1f5f9;border-radius:10px;padding:4px;width:fit-content;margin-bottom:18px;">
+            <button id="bkTabActive" onclick="renderJobs('active')" style="background:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;color:#0f172a;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.08);font-family:'Inter',sans-serif;">Active (0)</button>
+            <button id="bkTabDone" onclick="renderJobs('completed')" style="background:transparent;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:500;color:#64748b;cursor:pointer;font-family:'Inter',sans-serif;">Completed (0)</button>
+            <button id="bkTabAll" onclick="renderJobs('all')" style="background:transparent;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:500;color:#64748b;cursor:pointer;font-family:'Inter',sans-serif;">All (0)</button>
           </div>
 
-          <!-- Empty state -->
-          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:48px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;">
-            <div style="width:64px;height:64px;background:#f8fafc;border-radius:18px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;">
-              <svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#cbd5e1" stroke-width="1.5"><rect x="4" y="8" width="22" height="17" rx="3"/><path d="M9 8V6a6 6 0 0112 0v2"/><path d="M4 14h22"/></svg>
-            </div>
-            <div style="font-size:16px;font-weight:700;color:#0f172a;">No active jobs</div>
-            <div style="font-size:13px;color:#94a3b8;line-height:1.6;max-width:300px;">Book your first property service and your active jobs, progress updates and reports will appear here.</div>
-            <button onclick="startNewChat();showPage('chat',null);" style="margin-top:8px;background:#1d4ed8;color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Book first service</button>
-          </div>
+          <!-- Job list -->
+          <div id="bkJobList"></div>
 
         </div>
       </div>
@@ -3745,22 +3744,8 @@ function addMessage(role, text, chips = []) {
   )) {
     setTimeout(showDetailActionButtons, 500);
   }
-  // Auto-show supplier count slider when AI asks how many
-  if (role === 'ai' && text && (
-    text.toLowerCase().includes('how many professionals') ||
-    text.toLowerCase().includes('how many supplier') ||
-    text.toLowerCase().includes('how many quotes')
-  )) {
-    setTimeout(showSupplierCountSlider, 400);
-  }
-  // Auto-show price range widget when AI asks budget
-  if (role === 'ai' && text && (
-    text.toLowerCase().includes('budget') ||
-    text.toLowerCase().includes('price range') ||
-    text.toLowerCase().includes('price preference')
-  )) {
-    setTimeout(showPriceRangeWidget, 400);
-  }
+
+
 }
 
 function showTyping() {
@@ -3848,7 +3833,16 @@ function renderBookingConfirmed(bookText) {
   const confirmId = 'K' + Math.floor(Math.random()*90000+10000);
   // Store for chip click
   window._lastBookingData = {id:confirmId, service, pro, eta, price, address};
-  return `<div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;border-radius:16px;padding:20px;margin-top:8px;">
+  // Add to jobs list
+  var now = new Date();
+  var dateStr = now.toISOString().split('T')[0];
+  _confirmedJobs.unshift({
+    ref: confirmId, service: service, pro: pro, eta: eta, price: price,
+    address: address, status: 'confirmed', date: dateStr, isNew: true
+  });
+  // Auto-clear "new" flag after 60s
+  (function(id){ setTimeout(function(){ var j=_confirmedJobs.find(function(x){return x.ref===id;}); if(j) j.isNew=false; }, 60000); })(confirmId);
+  return `<div class="booking-confirmed-card" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;border-radius:16px;padding:20px;margin-top:8px;">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
       <div style="width:36px;height:36px;background:#16a34a;border-radius:10px;display:flex;align-items:center;justify-content:center;">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="2.5"><path d="M3 9l4 4 8-8"/></svg>
@@ -4529,6 +4523,142 @@ function confirmPriceRange() {
   if (widget) widget.remove();
   sendFromSuggestion('My budget is ' + label);
 }
+
+// =============================================
+// JOB BOOKINGS — Dynamic list
+// =============================================
+var _confirmedJobs = [];
+
+// Service type → icon mapping
+function jobServiceIcon(service) {
+  var s = (service||'').toLowerCase();
+  if (s.includes('gas') || s.includes('boiler')) return {bg:'#fff7ed',color:'#ea580c',icon:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 2C6 5 4 8 7 10.5c1 .9 1 2.5-1 3.5 2-1 4.5-1 5.5-3.5.5-1.3-.5-2.5-1-3.5C9.5 5.5 11 4 13 3c-1.5.5-3 1-4 3z"/><circle cx="9" cy="14.5" r="1"/></svg>'};
+  if (s.includes('electric') || s.includes('eicr')) return {bg:'#eff6ff',color:'#2563eb',icon:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 2L6 10h5l-3 6 7-9h-5l3-5z"/></svg>'};
+  if (s.includes('clean')) return {bg:'#f0fdf4',color:'#16a34a',icon:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 15l4-4 3 3 4-7"/><circle cx="14" cy="4" r="2"/></svg>'};
+  if (s.includes('plumb') || s.includes('drain') || s.includes('leak')) return {bg:'#eff6ff',color:'#0ea5e9',icon:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 14c0-4 2-8 5-10 3 2 5 6 5 10"/><path d="M7 14h4"/></svg>'};
+  if (s.includes('fire') || s.includes('risk')) return {bg:'#fff1f2',color:'#e11d48',icon:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 2c0 3-4 5-4 9a4 4 0 008 0c0-4-4-6-4-9z"/><path d="M7 13a2 2 0 004 0"/></svg>'};
+  if (s.includes('lock') || s.includes('key')) return {bg:'#f5f3ff',color:'#7c3aed',icon:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="9" width="10" height="7" rx="2"/><path d="M6 9V6a3 3 0 016 0v3"/></svg>'};
+  if (s.includes('garden') || s.includes('lawn')) return {bg:'#f0fdf4',color:'#16a34a',icon:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 16V8M9 8C9 5 6 3 4 4c1 2 3 3 5 4M9 8c0-3 3-5 5-4-1 2-3 3-5 4"/></svg>'};
+  if (s.includes('epc') || s.includes('check') || s.includes('inspect')) return {bg:'#f0f9ff',color:'#0284c7',icon:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="2" width="12" height="15" rx="2"/><path d="M6 7h6M6 10h6M6 13h4"/></svg>'};
+  // Default
+  return {bg:'#f8fafc',color:'#475569',icon:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="12" height="11" rx="2"/><path d="M6 4V3a3 3 0 016 0v1"/><path d="M3 9h12"/></svg>'};
+}
+
+function jobStatusBadge(status) {
+  var map = {
+    'confirmed': {bg:'#dbeafe',color:'#1d4ed8',label:'Confirmed'},
+    'active':    {bg:'#dcfce7',color:'#16a34a',label:'In Progress'},
+    'completed': {bg:'#f1f5f9',color:'#475569',label:'Completed'},
+    'pending':   {bg:'#fef9c3',color:'#92400e',label:'Pending'},
+    'scheduled': {bg:'#fef3c7',color:'#d97706',label:'Scheduled'},
+  };
+  var s = map[status] || map['confirmed'];
+  return '<span style="background:' + s.bg + ';color:' + s.color + ';font-size:11px;font-weight:600;font-family:Inter,sans-serif;padding:3px 10px;border-radius:999px;">' + s.label + '</span>';
+}
+
+function jobProgress(status) {
+  var map = {confirmed:20, active:55, scheduled:40, pending:15, completed:100};
+  return map[status] || 20;
+}
+
+function renderJobs(filter) {
+  var list = document.getElementById('bkJobList');
+  if (!list) return;
+  // Update active tab styling
+  ['bkTabActive','bkTabDone','bkTabAll'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.style.background = 'transparent';
+    el.style.fontWeight = '500';
+    el.style.color = '#64748b';
+    el.style.boxShadow = 'none';
+  });
+  var activeTab = filter==='active' ? 'bkTabActive' : filter==='completed' ? 'bkTabDone' : 'bkTabAll';
+  var tab = document.getElementById(activeTab);
+  if (tab) { tab.style.background = '#fff'; tab.style.fontWeight = '600'; tab.style.color = '#0f172a'; tab.style.boxShadow = '0 1px 3px rgba(0,0,0,0.08)'; }
+
+  var jobs = _confirmedJobs.filter(function(j) {
+    if (filter === 'active') return j.status !== 'completed';
+    if (filter === 'completed') return j.status === 'completed';
+    return true;
+  });
+
+  if (!jobs.length) {
+    list.innerHTML = '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:48px 24px;text-align:center;">' +
+      '<div style="width:56px;height:56px;background:#f8fafc;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">' +
+      '<svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#cbd5e1" stroke-width="1.5"><rect x="3" y="7" width="20" height="15" rx="3"/><path d="M8 7V5a5 5 0 0110 0v2"/><path d="M3 13h20"/></svg></div>' +
+      '<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Fraunces,serif;margin-bottom:6px;">No jobs here yet</div>' +
+      '<div style="font-size:13px;color:#94a3b8;line-height:1.6;max-width:280px;margin:0 auto 20px;">Book your first property service and it will appear here.</div>' +
+      '<button onclick="startNewChat();showPage(\'chat\',null);" style="background:#1d4ed8;color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Book a service</button></div>';
+    return;
+  }
+
+  list.innerHTML = jobs.map(function(j, idx) {
+    var icon = jobServiceIcon(j.service);
+    var prog = jobProgress(j.status);
+    var isNew = idx === 0 && j.isNew;
+    return '<div style="background:#fff;border:1.5px solid ' + (isNew?'#93c5fd':'#e2e8f0') + ';border-radius:16px;padding:18px 20px;margin-bottom:12px;cursor:pointer;transition:box-shadow 0.15s,border-color 0.15s;position:relative;overflow:hidden;" onmouseover="this.style.boxShadow=\'0 4px 16px rgba(0,0,0,0.08)\'" onmouseout="this.style.boxShadow=\'none\'">' +
+      (isNew ? '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:16px 16px 0 0;"></div>' : '') +
+      '<div style="display:flex;align-items:flex-start;gap:14px;">' +
+        '<div style="width:44px;height:44px;border-radius:12px;background:' + icon.bg + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;color:' + icon.color + ';">' + icon.icon + '</div>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:3px;">' +
+            '<div style="font-size:14.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escapeHtml(j.service) + '</div>' +
+            '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">' +
+              jobStatusBadge(j.status) +
+              (isNew ? '<span style="background:#dbeafe;color:#1d4ed8;font-size:10px;font-weight:700;font-family:Inter,sans-serif;padding:2px 8px;border-radius:999px;">NEW</span>' : '') +
+            '</div>' +
+          '</div>' +
+          '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;display:flex;align-items:center;gap:4px;margin-bottom:10px;">' +
+            '<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5.5" cy="5.5" r="4.5"/><path d="M5.5 3v2.5l1.5 1.5"/></svg> ' +
+            (j.eta ? 'ETA: ' + escapeHtml(j.eta) : 'Booked') +
+            (j.address ? '&nbsp;&nbsp;📍 ' + escapeHtml(j.address.split(',')[0]) : '') +
+            (j.pro ? '&nbsp;&nbsp;👤 ' + escapeHtml(j.pro) : '') +
+          '</div>' +
+          '<div style="margin-bottom:6px;">' +
+            '<div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:4px;">' +
+              '<span>Progress</span><span>' + prog + '%</span>' +
+            '</div>' +
+            '<div style="background:#f1f5f9;border-radius:999px;height:5px;overflow:hidden;">' +
+              '<div style="height:100%;width:' + prog + '%;background:linear-gradient(90deg,#1d4ed8,#0ea5e9);border-radius:999px;transition:width 0.4s ease;"></div>' +
+            '</div>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;">' +
+            '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;">📅 ' + escapeHtml(j.date) + '&nbsp;&nbsp;Ref: ' + escapeHtml(j.ref) + '</div>' +
+            (j.price ? '<div style="font-size:15px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">' + escapeHtml(j.price) + '</div>' : '') +
+          '</div>' +
+        '</div>' +
+      '</div></div>';
+  }).join('');
+}
+
+function refreshBkPage() {
+  var active = _confirmedJobs.filter(function(j){ return j.status !== 'completed'; }).length;
+  var done = _confirmedJobs.filter(function(j){ return j.status === 'completed'; }).length;
+  var subtitle = document.getElementById('bkSubtitle');
+  if (subtitle) subtitle.textContent = active + ' active · ' + done + ' completed';
+  var statActive = document.getElementById('bkStatActive');
+  if (statActive) statActive.textContent = active;
+  var statDone = document.getElementById('bkStatDone');
+  if (statDone) statDone.textContent = done;
+  var statMonth = document.getElementById('bkStatMonth');
+  if (statMonth) statMonth.textContent = _confirmedJobs.length;
+  // Tabs
+  var ta = document.getElementById('bkTabActive');
+  var td = document.getElementById('bkTabDone');
+  var tall = document.getElementById('bkTabAll');
+  if (ta) ta.textContent = 'Active (' + active + ')';
+  if (td) td.textContent = 'Completed (' + done + ')';
+  if (tall) tall.textContent = 'All (' + _confirmedJobs.length + ')';
+  renderJobs('active');
+}
+
+// Intercept showPage to refresh bookings
+var _origShowPage = showPage;
+showPage = function(id, e) {
+  _origShowPage(id, e);
+  if (id === 'bookings') { setTimeout(refreshBkPage, 50); }
+};
 </script>
 
 <!-- =============================================
