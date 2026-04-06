@@ -683,7 +683,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
    CHAT AREA
 ============================================= */
 .chat-area{
-  flex:1;overflow-y:auto;padding:20px 32px;
+  flex:1;overflow-y:auto;padding:20px 24px;
   display:flex;flex-direction:column;gap:16px;
   scroll-behavior:smooth;background:var(--gray-50);
 }
@@ -742,7 +742,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .user-avatar-msg{background:var(--gray-200);color:var(--gray-700);}
 
 .msg-bubble{
-  max-width:82%;padding:12px 16px;
+  max-width:70%;padding:11px 15px;
   border-radius:14px;font-size:13.5px;line-height:1.65;
 }
 .user-bubble{
@@ -760,7 +760,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .ai-bubble strong{font-weight:600;color:var(--navy);}
 
 /* AI message wrapper */
-.ai-msg-wrap{display:flex;flex-direction:column;gap:8px;max-width:86%;}
+.ai-msg-wrap{display:flex;flex-direction:column;gap:8px;max-width:80%;}
 
 /* AI response chips */
 .ai-chips-row{display:flex;flex-wrap:wrap;gap:6px;padding-left:2px;}
@@ -1387,7 +1387,6 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 /* =============================================
    FLOATING CHAT ASSISTANT BUTTON
 ============================================= */
-.float-chat-btn{
   position:fixed;bottom:24px;right:24px;z-index:200;
   display:none; /* shown via JS when not on chat page */
   width:52px;height:52px;border-radius:50%;
@@ -1396,8 +1395,6 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   align-items:center;justify-content:center;
   transition:transform 0.2s,box-shadow 0.2s;
 }
-.float-chat-btn:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 8px 24px rgba(30,92,200,0.45);}
-.float-chat-btn svg{color:var(--white);}
 .float-chat-tooltip{
   position:absolute;right:60px;top:50%;transform:translateY(-50%);
   background:var(--navy);color:var(--white);
@@ -1405,7 +1402,6 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   padding:6px 12px;border-radius:var(--r-sm);white-space:nowrap;
   opacity:0;pointer-events:none;transition:opacity 0.15s;
 }
-.float-chat-btn:hover .float-chat-tooltip{opacity:1;}
 
 .hero-supplier-cta{
   display:flex;align-items:center;gap:14px;justify-content:center;
@@ -2282,14 +2278,12 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .ud-card-good{background:#0f172a;color:#fff;border:none;border-radius:10px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
 .ud-card-edit{background:#fff;color:#374151;border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
 
-/* Supplier cards — full width when in AI message */
-.ai-msg-wrap:has(.supplier-card){max-width:100% !important;width:100%;}
-/* Fallback for browsers without :has() */
-.supplier-grid-wrap{width:100%;max-width:none;}
-
 /* Booking confirmed card — full width */
 .ai-msg-wrap:has(.booking-confirmed-card){max-width:100% !important;width:100%;}
 .booking-confirmed-card{width:100%;}
+/* Supplier cards — full width */
+.ai-msg-wrap:has(.supplier-grid-wrap){max-width:100% !important;width:100%;}
+.supplier-grid-wrap{width:100%;max-width:none;}
 </style>
 </head>
 </head>
@@ -3062,7 +3056,6 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     <div id="page-bookings" style="flex-direction:column;">
       <div style="flex:1;overflow-y:auto;min-height:0;">
         <div style="max-width:800px;width:100%;margin:0 auto;padding:24px 28px 40px;">
-
           <!-- Header -->
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
             <div>
@@ -3074,40 +3067,36 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
               Book a service
             </button>
           </div>
-
-          <!-- Stats row -->
-          <div id="bkStats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;">
-            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 14px;">
+          <!-- Stats -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">
               <div style="font-size:10.5px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;font-family:'Inter',sans-serif;margin-bottom:4px;">Active</div>
               <div id="bkStatActive" style="font-size:24px;font-weight:800;color:#3b82f6;font-family:'Fraunces',serif;">0</div>
             </div>
-            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 14px;">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">
               <div style="font-size:10.5px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;font-family:'Inter',sans-serif;margin-bottom:4px;">Completed</div>
               <div id="bkStatDone" style="font-size:24px;font-weight:800;color:#10b981;font-family:'Fraunces',serif;">0</div>
             </div>
-            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 14px;">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">
               <div style="font-size:10.5px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;font-family:'Inter',sans-serif;margin-bottom:4px;">Total Spent</div>
               <div id="bkStatSpend" style="font-size:24px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;">£0</div>
             </div>
-            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 14px;">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">
               <div style="font-size:10.5px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;font-family:'Inter',sans-serif;margin-bottom:4px;">This Month</div>
               <div id="bkStatMonth" style="font-size:24px;font-weight:800;color:#f59e0b;font-family:'Fraunces',serif;">0</div>
             </div>
           </div>
-
           <!-- Filter tabs -->
           <div style="display:flex;gap:4px;background:#f1f5f9;border-radius:10px;padding:4px;width:fit-content;margin-bottom:18px;">
             <button id="bkTabActive" onclick="renderJobs('active')" style="background:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;color:#0f172a;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.08);font-family:'Inter',sans-serif;">Active (0)</button>
             <button id="bkTabDone" onclick="renderJobs('completed')" style="background:transparent;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:500;color:#64748b;cursor:pointer;font-family:'Inter',sans-serif;">Completed (0)</button>
             <button id="bkTabAll" onclick="renderJobs('all')" style="background:transparent;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:500;color:#64748b;cursor:pointer;font-family:'Inter',sans-serif;">All (0)</button>
           </div>
-
           <!-- Job list -->
           <div id="bkJobList"></div>
-
         </div>
       </div>
-      <!-- Fixed chat input at bottom -->
+      <!-- Bottom chat input -->
       <div style="flex-shrink:0;background:#fff;border-top:1px solid #e2e8f0;padding:12px 24px 16px;">
         <div style="max-width:800px;margin:0 auto;">
           <div style="display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #e2e8f0;border-radius:999px;padding:10px 10px 10px 18px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
@@ -3115,7 +3104,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             <input type="text" id="bkChatInput" placeholder="Type or say your issue"
               style="flex:1;border:none;outline:none;font-size:14px;color:#0f172a;background:transparent;font-family:inherit;"
               onkeydown="if(event.key==='Enter'&&this.value.trim()){startNewChat();showPage('chat',null);sendFromSuggestion(this.value.trim());this.value='';}"/>
-            <button onclick="const v=document.getElementById('bkChatInput').value.trim();if(v){startNewChat();showPage('chat',null);sendFromSuggestion(v);document.getElementById('bkChatInput').value='';}"
+            <button onclick="var v=document.getElementById('bkChatInput').value.trim();if(v){startNewChat();showPage('chat',null);sendFromSuggestion(v);document.getElementById('bkChatInput').value='';}"
               style="width:34px;height:34px;background:#1d4ed8;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2.2"><path d="M1.5 7h11M8.5 3.5l4 3.5-4 3.5"/></svg>
             </button>
@@ -3274,10 +3263,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
   </main>
   <!-- Floating chat assistant button (shown on non-chat pages) -->
-  <button class="float-chat-btn" id="floatChatBtn" onclick="startNewChat();showPage('chat',null);" title="Chat with AI assistant">
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 2C6.5 2 3 5 3 8.5c0 2 1 3.8 2.6 5L5 17.5l4-1.8c.64.1 1.3.2 2 .2 4.5 0 8-3 8-6.5S15.5 2 11 2z"/></svg>
-    <span class="float-chat-tooltip">Chat with AI</span>
-  </button>
+  
 
 </div><!-- /pg-dashboard -->
 
@@ -3334,22 +3320,8 @@ Ask the user to provide their contact details for quotes. Use this exact format 
 chips: []
 IMPORTANT: After this message, the system will automatically show "Enter details" and "Log in" buttons. Do NOT ask for details in chat.
 
-STEP 5.5 — SUPPLIER COUNT:
-Before searching, ask how many supplier quotes they want to compare. Use this EXACT format:
-{"message": "How many professionals would you like quotes from?\n\nMore options = better chances of finding the perfect price and availability.", "chips": ["Just 1 — quickest", "2–3 quotes", "4–5 quotes", "Show me up to 10"]}
-Wait for their answer before proceeding to STEP 5.6.
-
-STEP 5.6 — PRICE RANGE:
-After the user answers how many quotes, ask for their budget. Use this EXACT format:
-{"message": "What's your budget for this job?\n\nWe'll prioritise suppliers that match your price range.", "chips": ["Under £50", "£50–£100", "£100–£200", "£200–£500", "No preference"]}
-Wait for their answer before proceeding to STEP 6. Use their price range to filter and sort suppliers.
-
 STEP 6 — SUPPLIER MATCHING:
-Based on their choice, say "Searching for the best pros near you... 🔍" then show supplier cards.
-CRITICAL FORMAT: Put ALL supplier data in ONE message using multiple [Name: "X" | Rating: 4.9 | Reviews: 120 | ETA: "45 mins" | Price: "£40"] blocks on the SAME line separated by spaces.
-Example: SUPPLIERS: [Name: "Pro 1" | Rating: 4.9 | Reviews: 120 | ETA: "1 hr" | Price: "£80"] [Name: "Pro 2" | Rating: 4.7 | Reviews: 95 | ETA: "2 hrs" | Price: "£65"]
-Do NOT repeat SUPPLIERS: multiple times. Put it all on ONE line.
-Do NOT add "Which professional would you like to book?" — the user will click the card.
+Say "Searching for the best pros near you... 🔍" then show 2-3 supplier cards using SUPPLIERS: format.
 chips: []
 
 STEP 7 — BOOKING CONFIRMATION:
@@ -3696,9 +3668,7 @@ function addMessage(role, text, chips = []) {
     // Register chips and build HTML
     const startIdx = _chipRegistry.length;
     chips.forEach(chip => _chipRegistry.push(chip));
-    // Suppress chips when showing supplier cards — user selects via card click
-    const hasSuppliers = text && text.includes('SUPPLIERS:');
-    const chipsHtml = (chips.length > 0 && !hasSuppliers)
+    const chipsHtml = chips.length > 0
       ? '<div class="ai-chips-row">' + chips.map((ch, i) =>
           '<button class="ai-chip-btn" data-chip-idx="' + (startIdx + i) + '">' + escapeHtml(ch) + '</button>'
         ).join('') + '</div>'
@@ -3715,20 +3685,13 @@ function addMessage(role, text, chips = []) {
         const idx = parseInt(this.getAttribute('data-chip-idx'));
         const chipText = _chipRegistry[idx];
         if (chipText) {
-          // Disable all chips immediately
+          // Put chip text in input and fill chat input visually
+          chatInputEl.value = chipText;
+          sendBtnEl.disabled = false;
+          // Disable all chips so they can't be clicked again
           document.querySelectorAll('.ai-chip-btn').forEach(b => {
             b.disabled = true; b.style.opacity = '0.45'; b.style.cursor = 'not-allowed';
           });
-          // Special case: "View booking details" opens the modal
-          if (chipText.toLowerCase().includes('view booking details')) {
-            // Find last booking data stored
-            var bd = window._lastBookingData || {};
-            showBookingDetails(bd.id||'K00000', bd.service||'Property Service', bd.pro||'Professional', bd.eta||'Confirmed', bd.price||'', bd.address||'');
-            return;
-          }
-          // Normal flow
-          chatInputEl.value = chipText;
-          sendBtnEl.disabled = false;
           sendMessage();
         }
       });
@@ -3744,8 +3707,6 @@ function addMessage(role, text, chips = []) {
   )) {
     setTimeout(showDetailActionButtons, 500);
   }
-
-
 }
 
 function showTyping() {
@@ -3774,6 +3735,7 @@ function renderStars(rating) {
 }
 
 function renderSupplierCards(suppText) {
+  // Parse: [Name: "X" | Rating: 4.9 | Reviews: 120 | ETA: "45 mins" | Price: "£40"]
   const cardRegex = /\[([^\]]+)\]/g;
   let match;
   const cards = [];
@@ -3786,8 +3748,8 @@ function renderSupplierCards(suppText) {
     cards.push(fields);
   }
   if (!cards.length) return '';
-  const colors = ['#6366f1','#0ea5e9','#10b981','#f59e0b','#ef4444','#8b5cf6'];
-  return '<div class="supplier-grid-wrap" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px;width:100%;">' +
+  const serviceIcons = {'gas':'🔥','electric':'⚡','clean':'✨','plumb':'🔧','boiler':'🌡️','eicr':'🔌','epc':'📋','fire':'🚒','garden':'🌿','pest':'🐛','lock':'🔐','hvac':'❄️'};
+  return '<div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;">' +
     cards.map((f,idx) => {
       const name = f['Name'] || 'Professional';
       const rating = parseFloat(f['Rating']) || 4.8;
@@ -3795,31 +3757,31 @@ function renderSupplierCards(suppText) {
       const eta = f['ETA'] || '1-2 hrs';
       const price = f['Price'] || 'Quote';
       const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+      const colors = ['#6366f1','#0ea5e9','#10b981','#f59e0b','#ef4444'];
       const col = colors[idx % colors.length];
-      return `<div class="supplier-card" data-supplier-idx="${idx}" data-name="${escapeHtml(name)}" data-rating="${rating}" data-reviews="${reviews}" data-eta="${escapeHtml(eta)}" data-price="${escapeHtml(price)}" onclick="selectSupplier(this)" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:13px 12px;cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s,transform 0.12s;display:flex;flex-direction:column;gap:0;" onmouseover="this.style.borderColor='#1d4ed8';this.style.boxShadow='0 4px 16px rgba(29,78,216,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.boxShadow='none';this.style.transform='none'">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-          <div style="width:34px;height:34px;border-radius:9px;background:${col};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;font-family:'Inter',sans-serif;">${initials}</div>
-          <div style="min-width:0;flex:1;">
-            <div style="font-size:12.5px;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(name)}</div>
-            <div style="font-size:10.5px;color:#f59e0b;margin-top:1px;">${renderStars(rating)}<span style="color:#64748b;font-family:'Inter',sans-serif;"> ${rating}</span></div>
+      return `<div class="supplier-card" data-supplier-idx="${idx}" data-name="${escapeHtml(name)}" data-rating="${rating}" data-reviews="${reviews}" data-eta="${escapeHtml(eta)}" data-price="${escapeHtml(price)}" onclick="selectSupplier(this)" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:14px 16px;cursor:pointer;transition:border-color 0.18s,box-shadow 0.18s;display:flex;align-items:center;gap:14px;" onmouseover="this.style.borderColor='#1d4ed8';this.style.boxShadow='0 4px 18px rgba(29,78,216,0.12)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'">
+        <div style="width:44px;height:44px;border-radius:12px;background:${col};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0;font-family:'Inter',sans-serif;">${initials}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;margin-bottom:2px;">${escapeHtml(name)}</div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span style="font-size:12.5px;">${renderStars(rating)}</span>
+            <span style="font-size:12px;color:#64748b;font-family:'Inter',sans-serif;"><strong style="color:#0f172a;">${rating}</strong> (${reviews} reviews)</span>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:4px;flex-wrap:wrap;">
+            <span style="font-size:11.5px;color:#64748b;font-family:'Inter',sans-serif;">⏱ ${escapeHtml(eta)}</span>
           </div>
         </div>
-        <div style="display:flex;justify-content:space-between;background:#f8fafc;border-radius:8px;padding:7px 9px;margin-bottom:9px;">
-          <div>
-            <div style="font-size:9.5px;color:#94a3b8;font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:0.04em;">ETA</div>
-            <div style="font-size:11.5px;font-weight:600;color:#0f172a;font-family:'Inter',sans-serif;margin-top:1px;">${escapeHtml(eta)}</div>
-          </div>
-          <div style="text-align:right;">
-            <div style="font-size:9.5px;color:#94a3b8;font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:0.04em;">Price</div>
-            <div style="font-size:14px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;margin-top:1px;">${escapeHtml(price)}</div>
-          </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:16px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;">${escapeHtml(price)}</div>
+          <div style="font-size:11px;color:#94a3b8;font-family:'Inter',sans-serif;margin-bottom:6px;">est. price</div>
+          <div style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;">Book →</div>
         </div>
-        <button style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:8px;padding:8px 6px;font-size:12px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;box-sizing:border-box;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">Book this pro →</button>
       </div>`;
     }).join('') + '</div>';
 }
 
 function renderBookingConfirmed(bookText) {
+  // Parse: Service: X\nProfessional: X\nETA: X\nPrice: X\nAddress: X
   const fields = {};
   bookText.split('\n').forEach(line => {
     const [k,...v] = line.split(':');
@@ -3831,17 +3793,6 @@ function renderBookingConfirmed(bookText) {
   const price = fields['Price'] || '';
   const address = fields['Address'] || '';
   const confirmId = 'K' + Math.floor(Math.random()*90000+10000);
-  // Store for chip click
-  window._lastBookingData = {id:confirmId, service, pro, eta, price, address};
-  // Add to jobs list
-  var now = new Date();
-  var dateStr = now.toISOString().split('T')[0];
-  _confirmedJobs.unshift({
-    ref: confirmId, service: service, pro: pro, eta: eta, price: price,
-    address: address, status: 'confirmed', date: dateStr, isNew: true
-  });
-  // Auto-clear "new" flag after 60s
-  (function(id){ setTimeout(function(){ var j=_confirmedJobs.find(function(x){return x.ref===id;}); if(j) j.isNew=false; }, 60000); })(confirmId);
   return `<div class="booking-confirmed-card" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;border-radius:16px;padding:20px;margin-top:8px;">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
       <div style="width:36px;height:36px;background:#16a34a;border-radius:10px;display:flex;align-items:center;justify-content:center;">
@@ -3873,7 +3824,7 @@ function renderBookingConfirmed(bookText) {
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><rect x="1.5" y="1.5" width="10" height="10" rx="2"/><path d="M4 4.5h5M4 6.5h5M4 8.5h3"/></svg>
         View details
       </button>
-      <button onclick="showPage('bookings',null)" style="background:#0f172a;color:#fff;border:none;border-radius:10px;padding:11px 10px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+      <button onclick="addJobFromBooking({ref:'${confirmId}',service:'${escapeHtml(service)}',pro:'${escapeHtml(pro)}',eta:'${escapeHtml(eta)}',price:'${escapeHtml(price)}',address:'${escapeHtml(address)}'});showPage('bookings',null);" style="background:#0f172a;color:#fff;border:none;border-radius:10px;padding:11px 10px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><rect x="1.5" y="2.5" width="10" height="9" rx="1.5"/><path d="M4.5 1v3M8.5 1v3M1.5 6h10"/></svg>
         My Jobs →
       </button>
@@ -3882,15 +3833,13 @@ function renderBookingConfirmed(bookText) {
 }
 
 function formatAIText(text) {
-  // Check for SUPPLIERS block — show ONLY cards, strip all text
+  // Check for SUPPLIERS block
   if (text.includes('SUPPLIERS:')) {
-    // Extract ALL [Name:...|Rating:..|..] blocks from entire message
-    const allBlocks = text.match(/\[([^\]]+)\]/g) || [];
-    const suppData = allBlocks.join(' ');
-    const cards = suppData ? renderSupplierCards(suppData) : '';
-    // Small heading before cards
-    const heading = '<p style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 10px;">Select a professional to book:</p>';
-    return heading + cards;
+    const suppMatch = text.match(/SUPPLIERS:\s*([\s\S]*?)(?:\n\n|$)/);
+    const cleanText = text.replace(/SUPPLIERS:[\s\S]*?(?:\n\n|$)/, '').trim();
+    const cards = suppMatch ? renderSupplierCards(suppMatch[1]) : '';
+    const html = cleanText ? formatPlainText(cleanText) : '';
+    return (html ? html : '') + cards;
   }
   // Check for BOOKING_CONFIRMED block
   if (text.includes('BOOKING_CONFIRMED:')) {
@@ -3951,7 +3900,6 @@ document.querySelectorAll('.svc-card,.why-card,.testi-card,.step,.how-grid,.cta-
 
 // Show floating chat button on non-chat pages
 function updateFloatBtn(pageId) {
-  const btn = document.getElementById('floatChatBtn');
   if (!btn) return;
   btn.style.display = (pageId !== 'chat') ? 'flex' : 'none';
 }
@@ -4426,206 +4374,96 @@ function showBookingDetails(id, service, pro, eta, price, address) {
   modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
 }
 
-function showSupplierCountSlider() {
-  var area = document.getElementById('chatArea');
-  if (!area || document.getElementById('supplierSlider')) return;
-  var wrap = document.createElement('div');
-  wrap.id = 'supplierSlider';
-  wrap.style.cssText = 'margin:4px 0 8px 44px;background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px 22px;max-width:420px;';
-  wrap.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:'Inter',sans-serif;">Number of quotes</div>
-      <div id="sliderVal" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;font-size:15px;font-weight:800;font-family:'Fraunces',serif;padding:4px 14px;border-radius:8px;min-width:36px;text-align:center;">3</div>
-    </div>
-    <div style="position:relative;padding:8px 0;">
-      <input type="range" id="supplierCountRange" min="1" max="10" value="3"
-        style="width:100%;height:4px;border-radius:4px;outline:none;border:none;cursor:pointer;accent-color:#1d4ed8;"
-        oninput="document.getElementById('sliderVal').textContent=this.value;updateSliderLabels(this.value)"/>
-      <div style="display:flex;justify-content:space-between;margin-top:10px;">
-        <span style="font-size:11px;color:#94a3b8;font-family:'Inter',sans-serif;">1</span>
-        <span style="font-size:11px;color:#94a3b8;font-family:'Inter',sans-serif;">5</span>
-        <span style="font-size:11px;color:#94a3b8;font-family:'Inter',sans-serif;">10</span>
-      </div>
-    </div>
-    <div id="sliderHint" style="font-size:12px;color:#64748b;font-family:'Inter',sans-serif;text-align:center;margin:12px 0;padding:8px;background:#f8fafc;border-radius:8px;">3 quotes — good balance of choice</div>
-    <button onclick="confirmSupplierCount(parseInt(document.getElementById('supplierCountRange').value))" style="width:100%;padding:11px;font-size:13px;font-weight:700;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-      Confirm <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M8 3.5l3 3-3 3"/></svg>
-    </button>`;
-  area.appendChild(wrap);
-  area.scrollTop = area.scrollHeight;
-}
-
-function updateSliderLabels(val) {
-  val = parseInt(val);
-  var hints = {1:'1 quote — fastest booking',2:'2 quotes — quick comparison',3:'3 quotes — good balance of choice',4:'4 quotes — more options',5:'5 quotes — broad comparison',6:'6 quotes — thorough',7:'7 quotes — comprehensive',8:'8 quotes — maximum coverage',9:'9 quotes — best chance of deal',10:'10 quotes — all available pros'};
-  var el = document.getElementById('sliderHint');
-  if (el) el.textContent = hints[val] || val + ' quotes';
-}
-
-function confirmSupplierCount(count) {
-  var slider = document.getElementById('supplierSlider');
-  if (slider) slider.remove();
-  sendFromSuggestion('I want ' + count + ' quote' + (count > 1 ? 's' : '') + ' please');
-}
-
-function showPriceRangeWidget() {
-  var area = document.getElementById('chatArea');
-  if (!area || document.getElementById('priceRangeWidget')) return;
-  var wrap = document.createElement('div');
-  wrap.id = 'priceRangeWidget';
-  wrap.style.cssText = 'margin:4px 0 8px 44px;background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px 22px;max-width:400px;';
-  wrap.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:'Inter',sans-serif;">Your budget</div>
-      <div id="priceVal" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;font-size:13px;font-weight:700;font-family:'Inter',sans-serif;padding:4px 12px;border-radius:8px;">Up to £150</div>
-    </div>
-    <div style="position:relative;padding:8px 0 4px;">
-      <input type="range" id="priceRange" min="0" max="5" value="2"
-        style="width:100%;outline:none;border:none;cursor:pointer;accent-color:#1d4ed8;"
-        oninput="updatePriceLabel(this.value)"/>
-      <div style="display:flex;justify-content:space-between;margin-top:8px;">
-        <span style="font-size:10px;color:#94a3b8;font-family:'Inter',sans-serif;">Any</span>
-        <span style="font-size:10px;color:#94a3b8;font-family:'Inter',sans-serif;">£500+</span>
-      </div>
-    </div>
-    <div id="priceHint" style="font-size:12px;color:#64748b;font-family:'Inter',sans-serif;text-align:center;padding:8px 10px;background:#f8fafc;border-radius:8px;margin:10px 0 14px;">Best value picks in the £100–£200 range</div>
-    <button onclick="confirmPriceRange()" style="width:100%;padding:11px;font-size:13px;font-weight:700;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-      Confirm budget <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M8 3.5l3 3-3 3"/></svg>
-    </button>`;
-  area.appendChild(wrap);
-  area.scrollTop = area.scrollHeight;
-}
-
-var _priceLabels = ['No preference','Under £50','£50–£100','Up to £150','£100–£200','£200–£500','£500+'];
-var _priceSend = ['No budget preference','Under £50','£50–£100','Up to £150','£100–£200','£200–£500','£500 or more'];
-var _priceHints = [
-  'We\'ll show all available professionals',
-  'Great for quick, simple jobs',
-  'Good for standard services',
-  'Best value picks in the £100–£200 range',
-  'Covers most property services',
-  'For specialist or larger jobs',
-  'Premium or complex work'
-];
-
-function updatePriceLabel(val) {
-  val = parseInt(val);
-  var pv = document.getElementById('priceVal');
-  var ph = document.getElementById('priceHint');
-  if (pv) pv.textContent = _priceLabels[val] || '';
-  if (ph) ph.textContent = _priceHints[val] || '';
-}
-
-function confirmPriceRange() {
-  var val = parseInt(document.getElementById('priceRange').value);
-  var label = _priceSend[val] || 'No preference';
-  var widget = document.getElementById('priceRangeWidget');
-  if (widget) widget.remove();
-  sendFromSuggestion('My budget is ' + label);
-}
-
 // =============================================
-// JOB BOOKINGS — Dynamic list
+// MY JOBS — Dynamic list from confirmed bookings
 // =============================================
 var _confirmedJobs = [];
 
-// Service type → icon mapping
 function jobServiceIcon(service) {
   var s = (service||'').toLowerCase();
-  if (s.includes('gas') || s.includes('boiler')) return {bg:'#fff7ed',color:'#ea580c',icon:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 2C6 5 4 8 7 10.5c1 .9 1 2.5-1 3.5 2-1 4.5-1 5.5-3.5.5-1.3-.5-2.5-1-3.5C9.5 5.5 11 4 13 3c-1.5.5-3 1-4 3z"/><circle cx="9" cy="14.5" r="1"/></svg>'};
-  if (s.includes('electric') || s.includes('eicr')) return {bg:'#eff6ff',color:'#2563eb',icon:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 2L6 10h5l-3 6 7-9h-5l3-5z"/></svg>'};
-  if (s.includes('clean')) return {bg:'#f0fdf4',color:'#16a34a',icon:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 15l4-4 3 3 4-7"/><circle cx="14" cy="4" r="2"/></svg>'};
-  if (s.includes('plumb') || s.includes('drain') || s.includes('leak')) return {bg:'#eff6ff',color:'#0ea5e9',icon:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 14c0-4 2-8 5-10 3 2 5 6 5 10"/><path d="M7 14h4"/></svg>'};
-  if (s.includes('fire') || s.includes('risk')) return {bg:'#fff1f2',color:'#e11d48',icon:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 2c0 3-4 5-4 9a4 4 0 008 0c0-4-4-6-4-9z"/><path d="M7 13a2 2 0 004 0"/></svg>'};
-  if (s.includes('lock') || s.includes('key')) return {bg:'#f5f3ff',color:'#7c3aed',icon:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="9" width="10" height="7" rx="2"/><path d="M6 9V6a3 3 0 016 0v3"/></svg>'};
-  if (s.includes('garden') || s.includes('lawn')) return {bg:'#f0fdf4',color:'#16a34a',icon:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 16V8M9 8C9 5 6 3 4 4c1 2 3 3 5 4M9 8c0-3 3-5 5-4-1 2-3 3-5 4"/></svg>'};
-  if (s.includes('epc') || s.includes('check') || s.includes('inspect')) return {bg:'#f0f9ff',color:'#0284c7',icon:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="2" width="12" height="15" rx="2"/><path d="M6 7h6M6 10h6M6 13h4"/></svg>'};
-  // Default
-  return {bg:'#f8fafc',color:'#475569',icon:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="12" height="11" rx="2"/><path d="M6 4V3a3 3 0 016 0v1"/><path d="M3 9h12"/></svg>'};
+  if (s.includes('gas') || s.includes('boiler')) return {bg:'#fff7ed',color:'#ea580c',svg:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 2C6 5 4 8 7 10.5c1 .9 1 2.5-1 3.5 2-1 4.5-1 5.5-3.5.5-1.3-.5-2.5-1-3.5C9.5 5.5 11 4 13 3c-1.5.5-3 1-4 3z"/><circle cx="9" cy="14.5" r="1"/></svg>'};
+  if (s.includes('electric') || s.includes('eicr')) return {bg:'#eff6ff',color:'#2563eb',svg:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 2L6 10h5l-3 6 7-9h-5l3-5z"/></svg>'};
+  if (s.includes('clean')) return {bg:'#f0fdf4',color:'#16a34a',svg:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 15l4-4 3 3 4-7"/><circle cx="14" cy="4" r="2"/></svg>'};
+  if (s.includes('plumb') || s.includes('drain') || s.includes('leak')) return {bg:'#f0f9ff',color:'#0ea5e9',svg:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 14c0-4 2-8 5-10 3 2 5 6 5 10"/><path d="M7 14h4"/></svg>'};
+  if (s.includes('fire') || s.includes('risk')) return {bg:'#fff1f2',color:'#e11d48',svg:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 2c0 3-4 5-4 9a4 4 0 008 0c0-4-4-6-4-9z"/></svg>'};
+  if (s.includes('lock') || s.includes('key')) return {bg:'#f5f3ff',color:'#7c3aed',svg:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="9" width="10" height="7" rx="2"/><path d="M6 9V6a3 3 0 016 0v3"/></svg>'};
+  if (s.includes('garden') || s.includes('lawn')) return {bg:'#f0fdf4',color:'#16a34a',svg:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 16V8M9 8C9 5 6 3 4 4c1 2 3 3 5 4M9 8c0-3 3-5 5-4-1 2-3 3-5 4"/></svg>'};
+  return {bg:'#f8fafc',color:'#475569',svg:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="12" height="11" rx="2"/><path d="M6 4V3a3 3 0 016 0v1"/><path d="M3 9h12"/></svg>'};
 }
 
-function jobStatusBadge(status) {
-  var map = {
-    'confirmed': {bg:'#dbeafe',color:'#1d4ed8',label:'Confirmed'},
-    'active':    {bg:'#dcfce7',color:'#16a34a',label:'In Progress'},
-    'completed': {bg:'#f1f5f9',color:'#475569',label:'Completed'},
-    'pending':   {bg:'#fef9c3',color:'#92400e',label:'Pending'},
-    'scheduled': {bg:'#fef3c7',color:'#d97706',label:'Scheduled'},
-  };
-  var s = map[status] || map['confirmed'];
-  return '<span style="background:' + s.bg + ';color:' + s.color + ';font-size:11px;font-weight:600;font-family:Inter,sans-serif;padding:3px 10px;border-radius:999px;">' + s.label + '</span>';
+function jobBadge(status) {
+  var m = {confirmed:{bg:'#dbeafe',c:'#1d4ed8',t:'Confirmed'},active:{bg:'#dcfce7',c:'#16a34a',t:'In Progress'},completed:{bg:'#f1f5f9',c:'#475569',t:'Completed'},pending:{bg:'#fef9c3',c:'#92400e',t:'Pending'},scheduled:{bg:'#fef3c7',c:'#d97706',t:'Scheduled'}};
+  var s = m[status]||m.confirmed;
+  return '<span style="background:'+s.bg+';color:'+s.c+';font-size:11px;font-weight:700;font-family:Inter,sans-serif;padding:3px 10px;border-radius:999px;white-space:nowrap;">'+s.t+'</span>';
 }
 
-function jobProgress(status) {
-  var map = {confirmed:20, active:55, scheduled:40, pending:15, completed:100};
-  return map[status] || 20;
+function addJobFromBooking(data) {
+  var now = new Date();
+  var dateStr = now.toISOString().split('T')[0];
+  _confirmedJobs.unshift({
+    ref: data.ref||('K'+Math.floor(Math.random()*90000+10000)),
+    service: data.service||'Property Service',
+    pro: data.pro||'', eta: data.eta||'',
+    price: data.price||'', address: data.address||'',
+    status: 'confirmed', date: dateStr, isNew: true
+  });
+  setTimeout(function(){ var j=_confirmedJobs[0]; if(j) j.isNew=false; }, 60000);
 }
 
 function renderJobs(filter) {
   var list = document.getElementById('bkJobList');
   if (!list) return;
-  // Update active tab styling
-  ['bkTabActive','bkTabDone','bkTabAll'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    el.style.background = 'transparent';
-    el.style.fontWeight = '500';
-    el.style.color = '#64748b';
-    el.style.boxShadow = 'none';
+  ['bkTabActive','bkTabDone','bkTabAll'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el) return;
+    el.style.background='transparent'; el.style.fontWeight='500';
+    el.style.color='#64748b'; el.style.boxShadow='none';
   });
-  var activeTab = filter==='active' ? 'bkTabActive' : filter==='completed' ? 'bkTabDone' : 'bkTabAll';
-  var tab = document.getElementById(activeTab);
-  if (tab) { tab.style.background = '#fff'; tab.style.fontWeight = '600'; tab.style.color = '#0f172a'; tab.style.boxShadow = '0 1px 3px rgba(0,0,0,0.08)'; }
-
-  var jobs = _confirmedJobs.filter(function(j) {
-    if (filter === 'active') return j.status !== 'completed';
-    if (filter === 'completed') return j.status === 'completed';
+  var activeId = filter==='active'?'bkTabActive':filter==='completed'?'bkTabDone':'bkTabAll';
+  var tab=document.getElementById(activeId);
+  if(tab){tab.style.background='#fff';tab.style.fontWeight='600';tab.style.color='#0f172a';tab.style.boxShadow='0 1px 3px rgba(0,0,0,0.08)';}
+  var jobs = _confirmedJobs.filter(function(j){
+    if(filter==='active') return j.status!=='completed';
+    if(filter==='completed') return j.status==='completed';
     return true;
   });
-
-  if (!jobs.length) {
-    list.innerHTML = '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:48px 24px;text-align:center;">' +
+  if(!jobs.length){
+    list.innerHTML='<div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:48px 24px;text-align:center;">' +
       '<div style="width:56px;height:56px;background:#f8fafc;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">' +
       '<svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#cbd5e1" stroke-width="1.5"><rect x="3" y="7" width="20" height="15" rx="3"/><path d="M8 7V5a5 5 0 0110 0v2"/><path d="M3 13h20"/></svg></div>' +
-      '<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Fraunces,serif;margin-bottom:6px;">No jobs here yet</div>' +
-      '<div style="font-size:13px;color:#94a3b8;line-height:1.6;max-width:280px;margin:0 auto 20px;">Book your first property service and it will appear here.</div>' +
+      '<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Fraunces,serif;margin-bottom:6px;">No jobs yet</div>' +
+      '<div style="font-size:13px;color:#94a3b8;max-width:260px;margin:0 auto 20px;line-height:1.6;">Book your first service and it will appear here.</div>' +
       '<button onclick="startNewChat();showPage(\'chat\',null);" style="background:#1d4ed8;color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Book a service</button></div>';
     return;
   }
-
-  list.innerHTML = jobs.map(function(j, idx) {
-    var icon = jobServiceIcon(j.service);
-    var prog = jobProgress(j.status);
-    var isNew = idx === 0 && j.isNew;
-    return '<div style="background:#fff;border:1.5px solid ' + (isNew?'#93c5fd':'#e2e8f0') + ';border-radius:16px;padding:18px 20px;margin-bottom:12px;cursor:pointer;transition:box-shadow 0.15s,border-color 0.15s;position:relative;overflow:hidden;" onmouseover="this.style.boxShadow=\'0 4px 16px rgba(0,0,0,0.08)\'" onmouseout="this.style.boxShadow=\'none\'">' +
-      (isNew ? '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:16px 16px 0 0;"></div>' : '') +
+  list.innerHTML = jobs.map(function(j){
+    var ic=jobServiceIcon(j.service);
+    var prog={confirmed:20,active:55,scheduled:40,pending:15,completed:100}[j.status]||20;
+    var isNew=j.isNew;
+    return '<div style="background:#fff;border:1.5px solid '+(isNew?'#93c5fd':'#e2e8f0')+';border-radius:16px;padding:18px 20px;margin-bottom:12px;position:relative;overflow:hidden;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow=\'0 4px 16px rgba(0,0,0,0.08)\'" onmouseout="this.style.boxShadow=\'none\'">' +
+      (isNew?'<div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:16px 16px 0 0;"></div>':'') +
       '<div style="display:flex;align-items:flex-start;gap:14px;">' +
-        '<div style="width:44px;height:44px;border-radius:12px;background:' + icon.bg + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;color:' + icon.color + ';">' + icon.icon + '</div>' +
+        '<div style="width:44px;height:44px;border-radius:12px;background:'+ic.bg+';display:flex;align-items:center;justify-content:center;flex-shrink:0;color:'+ic.color+';">'+ic.svg+'</div>' +
         '<div style="flex:1;min-width:0;">' +
-          '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:3px;">' +
-            '<div style="font-size:14.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escapeHtml(j.service) + '</div>' +
-            '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">' +
-              jobStatusBadge(j.status) +
-              (isNew ? '<span style="background:#dbeafe;color:#1d4ed8;font-size:10px;font-weight:700;font-family:Inter,sans-serif;padding:2px 8px;border-radius:999px;">NEW</span>' : '') +
+          '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:3px;">' +
+            '<div style="font-size:14.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+escapeHtml(j.service)+'</div>' +
+            '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">' +
+              jobBadge(j.status) +
+              (isNew?'<span style="background:#dbeafe;color:#1d4ed8;font-size:10px;font-weight:700;font-family:Inter,sans-serif;padding:2px 8px;border-radius:999px;">NEW</span>':'') +
             '</div>' +
           '</div>' +
-          '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;display:flex;align-items:center;gap:4px;margin-bottom:10px;">' +
-            '<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5.5" cy="5.5" r="4.5"/><path d="M5.5 3v2.5l1.5 1.5"/></svg> ' +
-            (j.eta ? 'ETA: ' + escapeHtml(j.eta) : 'Booked') +
-            (j.address ? '&nbsp;&nbsp;📍 ' + escapeHtml(j.address.split(',')[0]) : '') +
-            (j.pro ? '&nbsp;&nbsp;👤 ' + escapeHtml(j.pro) : '') +
+          '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:10px;">'+
+            (j.pro?'👤 '+escapeHtml(j.pro):'')+(j.address?' &nbsp;📍 '+escapeHtml(j.address.split(',')[0]):'')+(j.eta?' &nbsp;⏱ '+escapeHtml(j.eta):'') +
           '</div>' +
-          '<div style="margin-bottom:6px;">' +
-            '<div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:4px;">' +
-              '<span>Progress</span><span>' + prog + '%</span>' +
-            '</div>' +
+          '<div style="margin-bottom:8px;">' +
+            '<div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:4px;"><span>Progress</span><span>'+prog+'%</span></div>' +
             '<div style="background:#f1f5f9;border-radius:999px;height:5px;overflow:hidden;">' +
-              '<div style="height:100%;width:' + prog + '%;background:linear-gradient(90deg,#1d4ed8,#0ea5e9);border-radius:999px;transition:width 0.4s ease;"></div>' +
+              '<div style="height:100%;width:'+prog+'%;background:linear-gradient(90deg,#1d4ed8,#0ea5e9);border-radius:999px;"></div>' +
             '</div>' +
           '</div>' +
-          '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;">' +
-            '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;">📅 ' + escapeHtml(j.date) + '&nbsp;&nbsp;Ref: ' + escapeHtml(j.ref) + '</div>' +
-            (j.price ? '<div style="font-size:15px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">' + escapeHtml(j.price) + '</div>' : '') +
+          '<div style="display:flex;align-items:center;justify-content:space-between;">' +
+            '<div style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;">📅 '+escapeHtml(j.date)+(j.ref?' &nbsp;Ref: '+escapeHtml(j.ref):'')+'</div>' +
+            (j.price?'<div style="font-size:15px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+escapeHtml(j.price)+'</div>':'') +
           '</div>' +
         '</div>' +
       '</div></div>';
@@ -4633,32 +4471,17 @@ function renderJobs(filter) {
 }
 
 function refreshBkPage() {
-  var active = _confirmedJobs.filter(function(j){ return j.status !== 'completed'; }).length;
-  var done = _confirmedJobs.filter(function(j){ return j.status === 'completed'; }).length;
-  var subtitle = document.getElementById('bkSubtitle');
-  if (subtitle) subtitle.textContent = active + ' active · ' + done + ' completed';
-  var statActive = document.getElementById('bkStatActive');
-  if (statActive) statActive.textContent = active;
-  var statDone = document.getElementById('bkStatDone');
-  if (statDone) statDone.textContent = done;
-  var statMonth = document.getElementById('bkStatMonth');
-  if (statMonth) statMonth.textContent = _confirmedJobs.length;
-  // Tabs
-  var ta = document.getElementById('bkTabActive');
-  var td = document.getElementById('bkTabDone');
-  var tall = document.getElementById('bkTabAll');
-  if (ta) ta.textContent = 'Active (' + active + ')';
-  if (td) td.textContent = 'Completed (' + done + ')';
-  if (tall) tall.textContent = 'All (' + _confirmedJobs.length + ')';
+  var active=_confirmedJobs.filter(function(j){return j.status!=='completed';}).length;
+  var done=_confirmedJobs.filter(function(j){return j.status==='completed';}).length;
+  var sb=document.getElementById('bkSubtitle'); if(sb) sb.textContent=active+' active · '+done+' completed';
+  var sa=document.getElementById('bkStatActive'); if(sa) sa.textContent=active;
+  var sd=document.getElementById('bkStatDone'); if(sd) sd.textContent=done;
+  var sm=document.getElementById('bkStatMonth'); if(sm) sm.textContent=_confirmedJobs.length;
+  var ta=document.getElementById('bkTabActive'); if(ta) ta.textContent='Active ('+active+')';
+  var td=document.getElementById('bkTabDone'); if(td) td.textContent='Completed ('+done+')';
+  var tall=document.getElementById('bkTabAll'); if(tall) tall.textContent='All ('+_confirmedJobs.length+')';
   renderJobs('active');
 }
-
-// Intercept showPage to refresh bookings
-var _origShowPage = showPage;
-showPage = function(id, e) {
-  _origShowPage(id, e);
-  if (id === 'bookings') { setTimeout(refreshBkPage, 50); }
-};
 </script>
 
 <!-- =============================================
