@@ -3336,7 +3336,11 @@ Before searching, ask how many supplier quotes they want to compare. Use this EX
 Wait for their answer before proceeding to STEP 6.
 
 STEP 6 — SUPPLIER MATCHING:
-Based on their choice, search and show supplier cards. Say "Searching for the best pros near you... 🔍" then show the chosen number of supplier cards using SUPPLIERS: format.
+Based on their choice, say "Searching for the best pros near you... 🔍" then show supplier cards.
+CRITICAL FORMAT: Put ALL supplier data in ONE message using multiple [Name: "X" | Rating: 4.9 | Reviews: 120 | ETA: "45 mins" | Price: "£40"] blocks on the SAME line separated by spaces.
+Example: SUPPLIERS: [Name: "Pro 1" | Rating: 4.9 | Reviews: 120 | ETA: "1 hr" | Price: "£80"] [Name: "Pro 2" | Rating: 4.7 | Reviews: 95 | ETA: "2 hrs" | Price: "£65"]
+Do NOT repeat SUPPLIERS: multiple times. Put it all on ONE line.
+Do NOT add "Which professional would you like to book?" — the user will click the card.
 chips: []
 
 STEP 7 — BOOKING CONFIRMATION:
@@ -3683,7 +3687,9 @@ function addMessage(role, text, chips = []) {
     // Register chips and build HTML
     const startIdx = _chipRegistry.length;
     chips.forEach(chip => _chipRegistry.push(chip));
-    const chipsHtml = chips.length > 0
+    // Suppress chips when showing supplier cards — user selects via card click
+    const hasSuppliers = text && text.includes('SUPPLIERS:');
+    const chipsHtml = (chips.length > 0 && !hasSuppliers)
       ? '<div class="ai-chips-row">' + chips.map((ch, i) =>
           '<button class="ai-chip-btn" data-chip-idx="' + (startIdx + i) + '">' + escapeHtml(ch) + '</button>'
         ).join('') + '</div>'
@@ -3855,13 +3861,15 @@ function renderBookingConfirmed(bookText) {
 }
 
 function formatAIText(text) {
-  // Check for SUPPLIERS block
+  // Check for SUPPLIERS block — show ONLY cards, strip all text
   if (text.includes('SUPPLIERS:')) {
-    const suppMatch = text.match(/SUPPLIERS:\s*([\s\S]*?)(?:\n\n|$)/);
-    const cleanText = text.replace(/SUPPLIERS:[\s\S]*?(?:\n\n|$)/, '').trim();
-    const cards = suppMatch ? renderSupplierCards(suppMatch[1]) : '';
-    const html = cleanText ? formatPlainText(cleanText) : '';
-    return (html ? html : '') + cards;
+    // Extract ALL [Name:...|Rating:..|..] blocks from entire message
+    const allBlocks = text.match(/\[([^\]]+)\]/g) || [];
+    const suppData = allBlocks.join(' ');
+    const cards = suppData ? renderSupplierCards(suppData) : '';
+    // Small heading before cards
+    const heading = '<p style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 10px;">Select a professional to book:</p>';
+    return heading + cards;
   }
   // Check for BOOKING_CONFIRMED block
   if (text.includes('BOOKING_CONFIRMED:')) {
