@@ -1,4 +1,55 @@
-<!DOCTYPE html>
+<!-- USER DETAILS MODAL -->
+<div id="userDetailsModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.55);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:20px;padding:0;width:100%;max-width:480px;position:relative;box-shadow:0 24px 64px rgba(0,0,0,0.22);overflow:hidden;animation:modalPop 0.22s ease;">
+    <!-- Header strip -->
+    <div style="background:linear-gradient(135deg,#12192A,#1E3A5F);padding:24px 28px 20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:17px;font-weight:700;color:#fff;font-family:'Fraunces',serif;margin-bottom:3px;">Your details</div>
+          <div style="font-size:12.5px;color:rgba(255,255,255,0.6);font-family:'Inter',sans-serif;">Secure · not shared · required for quotes</div>
+        </div>
+        <button onclick="closeUserModal()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;line-height:1;">×</button>
+      </div>
+    </div>
+    <!-- Form body -->
+    <div style="padding:24px 28px 28px;">
+      <div id="udStep1">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">First name *</label>
+            <input id="udFirstName" type="text" placeholder="First name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s,box-shadow 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.boxShadow='0 0 0 3px rgba(29,78,216,0.1)'" onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'"/>
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">Last name</label>
+            <input id="udLastName" type="text" placeholder="Last name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s,box-shadow 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.boxShadow='0 0 0 3px rgba(29,78,216,0.1)'" onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'"/>
+          </div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">Email address *</label>
+          <input id="udEmail" type="email" placeholder="your@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s,box-shadow 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.boxShadow='0 0 0 3px rgba(29,78,216,0.1)'" onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'"/>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">Phone number</label>
+          <input id="udPhone" type="tel" placeholder="+44 7700 000000" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s,box-shadow 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.boxShadow='0 0 0 3px rgba(29,78,216,0.1)'" onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'"/>
+        </div>
+        <div style="margin-bottom:20px;">
+          <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">Property address</label>
+          <input id="udAddress" type="text" placeholder="Full address incl. postcode" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s,box-shadow 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.boxShadow='0 0 0 3px rgba(29,78,216,0.1)'" onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'"/>
+        </div>
+        <button onclick="udSubmit()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity 0.15s;display:flex;align-items:center;justify-content:center;gap:8px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+          Save &amp; Continue
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 7h10M8 4l4 3-4 3"/></svg>
+        </button>
+        <p style="text-align:center;font-size:11.5px;color:#94a3b8;margin-top:12px;font-family:'Inter',sans-serif;">🔒 Encrypted &amp; secure · never sold</p>
+      </div>
+      <div id="udStep2" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes modalPop{from{opacity:0;transform:scale(0.96)translateY(8px);}to{opacity:1;transform:scale(1)translateY(0);}}
+</style><!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2567,42 +2618,44 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
       <div style="flex:1;overflow-y:auto;min-height:0;">
         <div style="max-width:860px;width:100%;margin:0 auto;padding:24px 28px 48px;">
 
-          <!-- HERO CONNECT CARD — Keylr Connect style from landing -->
-          <div class="home-animate" style="background:linear-gradient(135deg,#0f1c38 0%,#162845 40%,#1a3356 100%);border-radius:16px;padding:28px 32px;margin-bottom:20px;position:relative;overflow:hidden;min-height:160px;">
-            <!-- Background grid lines -->
-            <div style="position:absolute;inset:0;opacity:0.06;background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);background-size:40px 40px;pointer-events:none;"></div>
-            <div style="position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;">
-              <div style="flex:1;min-width:200px;">
-                <div style="display:inline-block;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.15);border-radius:999px;padding:4px 14px;font-size:11px;font-weight:600;color:rgba(255,255,255,0.8);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:14px;font-family:'Inter',sans-serif;">Keylr Connect</div>
-                <h2 style="font-family:'Fraunces',serif;font-size:clamp(22px,3.5vw,32px);font-weight:800;color:#fff;line-height:1.2;margin:0 0 10px;">Every service your<br>properties need</h2>
-                <p style="font-size:13.5px;color:rgba(255,255,255,0.6);line-height:1.55;margin:0 0 18px;max-width:380px;">Book trusted professionals instantly. Gas safety, cleaning, electrical, repairs — all in one place with real-time tracking.</p>
+          <!-- HERO CONNECT CARD -->
+          <div class="home-animate" style="background:var(--hero-bg);border-radius:20px;padding:36px 36px 28px;margin-bottom:20px;position:relative;overflow:hidden;">
+            <!-- BG gradient layers matching landing page -->
+            <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 30% 50%,rgba(30,92,200,0.18) 0%,transparent 70%),radial-gradient(ellipse 60% 80% at 80% 20%,rgba(30,122,188,0.12) 0%,transparent 60%);pointer-events:none;"></div>
+            <div style="position:absolute;inset:0;opacity:0.04;background-image:linear-gradient(rgba(255,255,255,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.6) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;"></div>
+            
+            <div style="position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:220px;">
+                <!-- Heading -->
+                <h2 style="font-family:'Fraunces',serif;font-size:clamp(22px,3vw,30px);font-weight:800;color:#fff;line-height:1.25;margin:0 0 10px;letter-spacing:-0.3px;">Book trusted property services <span style="color:#60a5fa;">with confidence.</span></h2>
+                <!-- Sub -->
+                <p style="font-size:13.5px;color:rgba(255,255,255,0.58);line-height:1.6;margin:0 0 20px;max-width:420px;">Describe your issue and we'll match you with vetted professionals — inspections, plumbing, compliance, and more.</p>
                 <!-- Search bar -->
-                <div style="display:flex;align-items:center;background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:10px 12px 10px 16px;gap:10px;max-width:500px;">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.8"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10.5 10.5l3 3"/></svg>
-                  <input id="heroCardInput" type="text" placeholder="What do you need? e.g. 'boiler service', 'end of tenancy clean'..." style="flex:1;background:transparent;border:none;outline:none;font-size:13.5px;color:#fff;font-family:'Inter',sans-serif;" onkeydown="if(event.key==='Enter'&&this.value.trim()){startNewChat();showPage('chat',null);sendFromSuggestion(this.value.trim());this.value='';}"/>
-                  <button onclick="var v=document.getElementById('heroCardInput').value.trim();if(v){startNewChat();showPage('chat',null);sendFromSuggestion(v);document.getElementById('heroCardInput').value='';}" style="background:#1d4ed8;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">Search</button>
+                <div style="display:flex;align-items:center;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.14);border-radius:14px;padding:6px 6px 6px 16px;gap:8px;max-width:520px;transition:border-color 0.15s;" onfocus-within="this.style.borderColor='rgba(255,255,255,0.35)'" id="heroCardBar">
+                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.8"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10.5 10.5l3 3"/></svg>
+                  <input id="heroCardInput" type="text" placeholder="Describe your issue or need..." style="flex:1;background:transparent;border:none;outline:none;font-size:13.5px;color:#fff;font-family:'Inter',sans-serif;padding:6px 0;" onkeydown="if(event.key==='Enter'&&this.value.trim()){startNewChat();showPage('chat',null);sendFromSuggestion(this.value.trim());this.value='';}"/>
+                  <button onclick="var v=document.getElementById('heroCardInput').value.trim();if(v){startNewChat();showPage('chat',null);sendFromSuggestion(v);document.getElementById('heroCardInput').value='';}" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px;transition:opacity 0.15s;white-space:nowrap;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6h9M8 3l4 3-4 3"/></svg>
+                  </button>
                 </div>
-                <!-- Quick chips -->
-                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;">
-                  <span onclick="startNewChat();showPage('chat',null);sendFromSuggestion('Gas Safety Certificate');" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.8);font-size:12px;font-weight:500;padding:5px 12px;border-radius:999px;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.12s;" onmouseover="this.style.background='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">Gas Safety</span>
-                  <span onclick="startNewChat();showPage('chat',null);sendFromSuggestion('EICR Electrical Inspection');" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.8);font-size:12px;font-weight:500;padding:5px 12px;border-radius:999px;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.12s;" onmouseover="this.style.background='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">EICR</span>
-                  <span onclick="startNewChat();showPage('chat',null);sendFromSuggestion('End of Tenancy Deep Clean');" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.8);font-size:12px;font-weight:500;padding:5px 12px;border-radius:999px;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.12s;" onmouseover="this.style.background='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">Deep Clean</span>
-                  <span onclick="startNewChat();showPage('chat',null);sendFromSuggestion('Lock Change');" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.8);font-size:12px;font-weight:500;padding:5px 12px;border-radius:999px;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.12s;" onmouseover="this.style.background='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">Lock Change</span>
-                  <span onclick="startNewChat();showPage('chat',null);sendFromSuggestion('Boiler Service');" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.8);font-size:12px;font-weight:500;padding:5px 12px;border-radius:999px;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.12s;" onmouseover="this.style.background='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">Boiler Service</span>
+                <!-- Chips -->
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;">
+                  <span onclick="startNewChat();showPage('chat',null);sendFromSuggestion('Plumbing repair');" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.75);font-size:12.5px;font-weight:500;padding:6px 14px;border-radius:999px;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.12s;" onmouseover="this.style.background='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">🔧 Plumbing</span>
+                  <span onclick="startNewChat();showPage('chat',null);sendFromSuggestion('Electrician');" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.75);font-size:12.5px;font-weight:500;padding:6px 14px;border-radius:999px;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.12s;" onmouseover="this.style.background='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">⚡ Electrician</span>
+                  <span onclick="startNewChat();showPage('chat',null);sendFromSuggestion('Gas Safety Certificate');" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.75);font-size:12.5px;font-weight:500;padding:6px 14px;border-radius:999px;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.12s;" onmouseover="this.style.background='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">🔥 Gas Safety</span>
+                  <span onclick="startNewChat();showPage('chat',null);sendFromSuggestion('Cleaning service');" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.75);font-size:12.5px;font-weight:500;padding:6px 14px;border-radius:999px;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.12s;" onmouseover="this.style.background='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">✨ Cleaning</span>
+                  <span onclick="startNewChat();showPage('chat',null);sendFromSuggestion('Gardening');" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.75);font-size:12.5px;font-weight:500;padding:6px 14px;border-radius:999px;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.12s;" onmouseover="this.style.background='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">🌿 Gardener</span>
                 </div>
               </div>
-              <!-- Property Health Card (top-right) -->
-              <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:16px 18px;min-width:160px;flex-shrink:0;">
-                <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.5);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;font-family:'Inter',sans-serif;">Property Health</div>
-                <div style="font-size:32px;font-weight:800;color:#f59e0b;font-family:'Fraunces',serif;line-height:1;">0%</div>
-                <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;font-family:'Inter',sans-serif;">Add properties to track</div>
-                <div style="margin-top:10px;cursor:pointer;color:rgba(255,255,255,0.6);font-size:12px;display:flex;align-items:center;gap:4px;" onclick="showPage('properties',null)">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6h8M7 3l3 3-3 3"/></svg>
-                </div>
+              <!-- Property Health mini-card -->
+              <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px 18px;min-width:148px;flex-shrink:0;cursor:pointer;" onclick="showPage('properties',null)">
+                <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.45);letter-spacing:0.1em;text-transform:uppercase;font-family:'Inter',sans-serif;margin-bottom:2px;">Property Health</div>
+                <div style="font-size:30px;font-weight:800;color:#f59e0b;font-family:'Fraunces',serif;line-height:1.1;">0%</div>
+                <div style="font-size:11.5px;color:rgba(255,255,255,0.4);margin-top:4px;font-family:'Inter',sans-serif;">Add properties to track</div>
+                <div style="margin-top:10px;color:rgba(255,255,255,0.4);font-size:12px;display:flex;align-items:center;gap:4px;font-family:'Inter',sans-serif;">View <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 5h6M5 2l3 3-3 3"/></svg></div>
               </div>
             </div>
           </div>
-                    
                     <!-- TOP STATS — individual cards -->
           <div class="home-stats-grid home-animate">
             <div class="home-stat-card">
@@ -4067,21 +4120,17 @@ function toggleSidebar() {
 var _userDetails = {firstName:'', lastName:'', email:'', phone:'', address:''};
 
 function openUserModal(editMode) {
-  if (editMode && _userDetails.firstName) {
-    document.getElementById('udFirstName').value = _userDetails.firstName;
-    document.getElementById('udLastName').value = _userDetails.lastName;
-    document.getElementById('udEmail').value = _userDetails.email;
-    document.getElementById('udPhone').value = _userDetails.phone || '';
-    document.getElementById('udAddress').value = _userDetails.address || '';
-  } else if (!editMode) {
-    ['udFirstName','udLastName','udEmail','udPhone','udAddress'].forEach(function(id){
-      var el = document.getElementById(id); if(el) el.value = '';
-    });
-  }
+  var fields = ['udFirstName','udLastName','udEmail','udPhone','udAddress'];
+  var vals = [_userDetails.firstName, _userDetails.lastName, _userDetails.email, _userDetails.phone, _userDetails.address];
+  fields.forEach(function(id, i){
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.value = (editMode && vals[i] && vals[i] !== '—') ? vals[i] : '';
+    el.style.borderColor = '#e2e8f0';
+    el.style.boxShadow = 'none';
+  });
   document.getElementById('udStep1').style.display = 'block';
   document.getElementById('udStep2').style.display = 'none';
-  document.getElementById('udProgress1').style.background = '#1d4ed8';
-  document.getElementById('udProgress2').style.background = '#e2e8f0';
   document.getElementById('userDetailsModal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
@@ -4091,29 +4140,23 @@ function closeUserModal() {
   document.body.style.overflow = '';
 }
 
-function udStep1Next() {
-  var fn = document.getElementById('udFirstName').value.trim();
-  var ln = document.getElementById('udLastName').value.trim();
-  var em = document.getElementById('udEmail').value.trim();
-  if (!fn || !em) { alert('Please fill in your first name and email.'); return; }
-  _userDetails.firstName = fn;
-  _userDetails.lastName = ln;
-  _userDetails.email = em;
-  document.getElementById('udStep1').style.display = 'none';
-  document.getElementById('udStep2').style.display = 'block';
-  document.getElementById('udProgress2').style.background = '#1d4ed8';
-}
-
-function udGoBack() {
-  document.getElementById('udStep2').style.display = 'none';
-  document.getElementById('udStep1').style.display = 'block';
-  document.getElementById('udProgress2').style.background = '#e2e8f0';
-}
+function udStep1Next() { /* not used - single step form */ }
+function udGoBack() { /* not used - single step form */ }
 
 function udSubmit() {
+  var fn = document.getElementById('udFirstName').value.trim();
+  var em = document.getElementById('udEmail').value.trim();
+  if (!fn || !em) {
+    // Highlight missing fields
+    if (!fn) { var el=document.getElementById('udFirstName'); el.style.borderColor='#ef4444'; el.focus(); return; }
+    if (!em) { var el2=document.getElementById('udEmail'); el2.style.borderColor='#ef4444'; el2.focus(); return; }
+    return;
+  }
+  _userDetails.firstName = fn;
+  _userDetails.lastName = document.getElementById('udLastName').value.trim();
+  _userDetails.email = em;
   _userDetails.phone = document.getElementById('udPhone').value.trim() || '—';
   _userDetails.address = document.getElementById('udAddress').value.trim() || '—';
-  document.getElementById('udProgress3').style.background = '#1d4ed8';
   closeUserModal();
   showUserDetailsCard();
 }
@@ -4146,9 +4189,8 @@ function udConfirmGood() {
   if (card) card.remove();
   var actions = document.getElementById('udActionBtns');
   if (actions) actions.remove();
-  addMessage('user', 'It looks good ✓');
-  chatHistory.push({role:'user', content:'Details confirmed — Name: ' + _userDetails.firstName + ' ' + _userDetails.lastName + ' | Email: ' + _userDetails.email + ' | Phone: ' + _userDetails.phone + ' | Address: ' + _userDetails.address});
-  sendToAI();
+  // Use sendFromSuggestion to properly trigger the AI
+  sendFromSuggestion('Details confirmed — Name: ' + _userDetails.firstName + ' ' + _userDetails.lastName + ' | Email: ' + _userDetails.email + ' | Phone: ' + _userDetails.phone + ' | Address: ' + _userDetails.address);
 }
 
 function showDetailActionButtons() {
