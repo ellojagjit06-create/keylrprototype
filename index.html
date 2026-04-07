@@ -754,7 +754,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   flex-shrink:0;
 }
 .chat-input-box{
-  display:flex;align-items:flex-end;gap:8px;
+  display:flex;align-items:center;gap:8px;
   background:var(--page-bg);border:1.5px solid var(--gray-200);
   border-radius:var(--r-lg);padding:9px 10px 9px 14px;
   transition:border-color 0.15s,box-shadow 0.15s;
@@ -2929,9 +2929,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           <div class="icon-btn" title="New chat" onclick="startNewChat()">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h10M7 2v10"/></svg>
           </div>
-          <div class="icon-btn" title="Back to site" onclick="backToLanding(event)">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2L4 7l5 5"/></svg>
-          </div>
+          
         </div>
       </div>
 
@@ -2968,7 +2966,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
       <!-- Input -->
       <div class="chat-input-area">
         <div class="chat-input-box">
-          <textarea class="chat-textarea" id="chatInput" placeholder="Ask about any property service…" rows="1" onkeydown="handleChatKey(event)" oninput="autoGrow(this)"></textarea>
+          <textarea class="chat-textarea" id="chatInput" placeholder="Ask about any property service…" rows="1" onkeydown="handleChatKey(event)" oninput="autoGrow(this)" style="vertical-align:middle;"></textarea>
           <button class="chat-send-btn" id="sendBtn" onclick="sendMessage()" disabled>
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 7.5h11M9 4l4 3.5-4 3.5"/></svg>
           </button>
@@ -5709,10 +5707,10 @@ function wizGoTo(n) {
 function _updateWizStepper(active) {
   var CHECK = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 6.5l3.5 3.5 5.5-6"/></svg>';
   var ICONS = {
-    1: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLRPLACEHOLDER" stroke-width="2"><circle cx="6.5" cy="4" r="2.3"/><path d="M1.5 11.5c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>',
-    2: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLRPLACEHOLDER" stroke-width="1.8"><rect x="1.5" y="5" width="10" height="7" rx="1.5"/><path d="M4 5V3.5a2.5 2.5 0 015 0V5"/></svg>',
-    3: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLRPLACEHOLDER" stroke-width="1.8"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v.5M6 7c0-1.5 2-1.5 2 0s-1 .8-1 1.8M6.5 10v.5"/></svg>',
-    4: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLRPLACEHOLDER" stroke-width="1.8"><path d="M6.5 1l1.3 3.5H11L8.3 6.6l1 3.4-2.8-2-2.8 2 1-3.4L2 4.5h3.2z"/></svg>'
+    1: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLR" stroke-width="2"><circle cx="6.5" cy="4" r="2.3"/><path d="M1.5 11.5c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>',
+    2: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLR" stroke-width="1.8"><rect x="1.5" y="5" width="10" height="7" rx="1.5"/><path d="M4 5V3.5a2.5 2.5 0 015 0V5"/></svg>',
+    3: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLR" stroke-width="1.8"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v.5M6 7c0-1.5 2-1.5 2 0s-1 .8-1 1.8M6.5 10v.5"/></svg>',
+    4: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLR" stroke-width="1.8"><path d="M6.5 1l1.3 3.5H11L8.3 6.6l1 3.4-2.8-2-2.8 2 1-3.4L2 4.5h3.2z"/></svg>'
   };
 
   for (var i = 1; i <= 4; i++) {
@@ -5721,32 +5719,32 @@ function _updateWizStepper(active) {
     var line = document.getElementById('wsline-'+i);
     if (!dot || !lbl) continue;
 
-    var done   = _onboardSteps[i-1] && _onboardSteps[i-1].done;
-    var isActive = i === active;
-    var isPast   = i < active;
+    var isActive = (i === active);
+    var isPast   = (i < active);
 
-    if (done || isPast) {
-      dot.style.background  = 'linear-gradient(135deg,#1A5FC8,#0FA3D0)';
-      dot.style.boxShadow   = 'none';
-      dot.innerHTML         = CHECK;
-      lbl.style.color       = '#1A5FC8';
-      lbl.style.fontWeight  = '600';
+    if (isPast) {
+      // Completed step: gradient bg, checkmark
+      dot.style.background = 'linear-gradient(135deg,#1A5FC8,#0FA3D0)';
+      dot.style.boxShadow  = 'none';
+      dot.innerHTML = CHECK;
+      lbl.style.color      = '#1A5FC8';
+      lbl.style.fontWeight = '600';
       if (line) line.style.background = 'linear-gradient(90deg,#1A5FC8,#0FA3D0)';
     } else if (isActive) {
-      dot.style.background  = '#1A5FC8';
-      dot.style.boxShadow   = '0 0 0 4px rgba(26,92,200,0.18)';
-      // WHITE icon for active (dark background)
-      dot.innerHTML         = ICONS[i].replace('CLRPLACEHOLDER','#fff');
-      lbl.style.color       = '#1A5FC8';
-      lbl.style.fontWeight  = '700';
+      // Current step: solid blue, white icon, glow ring
+      dot.style.background = '#1A5FC8';
+      dot.style.boxShadow  = '0 0 0 4px rgba(26,92,200,0.18)';
+      dot.innerHTML = ICONS[i].replace(/CLR/g, '#fff');
+      lbl.style.color      = '#1A5FC8';
+      lbl.style.fontWeight = '700';
       if (line) line.style.background = '#e2e8f0';
     } else {
-      dot.style.background  = '#e8ecf0';
-      dot.style.boxShadow   = 'none';
-      // GREY icon for inactive
-      dot.innerHTML         = ICONS[i].replace('CLRPLACEHOLDER','#94a3b8');
-      lbl.style.color       = '#94a3b8';
-      lbl.style.fontWeight  = '500';
+      // Future step: grey bg, grey icon
+      dot.style.background = '#e8ecf0';
+      dot.style.boxShadow  = 'none';
+      dot.innerHTML = ICONS[i].replace(/CLR/g, '#94a3b8');
+      lbl.style.color      = '#94a3b8';
+      lbl.style.fontWeight = '500';
       if (line) line.style.background = '#e2e8f0';
     }
   }
@@ -5952,19 +5950,10 @@ function _selectTierInline(name) {
 function _finishSetup() {
   _onboardSteps[3].done = true;
   _updateWizStepper(4);
-  if(_user) _user.profileComplete = true;
-  // Show done state
-  var panel4 = document.getElementById('stab-panel-4');
-  if (panel4) {
-    panel4.innerHTML = '<div style="text-align:center;padding:40px 20px;">' +
-      '<div style="width:64px;height:64px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">' +
-        '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#16a34a" stroke-width="2"><path d="M4 14l7 7 13-13"/></svg>' +
-      '</div>' +
-      '<div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">Setup complete!</div>' +
-      '<div style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;max-width:320px;margin:0 auto 24px;line-height:1.65;">Your account is fully configured. Your dashboard has been personalised based on your profile.</div>' +
-      '<button onclick="showPage(\'home\',null)" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Go to dashboard →</button>' +
-    '</div>';
-  }
+  if (_user) _user.profileComplete = true;
+  // Go directly to dashboard home
+  goToDashboard('', false);
+  setTimeout(function() { showPage('home', null); }, 400);
 }
 
 // Hook showPage to sync settings when tab opens
