@@ -3329,135 +3329,123 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     <!-- SETTINGS PAGE -->
     <div id="page-settings">
       <div style="flex:1;overflow-y:auto;background:#f6f7f9;">
-        <div style="max-width:900px;margin:0 auto;padding:24px 24px 60px;display:flex;gap:20px;align-items:flex-start;">
 
-          <!-- LEFT: Vertical step indicator -->
-          <div style="width:200px;flex-shrink:0;position:sticky;top:24px;">
-            <div style="background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0;">
-              <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;font-family:Inter,sans-serif;margin-bottom:14px;">Account setup</div>
-              <div id="settingsStepNav" style="display:flex;flex-direction:column;gap:2px;"></div>
-              <div style="margin-top:16px;padding-top:14px;border-top:1px solid #f1f5f9;">
-                <div style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:6px;">Progress</div>
-                <div style="background:#f1f5f9;border-radius:999px;height:6px;overflow:hidden;">
-                  <div id="settingsProgressFill" style="height:100%;width:25%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:999px;transition:width 0.4s;"></div>
+        <!-- Horizontal stepper at top -->
+        <div style="background:#fff;border-bottom:1px solid #e2e8f0;padding:20px 28px 0;flex-shrink:0;">
+          <div style="max-width:800px;margin:0 auto;">
+            <div style="font-size:13px;font-weight:600;color:#64748b;font-family:Inter,sans-serif;margin-bottom:14px;">Account setup</div>
+            <div style="display:flex;align-items:center;gap:0;position:relative;margin-bottom:0;">
+              <!-- Connector line -->
+              <div style="position:absolute;top:17px;left:0;right:0;height:2px;background:#e2e8f0;z-index:0;"></div>
+              <div id="stepperFill" style="position:absolute;top:17px;left:0;height:2px;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);z-index:1;transition:width 0.4s;width:0%;"></div>
+              <!-- Step items -->
+              <div id="stepper-1" style="flex:1;display:flex;flex-direction:column;align-items:flex-start;position:relative;z-index:2;cursor:pointer;" onclick="scrollToSettingsSection(1)">
+                <div id="stepDot-1" style="width:34px;height:34px;border-radius:50%;background:#1A5FC8;border:3px solid #fff;box-shadow:0 0 0 2px #1A5FC8;display:flex;align-items:center;justify-content:center;">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2"><circle cx="7" cy="4.5" r="2.5"/><path d="M2 12c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>
                 </div>
-                <div id="settingsProgressTxt" style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:5px;">1 of 4 complete</div>
+                <div id="stepLabel-1" style="font-size:11.5px;font-weight:600;color:#1A5FC8;font-family:Inter,sans-serif;margin-top:6px;margin-bottom:14px;white-space:nowrap;">My Profile</div>
+              </div>
+              <div id="stepper-2" style="flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:2;cursor:pointer;" onclick="scrollToSettingsSection(2)">
+                <div id="stepDot-2" style="width:34px;height:34px;border-radius:50%;background:#e2e8f0;border:3px solid #fff;display:flex;align-items:center;justify-content:center;">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.8"><rect x="2" y="6" width="10" height="7" rx="1.5"/><path d="M4.5 6V4a2.5 2.5 0 015 0v2"/></svg>
+                </div>
+                <div id="stepLabel-2" style="font-size:11.5px;font-weight:500;color:#94a3b8;font-family:Inter,sans-serif;margin-top:6px;margin-bottom:14px;white-space:nowrap;">Company</div>
+              </div>
+              <div id="stepper-3" style="flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:2;cursor:pointer;" onclick="scrollToSettingsSection(3)">
+                <div id="stepDot-3" style="width:34px;height:34px;border-radius:50%;background:#e2e8f0;border:3px solid #fff;display:flex;align-items:center;justify-content:center;">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.8"><circle cx="7" cy="7" r="5"/><path d="M7 4.5v.5M6.5 7.5C6.5 6 8.5 6 8.5 7.5S7 8 7 9M7 10.5v.5"/></svg>
+                </div>
+                <div id="stepLabel-3" style="font-size:11.5px;font-weight:500;color:#94a3b8;font-family:Inter,sans-serif;margin-top:6px;margin-bottom:14px;white-space:nowrap;">Profiling</div>
+              </div>
+              <div id="stepper-4" style="flex:1;display:flex;flex-direction:column;align-items:flex-end;position:relative;z-index:2;cursor:pointer;" onclick="scrollToSettingsSection(4)">
+                <div id="stepDot-4" style="width:34px;height:34px;border-radius:50%;background:#e2e8f0;border:3px solid #fff;display:flex;align-items:center;justify-content:center;">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M7 1.5l1.4 3.5H12l-2.9 2.3 1.1 3.7L7 9l-3.2 2 1.1-3.7L2 6h3.6z"/></svg>
+                </div>
+                <div id="stepLabel-4" style="font-size:11.5px;font-weight:500;color:#94a3b8;font-family:Inter,sans-serif;margin-top:6px;margin-bottom:14px;white-space:nowrap;">Choose Plan</div>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- RIGHT: Step content panels -->
-          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;">
+        <!-- All sections stacked vertically -->
+        <div style="max-width:800px;margin:0 auto;padding:24px 28px 60px;display:flex;flex-direction:column;gap:20px;">
 
-            <!-- STEP 1: Profile -->
-            <div id="stab-panel-1" class="settings-panel" style="background:#fff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;">
-              <div id="sp1-header" onclick="toggleSettingsPanel(1)" style="padding:18px 20px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;" onmouseover="this.style.background='#fafbfc'" onmouseout="this.style.background=''">
-                <div id="sp1-icon" style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
-                </div>
-                <div style="flex:1;">
-                  <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">My Profile</div>
-                  <div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">Name, email and password</div>
-                </div>
-                <div id="sp1-status" style="font-size:11.5px;font-weight:600;color:#94a3b8;font-family:Inter,sans-serif;margin-right:8px;"></div>
-                <svg id="sp1-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="2" style="transition:transform 0.2s;transform:rotate(180deg);"><path d="M3 5l4 4 4-4"/></svg>
-              </div>
-              <div id="sp1-body" style="padding:0 20px 20px;border-top:1px solid #f1f5f9;">
-                <div style="display:flex;align-items:center;gap:14px;padding:16px 0 18px;">
-                  <div id="settingsIni" style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);color:#fff;font-size:18px;font-weight:700;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;">?</div>
-                  <div><div id="settingsName" style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">–</div><div id="settingsContact" style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:1px;">–</div></div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
-                  <div><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Full name</label><input id="profileName" type="text" placeholder="Your name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 11px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
-                  <div><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Phone</label><input id="profilePhone" type="text" placeholder="+44 7700 000000" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 11px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
-                  <div><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Email</label><input id="profileEmail" type="email" placeholder="you@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 11px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
-                  <div style="position:relative;"><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Password</label><input id="profilePwd" type="password" placeholder="••••••••" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 36px 8px 11px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/><button type="button" onclick="var f=document.getElementById('profilePwd');f.type=f.type==='password'?'text':'password';" style="position:absolute;right:9px;bottom:9px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="7.5" cy="7.5" rx="5.5" ry="3.5"/><circle cx="7.5" cy="7.5" r="1.5"/></svg></button></div>
-                </div>
-                <button id="saveProfileBtn" onclick="_saveProfileBasic()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save changes</button>
+          <!-- SECTION 1: Profile -->
+          <div id="settings-section-1" style="background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:24px;">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #f1f5f9;">
+              <div id="settingsIni" style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);color:#fff;font-size:18px;font-weight:700;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;">?</div>
+              <div>
+                <div id="settingsName" style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:1px;">–</div>
+                <div id="settingsContact" style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">–</div>
               </div>
             </div>
+            <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:14px;">Account details</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:16px;">
+              <div><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Full name</label><input id="profileName" type="text" placeholder="Your name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
+              <div><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Phone</label><input id="profilePhone" type="text" placeholder="+44 7700 000000" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
+              <div><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Email</label><input id="profileEmail" type="email" placeholder="you@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
+              <div style="position:relative;"><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Password</label><input id="profilePwd" type="password" placeholder="••••••••" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 36px 9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/><button type="button" onclick="var f=document.getElementById('profilePwd');f.type=f.type==='password'?'text':'password';" style="position:absolute;right:9px;bottom:9px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="7.5" cy="7.5" rx="5.5" ry="3.5"/><circle cx="7.5" cy="7.5" r="1.5"/></svg></button></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <button id="saveProfileBtn" onclick="_saveProfileBasic()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save changes</button>
+              <button onclick="scrollToSettingsSection(2)" style="background:transparent;border:1px solid #e2e8f0;border-radius:9px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">Next: Company →</button>
+            </div>
+          </div>
 
-            <!-- STEP 2: Company Details -->
-            <div id="stab-panel-2" class="settings-panel" style="background:#fff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;">
-              <div id="sp2-header" onclick="toggleSettingsPanel(2)" style="padding:18px 20px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;" onmouseover="this.style.background='#fafbfc'" onmouseout="this.style.background=''">
-                <div id="sp2-icon" style="width:36px;height:36px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#64748b" stroke-width="1.8"><rect x="2" y="7" width="12" height="8" rx="1.5"/><path d="M5 7V5a3 3 0 016 0v2"/></svg>
-                </div>
-                <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Company Details</div><div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">Trading name, registration, address</div></div>
-                <div id="sp2-status" style="font-size:11.5px;font-weight:600;color:#94a3b8;font-family:Inter,sans-serif;margin-right:8px;">Optional</div>
-                <svg id="sp2-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="2" style="transition:transform 0.2s;"><path d="M3 5l4 4 4-4"/></svg>
+          <!-- SECTION 2: Company -->
+          <div id="settings-section-2" style="background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:24px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+              <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Company Details</div>
+              <span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;">Optional · Used on invoices</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:16px;">
+              <div><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Trading name <span style="color:#ef4444;">*</span></label><input id="coTrading" type="text" placeholder="Your business name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
+              <div><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Reg. number</label><input id="coReg" type="text" placeholder="e.g. 12345678" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
+              <div><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Legal name <span style="color:#ef4444;">*</span></label><input id="coLegal" type="text" placeholder="As on Companies House" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
+              <div><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">VAT number</label><input id="coVat" type="text" placeholder="e.g. GB123456789" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
+              <div style="grid-column:span 2;"><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Registered address <span style="color:#ef4444;">*</span></label><input id="coAddr" type="text" placeholder="Street, city, postcode" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button onclick="_saveCompanyDetails()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save & continue</button>
+              <button onclick="scrollToSettingsSection(3)" style="background:transparent;border:1px solid #e2e8f0;border-radius:9px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">Skip for now</button>
+            </div>
+          </div>
+
+          <!-- SECTION 3: Profiling -->
+          <div id="settings-section-3" style="background:#fff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;">
+            <div id="inlineProfilingContent" style="padding:24px;"></div>
+          </div>
+
+          <!-- SECTION 4: Plan -->
+          <div id="settings-section-4" style="background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:24px;">
+            <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">Choose your plan</div>
+            <div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:20px;">Based on your profile. Change any time.</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px;">
+              <div id="tier-connect" onclick="_selectTierInline('Connect')" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:18px 14px;cursor:pointer;transition:all 0.15s;" onmouseover="if(this.id!==window._selectedTier)this.style.borderColor='#c7d2fe'" onmouseout="if(this.id!==window._selectedTier)this.style.borderColor='#e2e8f0'">
+                <div style="font-size:14px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:3px;">Connect</div>
+                <div style="font-size:19px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">Free</div>
+                <div style="font-size:11.5px;color:#64748b;line-height:1.5;margin-bottom:10px;font-family:Inter,sans-serif;">For individual landlords up to 25 units.</div>
+                <div style="font-size:11.5px;color:#374151;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:4px;"><span>✓ 25 properties</span><span>✓ Job tracking</span><span>✓ Compliance alerts</span></div>
               </div>
-              <div id="sp2-body" style="display:none;padding:0 20px 20px;border-top:1px solid #f1f5f9;">
-                <div style="height:16px;"></div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
-                  <div><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Trading name <span style="color:#ef4444;">*</span></label><input id="coTrading" type="text" placeholder="Your business name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 11px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
-                  <div><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Reg. number</label><input id="coReg" type="text" placeholder="e.g. 12345678" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 11px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
-                  <div><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Legal name <span style="color:#ef4444;">*</span></label><input id="coLegal" type="text" placeholder="As on Companies House" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 11px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
-                  <div><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">VAT number</label><input id="coVat" type="text" placeholder="e.g. GB123456789" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 11px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
-                  <div style="grid-column:span 2;"><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Registered address <span style="color:#ef4444;">*</span></label><input id="coAddr" type="text" placeholder="Street, city, postcode" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 11px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
-                </div>
-                <div style="display:flex;gap:8px;">
-                  <button onclick="_saveCompanyDetails()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save & continue</button>
-                  <button onclick="toggleSettingsPanel(2)" style="background:transparent;border:1px solid #e2e8f0;border-radius:9px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#64748b;">Skip for now</button>
-                </div>
+              <div id="tier-premium" onclick="_selectTierInline('Connect Premium')" style="border:2px solid #1A5FC8;border-radius:12px;padding:18px 14px;cursor:pointer;transition:all 0.15s;background:#eff6ff;position:relative;">
+                <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#1A5FC8;color:#fff;font-size:10px;font-weight:700;font-family:Inter,sans-serif;padding:3px 10px;border-radius:999px;white-space:nowrap;">Recommended</div>
+                <div style="font-size:14px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:3px;">Connect Premium</div>
+                <div style="font-size:19px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">£29/mo</div>
+                <div style="font-size:11.5px;color:#64748b;line-height:1.5;margin-bottom:10px;font-family:Inter,sans-serif;">For letting agents and growing portfolios.</div>
+                <div style="font-size:11.5px;color:#374151;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:4px;"><span>✓ 100 properties</span><span>✓ Compliance dash</span><span>✓ Team access</span></div>
+              </div>
+              <div id="tier-copilot" onclick="_selectTierInline('Copilot')" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:18px 14px;cursor:pointer;transition:all 0.15s;" onmouseover="if(this.id!==window._selectedTier)this.style.borderColor='#c7d2fe'" onmouseout="if(this.id!==window._selectedTier)this.style.borderColor='#e2e8f0'">
+                <div style="font-size:14px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:3px;">Copilot</div>
+                <div style="font-size:19px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">£99/mo</div>
+                <div style="font-size:11.5px;color:#64748b;line-height:1.5;margin-bottom:10px;font-family:Inter,sans-serif;">Full platform for large businesses.</div>
+                <div style="font-size:11.5px;color:#374151;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:4px;"><span>✓ Unlimited</span><span>✓ API access</span><span>✓ Dedicated mgr</span></div>
               </div>
             </div>
+            <button onclick="_finishSetup()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 26px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Complete setup →</button>
+          </div>
 
-            <!-- STEP 3: Profiling -->
-            <div id="stab-panel-3" class="settings-panel" style="background:#fff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;">
-              <div id="sp3-header" onclick="toggleSettingsPanel(3)" style="padding:18px 20px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;" onmouseover="this.style.background='#fafbfc'" onmouseout="this.style.background=''">
-                <div id="sp3-icon" style="width:36px;height:36px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#64748b" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 5.5v.5M7.3 8.5c0-1.7 2.2-1.7 2.2 0S8 9.5 8 10.5M8 12v.5"/></svg>
-                </div>
-                <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Profile questions</div><div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">7 questions · under 90 seconds</div></div>
-                <div id="sp3-status" style="font-size:11.5px;font-weight:600;color:#94a3b8;font-family:Inter,sans-serif;margin-right:8px;"></div>
-                <svg id="sp3-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="2" style="transition:transform 0.2s;"><path d="M3 5l4 4 4-4"/></svg>
-              </div>
-              <div id="sp3-body" style="display:none;border-top:1px solid #f1f5f9;">
-                <div id="inlineProfilingContent" style="padding:20px;"></div>
-              </div>
-            </div>
-
-            <!-- STEP 4: Plan -->
-            <div id="stab-panel-4" class="settings-panel" style="background:#fff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;">
-              <div id="sp4-header" onclick="toggleSettingsPanel(4)" style="padding:18px 20px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;" onmouseover="this.style.background='#fafbfc'" onmouseout="this.style.background=''">
-                <div id="sp4-icon" style="width:36px;height:36px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#64748b" stroke-width="1.8"><path d="M8 2l1.5 4H14l-3.5 2.8 1.3 4.2L8 11l-3.8 2 1.3-4.2L2 6h4.5z"/></svg>
-                </div>
-                <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Choose your plan</div><div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">Connect · Connect Premium · Copilot</div></div>
-                <div id="sp4-status" style="font-size:11.5px;font-weight:600;color:#94a3b8;font-family:Inter,sans-serif;margin-right:8px;"></div>
-                <svg id="sp4-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="2" style="transition:transform 0.2s;"><path d="M3 5l4 4 4-4"/></svg>
-              </div>
-              <div id="sp4-body" style="display:none;padding:0 20px 20px;border-top:1px solid #f1f5f9;">
-                <div style="height:16px;"></div>
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;">
-                  <div id="tier-connect" onclick="_selectTierInline('Connect')" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 14px;cursor:pointer;transition:all 0.15s;" onmouseover="if(this.id!==window._selectedTier)this.style.borderColor='#c7d2fe'" onmouseout="if(this.id!==window._selectedTier)this.style.borderColor='#e2e8f0'">
-                    <div style="font-size:14px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:3px;">Connect</div>
-                    <div style="font-size:18px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">Free</div>
-                    <div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;margin-bottom:10px;">For individual landlords up to 25 units.</div>
-                    <div style="font-size:11.5px;color:#374151;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:4px;"><span>✓ 25 properties</span><span>✓ Job tracking</span><span>✓ Compliance alerts</span></div>
-                  </div>
-                  <div id="tier-premium" onclick="_selectTierInline('Connect Premium')" style="border:2px solid #1A5FC8;border-radius:12px;padding:16px 14px;cursor:pointer;transition:all 0.15s;background:#eff6ff;position:relative;" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'">
-                    <div style="position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:#1A5FC8;color:#fff;font-size:10px;font-weight:700;font-family:Inter,sans-serif;padding:2px 10px;border-radius:999px;white-space:nowrap;">Recommended</div>
-                    <div style="font-size:14px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:3px;">Premium</div>
-                    <div style="font-size:18px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">£29/mo</div>
-                    <div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;margin-bottom:10px;">For letting agents and growing portfolios.</div>
-                    <div style="font-size:11.5px;color:#374151;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:4px;"><span>✓ 100 properties</span><span>✓ Compliance dash</span><span>✓ Team access</span></div>
-                  </div>
-                  <div id="tier-copilot" onclick="_selectTierInline('Copilot')" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 14px;cursor:pointer;transition:all 0.15s;" onmouseover="if(this.id!==window._selectedTier)this.style.borderColor='#c7d2fe'" onmouseout="if(this.id!==window._selectedTier)this.style.borderColor='#e2e8f0'">
-                    <div style="font-size:14px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:3px;">Copilot</div>
-                    <div style="font-size:18px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">£99/mo</div>
-                    <div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;margin-bottom:10px;">Full platform for large businesses.</div>
-                    <div style="font-size:11.5px;color:#374151;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:4px;"><span>✓ Unlimited</span><span>✓ API access</span><span>✓ Dedicated mgr</span></div>
-                  </div>
-                </div>
-                <button onclick="_finishSetup()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:10px 24px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Complete setup →</button>
-              </div>
-            </div>
-
-          </div><!-- /right -->
-        </div><!-- /flex container -->
-      </div><!-- /scroll -->
+        </div>
+      </div>
     </div>
 </main>
   <!-- Floating chat assistant button (shown on non-chat pages) -->
@@ -5449,8 +5437,8 @@ function _renderOnboardingSteps() {
     '</div>';
   }).join('');
 
-  _openSettingsPanel(1);
-  _updateSettingsStepNav();
+  _updateStepperActive(1);
+  _renderInlineProfiling();
 }
 function _saveProfileBasic() {
   var n  = document.getElementById('profileName');
@@ -5632,87 +5620,47 @@ function _selectTier(name) {
 // =============================================
 window._selectedTier = 'tier-premium'; // default
 
-function toggleSettingsPanel(n) {
+
+function scrollToSettingsSection(n) {
+  var el = document.getElementById('settings-section-'+n);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(function(){ _updateStepperActive(n); }, 200);
+  }
+}
+
+function _updateStepperActive(n) {
   for (var i = 1; i <= 4; i++) {
-    var body = document.getElementById('sp'+i+'-body');
-    var chevron = document.getElementById('sp'+i+'-chevron');
-    if (!body) continue;
-    if (i === n) {
-      var isOpen = body.style.display !== 'none';
-      body.style.display = isOpen ? 'none' : (i === 3 ? 'block' : 'block');
-      if (chevron) chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
-      if (i === 3 && !isOpen) _renderInlineProfiling();
+    var dot = document.getElementById('stepDot-'+i);
+    var lbl = document.getElementById('stepLabel-'+i);
+    var done = _onboardSteps[i-1] && _onboardSteps[i-1].done;
+    var active = i === n;
+    if (!dot || !lbl) continue;
+    if (done) {
+      dot.style.background = '#10b981'; dot.style.boxShadow = '0 0 0 2px #10b981';
+      dot.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6.5l3.5 3.5 5.5-6"/></svg>';
+      lbl.style.color = '#10b981'; lbl.style.fontWeight = '600';
+    } else if (active) {
+      dot.style.background = '#1A5FC8'; dot.style.boxShadow = '0 0 0 2px #1A5FC8';
+      lbl.style.color = '#1A5FC8'; lbl.style.fontWeight = '600';
+    } else {
+      dot.style.background = '#e2e8f0'; dot.style.boxShadow = 'none';
+      lbl.style.color = '#94a3b8'; lbl.style.fontWeight = '500';
     }
   }
-  _updateSettingsStepNav();
-}
-
-function _openSettingsPanel(n) {
-  for (var i = 1; i <= 4; i++) {
-    var body = document.getElementById('sp'+i+'-body');
-    var chevron = document.getElementById('sp'+i+'-chevron');
-    if (!body) continue;
-    body.style.display = i === n ? 'block' : 'none';
-    if (chevron) chevron.style.transform = i === n ? 'rotate(180deg)' : '';
-  }
-  if (n === 3) _renderInlineProfiling();
-  _updateSettingsStepNav();
-}
-
-function _updateSettingsStepNav() {
-  var nav = document.getElementById('settingsStepNav');
-  if (!nav) return;
-  var steps = [
-    { n:1, label:'My Profile' },
-    { n:2, label:'Company Details' },
-    { n:3, label:'Profile Questions' },
-    { n:4, label:'Choose Plan' },
-  ];
+  // Update progress fill
   var doneCount = _onboardSteps.filter(function(s){ return s.done; }).length;
-  nav.innerHTML = steps.map(function(s) {
-    var done = _onboardSteps[s.n-1] && _onboardSteps[s.n-1].done;
-    var body = document.getElementById('sp'+s.n+'-body');
-    var isOpen = body && body.style.display !== 'none';
-    return '<button onclick="_openSettingsPanel('+s.n+')" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;border:none;border-radius:8px;cursor:pointer;font-family:Inter,sans-serif;font-size:12.5px;font-weight:'+(isOpen?'600':'500')+';color:'+(isOpen?'#0f172a':'#64748b')+';background:'+(isOpen?'#f1f5f9':'transparent')+';text-align:left;transition:all 0.12s;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\''+(isOpen?'#f1f5f9':'transparent')+'\'">' +
-      '<div style="width:18px;height:18px;border-radius:50%;border:1.5px solid '+(done?'#10b981':isOpen?'#1A5FC8':'#d1d5db')+';background:'+(done?'#dcfce7':isOpen?'#eff6ff':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
-        (done?'<svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 4.5l2.5 2.5 4-4"/></svg>':'<div style="width:5px;height:5px;border-radius:50%;background:'+(isOpen?'#1A5FC8':'#d1d5db')+'"></div>') +
-      '</div>'+s.label+'</button>';
-  }).join('');
-  // Update progress
-  var pct = Math.round((doneCount/4)*100);
-  var fill = document.getElementById('settingsProgressFill');
-  var txt = document.getElementById('settingsProgressTxt');
-  if (fill) fill.style.width = pct+'%';
-  if (txt) txt.textContent = doneCount+' of 4 complete';
+  var pct = Math.round(((n-1) / 3) * 100);
+  var fill = document.getElementById('stepperFill');
+  if (fill) fill.style.width = pct + '%';
 }
 
-// Keep switchSettingsTab as alias for _openSettingsPanel
-function switchSettingsTab(n) { _openSettingsPanel(n); }
+// Keep as alias for inline profiling
+function switchSettingsTab(n) { scrollToSettingsSection(n); }
+function _openSettingsPanel(n) { scrollToSettingsSection(n); }
+function _updateSettingsStepNav() { _updateStepperActive(1); }
 
 
-function _syncSettingsPage() {
-  if (!_user) return;
-  var ini  = document.getElementById('settingsIni');
-  var nm   = document.getElementById('settingsName');
-  var ct   = document.getElementById('settingsContact');
-  var pn   = document.getElementById('profileName');
-  var pe   = document.getElementById('profileEmail');
-  var ph   = document.getElementById('profilePhone');
-
-  var initials = _getInitials(_user.name || '?');
-  if (ini)  ini.textContent  = initials;
-  if (nm)   nm.textContent   = _user.name  || '–';
-  if (ct)   ct.textContent   = _user.email || _user.phone || _user.contact || '–';
-  // Pre-fill form fields from signup data
-  if (pn && _user.name)    pn.value  = _user.name;
-  if (pe && _user.email)   pe.value  = _user.email;
-  if (ph && _user.phone)   ph.value  = _user.phone;
-  // If phone login: show phone in email field area
-  if (pe && !_user.email && _user.contact) {
-    pe.placeholder = _user.contact + ' (via OTP)';
-    pe.style.color = '#94a3b8';
-  }
-}
 
 // =============================================
 // SAVE PROFILE BASIC
@@ -5727,7 +5675,7 @@ function _saveProfileBasic() {
   _syncUserUI();
   _syncSettingsPage();
   _onboardSteps[0].done = true;
-  _updateSettingsStepNav();
+  _updateStepperActive(1);
   var saveBtn = document.getElementById('saveProfileBtn');
   if (saveBtn) {
     saveBtn.textContent = 'Saved ✓';
@@ -5745,8 +5693,8 @@ function _saveProfileBasic() {
 
 function _saveCompanyDetails() {
   _onboardSteps[1].done = true;
-  _openSettingsPanel(3);
-  _updateSettingsStepNav();
+  _updateStepperActive(2);
+  scrollToSettingsSection(3);
 }
 
 // =============================================
@@ -5868,7 +5816,7 @@ function _inlineSelect(opt) {
 }
 function _inlineQNext() {
   if (_inlineQStep < 6) { _inlineQStep++; _renderInlineProfiling(); }
-  else { _onboardSteps[2].done = true; _openSettingsPanel(4); _updateSettingsStepNav(); }
+  else { _onboardSteps[2].done = true; _updateStepperActive(3); scrollToSettingsSection(4); }
 }
 function _inlineQBack() { if(_inlineQStep>0){ _inlineQStep--; _renderInlineProfiling(); } }
 
@@ -5887,6 +5835,7 @@ function _selectTierInline(name) {
 
 function _finishSetup() {
   _onboardSteps[3].done = true;
+  _updateStepperActive(4);
   if(_user) _user.profileComplete = true;
   // Show done state
   var panel4 = document.getElementById('stab-panel-4');
@@ -6034,98 +5983,182 @@ function showAuthPageV4(mode) {
 // =============================================
 function showSupplierAuth() {
   var ex = document.getElementById('authModal'); if (ex) ex.remove();
+  window._authSup = { step: 'contact', contact: '', name: '', countryCode: '+44' };
+  var COUNTRY_CODES = [
+    {code:'+44',flag:'🇬🇧',name:'UK'},{code:'+1',flag:'🇺🇸',name:'US'},{code:'+91',flag:'🇮🇳',name:'IN'},
+    {code:'+971',flag:'🇦🇪',name:'UAE'},{code:'+61',flag:'🇦🇺',name:'AU'},{code:'+33',flag:'🇫🇷',name:'FR'},
+    {code:'+49',flag:'🇩🇪',name:'DE'},{code:'+92',flag:'🇵🇰',name:'PK'}
+  ];
   var modal = document.createElement('div');
   modal.id = 'authModal';
   modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
   document.body.appendChild(modal);
-  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  modal.addEventListener('click', function(e){ if(e.target===modal){ modal.remove(); delete window._authSup; } });
 
-  // Build card
-  var card = document.createElement('div');
-  card.style.cssText = 'background:#fff;border-radius:20px;width:100%;max-width:440px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;';
-  modal.appendChild(card);
+  function renderSup() {
+    var s = window._authSup;
+    var card = document.createElement('div');
+    card.style.cssText = 'background:#fff;border-radius:20px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;';
 
-  // Header
-  var hdr = document.createElement('div');
-  hdr.style.cssText = 'padding:22px 26px 16px;border-bottom:0.5px solid #f1f5f9;display:flex;justify-content:space-between;align-items:flex-start;';
-  hdr.innerHTML = '<div><div style="font-size:19px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">Join as a Supplier</div><div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">Receive verified job requests from property managers</div></div>';
-  var closeBtn = document.createElement('button');
-  closeBtn.textContent = '×';
-  closeBtn.style.cssText = 'background:#f1f5f9;border:none;color:#64748b;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:10px;';
-  closeBtn.addEventListener('click', function(){ modal.remove(); });
-  hdr.appendChild(closeBtn);
-  card.appendChild(hdr);
+    // Header
+    var hdr = document.createElement('div');
+    hdr.style.cssText = 'padding:22px 26px 16px;border-bottom:0.5px solid #f1f5f9;display:flex;justify-content:space-between;align-items:flex-start;';
+    var hdrLeft = document.createElement('div');
+    hdrLeft.innerHTML = '<div style="font-size:19px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">' +
+      (s.step==='contact' ? 'Join as a Supplier' : s.step==='password' ? 'Create your password' : 'Verify your number') +
+      '</div><div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">' +
+      (s.step==='contact' ? 'Receive verified job requests from property managers' : s.step==='password' ? 'Signing up as a Supplier' : 'We sent a 6-digit code to '+s.contact) +
+      '</div>';
+    var closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '&times;';
+    closeBtn.style.cssText = 'background:#f1f5f9;border:none;color:#64748b;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:10px;line-height:1;';
+    closeBtn.addEventListener('click', function(){ modal.remove(); delete window._authSup; });
+    hdr.appendChild(hdrLeft); hdr.appendChild(closeBtn);
+    card.appendChild(hdr);
 
-  // Body
-  var body = document.createElement('div');
-  body.style.cssText = 'padding:20px 26px 22px;';
-  card.appendChild(body);
+    // Body
+    var body = document.createElement('div');
+    body.style.cssText = 'padding:20px 26px 22px;';
 
-  function mkField(label, type, placeholder, id) {
-    var wrap = document.createElement('div');
-    var lbl = document.createElement('label');
-    lbl.textContent = label;
-    lbl.style.cssText = 'font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;';
-    var inp = document.createElement('input');
-    inp.type = type; inp.placeholder = placeholder;
-    if (id) inp.id = id;
-    inp.style.cssText = 'width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;';
-    inp.addEventListener('focus', function(){ this.style.borderColor = '#1A5FC8'; });
-    inp.addEventListener('blur',  function(){ this.style.borderColor = '#e2e8f0'; });
+    if (s.step === 'contact') {
+      // Full name
+      body.appendChild(mkInput('Full name','text','Your full name','supName'));
+      document.getElementById('supName') && (document.getElementById('supName').style.marginBottom = '14px');
+      // Email/mobile with CC picker
+      var emailLbl = document.createElement('label');
+      emailLbl.textContent = 'Email or mobile number';
+      emailLbl.style.cssText = 'font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;';
+      var contactRow = document.createElement('div');
+      contactRow.style.cssText = 'position:relative;display:flex;margin-bottom:5px;';
+      // CC wrap (hidden by default)
+      var ccWrap = document.createElement('div');
+      ccWrap.id = 'supCcWrap';
+      ccWrap.style.cssText = 'display:none;flex-shrink:0;position:relative;';
+      var ccBtn = document.createElement('button');
+      ccBtn.id = 'supCcBtn'; ccBtn.type = 'button';
+      ccBtn.style.cssText = 'height:44px;padding:0 10px;background:#f8fafc;border:1.5px solid #e2e8f0;border-right:none;border-radius:10px 0 0 10px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;display:flex;align-items:center;gap:4px;white-space:nowrap;';
+      var ccSpan = document.createElement('span'); ccSpan.id='supCcDisplay'; ccSpan.textContent='🇬🇧 +44';
+      var ccArr = document.createElement('span'); ccArr.innerHTML='<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4l3 3 3-3"/></svg>';
+      ccBtn.appendChild(ccSpan); ccBtn.appendChild(ccArr);
+      var ccList = document.createElement('div'); ccList.id='supCcList';
+      ccList.style.cssText='display:none;position:absolute;top:48px;left:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.1);z-index:20;min-width:190px;overflow:hidden;';
+      COUNTRY_CODES.forEach(function(cc){
+        var item = document.createElement('div');
+        item.style.cssText='display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;';
+        item.textContent=cc.flag+' '+cc.name;
+        var codeSpan=document.createElement('span'); codeSpan.textContent=cc.code; codeSpan.style.cssText='color:#94a3b8;margin-left:auto;font-size:12px;';
+        item.appendChild(codeSpan);
+        item.addEventListener('mouseover',function(){this.style.background='#f8fafc';}); item.addEventListener('mouseout',function(){this.style.background='';});
+        item.addEventListener('click',function(){ window._authSup.countryCode=cc.code; ccSpan.textContent=cc.flag+' '+cc.code; ccList.style.display='none'; });
+        ccList.appendChild(item);
+      });
+      ccBtn.addEventListener('click',function(){ ccList.style.display=ccList.style.display==='none'?'block':'none'; });
+      ccWrap.appendChild(ccBtn); ccWrap.appendChild(ccList);
+      var contactInp = document.createElement('input');
+      contactInp.id='supContact'; contactInp.type='text'; contactInp.placeholder='you@email.com  or  07700 000000';
+      contactInp.style.cssText='flex:1;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;';
+      contactInp.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';});
+      contactInp.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';});
+      contactInp.addEventListener('keydown',function(e){if(e.key==='Enter')supContinue();});
+      contactInp.addEventListener('input',function(){
+        var val=this.value.trim(); var isPhone=/^[\d\s\+\-\(\)]{3,}$/.test(val)&&/\d{3,}/.test(val);
+        ccWrap.style.display=isPhone?'block':'none'; this.style.borderRadius=isPhone?'0 10px 10px 0':'10px';
+      });
+      contactRow.appendChild(ccWrap); contactRow.appendChild(contactInp);
+      var hint=document.createElement('p'); hint.textContent='Email → password · Mobile → OTP verification';
+      hint.style.cssText='font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin:5px 0 18px;';
+      body.appendChild(emailLbl); body.appendChild(contactRow); body.appendChild(hint);
+      var contBtn=document.createElement('button'); contBtn.textContent='Continue →';
+      contBtn.style.cssText='width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;';
+      contBtn.addEventListener('click',supContinue);
+      body.appendChild(contBtn);
+      var switchP=document.createElement('p'); switchP.style.cssText='text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;';
+      switchP.innerHTML='Already a supplier? <a href="#" style="color:#1A5FC8;font-weight:600;text-decoration:none;">Log in</a>';
+      switchP.querySelector('a').addEventListener('click',function(e){e.preventDefault();modal.remove();delete window._authSup;showAuthPageV4('login');});
+      body.appendChild(switchP);
+
+    } else if (s.step === 'password') {
+      body.appendChild(mkChip(s.contact, function(){ window._authSup.step='contact'; modal.innerHTML=''; modal.appendChild(card); renderSup(); }));
+      var pwdWrap=document.createElement('div'); pwdWrap.style.cssText='margin-bottom:20px;position:relative;';
+      var pwdLbl=document.createElement('label'); pwdLbl.textContent='Create a password'; pwdLbl.style.cssText='font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;';
+      var pwdInp=document.createElement('input'); pwdInp.id='supPwd'; pwdInp.type='password'; pwdInp.placeholder='••••••••';
+      pwdInp.style.cssText='width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 44px 11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;';
+      pwdInp.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';}); pwdInp.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';});
+      var eyeBtn=document.createElement('button'); eyeBtn.type='button';
+      eyeBtn.style.cssText='position:absolute;right:13px;bottom:12px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;';
+      eyeBtn.innerHTML='<svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg>';
+      eyeBtn.addEventListener('click',function(){pwdInp.type=pwdInp.type==='password'?'text':'password';});
+      pwdWrap.appendChild(pwdLbl); pwdWrap.appendChild(pwdInp); pwdWrap.appendChild(eyeBtn);
+      body.appendChild(pwdWrap);
+      var subBtn=document.createElement('button'); subBtn.textContent='Create account →';
+      subBtn.style.cssText='width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;';
+      subBtn.addEventListener('click',function(){modal.remove();delete window._authSup;});
+      body.appendChild(subBtn);
+
+    } else if (s.step === 'otp') {
+      body.appendChild(mkChip(s.contact, function(){ window._authSup.step='contact'; modal.innerHTML=''; modal.appendChild(card); renderSup(); }));
+      var otpRow=document.createElement('div'); otpRow.style.cssText='display:flex;gap:8px;justify-content:center;margin:16px 0;';
+      for(var i=0;i<6;i++){
+        var box=document.createElement('input'); box.type='text'; box.inputMode='numeric'; box.maxLength=1;
+        box.style.cssText='width:42px;height:50px;border:1.5px solid #e2e8f0;border-radius:10px;text-align:center;font-size:22px;font-weight:700;font-family:Inter,sans-serif;color:#0f172a;outline:none;box-sizing:border-box;';
+        box.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';}); box.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';});
+        (function(idx,el){el.addEventListener('input',function(){this.value=this.value.replace(/\D/g,'');var next=otpRow.children[idx+1];if(this.value&&next)next.focus();});el.addEventListener('keydown',function(e){if(e.key==='Backspace'&&!this.value&&idx>0)otpRow.children[idx-1].focus();});})(i,box);
+        otpRow.appendChild(box);
+      }
+      body.appendChild(otpRow);
+      var verBtn=document.createElement('button'); verBtn.textContent='Verify & Continue →';
+      verBtn.style.cssText='width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:10px;';
+      verBtn.addEventListener('click',function(){modal.remove();delete window._authSup;});
+      body.appendChild(verBtn);
+      var resendRow=document.createElement('div'); resendRow.style.cssText='display:flex;justify-content:center;gap:16px;';
+      var backBtn=document.createElement('button'); backBtn.textContent='← Change number'; backBtn.style.cssText='background:none;border:none;color:#64748b;font-size:12.5px;cursor:pointer;font-family:Inter,sans-serif;padding:0;';
+      backBtn.addEventListener('click',function(){window._authSup.step='contact';modal.innerHTML='';modal.appendChild(card);renderSup();});
+      var resend=document.createElement('button'); resend.textContent='Resend OTP'; resend.style.cssText='background:none;border:none;color:#1A5FC8;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;';
+      resend.addEventListener('click',function(){resend.textContent='Sent ✓';resend.style.color='#10b981';setTimeout(function(){resend.textContent='Resend OTP';resend.style.color='#1A5FC8';},3000);});
+      resendRow.appendChild(backBtn); resendRow.appendChild(resend);
+      body.appendChild(resendRow);
+    }
+
+    card.appendChild(body);
+    modal.innerHTML=''; modal.appendChild(card);
+    setTimeout(function(){var f=document.getElementById('supName')||document.getElementById('supContact');if(f)f.focus();},80);
+  }
+
+  function mkInput(label, type, placeholder, id) {
+    var wrap=document.createElement('div'); wrap.style.marginBottom='14px';
+    var lbl=document.createElement('label'); lbl.textContent=label;
+    lbl.style.cssText='font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;';
+    var inp=document.createElement('input'); inp.type=type; inp.placeholder=placeholder; inp.id=id;
+    inp.style.cssText='width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;';
+    inp.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';});
+    inp.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';});
     wrap.appendChild(lbl); wrap.appendChild(inp);
     return wrap;
   }
 
-  // Name row
-  var nameRow = document.createElement('div');
-  nameRow.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;';
-  nameRow.appendChild(mkField('First name','text','First',''));
-  nameRow.appendChild(mkField('Last name','text','Last',''));
-  body.appendChild(nameRow);
+  function mkChip(contact, onBack) {
+    var wrap=document.createElement('div');
+    wrap.style.cssText='display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e8ecf0;border-radius:10px;padding:10px 14px;margin-bottom:18px;';
+    var icon=document.createElement('span'); icon.innerHTML='<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#64748b" stroke-width="1.8"><rect x="1" y="3" width="11" height="8" rx="1.5"/><path d="M1 5.5l5.5 3.5 5.5-3.5"/></svg>';
+    var txt=document.createElement('span'); txt.textContent=contact; txt.style.cssText='font-size:13px;color:#374151;font-family:Inter,sans-serif;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+    var chg=document.createElement('button'); chg.textContent='Change'; chg.style.cssText='background:none;border:none;color:#1A5FC8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;';
+    chg.addEventListener('click',onBack);
+    wrap.appendChild(icon); wrap.appendChild(txt); wrap.appendChild(chg);
+    return wrap;
+  }
 
-  // Business name
-  var bizWrap = mkField('Business / trade name','text','e.g. SparkRight Electrical Ltd','');
-  bizWrap.style.marginBottom = '14px';
-  body.appendChild(bizWrap);
+  function supContinue() {
+    var nm=document.getElementById('supName'); if(nm) window._authSup.name=nm.value.trim();
+    var ct=document.getElementById('supContact'); if(!ct) return;
+    var val=ct.value.trim(); if(!val){ct.style.borderColor='#ef4444';ct.focus();return;}
+    window._authSup.contact=val;
+    var cleaned=val.replace(/[\s\-\(\)\+]/g,'');
+    window._authSup.step=/^\d{7,15}$/.test(cleaned)?'otp':'password';
+    if(/^\d{7,15}$/.test(cleaned)) window._authSup.contact=window._authSup.countryCode+' '+val;
+    renderSup();
+  }
 
-  // Email/mobile
-  var emailWrap = mkField('Email or mobile number','text','you@email.com  or  07700 000000','');
-  emailWrap.style.marginBottom = '6px';
-  var hint = document.createElement('p');
-  hint.textContent = 'Email → password · Mobile → OTP verification';
-  hint.style.cssText = 'font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin:4px 0 14px;';
-  body.appendChild(emailWrap);
-  body.appendChild(hint);
-
-  // Password with eye toggle
-  var pwdWrap = document.createElement('div');
-  pwdWrap.style.cssText = 'margin-bottom:20px;position:relative;';
-  var pwdLbl = document.createElement('label');
-  pwdLbl.textContent = 'Password'; pwdLbl.style.cssText = 'font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;';
-  var pwdInp = document.createElement('input');
-  pwdInp.type='password'; pwdInp.id='supPwd'; pwdInp.placeholder='Create a password';
-  pwdInp.style.cssText = 'width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 42px 10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;';
-  pwdInp.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';});
-  pwdInp.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';});
-  var eyeBtn = document.createElement('button');
-  eyeBtn.type='button'; eyeBtn.style.cssText='position:absolute;right:12px;bottom:11px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;';
-  eyeBtn.innerHTML='<svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg>';
-  eyeBtn.addEventListener('click',function(){ pwdInp.type=pwdInp.type==='password'?'text':'password'; });
-  pwdWrap.appendChild(pwdLbl); pwdWrap.appendChild(pwdInp); pwdWrap.appendChild(eyeBtn);
-  body.appendChild(pwdWrap);
-
-  // Submit
-  var submitBtn = document.createElement('button');
-  submitBtn.textContent = 'Apply to join →';
-  submitBtn.style.cssText = 'width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;';
-  submitBtn.addEventListener('click', function(){ modal.remove(); });
-  body.appendChild(submitBtn);
-
-  var switchP = document.createElement('p');
-  switchP.style.cssText = 'text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;';
-  switchP.innerHTML = 'Already a supplier? <a href="#" style="color:#1A5FC8;font-weight:600;text-decoration:none;">Log in</a>';
-  switchP.querySelector('a').addEventListener('click', function(e){ e.preventDefault(); modal.remove(); showAuthPageV4('login'); });
-  body.appendChild(switchP);
+  renderSup();
 }
 </script>
 
