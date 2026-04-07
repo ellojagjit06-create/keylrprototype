@@ -3325,7 +3325,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   
 
     <!-- SETTINGS PAGE -->
-    <div id="page-settings">
+    <div id="page-settings" style="height:100%;min-height:0;">
       <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
 
         <!-- TOP: Settings heading + tab bar -->
@@ -3344,13 +3344,13 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
         </div>
 
         <!-- TAB PANELS (scrollable) -->
-        <div style="flex:1;overflow-y:auto;background:#f5f6f8;">
+        <div style="flex:1;overflow-y:auto;background:#f5f6f8;min-height:0;">
 
           <!-- PROFILE TAB -->
           <div id="stg-panel-profile">
 
             <!-- Account Setup Wizard -->
-            <div style="background:#fff;border-bottom:1px solid #eaecf0;flex-shrink:0;">
+            <div style="background:#fff;border-bottom:1px solid #eaecf0;position:sticky;top:0;z-index:10;">
               <div style="max-width:780px;margin:0 auto;padding:16px 28px 0;">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
                   <div style="font-size:12.5px;font-weight:600;color:#64748b;font-family:Inter,sans-serif;">Account Setup</div>
