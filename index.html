@@ -2624,13 +2624,24 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
         </div>
       </div>
       <!-- Logged in: profile row -->
-      <div id="sbProfileArea" style="display:none;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;transition:background 0.12s;" onclick="_showProfileDropdown('sbProfileArea')" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">
-        <div id="sbProfileIni" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);color:#fff;font-size:13px;font-weight:700;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;">JD</div>
-        <div style="flex:1;min-width:0;" class="db-nav-item-label">
-          <div id="sbProfileName" style="font-size:13px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">John Doe</div>
-          <div id="sbProfileEmail" style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">john@property.co</div>
+      <div id="sbProfileArea" style="display:none;flex-direction:column;gap:0;padding:8px 12px 10px;border-radius:12px;cursor:pointer;transition:background 0.12s;" onclick="_showProfileDropdown('sbProfileArea')" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div id="sbProfileIni" style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);color:#fff;font-size:12px;font-weight:700;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;">JD</div>
+          <div style="flex:1;min-width:0;" class="db-nav-item-label">
+            <div id="sbProfileName" style="font-size:13px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">John Doe</div>
+            <div id="sbProfileEmail" style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">john@property.co</div>
+          </div>
+          <svg class="db-nav-item-label" width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M3 5l3-3 3 3M3 7l3 3 3-3"/></svg>
         </div>
-        <svg class="db-nav-item-label" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M3 5l3-3 3 3M3 7l3 3 3-3"/></svg>
+        <div class="db-nav-item-label" style="margin-top:8px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+            <span style="font-size:10.5px;color:#94a3b8;font-family:Inter,sans-serif;">Profile</span>
+            <span id="sbProfilePct" style="font-size:10.5px;font-weight:700;color:#1A5FC8;font-family:Inter,sans-serif;">25%</span>
+          </div>
+          <div style="height:3px;background:#e2e8f0;border-radius:999px;overflow:hidden;">
+            <div id="sbProfileBar" style="height:100%;width:25%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:999px;transition:width 0.4s;"></div>
+          </div>
+        </div>
       </div>
     </div>
   </aside>
@@ -3426,7 +3437,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
                   </div>
                   <div style="display:flex;align-items:center;gap:10px;">
                     <button id="saveProfileBtn" onclick="_saveProfileBasic()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save changes</button>
-                    <button onclick="_saveAndNextProfile()" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">Next: Company →</button>
+                    <button onclick="_saveAndNextProfile()" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;min-width:auto;">Next →</button>
                   </div>
                 </div>
               </div>
@@ -3581,6 +3592,7 @@ function _syncUserUI() {
   if (_user && sbIni)   sbIni.textContent   = _getInitials(_user.name);
   if (_user && sbName)  sbName.textContent  = _user.name  || '';
   if (_user && sbEmail) sbEmail.textContent = _user.email || _user.phone || _user.contact || '';
+  if (typeof _updateProfilePct === 'function') _updateProfilePct();
 }
 
 function _showProfileDropdown(anchorId) {
@@ -3615,7 +3627,7 @@ function _showProfileDropdown(anchorId) {
     '<div onclick="_goToSettings();document.getElementById(\'profileDropdown\').remove();" style="padding:11px 16px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;display:flex;align-items:center;gap:9px;transition:background 0.1s;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'transparent\'">' +
       '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="7" cy="4.5" r="2.5"/><path d="M2 12c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>My Profile' +
     '</div>' +
-    '<div onclick="_doLogout();document.getElementById(\'profileDropdown\').remove();" style="padding:11px 16px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#ef4444;display:flex;align-items:center;gap:9px;border-top:1px solid #f1f5f9;transition:background 0.1s;" onmouseover="this.style.background=\'#fff5f5\'" onmouseout="this.style.background=\'transparent\'">' +
+    '<div onclick="_confirmLogout();document.getElementById(\'profileDropdown\').remove();" style="padding:11px 16px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#ef4444;display:flex;align-items:center;gap:9px;border-top:1px solid #f1f5f9;transition:background 0.1s;" onmouseover="this.style.background=\'#fff5f5\'" onmouseout="this.style.background=\'transparent\'">' +
       '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5.5 7h6M9 4.5l2.5 2.5L9 9.5M8 2.5H3a1 1 0 00-1 1v7a1 1 0 001 1h5"/></svg>Log out' +
     '</div>';
 
@@ -5904,12 +5916,7 @@ function _renderInlineProfiling() {
     '</div>' +
     '</div>';
 
-  // Wire button clicks via event delegation
-  container.querySelectorAll('button[data-opt]').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      window._inlineSelectOpt(this);
-    });
-  });
+  // onclick inline attr handles clicks - no extra listener needed
 }
 
 window._inlineSelectOpt = function(el) {
@@ -5950,8 +5957,13 @@ showPage = function(id, e) {
   _origShowPage_settings(id, e);
   if (id === 'settings') {
     setTimeout(function(){
-      _syncSettingsPage();
-      switchSettingsTab(1);
+      if (!_user) {
+        _showSettingsGuestScreen();
+      } else {
+        _syncSettingsPage();
+        switchSettingsMainTab('profile');
+        wizGoTo(1);
+      }
     }, 30);
   }
 };
@@ -6381,6 +6393,75 @@ showPage = function(id, e) {
     }, 30);
   }
 };
+
+// =============================================
+// SETTINGS — guest screen
+// =============================================
+function _showSettingsGuestScreen() {
+  var settingsEl = document.getElementById('page-settings');
+  if (!settingsEl) return;
+  // Inject guest screen into the scrollable area
+  var scrollArea = settingsEl.querySelector('[style*="overflow-y:auto"]');
+  if (!scrollArea) return;
+  scrollArea.innerHTML =
+    '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;padding:40px 24px;text-align:center;">' +
+      '<div style="width:72px;height:72px;background:#f1f5f9;border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">' +
+        '<svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#94a3b8" stroke-width="1.8"><circle cx="16" cy="10" r="5"/><path d="M4 28c0-6.6 5.4-12 12-12s12 5.4 12 12"/><path d="M22 6l2 2M22 10l2-2"/></svg>' +
+      '</div>' +
+      '<div style="font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:6px;">Sign in to access Settings</div>' +
+      '<div style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;max-width:280px;line-height:1.6;margin-bottom:22px;">Create an account or log in to manage your profile, company details, and preferences.</div>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">' +
+        '<button onclick="showAuthPageV4(\'signup\')" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 22px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Create account</button>' +
+        '<button onclick="showAuthPageV4(\'login\')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 20px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">Log in</button>' +
+      '</div>' +
+    '</div>';
+}
+
+// =============================================
+// LOGOUT CONFIRMATION MODAL
+// =============================================
+function _confirmLogout() {
+  var ex = document.getElementById('logoutConfirmModal'); if (ex) { ex.remove(); return; }
+  var modal = document.createElement('div');
+  modal.id = 'logoutConfirmModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML =
+    '<div style="background:#fff;border-radius:18px;width:100%;max-width:360px;padding:28px 26px;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;text-align:center;">' +
+      '<div style="width:52px;height:52px;background:#fef2f2;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">' +
+        '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>' +
+      '</div>' +
+      '<div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:6px;">Log out?</div>' +
+      '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:22px;line-height:1.5;">You\'ll need to sign in again to access your dashboard and bookings.</div>' +
+      '<div style="display:flex;gap:10px;">' +
+        '<button onclick="document.getElementById(\'logoutConfirmModal\').remove();" style="flex:1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:11px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">Cancel</button>' +
+        '<button onclick="document.getElementById(\'logoutConfirmModal\').remove();_doLogout();" style="flex:1;background:#ef4444;color:#fff;border:none;border-radius:10px;padding:11px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Log out</button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(modal);
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+}
+
+// =============================================
+// PROFILE COMPLETION % — update sidebar bar
+// =============================================
+function _calcProfilePct() {
+  if (!_user) return 0;
+  var score = 0;
+  if (_user.name)  score += 25;
+  if (_user.email || _user.contact) score += 25;
+  if (_onboardSteps[1] && _onboardSteps[1].done) score += 20;  // company
+  if (_onboardSteps[2] && _onboardSteps[2].done) score += 20;  // profiling
+  if (_onboardSteps[3] && _onboardSteps[3].done) score += 10;  // plan
+  return Math.min(score, 100);
+}
+
+function _updateProfilePct() {
+  var pct = _calcProfilePct();
+  var bar = document.getElementById('sbProfileBar');
+  var txt = document.getElementById('sbProfilePct');
+  if (bar) bar.style.width = pct + '%';
+  if (txt) txt.textContent = pct + '%';
+}
 </script>
 
 <!-- =============================================
