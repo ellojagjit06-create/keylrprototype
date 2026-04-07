@@ -3331,66 +3331,135 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
     <!-- SETTINGS PAGE -->
     <div id="page-settings">
-      <div style="flex:1;overflow-y:auto;min-height:0;">
-        <div style="max-width:760px;width:100%;margin:0 auto;padding:28px 28px 60px;">
+      <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
 
-          <!-- Profile header -->
-          <div style="margin-bottom:24px;">
-            <h2 style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin:0 0 3px;">My Profile</h2>
-            <p style="font-size:13px;color:#94a3b8;font-family:Inter,sans-serif;margin:0;">Manage your account and complete your setup</p>
+        <!-- Step tabs header -->
+        <div style="background:#fff;border-bottom:1px solid #e2e8f0;padding:0 28px;display:flex;align-items:stretch;gap:0;flex-shrink:0;">
+          <button id="stab-1" onclick="switchSettingsTab(1)" class="stab stab-active" style="padding:14px 20px;border:none;background:transparent;font-size:13px;font-weight:600;color:#1A5FC8;border-bottom:2px solid #1A5FC8;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:7px;white-space:nowrap;">
+            <div style="width:20px;height:20px;border-radius:50%;background:#1A5FC8;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>My Profile
+          </button>
+          <button id="stab-2" onclick="switchSettingsTab(2)" class="stab" style="padding:14px 20px;border:none;background:transparent;font-size:13px;font-weight:500;color:#64748b;border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:7px;white-space:nowrap;">
+            <div id="stab2-badge" style="width:20px;height:20px;border-radius:50%;background:#e2e8f0;color:#64748b;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>Company Details
+          </button>
+          <button id="stab-3" onclick="switchSettingsTab(3)" class="stab" style="padding:14px 20px;border:none;background:transparent;font-size:13px;font-weight:500;color:#64748b;border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:7px;white-space:nowrap;">
+            <div id="stab3-badge" style="width:20px;height:20px;border-radius:50%;background:#e2e8f0;color:#64748b;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>Profiling
+          </button>
+          <button id="stab-4" onclick="switchSettingsTab(4)" class="stab" style="padding:14px 20px;border:none;background:transparent;font-size:13px;font-weight:500;color:#64748b;border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:7px;white-space:nowrap;">
+            <div id="stab4-badge" style="width:20px;height:20px;border-radius:50%;background:#e2e8f0;color:#64748b;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>Choose Plan
+          </button>
+          <div style="flex:1;"></div>
+          <div style="display:flex;align-items:center;gap:6px;padding:0 4px;">
+            <div id="settingsProgressBar" style="width:120px;height:5px;background:#f1f5f9;border-radius:999px;overflow:hidden;">
+              <div id="settingsProgressFill" style="height:100%;width:25%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:999px;transition:width 0.4s;"></div>
+            </div>
+            <span id="settingsProgressTxt" style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;white-space:nowrap;">1 of 4</span>
+          </div>
+        </div>
+
+        <!-- Step panels -->
+        <div style="flex:1;overflow-y:auto;">
+
+          <!-- STEP 1: My Profile -->
+          <div id="stab-panel-1" style="display:flex;max-width:720px;width:100%;margin:0 auto;padding:28px;gap:28px;align-items:flex-start;">
+            <!-- Left: avatar + info -->
+            <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:10px;width:100px;">
+              <div id="settingsIni" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);color:#fff;font-size:24px;font-weight:700;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;">?</div>
+              <div id="settingsName" style="font-size:13px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;text-align:center;word-break:break-word;">–</div>
+              <div id="settingsContact" style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;text-align:center;word-break:break-word;">–</div>
+            </div>
+            <!-- Right: form -->
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:16px;">Account details</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                <div>
+                  <label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Full name</label>
+                  <input id="profileName" type="text" placeholder="Your full name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
+                </div>
+                <div>
+                  <label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Phone number</label>
+                  <input id="profilePhone" type="text" placeholder="+44 7700 000000" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
+                </div>
+                <div>
+                  <label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Email address</label>
+                  <input id="profileEmail" type="email" placeholder="you@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
+                </div>
+                <div style="position:relative;">
+                  <label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Password</label>
+                  <input id="profilePwd" type="password" placeholder="Create or update password" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 38px 9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
+                  <button type="button" onclick="var f=document.getElementById('profilePwd');f.type=f.type==='password'?'text':'password';" style="position:absolute;right:10px;bottom:10px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;">
+                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="7.5" cy="7.5" rx="5.5" ry="3.5"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <button id="saveProfileBtn" onclick="_saveProfileBasic()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save changes</button>
+                <button onclick="switchSettingsTab(2)" style="background:transparent;border:1px solid #e2e8f0;border-radius:10px;padding:10px 18px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">Next: Company →</button>
+              </div>
+            </div>
           </div>
 
-          <!-- Profile card -->
-          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:24px;margin-bottom:20px;">
-            <div style="display:flex;align-items:center;gap:16px;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid #f1f5f9;">
-              <div id="settingsIni" style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);color:#fff;font-size:18px;font-weight:700;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;">?</div>
-              <div>
-                <div id="settingsName" style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">–</div>
-                <div id="settingsContact" style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">–</div>
-              </div>
+          <!-- STEP 2: Company Details -->
+          <div id="stab-panel-2" style="display:none;max-width:720px;width:100%;margin:0 auto;padding:28px;">
+            <div style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:6px;">Company Details</div>
+            <div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:20px;">Used on invoices and platform communications. <button onclick="switchSettingsTab(3)" style="background:none;border:none;color:#94a3b8;font-size:13px;cursor:pointer;font-family:Inter,sans-serif;padding:0;text-decoration:underline;">Skip for now</button></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+              <div><label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Trading / Company name <span style="color:#ef4444;">*</span></label><input type="text" id="coTrading" placeholder="Your business name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
+              <div><label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Company Reg. Number <span style="font-weight:400;color:#94a3b8;">(optional)</span></label><input type="text" id="coReg" placeholder="e.g. 12345678" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
+              <div><label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Legal company name <span style="color:#ef4444;">*</span></label><input type="text" id="coLegal" placeholder="As on Companies House" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
+              <div><label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">VAT Number <span style="font-weight:400;color:#94a3b8;">(optional)</span></label><input type="text" id="coVat" placeholder="e.g. GB123456789" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
+              <div style="grid-column:span 2;"><label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Registered address <span style="color:#ef4444;">*</span></label><input type="text" id="coAddr" placeholder="Street, city, postcode" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
             </div>
-            <div style="display:flex;flex-direction:column;gap:13px;">
-              <div>
-                <label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Full name</label>
-                <input id="profileName" type="text" placeholder="Your full name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
-              </div>
-              <div>
-                <label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Email address</label>
-                <input id="profileEmail" type="email" placeholder="you@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
-              </div>
-              <div>
-                <label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Phone number</label>
-                <input id="profilePhone" type="text" placeholder="+44 7700 000000" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
-              </div>
-              <div style="position:relative;">
-                <label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Password</label>
-                <input id="profilePwd" type="password" placeholder="Create or update password" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 40px 9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
-                <button type="button" onclick="var f=document.getElementById('profilePwd');f.type=f.type==='password'?'text':'password';" style="position:absolute;right:10px;bottom:10px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8" cy="8" rx="6" ry="3.5"/><circle cx="8" cy="8" r="1.5"/></svg></button>
-              </div>
+            <div style="display:flex;gap:10px;">
+              <button onclick="switchSettingsTab(1)" style="background:transparent;border:1px solid #e2e8f0;border-radius:10px;padding:10px 18px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Back</button>
+              <button onclick="_saveCompanyDetails()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save &amp; continue →</button>
             </div>
-            <button id="saveProfileBtn" onclick="_saveProfileBasic()" style="margin-top:18px;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 24px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save changes</button>
           </div>
 
-          <!-- Onboarding progress -->
-          <div id="onboardingSteps" style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:22px 24px;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-              <div>
-                <div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:2px;">Complete your account setup</div>
-                <div id="stepProgress" style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">1 of 4 steps complete</div>
+          <!-- STEP 3: Profiling (inline, no modal) -->
+          <div id="stab-panel-3" style="display:none;max-width:600px;width:100%;margin:0 auto;padding:28px;">
+            <div id="inlineProfilingContent"></div>
+          </div>
+
+          <!-- STEP 4: Tier selection -->
+          <div id="stab-panel-4" style="display:none;max-width:720px;width:100%;margin:0 auto;padding:28px;">
+            <div style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">Choose your plan</div>
+            <div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:22px;">Based on your profile. Change any time.</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;">
+              <div onclick="_selectTierInline('Connect')" id="tier-connect" style="border:1.5px solid #e2e8f0;border-radius:14px;padding:20px 16px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='#1A5FC8'" onmouseout="if(this.id!==window._selectedTier)this.style.borderColor='#e2e8f0'">
+                <div style="font-size:15px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">Connect</div>
+                <div style="font-size:20px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">Free</div>
+                <div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:12px;line-height:1.5;">For individual landlords and small portfolios.</div>
+                <div style="font-size:12px;color:#374151;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:5px;">
+                  <span>✓ Up to 25 properties</span><span>✓ Book professionals</span><span>✓ Job tracking</span>
+                </div>
               </div>
-              <div style="position:relative;width:48px;height:48px;">
-                <svg width="48" height="48" viewBox="0 0 48 48">
-                  <circle cx="24" cy="24" r="20" fill="none" stroke="#f1f5f9" stroke-width="4"/>
-                  <circle id="progressRing" cx="24" cy="24" r="20" fill="none" stroke="#1A5FC8" stroke-width="4" stroke-linecap="round" stroke-dasharray="125.6" stroke-dashoffset="94.2" transform="rotate(-90 24 24)"/>
-                </svg>
-                <div id="progressPct" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#1A5FC8;font-family:Inter,sans-serif;">25%</div>
+              <div onclick="_selectTierInline('Connect Premium')" id="tier-premium" style="border:2px solid #1A5FC8;border-radius:14px;padding:20px 16px;cursor:pointer;transition:all 0.15s;background:#eff6ff;position:relative;" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'">
+                <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#1A5FC8;color:#fff;font-size:10.5px;font-weight:700;font-family:Inter,sans-serif;padding:3px 10px;border-radius:999px;white-space:nowrap;">Recommended</div>
+                <div style="font-size:15px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">Connect Premium</div>
+                <div style="font-size:20px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">£29/mo</div>
+                <div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:12px;line-height:1.5;">For letting agents and growing portfolios.</div>
+                <div style="font-size:12px;color:#374151;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:5px;">
+                  <span>✓ Up to 100 properties</span><span>✓ Compliance dashboard</span><span>✓ Team access</span>
+                </div>
+              </div>
+              <div onclick="_selectTierInline('Copilot')" id="tier-copilot" style="border:1.5px solid #e2e8f0;border-radius:14px;padding:20px 16px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='#1A5FC8'" onmouseout="if(this.id!==window._selectedTier)this.style.borderColor='#e2e8f0'">
+                <div style="font-size:15px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">Copilot</div>
+                <div style="font-size:20px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">£99/mo</div>
+                <div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:12px;line-height:1.5;">Full platform for large businesses.</div>
+                <div style="font-size:12px;color:#374151;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:5px;">
+                  <span>✓ Unlimited properties</span><span>✓ API access</span><span>✓ Dedicated manager</span>
+                </div>
               </div>
             </div>
-            <div id="onboardingStepList" style="display:flex;flex-direction:column;gap:8px;"></div>
+            <div style="display:flex;gap:10px;">
+              <button onclick="switchSettingsTab(3)" style="background:transparent;border:1px solid #e2e8f0;border-radius:10px;padding:10px 18px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Back</button>
+              <button onclick="_finishSetup()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Complete setup →</button>
+            </div>
           </div>
 
         </div>
       </div>
+    </div>
 </main>
   <!-- Floating chat assistant button (shown on non-chat pages) -->
   
@@ -4184,8 +4253,9 @@ document.querySelectorAll('.svc-card,.why-card,.testi-card,.step,.how-grid,.cta-
 
 // Show floating chat button on non-chat pages
 function updateFloatBtn(pageId) {
-  if (!btn) return;
-  btn.style.display = (pageId !== 'chat') ? 'flex' : 'none';
+  var floatBtn = document.getElementById('floatChatBtn');
+  if (!floatBtn) return;
+  floatBtn.style.display = (pageId !== 'chat') ? 'flex' : 'none';
 }
 
 // =============================================
@@ -5077,13 +5147,22 @@ function showAuthPage(mode) {
   window._authSubmit  = function(){
     var a = window._auth;
     if (a && a.isSignup) {
-      _setUser({ name: a.name || '', email: /\d{5,}/.test((a.contact||'').replace(/[\s\-\(\)\+]/g,'')) ? '' : a.contact, contact: a.contact || '', role: a.role || 'manager', profileComplete: false });
+      var isPhone = /^\d{7,15}$/.test((a.contact||'').replace(/[\s\-\(\)\+]/g,''));
+      _setUser({
+        name: a.name || '',
+        email: isPhone ? '' : (a.contact || ''),
+        phone: isPhone ? (a.contact || '') : '',
+        contact: a.contact || '',
+        role: a.role || 'manager',
+        profileComplete: false
+      });
       modal.remove(); delete window._auth;
-      showPage('settings', null); goToDashboardIfNeeded();
+      goToDashboard('', false);
+      setTimeout(function(){ showPage('settings', null); }, 500);
     } else {
       _setUser({ name: a.name || '', email: a.contact || '', contact: a.contact || '', role: a.role || 'manager', profileComplete: true });
       modal.remove(); delete window._auth;
-      showPage('home', null); goToDashboardIfNeeded();
+      goToDashboard('', false);
     }
   };
   window._authSwitchVariant = function(v) {
@@ -5540,6 +5619,200 @@ function _selectTier(name) {
   document.getElementById('stepModal').remove();
   _renderOnboardingSteps();
 }
+
+// =============================================
+// SETTINGS TAB WIZARD
+// =============================================
+window._selectedTier = 'tier-premium'; // default
+
+function switchSettingsTab(n) {
+  for (var i = 1; i <= 4; i++) {
+    var panel = document.getElementById('stab-panel-' + i);
+    var tab   = document.getElementById('stab-' + i);
+    if (!panel || !tab) continue;
+    var active = i === n;
+    panel.style.display = active ? (i === 1 ? 'flex' : 'block') : 'none';
+    tab.style.color       = active ? '#1A5FC8' : '#64748b';
+    tab.style.fontWeight  = active ? '600' : '500';
+    tab.style.borderBottom = active ? '2px solid #1A5FC8' : '2px solid transparent';
+    var badge = document.getElementById('stab' + i + '-badge');
+    if (badge) {
+      badge.style.background = active ? '#1A5FC8' : (_onboardSteps[i-1]&&_onboardSteps[i-1].done ? '#dcfce7' : '#e2e8f0');
+      badge.style.color      = active ? '#fff'    : (_onboardSteps[i-1]&&_onboardSteps[i-1].done ? '#16a34a' : '#64748b');
+      badge.textContent      = (_onboardSteps[i-1]&&_onboardSteps[i-1].done && !active) ? '✓' : i;
+    }
+  }
+  // Progress bar
+  var pct = Math.round((n / 4) * 100);
+  var fill = document.getElementById('settingsProgressFill');
+  var txt  = document.getElementById('settingsProgressTxt');
+  if (fill) fill.style.width = pct + '%';
+  if (txt)  txt.textContent  = n + ' of 4';
+
+  // Render profiling step inline
+  if (n === 3) _renderInlineProfiling();
+}
+
+// =============================================
+// SETTINGS SYNC — prefill from _user
+// =============================================
+function _syncSettingsPage() {
+  if (!_user) return;
+  var ini  = document.getElementById('settingsIni');
+  var nm   = document.getElementById('settingsName');
+  var ct   = document.getElementById('settingsContact');
+  var pn   = document.getElementById('profileName');
+  var pe   = document.getElementById('profileEmail');
+  var ph   = document.getElementById('profilePhone');
+
+  var initials = _getInitials(_user.name || '?');
+  if (ini)  ini.textContent  = initials;
+  if (nm)   nm.textContent   = _user.name  || '–';
+  if (ct)   ct.textContent   = _user.email || _user.phone || _user.contact || '–';
+  // Pre-fill form fields from signup data
+  if (pn && _user.name)    pn.value  = _user.name;
+  if (pe && _user.email)   pe.value  = _user.email;
+  if (ph && _user.phone)   ph.value  = _user.phone;
+  // If phone login: show phone in email field area
+  if (pe && !_user.email && _user.contact) {
+    pe.placeholder = _user.contact + ' (via OTP)';
+    pe.style.color = '#94a3b8';
+  }
+}
+
+// =============================================
+// SAVE PROFILE BASIC
+// =============================================
+function _saveProfileBasic() {
+  var n  = document.getElementById('profileName');
+  var e  = document.getElementById('profileEmail');
+  var ph = document.getElementById('profilePhone');
+  if (n  && _user) _user.name  = n.value.trim();
+  if (e  && _user) _user.email = e.value.trim();
+  if (ph && _user) _user.phone = ph.value.trim();
+  _syncUserUI();
+  _syncSettingsPage();
+  _onboardSteps[0].done = true;
+  var saveBtn = document.getElementById('saveProfileBtn');
+  if (saveBtn) {
+    saveBtn.textContent = 'Saved ✓';
+    saveBtn.style.background = '#10b981';
+    saveBtn.style.backgroundImage = 'none';
+    setTimeout(function() {
+      if (saveBtn) {
+        saveBtn.textContent = 'Save changes';
+        saveBtn.style.background = '';
+        saveBtn.style.backgroundImage = 'linear-gradient(90deg,#1A5FC8,#0FA3D0)';
+      }
+    }, 2000);
+  }
+}
+
+function _saveCompanyDetails() {
+  _onboardSteps[1].done = true;
+  switchSettingsTab(3);
+}
+
+// =============================================
+// INLINE PROFILING (step 3)
+// =============================================
+var _inlineQStep = 0;
+var _inlineAnswers = Array(7).fill(null).map(function(){ return {}; });
+var _PROFILING_QS = [
+  { q:'What best describes what you do?', type:'single', opts:['Residential letting agent','Short-term rental / Airbnb manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator','Facilities manager','Individual landlord','Other'] },
+  { q:'What types of property do you manage?', type:'multi', opts:['Houses and flats — AST','HMO','Short-term rental / holiday let','Residential block / leasehold','Offices','Retail units','Hotels','Mixed residential and commercial'] },
+  { q:'How many properties or units do you manage?', type:'single', opts:['1 to 5','6 to 25','26 to 100','101 to 500','500 or more'] },
+  { q:'Which services do you currently coordinate?', type:'multi', opts:['Cleaning','Compliance certificates','Reactive maintenance','Planned maintenance','Property inspections','Landscaping','Pest control','Specialist trades'] },
+  { q:'Where are your properties located?', type:'multi', opts:['London','South East England','South West England','Midlands','North West England','North East England','Yorkshire','Scotland','Wales','Multiple regions'] },
+  { q:'How do you currently find and manage your service providers?', type:'single', opts:['Mostly ad hoc — WhatsApp / phone','Small group of regular contractors','Large contractor network','In-house staff','I use a property management system'] },
+  { q:'What is your biggest headache right now?', type:'single', opts:['Finding reliable contractors','Keeping track of jobs','Compliance — certificates expiring','Invoices from many suppliers','Coordinating my team','No single portfolio view'] },
+];
+
+function _renderInlineProfiling() {
+  var container = document.getElementById('inlineProfilingContent');
+  if (!container) return;
+  var q = _PROFILING_QS[_inlineQStep];
+  var ans = _inlineAnswers[_inlineQStep];
+
+  var barHtml = '<div style="display:flex;gap:4px;margin-bottom:16px;">' +
+    [0,1,2,3,4,5,6].map(function(i){ return '<div style="flex:1;height:4px;border-radius:999px;background:'+(i<=_inlineQStep?'#1A5FC8':'#f1f5f9')+';""></div>'; }).join('') +
+    '</div>';
+
+  var optHtml = q.opts.map(function(opt) {
+    var sel = q.type === 'single' ? ans.val === opt : (ans.vals||[]).indexOf(opt) !== -1;
+    return '<button onclick="_inlineSelect(\''+opt.replace(/'/g,"\\'")+'\')" style="text-align:left;width:100%;padding:11px 14px;border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;background:'+(sel?'#eff6ff':'#fff')+';font-size:13px;font-family:Inter,sans-serif;color:#374151;cursor:pointer;display:flex;align-items:center;gap:10px;margin-bottom:7px;transition:all 0.1s;">' +
+      '<div style="width:18px;height:18px;border-radius:'+(q.type==='single'?'50%':'5px')+';border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';flex-shrink:0;display:flex;align-items:center;justify-content:center;">' +
+        (sel ? (q.type==='single' ? '<div style="width:6px;height:6px;border-radius:50%;background:#fff;"></div>' : '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M1.5 5l3 3 4-4.5"/></svg>') : '') +
+      '</div>' + opt + '</button>';
+  }).join('');
+
+  container.innerHTML =
+    '<div style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">Profiling questions</div>' +
+    '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:16px;">Question '+(_inlineQStep+1)+' of 7 · <button onclick="switchSettingsTab(4)" style="background:none;border:none;color:#94a3b8;font-size:12.5px;cursor:pointer;font-family:Inter,sans-serif;padding:0;text-decoration:underline;">Skip all</button></div>' +
+    barHtml +
+    '<div style="font-size:14.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">'+q.q+'</div>' +
+    '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:14px;">'+(q.type==='multi'?'Select all that apply':'Choose one')+'</div>' +
+    optHtml +
+    '<div style="display:flex;gap:10px;margin-top:16px;">' +
+      (_inlineQStep > 0 ? '<button onclick="_inlineQBack()" style="background:transparent;border:1px solid #e2e8f0;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Back</button>' : '<button onclick="switchSettingsTab(2)" style="background:transparent;border:1px solid #e2e8f0;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Company</button>') +
+      '<button onclick="_inlineQNext()" style="flex:1;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">'+(_inlineQStep===6?'Finish →':'Continue →')+'</button>' +
+    '</div>';
+}
+
+function _inlineSelect(opt) {
+  var q = _PROFILING_QS[_inlineQStep];
+  var ans = _inlineAnswers[_inlineQStep];
+  if (q.type === 'single') { ans.val = opt; }
+  else { if(!ans.vals) ans.vals=[]; var i=ans.vals.indexOf(opt); if(i===-1) ans.vals.push(opt); else ans.vals.splice(i,1); }
+  _renderInlineProfiling();
+}
+function _inlineQNext() {
+  if (_inlineQStep < 6) { _inlineQStep++; _renderInlineProfiling(); }
+  else { _onboardSteps[2].done = true; switchSettingsTab(4); }
+}
+function _inlineQBack() { if(_inlineQStep>0){ _inlineQStep--; _renderInlineProfiling(); } }
+
+function _selectTierInline(name) {
+  var map = {'Connect':'tier-connect','Connect Premium':'tier-premium','Copilot':'tier-copilot'};
+  window._selectedTier = map[name];
+  ['tier-connect','tier-premium','tier-copilot'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var active = id === window._selectedTier;
+    el.style.border = active ? '2px solid #1A5FC8' : '1.5px solid #e2e8f0';
+    el.style.background = active ? '#eff6ff' : '#fff';
+  });
+  if(_user) _user.tier = name;
+}
+
+function _finishSetup() {
+  _onboardSteps[3].done = true;
+  if(_user) _user.profileComplete = true;
+  // Show done state
+  var panel4 = document.getElementById('stab-panel-4');
+  if (panel4) {
+    panel4.innerHTML = '<div style="text-align:center;padding:40px 20px;">' +
+      '<div style="width:64px;height:64px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">' +
+        '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#16a34a" stroke-width="2"><path d="M4 14l7 7 13-13"/></svg>' +
+      '</div>' +
+      '<div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">Setup complete!</div>' +
+      '<div style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;max-width:320px;margin:0 auto 24px;line-height:1.65;">Your account is fully configured. Your dashboard has been personalised based on your profile.</div>' +
+      '<button onclick="showPage(\'home\',null)" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Go to dashboard →</button>' +
+    '</div>';
+  }
+}
+
+// Hook showPage to sync settings when tab opens
+var _origShowPage_settings = showPage;
+showPage = function(id, e) {
+  _origShowPage_settings(id, e);
+  if (id === 'settings') {
+    setTimeout(function(){
+      _syncSettingsPage();
+      switchSettingsTab(1);
+    }, 30);
+  }
+};
 </script>
 
 <!-- =============================================
