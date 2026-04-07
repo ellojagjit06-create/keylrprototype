@@ -4681,11 +4681,12 @@ function showAuthPage(mode) {
   var ex = document.getElementById('authModal');
   if (ex) ex.remove();
 
+  // step: 'contact' → 'password' (email) or 'otp' (phone)
   window._auth = {
     isSignup: mode !== 'login',
     role: 'manager',
+    step: 'contact',  // contact | password | otp
     contact: '',
-    showOtp: false,
     countryCode: '+44'
   };
 
@@ -4695,105 +4696,143 @@ function showAuthPage(mode) {
   document.body.appendChild(modal);
   modal.addEventListener('click', function(e){ if(e.target===modal){ modal.remove(); delete window._auth; } });
 
-  // Country codes list
   var countryCodes = [
     {code:'+44',flag:'🇬🇧',name:'UK'},
-    {code:'+1',flag:'🇺🇸',name:'US'},
-    {code:'+91',flag:'🇮🇳',name:'IN'},
+    {code:'+1',flag:'🇺🇸',name:'US/CA'},
+    {code:'+91',flag:'🇮🇳',name:'India'},
     {code:'+971',flag:'🇦🇪',name:'UAE'},
-    {code:'+61',flag:'🇦🇺',name:'AU'},
-    {code:'+33',flag:'🇫🇷',name:'FR'},
-    {code:'+49',flag:'🇩🇪',name:'DE'},
-    {code:'+92',flag:'🇵🇰',name:'PK'},
-    {code:'+880',flag:'🇧🇩',name:'BD'},
-    {code:'+1',flag:'🇨🇦',name:'CA'},
+    {code:'+61',flag:'🇦🇺',name:'Australia'},
+    {code:'+33',flag:'🇫🇷',name:'France'},
+    {code:'+49',flag:'🇩🇪',name:'Germany'},
+    {code:'+92',flag:'🇵🇰',name:'Pakistan'},
   ];
 
   window._authRender = function() {
     var a = window._auth;
     var isSignup = a.isSignup;
-    var headings = {
-      manager: { h: isSignup ? 'Join as Property Manager' : 'Welcome back', s: isSignup ? 'Book services, track compliance and manage your portfolio.' : 'Log in to your Keylr account.' },
-      supplier: { h: isSignup ? 'Join as a Supplier' : 'Supplier Login', s: isSignup ? 'Join our network and receive verified job requests.' : 'Access your supplier dashboard.' }
-    };
-    var head = headings[a.role];
+    var step = a.step;
 
-    // ---- Role toggle (signup only) ----
-    var toggleHtml = isSignup ? (
+    // Dynamic heading per role + step
+    var headings = {
+      manager: {
+        contact: isSignup ? 'Join as Property Manager' : 'Welcome back',
+        password: isSignup ? 'Create your password' : 'Enter your password',
+        otp: 'Verify your number'
+      },
+      supplier: {
+        contact: isSignup ? 'Join as a Supplier' : 'Supplier Login',
+        password: isSignup ? 'Create your password' : 'Enter your password',
+        otp: 'Verify your number'
+      }
+    };
+    var subheads = {
+      manager: {
+        contact: isSignup ? 'Book services, track compliance and manage your portfolio.' : 'Log in to your Keylr account.',
+        password: isSignup ? 'Choose a secure password for your account.' : 'Enter the password for ' + a.contact,
+        otp: 'We\'ve sent a 6-digit code to ' + a.contact
+      },
+      supplier: {
+        contact: isSignup ? 'Join our network and receive verified job requests.' : 'Access your supplier dashboard.',
+        password: isSignup ? 'Choose a secure password for your account.' : 'Enter the password for ' + a.contact,
+        otp: 'We\'ve sent a 6-digit code to ' + a.contact
+      }
+    };
+
+    var head = headings[a.role][step];
+    var sub  = subheads[a.role][step];
+
+    // Role toggle — only on contact step (not password/otp)
+    var toggleHtml = (isSignup && step === 'contact') ? (
       '<div style="display:flex;background:#f1f5f9;border-radius:10px;padding:4px;margin-bottom:20px;">' +
-        '<button onclick="window._authSetRole(\'manager\')" style="flex:1;border:none;border-radius:7px;padding:9px 6px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.15s;' + (a.role==='manager'?'background:#fff;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,0.1);':'background:transparent;color:#64748b;') + '">' +
+        '<button onclick="window._authSetRole(\'manager\')" style="flex:1;border:none;border-radius:7px;padding:9px 6px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.15s;' +
+          (a.role==='manager'?'background:#fff;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,0.1);':'background:transparent;color:#64748b;') + '">' +
           '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1.5 12V6L6.5 1.5 11.5 6v6"/><path d="M4.5 12V8h4v4"/></svg>Property Manager' +
         '</button>' +
-        '<button onclick="window._authSetRole(\'supplier\')" style="flex:1;border:none;border-radius:7px;padding:9px 6px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.15s;' + (a.role==='supplier'?'background:#fff;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,0.1);':'background:transparent;color:#64748b;') + '">' +
+        '<button onclick="window._authSetRole(\'supplier\')" style="flex:1;border:none;border-radius:7px;padding:9px 6px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.15s;' +
+          (a.role==='supplier'?'background:#fff;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,0.1);':'background:transparent;color:#64748b;') + '">' +
           '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6.5" cy="3.5" r="2.5"/><path d="M1 12c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/></svg>Supplier' +
         '</button>' +
       '</div>'
     ) : '';
 
-    // ---- Country code dropdown html ----
-    var ccHtml = '<div id="ccDropWrap" style="position:relative;display:none;">' +
-      '<button id="ccBtn" onclick="window._authToggleCC()" style="display:flex;align-items:center;gap:4px;background:#f8fafc;border:1px solid #e2e8f0;border-right:none;border-radius:10px 0 0 10px;padding:0 10px;height:42px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;white-space:nowrap;">' +
-        '<span id="ccFlag">' + a.countryCode.split('')[0] + '</span>' +
-        '<span id="ccCode" style="font-weight:600;">' + a.countryCode + '</span>' +
-        '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" style="margin-left:2px;"><path d="M2 4l3 3 3-3"/></svg>' +
-      '</button>' +
-      '<div id="ccList" style="display:none;position:absolute;top:46px;left:0;background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.1);z-index:10;min-width:160px;overflow:hidden;">' +
-        countryCodes.map(function(cc){ return '<div onclick="window._authSelectCC(\'' + cc.code + '\',\'' + cc.flag + '\')" style="display:flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'transparent\'">' + cc.flag + ' ' + cc.name + ' <span style="color:#94a3b8;margin-left:auto;">' + cc.code + '</span></div>'; }).join('') +
-      '</div>' +
-    '</div>';
-
-    // ---- Main form ----
+    // ── STEP: contact ──
     var bodyHtml = '';
+    if (step === 'contact') {
+      var ccFlag = countryCodes.find(function(x){ return x.code===a.countryCode; });
+      var ccDisplay = (ccFlag ? ccFlag.flag + ' ' : '') + a.countryCode;
+      bodyHtml =
+        '<div style="margin-bottom:20px;">' +
+          '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">Email or mobile number</label>' +
+          '<div id="contactRow" style="display:flex;position:relative;">' +
+            '<div id="ccWrap" style="display:none;flex-shrink:0;">' +
+              '<button id="ccBtn" onclick="window._authToggleCC()" style="height:44px;padding:0 10px;background:#f8fafc;border:1.5px solid #e2e8f0;border-right:none;border-radius:10px 0 0 10px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+                '<span id="ccDisplay">' + ccDisplay + '</span>' +
+                '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4l3 3 3-3"/></svg>' +
+              '</button>' +
+              '<div id="ccList" style="display:none;position:absolute;top:46px;left:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.1);z-index:20;min-width:200px;overflow:hidden;">' +
+                countryCodes.map(function(cc){
+                  return '<div onclick="window._authSelectCC(\'' + cc.code + '\',\'' + cc.flag + '\')" style="display:flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'#fff\'">' +
+                    cc.flag + ' ' + cc.name + ' <span style="color:#94a3b8;margin-left:auto;font-size:12px;">' + cc.code + '</span></div>';
+                }).join('') +
+              '</div>' +
+            '</div>' +
+            '<input id="authContact" type="text" placeholder="you@email.com  or  07700 000000" value="' + a.contact + '" style="flex:1;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/>' +
+          '</div>' +
+          '<p style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin:6px 0 0;line-height:1.5;">Use email for password login · use mobile for OTP sign-in</p>' +
+        '</div>' +
+        '<button onclick="window._authContinue()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">Continue →</button>';
 
-    if (a.showOtp) {
+    // ── STEP: password ──
+    } else if (step === 'password') {
       bodyHtml =
-        '<div style="text-align:center;margin-bottom:20px;">' +
-          '<div style="width:52px;height:52px;background:#eff6ff;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">' +
-            '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="1.8"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 9l9 6 9-6"/></svg>' +
-          '</div>' +
-          '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">OTP sent to ' + a.contact + '</div>' +
-          '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">Enter the 6-digit code from your messages</div>' +
+        '<div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 14px;margin-bottom:18px;">' +
+          '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.8"><rect x="1.5" y="3" width="11" height="8" rx="1.5"/><path d="M1.5 5.5l5.5 4 5.5-4"/></svg>' +
+          '<span style="font-size:13px;color:#374151;font-family:Inter,sans-serif;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + a.contact + '</span>' +
+          '<button onclick="window._authBack()" style="background:none;border:none;color:#1d4ed8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;flex-shrink:0;">Change</button>' +
         '</div>' +
-        '<div style="display:flex;gap:8px;justify-content:center;margin-bottom:16px;" id="otpBoxes">' +
-          [0,1,2,3,4,5].map(function(i){ return '<input data-otp="'+i+'" type="text" inputmode="numeric" maxlength="1" style="width:42px;height:50px;border:1.5px solid #e2e8f0;border-radius:10px;text-align:center;font-size:22px;font-weight:700;font-family:Inter,sans-serif;color:#0f172a;outline:none;box-sizing:border-box;">'; }).join('') +
-        '</div>' +
-        '<button onclick="window._authSubmit()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:10px;">Verify &amp; Continue</button>' +
-        '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-          '<button onclick="window._authBack()" style="background:none;border:none;color:#64748b;font-size:12.5px;font-weight:500;cursor:pointer;font-family:Inter,sans-serif;padding:0;">← Change number</button>' +
-          '<button id="resendBtn" onclick="window._authResend()" style="background:none;border:none;color:#1d4ed8;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Resend OTP</button>' +
-        '</div>';
-    } else {
-      bodyHtml =
-        '<div style="margin-bottom:14px;">' +
-          '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Email or mobile number</label>' +
-          '<div style="display:flex;">' +
-            ccHtml +
-            '<input id="authContact" type="text" placeholder="you@email.com  or  07700 000000" autocomplete="email" style="flex:1;border:1.5px solid #e2e8f0;border-radius:0 10px 10px 0;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" id="authContact2"/>' +
-          '</div>' +
-          '<p style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin:5px 0 0;">Type a mobile number to receive an OTP instead of a password</p>' +
-        '</div>' +
-        '<div style="margin-bottom:6px;position:relative;">' +
-          '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">' + (isSignup ? 'Create password' : 'Password') + '</label>' +
-          '<input id="authPwd" type="password" placeholder="••••••••" autocomplete="' + (isSignup ? 'new-password' : 'current-password') + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 42px 10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;"/>' +
-          '<button id="pwdEye" type="button" style="position:absolute;right:12px;bottom:11px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;">' +
+        '<div style="margin-bottom:20px;position:relative;">' +
+          '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">' + (isSignup ? 'Create a password' : 'Password') + '</label>' +
+          '<input id="authPwd" type="password" placeholder="••••••••" autofocus autocomplete="' + (isSignup ? 'new-password' : 'current-password') + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 44px 11px 13px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/>' +
+          '<button id="pwdEye" type="button" style="position:absolute;right:12px;bottom:12px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;">' +
             '<svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg>' +
           '</button>' +
         '</div>' +
-        '<p style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 16px;">Enter mobile number above to use OTP sign-in instead.</p>' +
-        '<button onclick="window._authContinue()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">' + (isSignup ? 'Create account' : 'Log in') + '</button>';
+        '<button onclick="window._authSubmit()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">' + (isSignup ? 'Create account' : 'Log in') + '</button>';
+
+    // ── STEP: otp ──
+    } else if (step === 'otp') {
+      bodyHtml =
+        '<div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 14px;margin-bottom:20px;">' +
+          '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.8"><rect x="1.5" y="1" width="11" height="12" rx="2"/><circle cx="7" cy="9.5" r="1"/></svg>' +
+          '<span style="font-size:13px;color:#374151;font-family:Inter,sans-serif;flex:1;">' + a.contact + '</span>' +
+          '<button onclick="window._authBack()" style="background:none;border:none;color:#1d4ed8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Change</button>' +
+        '</div>' +
+        '<div style="display:flex;gap:8px;justify-content:center;margin-bottom:16px;" id="otpBoxes">' +
+          [0,1,2,3,4,5].map(function(i){
+            return '<input data-otp="'+i+'" type="text" inputmode="numeric" maxlength="1" style="width:42px;height:50px;border:1.5px solid #e2e8f0;border-radius:10px;text-align:center;font-size:22px;font-weight:700;font-family:Inter,sans-serif;color:#0f172a;outline:none;box-sizing:border-box;transition:border-color 0.15s;">';
+          }).join('') +
+        '</div>' +
+        '<button onclick="window._authSubmit()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:10px;">Verify &amp; Continue</button>' +
+        '<div style="display:flex;align-items:center;justify-content:center;gap:16px;">' +
+          '<button onclick="window._authBack()" style="background:none;border:none;color:#64748b;font-size:12.5px;cursor:pointer;font-family:Inter,sans-serif;padding:0;">← Change number</button>' +
+          '<span style="color:#e2e8f0;">|</span>' +
+          '<button id="resendBtn" onclick="window._authResend()" style="background:none;border:none;color:#1d4ed8;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Resend OTP</button>' +
+        '</div>';
     }
 
-    var switchHtml = isSignup
-      ? '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">Already have an account? <a href="#" onclick="window._authSwitch();return false;" style="color:#1d4ed8;font-weight:600;text-decoration:none;">Log in</a></p>'
-      : '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">No account? <a href="#" onclick="window._authSwitch();return false;" style="color:#1d4ed8;font-weight:600;text-decoration:none;">Sign up free</a></p>';
+    var switchHtml = (step === 'contact') ? (
+      isSignup
+        ? '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">Have an account? <a href="#" onclick="window._authSwitch();return false;" style="color:#1d4ed8;font-weight:600;text-decoration:none;">Log in</a></p>'
+        : '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">No account? <a href="#" onclick="window._authSwitch();return false;" style="color:#1d4ed8;font-weight:600;text-decoration:none;">Sign up free</a></p>'
+    ) : '';
 
     modal.innerHTML =
       '<div style="background:#fff;border-radius:20px;width:100%;max-width:440px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;">' +
         '<div style="padding:24px 28px 18px;border-bottom:1px solid #f1f5f9;">' +
           '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
             '<div>' +
-              '<div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:3px;">' + head.h + '</div>' +
-              '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">' + head.s + '</div>' +
+              '<div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:3px;">' + head + '</div>' +
+              '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">' + sub + '</div>' +
             '</div>' +
             '<button id="authCloseBtn" style="background:#f1f5f9;border:none;color:#64748b;min-width:32px;min-height:32px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:12px;line-height:1;">&times;</button>' +
           '</div>' +
@@ -4803,7 +4842,7 @@ function showAuthPage(mode) {
         '</div>' +
       '</div>';
 
-    // ---- Wire events ----
+    // ── Wire events ──
     var cb = document.getElementById('authCloseBtn');
     if (cb) cb.addEventListener('click', function(){ modal.remove(); delete window._auth; });
 
@@ -4813,79 +4852,85 @@ function showAuthPage(mode) {
       if(f) f.type = f.type==='password'?'text':'password';
     });
 
-    ['authContact','authContact2','authPwd'].forEach(function(id){
-      var el = document.getElementById(id);
-      if(!el) return;
-      el.addEventListener('focus', function(){ this.style.borderColor='#1d4ed8'; });
-      el.addEventListener('blur', function(){ this.style.borderColor='#e2e8f0'; });
-      if(id!=='authPwd') el.addEventListener('keydown', function(e){ if(e.key==='Enter') window._authContinue(); });
-      // Show country code when user starts typing a phone number
-      if(id!=='authPwd') el.addEventListener('input', function(){
+    var ct = document.getElementById('authContact');
+    if (ct) {
+      ct.addEventListener('focus', function(){ this.style.borderColor='#1d4ed8'; });
+      ct.addEventListener('blur', function(){ this.style.borderColor='#e2e8f0'; });
+      ct.addEventListener('keydown', function(e){ if(e.key==='Enter') window._authContinue(); });
+      ct.addEventListener('input', function(){
         var val = this.value.trim();
-        var isPhone = /^[\d\+\s\-\(\)]{3,}$/.test(val);
-        var ccWrap = document.getElementById('ccDropWrap');
-        if(ccWrap) {
+        var isPhone = /^[\d\s\+\-\(\)]{3,}$/.test(val) && /\d{3,}/.test(val);
+        var ccWrap = document.getElementById('ccWrap');
+        if (ccWrap) {
           ccWrap.style.display = isPhone ? 'block' : 'none';
-          // adjust the contact input border-radius
-          var ci = document.getElementById('authContact2') || document.getElementById('authContact');
-          if(ci) ci.style.borderRadius = isPhone ? '0 10px 10px 0' : '10px';
+          this.style.borderRadius = isPhone ? '0 10px 10px 0' : '10px';
         }
       });
-    });
+    }
+
+    var pwd = document.getElementById('authPwd');
+    if (pwd) {
+      pwd.addEventListener('focus', function(){ this.style.borderColor='#1d4ed8'; });
+      pwd.addEventListener('blur', function(){ this.style.borderColor='#e2e8f0'; });
+      pwd.addEventListener('keydown', function(e){ if(e.key==='Enter') window._authSubmit(); });
+      setTimeout(function(){ if(pwd) pwd.focus(); }, 80);
+    }
+    if (ct && !pwd) setTimeout(function(){ if(ct) ct.focus(); }, 80);
 
     var otpBoxes = document.getElementById('otpBoxes');
-    if(otpBoxes){
+    if (otpBoxes) {
       var inputs = otpBoxes.querySelectorAll('input');
-      inputs.forEach(function(inp,i){
-        inp.addEventListener('input',function(){
+      inputs.forEach(function(inp, i){
+        inp.addEventListener('input', function(){
           this.value = this.value.replace(/\D/g,'');
-          if(this.value && i<inputs.length-1) inputs[i+1].focus();
+          if (this.value && i < inputs.length-1) inputs[i+1].focus();
         });
-        inp.addEventListener('keydown',function(e){
-          if(e.key==='Backspace'&&!this.value&&i>0) inputs[i-1].focus();
+        inp.addEventListener('keydown', function(e){
+          if (e.key==='Backspace' && !this.value && i>0) inputs[i-1].focus();
         });
-        inp.addEventListener('focus',function(){ this.style.borderColor='#1d4ed8'; });
-        inp.addEventListener('blur',function(){ this.style.borderColor='#e2e8f0'; });
+        inp.addEventListener('focus', function(){ this.style.borderColor='#1d4ed8'; });
+        inp.addEventListener('blur', function(){ this.style.borderColor='#e2e8f0'; });
       });
-      if(inputs[0]) setTimeout(function(){ inputs[0].focus(); },80);
-    } else {
-      var fc = document.getElementById('authContact2') || document.getElementById('authContact');
-      if(fc) setTimeout(function(){ fc.focus(); },80);
+      setTimeout(function(){ if(inputs[0]) inputs[0].focus(); }, 80);
     }
   };
 
-  // Exposed global helpers
-  window._authSetRole = function(r){ window._auth.role=r; window._authRender(); };
-  window._authBack = function(){ window._auth.showOtp=false; window._authRender(); };
-  window._authSwitch = function(){ var m=window._auth.isSignup?'login':'signup'; modal.remove(); delete window._auth; showAuthPage(m); };
-  window._authSubmit = function(){ modal.remove(); delete window._auth; showPage('home',null); };
+  // ── Global helpers (accessible from onclick attrs) ──
+  window._authSetRole = function(r){ window._auth.role = r; window._authRender(); };
+  window._authBack = function(){ window._auth.step = 'contact'; window._authRender(); };
+  window._authSwitch = function(){
+    var m = window._auth.isSignup ? 'login' : 'signup';
+    modal.remove(); delete window._auth; showAuthPage(m);
+  };
+  window._authSubmit = function(){ modal.remove(); delete window._auth; showPage('home', null); };
   window._authResend = function(){
-    var b=document.getElementById('resendBtn');
-    if(b){b.textContent='Sent ✓';b.style.color='#10b981';setTimeout(function(){if(b){b.textContent='Resend OTP';b.style.color='#1d4ed8';}},3000);}
+    var b = document.getElementById('resendBtn');
+    if(b){ b.textContent='Sent ✓'; b.style.color='#10b981'; setTimeout(function(){ if(b){ b.textContent='Resend OTP'; b.style.color='#1d4ed8'; } }, 3000); }
   };
   window._authToggleCC = function(){
-    var list=document.getElementById('ccList');
-    if(list) list.style.display=list.style.display==='none'?'block':'none';
+    var l = document.getElementById('ccList'); if(l) l.style.display = l.style.display==='none' ? 'block' : 'none';
   };
   window._authSelectCC = function(code, flag){
     window._auth.countryCode = code;
-    var btn=document.getElementById('ccCode'); if(btn) btn.textContent=code;
-    var fl=document.getElementById('ccFlag'); if(fl) fl.textContent=flag;
-    var list=document.getElementById('ccList'); if(list) list.style.display='none';
+    var d = document.getElementById('ccDisplay'); if(d) d.textContent = flag + ' ' + code;
+    var l = document.getElementById('ccList'); if(l) l.style.display = 'none';
   };
   window._authContinue = function(){
-    var ct = document.getElementById('authContact2') || document.getElementById('authContact');
-    if(!ct) return;
+    var ct = document.getElementById('authContact');
+    if (!ct) return;
     var val = ct.value.trim();
-    if(!val){ ct.style.borderColor='#ef4444'; ct.focus(); return; }
-    window._auth.contact = window._auth.countryCode + ' ' + val;
-    var isPhone = /^[\d\s\(\)\-]{7,}$/.test(val.replace(/[\+\s]/g,''));
-    if(isPhone){
-      window._auth.showOtp = true;
-      window._authRender();
+    if (!val){ ct.style.borderColor='#ef4444'; ct.focus(); return; }
+    window._auth.contact = val;
+    // Detect phone vs email
+    var cleaned = val.replace(/[\s\-\(\)\+]/g,'');
+    var isPhone = /^\d{7,15}$/.test(cleaned);
+    if (isPhone) {
+      window._auth.contact = window._auth.countryCode + ' ' + val;
+      window._auth.step = 'otp';
     } else {
-      window._authSubmit();
+      window._auth.step = 'password';
     }
+    window._authRender();
   };
 
   window._authRender();
