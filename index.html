@@ -1,117 +1,7 @@
 <!-- USER DETAILS MODAL -->
 <div id="userDetailsModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.55);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;">
   <div style="background:#fff;border-radius:20px;padding:0;width:100%;max-width:480px;position:relative;box-shadow:0 24px 64px rgba(0,0,0,0.22);overflow:hidden;animation:modalPop 0.22s ease;">
-    <!-- SETTINGS PAGE -->
-    <div id="page-settings">
-      <div style="flex:1;overflow-y:auto;min-height:0;">
-        <div style="max-width:760px;width:100%;margin:0 auto;padding:28px 28px 60px;">
-
-          <!-- Profile header -->
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
-            <div>
-              <h2 style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin:0 0 3px;">My Profile</h2>
-              <p id="settingsSubtitle" style="font-size:13px;color:#94a3b8;font-family:Inter,sans-serif;margin:0;">Complete your profile to get the most from Keylr</p>
-            </div>
-          </div>
-
-          <!-- Profile card -->
-          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:22px 24px;margin-bottom:20px;">
-            <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
-              <div id="settingsIni" style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);color:#fff;font-size:20px;font-weight:700;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;">?</div>
-              <div>
-                <div id="settingsName" style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">–</div>
-                <div id="settingsContact" style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">–</div>
-              </div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-              <div>
-                <label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Full name</label>
-                <input id="profileName" type="text" placeholder="Your full name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
-              </div>
-              <div>
-                <label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Phone number</label>
-                <input id="profilePhone" type="text" placeholder="+44 7700 000000" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
-              </div>
-              <div>
-                <label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Email address</label>
-                <input id="profileEmail" type="email" placeholder="you@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
-              </div>
-              <div style="position:relative;">
-                <label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Password</label>
-                <input id="profilePwd" type="password" placeholder="Create a password" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 40px 9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
-                <button type="button" onclick="var f=document.getElementById('profilePwd');f.type=f.type==='password'?'text':'password';" style="position:absolute;right:10px;bottom:10px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8" cy="8" rx="6" ry="3.5"/><circle cx="8" cy="8" r="1.5"/></svg></button>
-              </div>
-            </div>
-            <button onclick="_saveProfileBasic()" style="margin-top:16px;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save changes</button>
-          </div>
-
-          <!-- Onboarding progress steps -->
-          <div id="onboardingSteps" style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:22px 24px;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-              <div>
-                <div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:2px;">Complete your account setup</div>
-                <div id="stepProgress" style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">1 of 4 steps complete</div>
-              </div>
-              <div style="position:relative;width:48px;height:48px;">
-                <svg width="48" height="48" viewBox="0 0 48 48">
-                  <circle cx="24" cy="24" r="20" fill="none" stroke="#f1f5f9" stroke-width="4"/>
-                  <circle id="progressRing" cx="24" cy="24" r="20" fill="none" stroke="#1A5FC8" stroke-width="4" stroke-linecap="round" stroke-dasharray="125.6" stroke-dashoffset="94.2" transform="rotate(-90 24 24)"/>
-                </svg>
-                <div id="progressPct" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#1A5FC8;font-family:Inter,sans-serif;">25%</div>
-              </div>
-            </div>
-
-            <!-- Step list -->
-            <div id="onboardingStepList" style="display:flex;flex-direction:column;gap:8px;"></div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    <!-- Header strip -->
-    <div style="background:linear-gradient(135deg,#12192A,#1E3A5F);padding:24px 28px 20px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div>
-          <div style="font-size:17px;font-weight:700;color:#fff;font-family:'Fraunces',serif;margin-bottom:3px;">Your details</div>
-          <div style="font-size:12.5px;color:rgba(255,255,255,0.6);font-family:'Inter',sans-serif;">Secure · not shared · required for quotes</div>
-        </div>
-        <button onclick="closeUserModal()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;line-height:1;">×</button>
-      </div>
-    </div>
-    <!-- Form body -->
-    <div style="padding:24px 28px 28px;">
-      <div id="udStep1">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-          <div>
-            <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">First name *</label>
-            <input id="udFirstName" type="text" placeholder="First name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s,box-shadow 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.boxShadow='0 0 0 3px rgba(29,78,216,0.1)'" onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'"/>
-          </div>
-          <div>
-            <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">Last name</label>
-            <input id="udLastName" type="text" placeholder="Last name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s,box-shadow 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.boxShadow='0 0 0 3px rgba(29,78,216,0.1)'" onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'"/>
-          </div>
-        </div>
-        <div style="margin-bottom:12px;">
-          <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">Email address *</label>
-          <input id="udEmail" type="email" placeholder="your@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s,box-shadow 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.boxShadow='0 0 0 3px rgba(29,78,216,0.1)'" onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'"/>
-        </div>
-        <div style="margin-bottom:12px;">
-          <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">Phone number</label>
-          <input id="udPhone" type="tel" placeholder="+44 7700 000000" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s,box-shadow 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.boxShadow='0 0 0 3px rgba(29,78,216,0.1)'" onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'"/>
-        </div>
-        <div style="margin-bottom:20px;">
-          <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:'Inter',sans-serif;">Property address</label>
-          <input id="udAddress" type="text" placeholder="Full address incl. postcode" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s,box-shadow 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.boxShadow='0 0 0 3px rgba(29,78,216,0.1)'" onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'"/>
-        </div>
-        <button onclick="udSubmit()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity 0.15s;display:flex;align-items:center;justify-content:center;gap:8px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-          Save &amp; Continue
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 7h10M8 4l4 3-4 3"/></svg>
-        </button>
-        <p style="text-align:center;font-size:11.5px;color:#94a3b8;margin-top:12px;font-family:'Inter',sans-serif;">🔒 Encrypted &amp; secure · never sold</p>
-      </div>
-      <div id="udStep2" style="display:none;"></div>
-    </div>
+</div>
   </div>
 </div>
 
@@ -3438,6 +3328,70 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     </div>
 
   
+
+    <!-- SETTINGS PAGE -->
+    <div id="page-settings">
+      <div style="flex:1;overflow-y:auto;min-height:0;">
+        <div style="max-width:760px;width:100%;margin:0 auto;padding:28px 28px 60px;">
+
+          <!-- Profile header -->
+          <div style="margin-bottom:24px;">
+            <h2 style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin:0 0 3px;">My Profile</h2>
+            <p style="font-size:13px;color:#94a3b8;font-family:Inter,sans-serif;margin:0;">Manage your account and complete your setup</p>
+          </div>
+
+          <!-- Profile card -->
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:24px;margin-bottom:20px;">
+            <div style="display:flex;align-items:center;gap:16px;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid #f1f5f9;">
+              <div id="settingsIni" style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);color:#fff;font-size:18px;font-weight:700;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;">?</div>
+              <div>
+                <div id="settingsName" style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">–</div>
+                <div id="settingsContact" style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">–</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:13px;">
+              <div>
+                <label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Full name</label>
+                <input id="profileName" type="text" placeholder="Your full name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
+              </div>
+              <div>
+                <label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Email address</label>
+                <input id="profileEmail" type="email" placeholder="you@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
+              </div>
+              <div>
+                <label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Phone number</label>
+                <input id="profilePhone" type="text" placeholder="+44 7700 000000" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
+              </div>
+              <div style="position:relative;">
+                <label style="font-size:11.5px;font-weight:600;color:#94a3b8;display:block;margin-bottom:5px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Password</label>
+                <input id="profilePwd" type="password" placeholder="Create or update password" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 40px 9px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
+                <button type="button" onclick="var f=document.getElementById('profilePwd');f.type=f.type==='password'?'text':'password';" style="position:absolute;right:10px;bottom:10px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8" cy="8" rx="6" ry="3.5"/><circle cx="8" cy="8" r="1.5"/></svg></button>
+              </div>
+            </div>
+            <button id="saveProfileBtn" onclick="_saveProfileBasic()" style="margin-top:18px;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 24px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save changes</button>
+          </div>
+
+          <!-- Onboarding progress -->
+          <div id="onboardingSteps" style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:22px 24px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+              <div>
+                <div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:2px;">Complete your account setup</div>
+                <div id="stepProgress" style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">1 of 4 steps complete</div>
+              </div>
+              <div style="position:relative;width:48px;height:48px;">
+                <svg width="48" height="48" viewBox="0 0 48 48">
+                  <circle cx="24" cy="24" r="20" fill="none" stroke="#f1f5f9" stroke-width="4"/>
+                  <circle id="progressRing" cx="24" cy="24" r="20" fill="none" stroke="#1A5FC8" stroke-width="4" stroke-linecap="round" stroke-dasharray="125.6" stroke-dashoffset="94.2" transform="rotate(-90 24 24)"/>
+                </svg>
+                <div id="progressPct" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#1A5FC8;font-family:Inter,sans-serif;">25%</div>
+              </div>
+            </div>
+            <div id="onboardingStepList" style="display:flex;flex-direction:column;gap:8px;"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
 </main>
   <!-- Floating chat assistant button (shown on non-chat pages) -->
   
@@ -4979,6 +4933,7 @@ function showAuthPage(mode) {
       }).join('');
 
       formBody =
+        (isSignup ? '<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Full name</label><input id="authName" type="text" placeholder="Your full name" autocomplete="name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/></div>' : '') +
         '<div style="margin-bottom:16px;">' +
           '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">Email / Phone Number</label>' +
           '<div style="position:relative;display:flex;">' +
@@ -5328,7 +5283,7 @@ function showAuthPageV3(mode) {
   window._authResend=function(){var b=document.getElementById('resendBtn');if(b){b.textContent='Sent ✓';b.style.color='#10b981';setTimeout(function(){if(b){b.textContent='Resend OTP';b.style.color='#1A5FC8';}},3000);}};
   window._authToggleCC=function(){var l=document.getElementById('ccList');if(l)l.style.display=l.style.display==='none'?'block':'none';};
   window._authSelectCC=function(code,flag){window._auth.countryCode=code;var d=document.getElementById('ccDisplay');if(d)d.textContent=flag+' '+code;var l=document.getElementById('ccList');if(l)l.style.display='none';};
-  window._authContinue=function(){var ct=document.getElementById('authContact');if(!ct)return;var val=ct.value.trim();if(!val){ct.style.borderColor='#ef4444';ct.focus();return;}window._auth.contact=val;var cleaned=val.replace(/[\s\-\(\)\+]/g,'');window._auth.step=/^\d{7,15}$/.test(cleaned)?'otp':'password';window._auth.contact=(/^\d{7,15}$/.test(cleaned)?window._auth.countryCode+' ':'')+val;window._authRender();};
+  window._authContinue=function(){var ct=document.getElementById('authContact');if(!ct)return;var val=ct.value.trim();if(!val){ct.style.borderColor='#ef4444';ct.focus();return;}window._auth.contact=val;var nm=document.getElementById('authName');if(nm)window._auth.name=nm.value.trim();var cleaned=val.replace(/[\s\-\(\)\+]/g,'');window._auth.step=/^\d{7,15}$/.test(cleaned)?'otp':'password';window._auth.contact=(/^\d{7,15}$/.test(cleaned)?window._auth.countryCode+' ':'')+val;window._authRender();};
   window._authSwitchVariant=function(v){var a=window._auth;modal.remove();delete window._auth;var m=a&&a.isSignup?'signup':'login';if(v==='1')showAuthPageV1(m);else if(v==='2')showAuthPage(m);else if(v==='3')showAuthPageV3(m);};
   window._authRender();
 bodyHtml =
@@ -5419,14 +5374,13 @@ function _saveProfileBasic() {
   var n = document.getElementById('profileName');
   var e = document.getElementById('profileEmail');
   var ph = document.getElementById('profilePhone');
-  if (n) { if(_user) _user.name = n.value.trim(); }
-  if (e) { if(_user) _user.email = e.value.trim(); }
-  if (ph) { if(_user) _user.phone = ph.value.trim(); }
+  if (n && _user) _user.name = n.value.trim();
+  if (e && _user) _user.email = e.value.trim();
+  if (ph && _user) _user.phone = ph.value.trim();
   _syncUserUI();
   _syncSettingsPage();
-  // Brief success feedback
-  var btn = document.querySelector('#page-settings button[onclick="_saveProfileBasic()"]');
-  if (btn) { btn.textContent = 'Saved ✓'; btn.style.background = '#10b981'; setTimeout(function(){ btn.textContent = 'Save changes'; btn.style.background = ''; btn.style.backgroundImage = 'linear-gradient(90deg,#1A5FC8,#0FA3D0)'; }, 2000); }
+  var saveBtn = document.getElementById('saveProfileBtn');
+  if (saveBtn) { saveBtn.textContent = 'Saved ✓'; saveBtn.style.background = '#10b981'; setTimeout(function(){ btn.textContent = 'Save changes'; btn.style.background = ''; btn.style.backgroundImage = 'linear-gradient(90deg,#1A5FC8,#0FA3D0)'; }, 2000); }
 }
 
 // Hook showPage to sync settings
