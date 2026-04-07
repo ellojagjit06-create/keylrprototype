@@ -2428,7 +2428,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
         <button class="btn-teal" onclick="showAuthPage('signup')">Sign Up <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M8 4l3 2.5-3 2.5"/></svg></button>
       </div>
       <!-- Profile icon (logged in) -->
-      <div id="navProfileBtn" style="display:none;align-items:center;cursor:pointer;" onclick="_showProfileDropdown()">
+      <div id="navProfileBtn" style="display:none;align-items:center;cursor:pointer;" onclick="_showProfileDropdown('navProfileBtn')">
         <div id="navProfileIni" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);color:#fff;font-size:13px;font-weight:700;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;">JD</div>
       </div>
     </div>
@@ -2737,7 +2737,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
         </div>
       </div>
       <!-- Logged in: profile row -->
-      <div id="sbProfileArea" style="display:none;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;transition:background 0.12s;" onclick="_showProfileDropdown()" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">
+      <div id="sbProfileArea" style="display:none;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;transition:background 0.12s;" onclick="_showProfileDropdown('sbProfileArea')" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">
         <div id="sbProfileIni" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);color:#fff;font-size:13px;font-weight:700;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;">JD</div>
         <div style="flex:1;min-width:0;" class="db-nav-item-label">
           <div id="sbProfileName" style="font-size:13px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">John Doe</div>
@@ -3445,6 +3445,112 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 </div><!-- /pg-dashboard -->
 
 <script>
+// =============================================
+// USER SESSION — core functions
+// =============================================
+var _user = null;
+
+function _setUser(data) {
+  _user = data;
+  _syncUserUI();
+}
+
+function _clearUser() {
+  _user = null;
+  _syncUserUI();
+}
+
+function _getInitials(name) {
+  if (!name) return '?';
+  return name.trim().split(/\s+/).map(function(w){ return w[0]; }).join('').toUpperCase().slice(0,2);
+}
+
+function _syncUserUI() {
+  var navBtns    = document.getElementById('navAuthBtns');
+  var navProfile = document.getElementById('navProfileBtn');
+  var navIni     = document.getElementById('navProfileIni');
+  var sbAuth     = document.getElementById('sbAuthArea');
+  var sbProfile  = document.getElementById('sbProfileArea');
+  var sbIni      = document.getElementById('sbProfileIni');
+  var sbName     = document.getElementById('sbProfileName');
+  var sbEmail    = document.getElementById('sbProfileEmail');
+
+  if (navBtns)    navBtns.style.display    = _user ? 'none' : 'flex';
+  if (navProfile) navProfile.style.display = _user ? 'flex' : 'none';
+  if (navIni && _user)     navIni.textContent  = _getInitials(_user.name);
+  if (sbAuth)     sbAuth.style.display     = _user ? 'none' : 'block';
+  if (sbProfile)  sbProfile.style.display  = _user ? 'flex' : 'none';
+  if (_user && sbIni)   sbIni.textContent   = _getInitials(_user.name);
+  if (_user && sbName)  sbName.textContent  = _user.name  || '';
+  if (_user && sbEmail) sbEmail.textContent = _user.email || _user.contact || '';
+}
+
+function _showProfileDropdown(anchorId) {
+  var ex = document.getElementById('profileDropdown');
+  if (ex) { ex.remove(); return; }
+  var drop = document.createElement('div');
+  drop.id = 'profileDropdown';
+  drop.style.cssText = 'position:fixed;z-index:9998;background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,0.13);min-width:210px;overflow:hidden;';
+  var anchor = document.getElementById(anchorId || 'navProfileBtn') || document.getElementById('sbProfileArea');
+  if (anchor) {
+    var rect = anchor.getBoundingClientRect();
+    drop.style.top  = (rect.bottom + 8) + 'px';
+    drop.style.right = Math.max(8, window.innerWidth - rect.right) + 'px';
+  } else {
+    drop.style.top = '70px'; drop.style.right = '16px';
+  }
+
+  var userName  = _user ? (_user.name || '') : '';
+  var userEmail = _user ? (_user.email || _user.contact || '') : '';
+
+  drop.innerHTML =
+    '<div style="padding:14px 16px;border-bottom:1px solid #f1f5f9;">' +
+      '<div style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">' + userName + '</div>' +
+      '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">' + userEmail + '</div>' +
+    '</div>' +
+    '<div onclick="_goToSettings();document.getElementById(\'profileDropdown\').remove();" style="padding:11px 16px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;display:flex;align-items:center;gap:9px;transition:background 0.1s;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'transparent\'">' +
+      '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="7" cy="4.5" r="2.5"/><path d="M2 12c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>My Profile' +
+    '</div>' +
+    '<div onclick="_doLogout();document.getElementById(\'profileDropdown\').remove();" style="padding:11px 16px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#ef4444;display:flex;align-items:center;gap:9px;border-top:1px solid #f1f5f9;transition:background 0.1s;" onmouseover="this.style.background=\'#fff5f5\'" onmouseout="this.style.background=\'transparent\'">' +
+      '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5.5 7h6M9 4.5l2.5 2.5L9 9.5M8 2.5H3a1 1 0 00-1 1v7a1 1 0 001 1h5"/></svg>Log out' +
+    '</div>';
+
+  document.body.appendChild(drop);
+  setTimeout(function() {
+    document.addEventListener('click', function handler(e) {
+      if (!drop.contains(e.target)) {
+        drop.remove();
+        document.removeEventListener('click', handler);
+      }
+    });
+  }, 50);
+}
+
+function _goToSettings() {
+  var db = document.getElementById('pg-dashboard');
+  if (!db || !db.classList.contains('visible')) {
+    goToDashboard('', false);
+    setTimeout(function(){ showPage('settings', null); }, 500);
+  } else {
+    showPage('settings', null);
+  }
+}
+
+function _doLogout() {
+  _clearUser();
+  var db = document.getElementById('pg-dashboard');
+  if (db && db.classList.contains('visible')) {
+    backToLanding(null);
+  }
+}
+
+function goToDashboardIfNeeded() {
+  var db = document.getElementById('pg-dashboard');
+  if (!db || !db.classList.contains('visible')) {
+    goToDashboard('', false);
+  }
+}
+
 // =============================================
 // CONFIG — Add your Anthropic API key here
 // =============================================
@@ -5218,7 +5324,7 @@ function showAuthPageV3(mode) {
   window._authSetRole=function(r){window._auth.role=r;window._auth.step='contact';window._authRender();};
   window._authBack=function(){window._auth.step='contact';window._authRender();};
   window._authSwitch=function(){var m=window._auth.isSignup?'login':'signup';modal.remove();delete window._auth;showAuthPageV3(m);};
-  window._authSubmit=function(){modal.remove();delete window._auth;showPage('home',null);};
+  window._authSubmit=function(){var a=window._auth;if(a&&a.isSignup){_setUser({name:a.name||'',email:/\d{5,}/.test((a.contact||'').replace(/[\s\-\(\)\+]/g,''))?'':a.contact,contact:a.contact||'',role:a.role||'manager'});modal.remove();delete window._auth;goToDashboardIfNeeded();setTimeout(function(){showPage('settings',null);},400);}else{_setUser({name:a.name||'',email:a.contact||'',contact:a.contact||'',role:a.role||'manager'});modal.remove();delete window._auth;goToDashboardIfNeeded();}}
   window._authResend=function(){var b=document.getElementById('resendBtn');if(b){b.textContent='Sent ✓';b.style.color='#10b981';setTimeout(function(){if(b){b.textContent='Resend OTP';b.style.color='#1A5FC8';}},3000);}};
   window._authToggleCC=function(){var l=document.getElementById('ccList');if(l)l.style.display=l.style.display==='none'?'block':'none';};
   window._authSelectCC=function(code,flag){window._auth.countryCode=code;var d=document.getElementById('ccDisplay');if(d)d.textContent=flag+' '+code;var l=document.getElementById('ccList');if(l)l.style.display='none';};
