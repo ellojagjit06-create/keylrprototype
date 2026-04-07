@@ -3326,192 +3326,215 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
     <!-- SETTINGS PAGE -->
     <div id="page-settings">
-      <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;background:#f5f6f8;">
+      <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
 
-        <!-- WIZARD STEPPER HEADER -->
-        <div style="background:#fff;border-bottom:1px solid #eaecf0;padding:18px 32px 0;flex-shrink:0;">
-          <div style="max-width:680px;margin:0 auto;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-              <div style="font-size:13px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Account Setup</div>
-              <div id="wizStepCounter" style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;">Step 1 of 4</div>
+        <!-- TOP: Settings heading + tab bar -->
+        <div style="background:#fff;border-bottom:1px solid #eaecf0;flex-shrink:0;">
+          <div style="max-width:780px;margin:0 auto;padding:0 28px;">
+            <div style="padding:18px 0 0;">
+              <h2 style="font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin:0 0 14px;">Settings</h2>
             </div>
-            <!-- Steps row -->
-            <div style="display:flex;align-items:flex-start;width:100%;padding-bottom:0;">
-
-              <!-- Step 1 -->
-              <div style="display:flex;flex-direction:column;align-items:center;flex:1;cursor:pointer;" onclick="wizGoTo(1)">
-                <div style="display:flex;align-items:center;width:100%;margin-bottom:6px;">
-                  <div id="wsd-1" style="width:32px;height:32px;border-radius:50%;background:#1A5FC8;box-shadow:0 0 0 3px rgba(26,92,200,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.3s;">
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#fff" stroke-width="2"><circle cx="6.5" cy="4" r="2.3"/><path d="M1.5 11.5c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>
-                  </div>
-                  <div id="wsline-1" style="flex:1;height:2px;background:#e2e8f0;transition:background 0.4s;"></div>
-                </div>
-                <div id="wsl-1" style="font-size:11px;font-weight:700;color:#1A5FC8;font-family:Inter,sans-serif;padding-bottom:12px;align-self:flex-start;padding-left:2px;">Profile</div>
-              </div>
-
-              <!-- Step 2 -->
-              <div style="display:flex;flex-direction:column;align-items:center;flex:1;cursor:pointer;" onclick="wizGoTo(2)">
-                <div style="display:flex;align-items:center;width:100%;margin-bottom:6px;">
-                  <div id="wsd-2" style="width:32px;height:32px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.3s;">
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#94a3b8" stroke-width="1.8" id="wsicon-2"><rect x="1.5" y="5" width="10" height="7" rx="1.5"/><path d="M4 5V3.5a2.5 2.5 0 015 0V5"/></svg>
-                  </div>
-                  <div id="wsline-2" style="flex:1;height:2px;background:#e2e8f0;transition:background 0.4s;"></div>
-                </div>
-                <div id="wsl-2" style="font-size:11px;font-weight:500;color:#94a3b8;font-family:Inter,sans-serif;padding-bottom:12px;align-self:center;">Company</div>
-              </div>
-
-              <!-- Step 3 -->
-              <div style="display:flex;flex-direction:column;align-items:center;flex:1;cursor:pointer;" onclick="wizGoTo(3)">
-                <div style="display:flex;align-items:center;width:100%;margin-bottom:6px;">
-                  <div id="wsd-3" style="width:32px;height:32px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.3s;">
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#94a3b8" stroke-width="1.8" id="wsicon-3"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v.5M6 7c0-1.5 2-1.5 2 0s-1 .8-1 1.8M6.5 10v.5"/></svg>
-                  </div>
-                  <div id="wsline-3" style="flex:1;height:2px;background:#e2e8f0;transition:background 0.4s;"></div>
-                </div>
-                <div id="wsl-3" style="font-size:11px;font-weight:500;color:#94a3b8;font-family:Inter,sans-serif;padding-bottom:12px;align-self:center;">Profiling</div>
-              </div>
-
-              <!-- Step 4 (no line after) -->
-              <div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;" onclick="wizGoTo(4)">
-                <div style="display:flex;align-items:center;margin-bottom:6px;">
-                  <div id="wsd-4" style="width:32px;height:32px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.3s;">
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#94a3b8" stroke-width="1.8" id="wsicon-4"><path d="M6.5 1l1.3 3.5H11L8.3 6.6l1 3.4-2.8-2-2.8 2 1-3.4L2 4.5h3.2z"/></svg>
-                  </div>
-                </div>
-                <div id="wsl-4" style="font-size:11px;font-weight:500;color:#94a3b8;font-family:Inter,sans-serif;padding-bottom:12px;align-self:center;">Plan</div>
-              </div>
-
+            <!-- Tab bar -->
+            <div style="display:flex;gap:0;border-bottom:none;">
+              <button id="stg-tab-profile" onclick="switchSettingsMainTab('profile')" style="padding:10px 18px 12px;border:none;background:transparent;font-size:13px;font-weight:700;color:#1A5FC8;border-bottom:2.5px solid #1A5FC8;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;">Profile</button>
+              <button id="stg-tab-notif" onclick="switchSettingsMainTab('notif')" style="padding:10px 18px 12px;border:none;background:transparent;font-size:13px;font-weight:500;color:#64748b;border-bottom:2.5px solid transparent;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;">Notifications</button>
+              <button id="stg-tab-billing" onclick="switchSettingsMainTab('billing')" style="padding:10px 18px 12px;border:none;background:transparent;font-size:13px;font-weight:500;color:#64748b;border-bottom:2.5px solid transparent;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;">Billing</button>
             </div>
           </div>
         </div>
 
-        <!-- WIZARD BODY -->
-        <div id="wizBody" style="flex:1;overflow-y:auto;">
+        <!-- TAB PANELS (scrollable) -->
+        <div style="flex:1;overflow-y:auto;background:#f5f6f8;">
 
-          <!-- STEP 1: Profile -->
-          <div id="wiz-panel-1" style="max-width:640px;width:100%;margin:0 auto;padding:24px 24px 40px;">
-            <!-- Skip link -->
-            <div style="text-align:right;margin-bottom:10px;">
-              <button onclick="wizGoTo(2)" style="background:none;border:none;color:#94a3b8;font-size:12px;font-family:Inter,sans-serif;cursor:pointer;text-decoration:underline;padding:0;">Skip this step</button>
+          <!-- PROFILE TAB -->
+          <div id="stg-panel-profile">
+
+            <!-- Account Setup Wizard -->
+            <div style="background:#fff;border-bottom:1px solid #eaecf0;flex-shrink:0;">
+              <div style="max-width:780px;margin:0 auto;padding:16px 28px 0;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                  <div style="font-size:12.5px;font-weight:600;color:#64748b;font-family:Inter,sans-serif;">Account Setup</div>
+                  <div id="wizStepCounter" style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;">Step 1 of 4</div>
+                </div>
+                <!-- Stepper dots row -->
+                <div style="display:flex;align-items:flex-start;width:100%;">
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:flex-start;cursor:pointer;" onclick="wizGoTo(1)">
+                    <div style="display:flex;align-items:center;width:100%;margin-bottom:5px;">
+                      <div id="wsd-1" style="width:30px;height:30px;border-radius:50%;background:#1A5FC8;box-shadow:0 0 0 3px rgba(26,92,200,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.3s;"></div>
+                      <div id="wsline-1" style="flex:1;height:2px;background:#e2e8f0;transition:background 0.4s;"></div>
+                    </div>
+                    <div id="wsl-1" style="font-size:11px;font-weight:700;color:#1A5FC8;font-family:Inter,sans-serif;padding-bottom:10px;">Profile</div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer;" onclick="wizGoTo(2)">
+                    <div style="display:flex;align-items:center;width:100%;margin-bottom:5px;">
+                      <div id="wsd-2" style="width:30px;height:30px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.3s;"></div>
+                      <div id="wsline-2" style="flex:1;height:2px;background:#e2e8f0;transition:background 0.4s;"></div>
+                    </div>
+                    <div id="wsl-2" style="font-size:11px;font-weight:500;color:#94a3b8;font-family:Inter,sans-serif;padding-bottom:10px;text-align:center;width:100%;">Company</div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer;" onclick="wizGoTo(3)">
+                    <div style="display:flex;align-items:center;width:100%;margin-bottom:5px;">
+                      <div id="wsd-3" style="width:30px;height:30px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.3s;"></div>
+                      <div id="wsline-3" style="flex:1;height:2px;background:#e2e8f0;transition:background 0.4s;"></div>
+                    </div>
+                    <div id="wsl-3" style="font-size:11px;font-weight:500;color:#94a3b8;font-family:Inter,sans-serif;padding-bottom:10px;text-align:center;width:100%;">Profiling</div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:flex-end;cursor:pointer;" onclick="wizGoTo(4)">
+                    <div style="display:flex;align-items:center;margin-bottom:5px;">
+                      <div id="wsd-4" style="width:30px;height:30px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.3s;"></div>
+                    </div>
+                    <div id="wsl-4" style="font-size:11px;font-weight:500;color:#94a3b8;font-family:Inter,sans-serif;padding-bottom:10px;text-align:right;">Plan</div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
-              <div id="settingsIni" style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);color:#fff;font-size:19px;font-weight:700;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;">?</div>
-              <div><div id="settingsName" style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">–</div><div id="settingsContact" style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:1px;">–</div></div>
-            </div>
+
+            <!-- Wizard step content - SCROLLABLE container -->
+            <div id="wizBody" style="background:#f5f6f8;">
+
+              <!-- STEP 1: Profile -->
+              <div id="wiz-panel-1" style="max-width:600px;width:100%;margin:0 auto;padding:20px 20px 40px;">
+                <div style="text-align:right;margin-bottom:8px;">
+                  <button onclick="wizGoTo(2)" style="background:none;border:none;color:#94a3b8;font-size:12px;font-family:Inter,sans-serif;cursor:pointer;text-decoration:underline;padding:0;">Skip this step</button>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+                  <div id="settingsIni" style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);color:#fff;font-size:17px;font-weight:700;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;">?</div>
+                  <div><div id="settingsName" style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">–</div><div id="settingsContact" style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:1px;">–</div></div>
+                </div>
+                <div style="background:#fff;border-radius:14px;border:1px solid #e2e8f0;padding:20px;">
+                  <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:14px;">Account details</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                    <div>
+                      <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Full name <span style="color:#ef4444;">*</span></label>
+                      <input id="profileName" type="text" placeholder="Sarah Johnson" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="wizValidateField(this)"/>
+                      <div id="err-profileName" style="font-size:11px;color:#ef4444;font-family:Inter,sans-serif;margin-top:3px;display:none;">Required</div>
+                    </div>
+                    <div>
+                      <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Phone</label>
+                      <input id="profilePhone" type="tel" placeholder="+44 7700 000000" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
+                    </div>
+                    <div>
+                      <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Email address <span style="color:#ef4444;">*</span></label>
+                      <input id="profileEmail" type="email" placeholder="you@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="wizValidateField(this)"/>
+                      <div id="err-profileEmail" style="font-size:11px;color:#ef4444;font-family:Inter,sans-serif;margin-top:3px;display:none;">Valid email required</div>
+                    </div>
+                    <div style="position:relative;">
+                      <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Password</label>
+                      <input id="profilePwd" type="password" placeholder="Min. 8 characters" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 36px 9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
+                      <button type="button" onclick="var f=document.getElementById('profilePwd');f.type=f.type==='password'?'text':'password';" style="position:absolute;right:9px;bottom:10px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="7.5" cy="7.5" rx="5.5" ry="3.5"/><circle cx="7.5" cy="7.5" r="1.5"/></svg></button>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <button id="saveProfileBtn" onclick="_saveProfileBasic()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save changes</button>
+                    <button onclick="_saveAndNextProfile()" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">Next: Company →</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- STEP 2: Company -->
+              <div id="wiz-panel-2" style="display:none;max-width:600px;width:100%;margin:0 auto;padding:20px 20px 40px;">
+                <div style="text-align:right;margin-bottom:8px;">
+                  <button onclick="wizGoTo(3)" style="background:none;border:none;color:#94a3b8;font-size:12px;font-family:Inter,sans-serif;cursor:pointer;text-decoration:underline;padding:0;">Skip this step</button>
+                </div>
+                <div style="background:#fff;border-radius:14px;border:1px solid #e2e8f0;padding:20px;">
+                  <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:3px;">Company Details</div>
+                  <div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:14px;">Used on invoices and platform communications.</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                    <div><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Trading name <span style="color:#ef4444;">*</span></label><input id="coTrading" type="text" placeholder="Your business name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="wizValidateField(this)"/><div id="err-coTrading" style="font-size:11px;color:#ef4444;margin-top:3px;display:none;font-family:Inter,sans-serif;">Required</div></div>
+                    <div><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Reg. number</label><input id="coReg" type="text" placeholder="e.g. 12345678" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
+                    <div><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Legal name <span style="color:#ef4444;">*</span></label><input id="coLegal" type="text" placeholder="As on Companies House" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="wizValidateField(this)"/><div id="err-coLegal" style="font-size:11px;color:#ef4444;margin-top:3px;display:none;font-family:Inter,sans-serif;">Required</div></div>
+                    <div><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">VAT number</label><input id="coVat" type="text" placeholder="e.g. GB123456789" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/></div>
+                    <div style="grid-column:span 2;"><label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Registered address <span style="color:#ef4444;">*</span></label><input id="coAddr" type="text" placeholder="Street, city, postcode" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="wizValidateField(this)"/><div id="err-coAddr" style="font-size:11px;color:#ef4444;margin-top:3px;display:none;font-family:Inter,sans-serif;">Required</div></div>
+                  </div>
+                  <div style="display:flex;gap:10px;">
+                    <button onclick="wizGoTo(1)" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Back</button>
+                    <button onclick="_saveCompanyDetails()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save &amp; continue →</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- STEP 3: Profiling — full scroll, no overflow:hidden wrapper -->
+              <div id="wiz-panel-3" style="display:none;max-width:600px;width:100%;margin:0 auto;padding:20px 20px 40px;">
+                <div id="inlineProfilingContent"></div>
+              </div>
+
+              <!-- STEP 4: Plan -->
+              <div id="wiz-panel-4" style="display:none;max-width:600px;width:100%;margin:0 auto;padding:20px 20px 40px;">
+                <div style="text-align:right;margin-bottom:8px;">
+                  <button onclick="_finishSetup()" style="background:none;border:none;color:#94a3b8;font-size:12px;font-family:Inter,sans-serif;cursor:pointer;text-decoration:underline;padding:0;">Skip to dashboard</button>
+                </div>
+                <div style="background:#fff;border-radius:14px;border:1px solid #e2e8f0;padding:20px;">
+                  <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:3px;">Choose your plan</div>
+                  <div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:18px;">Based on your profile answers. Change any time.</div>
+                  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
+                    <div id="tier-connect" onclick="_selectTierInline('Connect')" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:14px 12px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 14px rgba(0,0,0,0.07)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                      <div style="font-size:13px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">Connect</div>
+                      <div style="font-size:18px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:6px;">Free</div>
+                      <div style="font-size:11px;color:#64748b;line-height:1.5;margin-bottom:8px;font-family:Inter,sans-serif;">Individual landlords, up to 25 units.</div>
+                      <div style="font-size:11px;color:#374151;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:3px;"><span>✓ 25 properties</span><span>✓ Job tracking</span><span>✓ Compliance alerts</span></div>
+                    </div>
+                    <div id="tier-premium" onclick="_selectTierInline('Connect Premium')" style="border:2px solid #1A5FC8;border-radius:12px;padding:14px 12px;cursor:pointer;transition:all 0.15s;background:#eff6ff;position:relative;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 18px rgba(26,92,200,0.16)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                      <div style="position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;font-size:9.5px;font-weight:700;font-family:Inter,sans-serif;padding:2px 8px;border-radius:999px;white-space:nowrap;">Recommended</div>
+                      <div style="font-size:13px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">Premium</div>
+                      <div style="font-size:18px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:6px;">£29<span style="font-size:11px;">/mo</span></div>
+                      <div style="font-size:11px;color:#64748b;line-height:1.5;margin-bottom:8px;font-family:Inter,sans-serif;">Letting agents &amp; growing portfolios.</div>
+                      <div style="font-size:11px;color:#374151;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:3px;"><span>✓ 100 properties</span><span>✓ Compliance dash</span><span>✓ Team access</span></div>
+                    </div>
+                    <div id="tier-copilot" onclick="_selectTierInline('Copilot')" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:14px 12px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 14px rgba(0,0,0,0.07)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                      <div style="font-size:13px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">Copilot</div>
+                      <div style="font-size:18px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:6px;">£99<span style="font-size:11px;">/mo</span></div>
+                      <div style="font-size:11px;color:#64748b;line-height:1.5;margin-bottom:8px;font-family:Inter,sans-serif;">Large portfolios &amp; property businesses.</div>
+                      <div style="font-size:11px;color:#374151;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:3px;"><span>✓ Unlimited</span><span>✓ API access</span><span>✓ Dedicated mgr</span></div>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:10px;">
+                    <button onclick="wizGoTo(3)" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Back</button>
+                    <button onclick="_finishSetup()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Complete setup →</button>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /wizBody -->
+          </div><!-- /stg-panel-profile -->
+
+          <!-- NOTIFICATIONS TAB -->
+          <div id="stg-panel-notif" style="display:none;max-width:600px;margin:0 auto;padding:24px 20px;">
             <div style="background:#fff;border-radius:14px;border:1px solid #e2e8f0;padding:20px;">
-              <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:14px;">Account details</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-                <div>
-                  <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Full name <span style="color:#ef4444;">*</span></label>
-                  <input id="profileName" type="text" placeholder="Sarah Johnson" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="wizValidateField(this)"/>
-                  <div id="err-profileName" style="font-size:11px;color:#ef4444;font-family:Inter,sans-serif;margin-top:3px;display:none;">Required</div>
-                </div>
-                <div>
-                  <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Phone</label>
-                  <input id="profilePhone" type="tel" placeholder="+44 7700 000000" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
-                </div>
-                <div>
-                  <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Email address <span style="color:#ef4444;">*</span></label>
-                  <input id="profileEmail" type="email" placeholder="you@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="wizValidateField(this)"/>
-                  <div id="err-profileEmail" style="font-size:11px;color:#ef4444;font-family:Inter,sans-serif;margin-top:3px;display:none;">Valid email required</div>
-                </div>
-                <div style="position:relative;">
-                  <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Password</label>
-                  <input id="profilePwd" type="password" placeholder="Min. 8 characters" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 36px 9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
-                  <button type="button" onclick="var f=document.getElementById('profilePwd');f.type=f.type==='password'?'text':'password';" style="position:absolute;right:9px;bottom:9px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="7.5" cy="7.5" rx="5.5" ry="3.5"/><circle cx="7.5" cy="7.5" r="1.5"/></svg></button>
-                </div>
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;">
-                <button id="saveProfileBtn" onclick="_saveProfileBasic()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save changes</button>
-                <button onclick="_saveAndNextProfile()" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">Next: Company →</button>
-              </div>
+              <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:16px;">Notification Preferences</div>
+              <div style="color:#64748b;font-size:13px;font-family:Inter,sans-serif;">Notification settings coming soon.</div>
             </div>
           </div>
 
-          <!-- STEP 2: Company -->
-          <div id="wiz-panel-2" style="display:none;max-width:640px;width:100%;margin:0 auto;padding:24px 24px 40px;">
-            <div style="text-align:right;margin-bottom:10px;">
-              <button onclick="wizGoTo(3)" style="background:none;border:none;color:#94a3b8;font-size:12px;font-family:Inter,sans-serif;cursor:pointer;text-decoration:underline;padding:0;">Skip this step</button>
-            </div>
+          <!-- BILLING TAB -->
+          <div id="stg-panel-billing" style="display:none;max-width:600px;margin:0 auto;padding:24px 20px;">
             <div style="background:#fff;border-radius:14px;border:1px solid #e2e8f0;padding:20px;">
-              <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:3px;">Company Details</div>
-              <div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:16px;">Used on invoices and platform communications.</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-                <div>
-                  <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Trading name <span style="color:#ef4444;">*</span></label>
-                  <input id="coTrading" type="text" placeholder="Your business name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="wizValidateField(this)"/>
-                  <div id="err-coTrading" style="font-size:11px;color:#ef4444;font-family:Inter,sans-serif;margin-top:3px;display:none;">Required</div>
-                </div>
-                <div>
-                  <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Reg. number</label>
-                  <input id="coReg" type="text" placeholder="e.g. 12345678" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
-                </div>
-                <div>
-                  <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Legal name <span style="color:#ef4444;">*</span></label>
-                  <input id="coLegal" type="text" placeholder="As on Companies House" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="wizValidateField(this)"/>
-                  <div id="err-coLegal" style="font-size:11px;color:#ef4444;font-family:Inter,sans-serif;margin-top:3px;display:none;">Required</div>
-                </div>
-                <div>
-                  <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">VAT number</label>
-                  <input id="coVat" type="text" placeholder="e.g. GB123456789" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
-                </div>
-                <div style="grid-column:span 2;">
-                  <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Registered address <span style="color:#ef4444;">*</span></label>
-                  <input id="coAddr" type="text" placeholder="Street, city, postcode" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="wizValidateField(this)"/>
-                  <div id="err-coAddr" style="font-size:11px;color:#ef4444;font-family:Inter,sans-serif;margin-top:3px;display:none;">Required</div>
-                </div>
-              </div>
-              <div style="display:flex;gap:10px;">
-                <button onclick="wizGoTo(1)" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Back</button>
-                <button onclick="_saveCompanyDetails()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save &amp; continue →</button>
-              </div>
+              <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:16px;">Billing &amp; Plan</div>
+              <div style="color:#64748b;font-size:13px;font-family:Inter,sans-serif;">Billing management coming soon.</div>
             </div>
           </div>
 
-          <!-- STEP 3: Profiling -->
-          <div id="wiz-panel-3" style="display:none;max-width:640px;width:100%;margin:0 auto;padding:24px 24px 40px;">
-            <div style="background:#fff;border-radius:14px;border:1px solid #e2e8f0;overflow:hidden;">
-              <div id="inlineProfilingContent" style="padding:22px;"></div>
-            </div>
-          </div>
+        </div><!-- /scroll area -->
+      </div>
+    </div>
 
-          <!-- STEP 4: Plan -->
-          <div id="wiz-panel-4" style="display:none;max-width:640px;width:100%;margin:0 auto;padding:24px 24px 40px;">
-            <div style="text-align:right;margin-bottom:10px;">
-              <button onclick="_finishSetup()" style="background:none;border:none;color:#94a3b8;font-size:12px;font-family:Inter,sans-serif;cursor:pointer;text-decoration:underline;padding:0;">Skip and go to dashboard</button>
-            </div>
-            <div style="background:#fff;border-radius:14px;border:1px solid #e2e8f0;padding:20px;">
-              <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:3px;">Choose your plan</div>
-              <div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:18px;">Based on your profile. Change any time in billing.</div>
-              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;">
-                <div id="tier-connect" onclick="_selectTierInline('Connect')" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 14px;cursor:pointer;transition:all 0.18s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 16px rgba(0,0,0,0.07)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-                  <div style="font-size:14px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">Connect</div>
-                  <div style="font-size:20px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">Free</div>
-                  <div style="font-size:11px;color:#64748b;line-height:1.5;margin-bottom:10px;font-family:Inter,sans-serif;">Individual landlords, up to 25 units.</div>
-                  <div style="font-size:11px;color:#374151;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:3px;"><span>✓ 25 properties</span><span>✓ Job tracking</span><span>✓ Compliance alerts</span></div>
-                </div>
-                <div id="tier-premium" onclick="_selectTierInline('Connect Premium')" style="border:2px solid #1A5FC8;border-radius:12px;padding:16px 14px;cursor:pointer;transition:all 0.18s;background:#eff6ff;position:relative;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(26,92,200,0.18)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-                  <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;font-size:10px;font-weight:700;font-family:Inter,sans-serif;padding:3px 10px;border-radius:999px;white-space:nowrap;">Recommended</div>
-                  <div style="font-size:14px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">Connect Premium</div>
-                  <div style="font-size:20px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">£29<span style="font-size:12px;">/mo</span></div>
-                  <div style="font-size:11px;color:#64748b;line-height:1.5;margin-bottom:10px;font-family:Inter,sans-serif;">Letting agents &amp; growing portfolios.</div>
-                  <div style="font-size:11px;color:#374151;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:3px;"><span>✓ 100 properties</span><span>✓ Compliance dashboard</span><span>✓ Team access</span></div>
-                </div>
-                <div id="tier-copilot" onclick="_selectTierInline('Copilot')" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 14px;cursor:pointer;transition:all 0.18s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 16px rgba(0,0,0,0.07)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-                  <div style="font-size:14px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">Copilot</div>
-                  <div style="font-size:20px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">£99<span style="font-size:12px;">/mo</span></div>
-                  <div style="font-size:11px;color:#64748b;line-height:1.5;margin-bottom:10px;font-family:Inter,sans-serif;">Large portfolios &amp; property businesses.</div>
-                  <div style="font-size:11px;color:#374151;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:3px;"><span>✓ Unlimited properties</span><span>✓ API access</span><span>✓ Dedicated manager</span></div>
-                </div>
-              </div>
-              <div style="display:flex;gap:10px;">
-                <button onclick="wizGoTo(3)" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Back</button>
-                <button onclick="_finishSetup()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Complete setup →</button>
-              </div>
-            </div>
+    <!-- COMPLETION MODAL (confetti) -->
+    <div id="setupCompleteModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.5);backdrop-filter:blur(8px);align-items:center;justify-content:center;">
+      <div style="background:#fff;border-radius:24px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.2);animation:modalPop 0.3s ease;text-align:center;padding:40px 32px;">
+        <canvas id="confettiCanvas" style="position:fixed;inset:0;pointer-events:none;z-index:10000;"></canvas>
+        <div style="width:72px;height:72px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#16a34a" stroke-width="2.5"><path d="M5 16l7 7 15-14"/></svg>
+        </div>
+        <div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">You're all set! 🎉</div>
+        <div style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;line-height:1.65;margin-bottom:24px;">Your account is fully configured and your dashboard is personalised based on your answers.</div>
+        <div style="background:#f8fafc;border-radius:12px;padding:14px;margin-bottom:22px;text-align:left;">
+          <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;font-family:Inter,sans-serif;margin-bottom:8px;">What's ready for you</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="font-size:12.5px;color:#374151;font-family:Inter,sans-serif;display:flex;align-items:center;gap:7px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#1A5FC8" stroke-width="2"><path d="M2 6.5l3.5 3.5 5.5-6"/></svg>Dashboard personalised to your role</div>
+            <div style="font-size:12.5px;color:#374151;font-family:Inter,sans-serif;display:flex;align-items:center;gap:7px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#1A5FC8" stroke-width="2"><path d="M2 6.5l3.5 3.5 5.5-6"/></svg>Service categories configured</div>
+            <div style="font-size:12.5px;color:#374151;font-family:Inter,sans-serif;display:flex;align-items:center;gap:7px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#1A5FC8" stroke-width="2"><path d="M2 6.5l3.5 3.5 5.5-6"/></svg>Regional suppliers pre-loaded</div>
           </div>
-
-        </div><!-- /wizBody -->
+        </div>
+        <button onclick="_closeSetupModal()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Go to dashboard →</button>
       </div>
     </div>
 </main>
@@ -5444,33 +5467,6 @@ var _onboardSteps = [
   { id:'tier', label:'Choose your plan', sub:'Connect · Connect Premium · Copilot', icon:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 2l1.8 3.6 4 .6-2.9 2.8.7 4-3.6-1.9-3.6 1.9.7-4L2.2 6.2l4-.6z"/></svg>', done: false, action: 'showTierStep' },
 ];
 
-function _syncSettingsPage() {
-  if (!_user) return;
-  var ini = document.getElementById('settingsIni');
-  var nm = document.getElementById('settingsName');
-  var ct = document.getElementById('settingsContact');
-  var profileName = document.getElementById('profileName');
-  var profileEmail = document.getElementById('profileEmail');
-  var profilePhone = document.getElementById('profilePhone');
-
-  if (ini) ini.textContent = _getInitials(_user.name || '?');
-  if (nm) nm.textContent = _user.name || '–';
-  if (ct) ct.textContent = _user.email || _user.contact || '–';
-  if (profileName) profileName.value = _user.name || '';
-  if (profileEmail) profileEmail.value = _user.email || '';
-  if (profilePhone) profilePhone.value = _user.phone || '';
-
-  // Show/hide password field: if logged in via phone OTP, show it. If email, prefill email and show
-  var pwdRow = document.getElementById('profilePwd');
-  if (pwdRow) {
-    var isPhone = _user.email === '' && _user.contact;
-    // Always show password for now
-  }
-
-  // Mark step 0 done
-  _onboardSteps[0].done = true;
-  _renderOnboardingSteps();
-}
 
 function _renderOnboardingSteps() {
   var list = document.getElementById('onboardingStepList');
@@ -6265,6 +6261,134 @@ function showSupplierAuth() {
 
   renderSup();
 }
+
+// =============================================
+// SETTINGS MAIN TABS
+// =============================================
+function switchSettingsMainTab(tab) {
+  ['profile','notif','billing'].forEach(function(t) {
+    var panel = document.getElementById('stg-panel-'+t);
+    var btn   = document.getElementById('stg-tab-'+t);
+    if (panel) panel.style.display = t === tab ? 'block' : 'none';
+    if (btn) {
+      btn.style.color       = t === tab ? '#1A5FC8' : '#64748b';
+      btn.style.fontWeight  = t === tab ? '700'     : '500';
+      btn.style.borderBottom = t === tab ? '2.5px solid #1A5FC8' : '2.5px solid transparent';
+    }
+  });
+}
+
+// =============================================
+// SETTINGS SYNC — prefill from _user (including password hint)
+// =============================================
+function _syncSettingsPage() {
+  if (!_user) return;
+  var ini  = document.getElementById('settingsIni');
+  var nm   = document.getElementById('settingsName');
+  var ct   = document.getElementById('settingsContact');
+  var pn   = document.getElementById('profileName');
+  var pe   = document.getElementById('profileEmail');
+  var ph   = document.getElementById('profilePhone');
+  var pp   = document.getElementById('profilePwd');
+
+  if (ini) ini.textContent  = _getInitials(_user.name || '?');
+  if (nm)  nm.textContent   = _user.name  || '–';
+  if (ct)  ct.textContent   = _user.email || _user.phone || _user.contact || '–';
+  if (pn && _user.name)    pn.value = _user.name;
+  if (pe && _user.email)   pe.value = _user.email;
+  if (ph && _user.phone)   ph.value = _user.phone || '';
+  // Password: if user signed up with password, show a placeholder (not the real pw)
+  if (pp && _user.contact) pp.placeholder = '••••••••  (set at signup)';
+}
+
+// =============================================
+// FINISH SETUP — confetti modal
+// =============================================
+function _finishSetup() {
+  _onboardSteps[3].done = true;
+  _updateWizStepper(4);
+  if (_user) _user.profileComplete = true;
+  _showSetupCompleteModal();
+}
+
+function _showSetupCompleteModal() {
+  var modal = document.getElementById('setupCompleteModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    _launchConfetti();
+  }
+}
+
+function _closeSetupModal() {
+  var modal = document.getElementById('setupCompleteModal');
+  if (modal) modal.style.display = 'none';
+  var canvas = document.getElementById('confettiCanvas');
+  if (canvas) { var ctx = canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); }
+  goToDashboard('', false);
+  setTimeout(function(){ showPage('home', null); }, 400);
+}
+
+function _launchConfetti() {
+  var canvas = document.getElementById('confettiCanvas');
+  if (!canvas) return;
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  var ctx = canvas.getContext('2d');
+  var pieces = [];
+  var colors = ['#1A5FC8','#0FA3D0','#10b981','#f59e0b','#8b5cf6','#ef4444','#06b6d4'];
+
+  for (var i = 0; i < 120; i++) {
+    pieces.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      w: Math.random() * 10 + 5,
+      h: Math.random() * 6 + 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rot: Math.random() * 360,
+      vx: Math.random() * 3 - 1.5,
+      vy: Math.random() * 4 + 2,
+      vr: Math.random() * 6 - 3,
+      opacity: 1
+    });
+  }
+
+  var frame = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    var alive = false;
+    pieces.forEach(function(p) {
+      if (p.y > canvas.height + 20) return;
+      alive = true;
+      p.x  += p.vx;
+      p.y  += p.vy;
+      p.rot += p.vr;
+      p.opacity = Math.max(0, 1 - p.y / (canvas.height * 0.9));
+      ctx.save();
+      ctx.globalAlpha = p.opacity;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    });
+    if (alive && frame < 180) { frame++; requestAnimationFrame(draw); }
+    else { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+  }
+  draw();
+}
+
+// Hook showPage to open settings properly
+var _origShowPage_stg = showPage;
+showPage = function(id, e) {
+  _origShowPage_stg(id, e);
+  if (id === 'settings') {
+    setTimeout(function(){
+      _syncSettingsPage();
+      switchSettingsMainTab('profile');
+      wizGoTo(1);
+    }, 30);
+  }
+};
 </script>
 
 <!-- =============================================
