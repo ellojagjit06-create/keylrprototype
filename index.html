@@ -5142,17 +5142,7 @@ function showAuthPage(mode) {
           '<div style="flex:1;min-width:0;">' +
             '<div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">' + formHead + '</div>' +
           '</div>' +
-          '<div style="display:flex;align-items:center;gap:7px;flex-shrink:0;margin-left:10px;">' +
-            '<div style="position:relative;">' +
-              '<select id="variantPicker" onchange="window._authSwitchVariant(this.value)" style="appearance:none;-webkit-appearance:none;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:5px 26px 5px 9px;font-size:11px;font-family:Inter,sans-serif;color:#374151;cursor:pointer;outline:none;">'+
-                '<option value=\"2\" selected>V2 — Split panel</option>'+
-                '<option value=\"1\">V1 — Stepped modal</option>'+
-                '<option value=\"3\">V3 — Dark hero</option>'+
-              '</select>' +
-              '<svg style="position:absolute;right:7px;top:50%;transform:translateY(-50%);pointer-events:none;" width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M1.5 3.5l3 3 3-3"/></svg>' +
-            '</div>' +
-            '<button id="authCloseBtn" style="background:#f1f5f9;border:none;color:#64748b;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button>' +
-          '</div>' +
+          '<button id="authCloseBtn" style="background:#f1f5f9;border:none;color:#64748b;width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0;">&times;</button>' + +
         '</div>' +
         '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:16px;">' + role.formHead[isSignup ? 'signup' : 'login'].replace(role.formHead[isSignup ? 'signup' : 'login'], role.formSub[isSignup ? 'signup' : 'login']) + '</div>' +
         '<div style="height:0.5px;background:#e8ecf0;margin-bottom:20px;"></div>' +
