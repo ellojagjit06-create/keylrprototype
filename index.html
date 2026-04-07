@@ -5070,6 +5070,72 @@ function showAuthPage(mode) {
         '</div>' +
       '</div>';
 
+    // RIGHT PANEL - dynamic form
+    var formHead = role.formHead[isSignup ? 'signup' : 'login'];
+    var ccEntry = COUNTRY_CODES.find(function(x){ return x.code === a.countryCode; }) || COUNTRY_CODES[0];
+
+    var formBody = '';
+
+    if (step === 'contact') {
+      var ccListHtml = COUNTRY_CODES.map(function(cc){
+        return '<div onclick="window._authSelectCC(\'' + cc.code + '\',\'' + cc.flag + '\')" style="display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'#fff\'">' +
+          cc.flag + ' ' + cc.name + '<span style="color:#94a3b8;margin-left:auto;font-size:12px;">' + cc.code + '</span></div>';
+      }).join('');
+
+      formBody =
+        (isSignup ? '<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Full name</label><input id="authName" type="text" placeholder="Your full name" autocomplete="name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/></div>' : '') +
+        '<div style="margin-bottom:16px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Email or mobile number</label>' +
+          '<div style="position:relative;display:flex;align-items:stretch;">' +
+            '<div id="ccWrap" style="display:none;flex-shrink:0;">' +
+              '<button id="ccBtn" onclick="window._authToggleCC()" style="height:100%;padding:0 10px;background:#f8fafc;border:1.5px solid #e2e8f0;border-right:none;border-radius:10px 0 0 10px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+                '<span id="ccDisplay">' + ccEntry.flag + ' ' + ccEntry.code + '</span>' +
+                '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4l3 3 3-3"/></svg>' +
+              '</button>' +
+              '<div id="ccList" style="display:none;position:absolute;top:48px;left:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.1);z-index:20;min-width:200px;overflow:hidden;">' + ccListHtml + '</div>' +
+            '</div>' +
+            '<input id="authContact" type="text" placeholder="you@email.com  or  07700 000000" value="' + a.contact + '" style="flex:1;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/>' +
+          '</div>' +
+          '<p style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin:5px 0 0;">Enter email for password sign-in · mobile for OTP</p>' +
+        '</div>' +
+        '<button onclick="window._authContinue()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">Continue →</button>'
+    } else if (step === 'password') {
+      formBody =
+        '<div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e8ecf0;border-radius:10px;padding:10px 14px;margin-bottom:18px;">' +
+          '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#64748b" stroke-width="1.8"><rect x="1" y="3" width="11" height="8" rx="1.5"/><path d="M1 5.5l5.5 3.5 5.5-3.5"/></svg>' +
+          '<span style="font-size:13px;color:#374151;font-family:Inter,sans-serif;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + a.contact + '</span>' +
+          '<button onclick="window._authBack()" style="background:none;border:none;color:#1A5FC8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;flex-shrink:0;">Change</button>' +
+        '</div>' +
+        
+        '<div style="margin-bottom:20px;position:relative;">' +
+          '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">' + (isSignup ? 'Create a password' : 'Password') + '</label>' +
+          '<input id="authPwd" type="password" placeholder="••••••••" autofocus style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 44px 11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/>' +
+          '<button id="pwdEye" type="button" style="position:absolute;right:13px;bottom:12px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;">' +
+            '<svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg>' +
+          '</button>' +
+        '</div>' +
+        '<button onclick="window._authSubmit()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">' + (isSignup ? 'Create account' : 'Log in') + '</button>';
+
+    } else if (step === 'otp') {
+      formBody =
+        '<div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e8ecf0;border-radius:10px;padding:10px 14px;margin-bottom:16px;">' +
+          '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#64748b" stroke-width="1.8"><rect x="1" y="1" width="11" height="11" rx="2"/><circle cx="6.5" cy="8" r="1"/></svg>' +
+          '<span style="font-size:13px;color:#374151;font-family:Inter,sans-serif;flex:1;">' + a.contact + '</span>' +
+          '<button onclick="window._authBack()" style="background:none;border:none;color:#1A5FC8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Change</button>' +
+        '</div>' +
+        '<p style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;text-align:center;margin:0 0 16px;">Enter the 6-digit code sent to your number</p>' +
+        '<div style="display:flex;gap:8px;justify-content:center;margin-bottom:18px;" id="otpBoxes">' +
+          [0,1,2,3,4,5].map(function(i){
+            return '<input data-otp="'+i+'" type="text" inputmode="numeric" maxlength="1" style="width:42px;height:50px;border:1.5px solid #e2e8f0;border-radius:10px;text-align:center;font-size:22px;font-weight:700;font-family:Inter,sans-serif;color:#0f172a;outline:none;box-sizing:border-box;transition:border-color 0.15s;">';
+          }).join('') +
+        '</div>' +
+        '<button onclick="window._authSubmit()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:10px;">Verify &amp; Continue</button>' +
+        '<div style="display:flex;align-items:center;justify-content:center;gap:16px;">' +
+          '<button onclick="window._authBack()" style="background:none;border:none;color:#64748b;font-size:12.5px;cursor:pointer;font-family:Inter,sans-serif;padding:0;">← Change number</button>' +
+          '<span style="color:#e2e8f0;font-size:16px;">|</span>' +
+          '<button id="resendBtn" onclick="window._authResend()" style="background:none;border:none;color:#1A5FC8;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Resend OTP</button>' +
+        '</div>';
+    }
+
     var rightPanel =
       '<div style="flex:1;padding:24px 26px;display:flex;flex-direction:column;min-width:0;min-width:0;">' +
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">' +
@@ -5077,8 +5143,17 @@ function showAuthPage(mode) {
             '<div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">' + formHead + '</div>' +
           '</div>' +
           '<div style="display:flex;align-items:center;gap:7px;flex-shrink:0;margin-left:10px;">' +
-            '<button id="authCloseBtn" style="background:#f1f5f9;border:none;color:#64748b;width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button>' +
+            '<div style="position:relative;">' +
+              '<select id="variantPicker" onchange="window._authSwitchVariant(this.value)" style="appearance:none;-webkit-appearance:none;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:5px 26px 5px 9px;font-size:11px;font-family:Inter,sans-serif;color:#374151;cursor:pointer;outline:none;">'+
+                '<option value=\"2\" selected>V2 — Split panel</option>'+
+                '<option value=\"1\">V1 — Stepped modal</option>'+
+                '<option value=\"3\">V3 — Dark hero</option>'+
+              '</select>' +
+              '<svg style="position:absolute;right:7px;top:50%;transform:translateY(-50%);pointer-events:none;" width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M1.5 3.5l3 3 3-3"/></svg>' +
+            '</div>' +
+            '<button id="authCloseBtn" style="background:#f1f5f9;border:none;color:#64748b;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button>' +
           '</div>' +
+        '</div>' +
         '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:16px;">' + role.formHead[isSignup ? 'signup' : 'login'].replace(role.formHead[isSignup ? 'signup' : 'login'], role.formSub[isSignup ? 'signup' : 'login']) + '</div>' +
         '<div style="height:0.5px;background:#e8ecf0;margin-bottom:20px;"></div>' +
         formBody +
