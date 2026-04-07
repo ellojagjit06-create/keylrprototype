@@ -2314,8 +2314,8 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     <div class="nav-btns" id="navBtns">
       <!-- Auth buttons (logged out) -->
       <div id="navAuthBtns" style="display:flex;align-items:center;gap:8px;">
-        <button class="btn-ghost-light" id="navLoginBtn" onclick="showAuthPage('login')">Log in</button>
-        <button class="btn-teal" onclick="showAuthPage('signup')">Sign Up <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M8 4l3 2.5-3 2.5"/></svg></button>
+        <button class="btn-ghost-light" id="navLoginBtn" onclick="showAuthPageV4('login')">Log in</button>
+        <button class="btn-teal" onclick="showAuthPageV4('signup')">Sign Up <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M8 4l3 2.5-3 2.5"/></svg></button>
       </div>
       <!-- Profile icon (logged in) -->
       <div id="navProfileBtn" style="display:none;align-items:center;cursor:pointer;" onclick="_showProfileDropdown('navProfileBtn')">
@@ -2405,7 +2405,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           <span class="hero-chip" onclick="setQuery('Gardener')">🌿 Gardener</span>
         </div>
         <div class="hero-supplier-cta">
-          <button class="hero-supplier-btn" onclick="alert('Supplier registration coming soon!')">
+          <button class="hero-supplier-btn" onclick="showSupplierAuth()">
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7.5" cy="5" r="2.5"/><path d="M2.5 13c0-2.8 2.2-5 5-5s5 2.2 5 5"/><path d="M11 3l1.5 1.5M11 6l1.5-1.5"/></svg>
             Join as a Supplier
           </button>
@@ -2622,8 +2622,8 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
       <div id="sbAuthArea">
         <p class="db-auth-hint">Sign up or log in to access<br>all the features</p>
         <div class="db-auth-btns">
-          <button class="db-signup-btn" onclick="showAuthPage('signup')">Sign up</button>
-          <button class="db-login-btn" onclick="showAuthPage('login')">Log in</button>
+          <button class="db-signup-btn" onclick="showAuthPageV4('signup')">Sign up</button>
+          <button class="db-login-btn" onclick="showAuthPageV4('login')">Log in</button>
         </div>
       </div>
       <!-- Logged in: profile row -->
@@ -3416,7 +3416,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           </div>
 
           <!-- STEP 3: Profiling (inline, no modal) -->
-          <div id="stab-panel-3" style="display:none;max-width:600px;width:100%;margin:0 auto;padding:28px;">
+          <div id="stab-panel-3" style="display:none;width:100%;overflow-y:auto;">
             <div id="inlineProfilingContent"></div>
           </div>
 
@@ -5719,13 +5719,39 @@ function _saveCompanyDetails() {
 var _inlineQStep = 0;
 var _inlineAnswers = Array(7).fill(null).map(function(){ return {}; });
 var _PROFILING_QS = [
-  { q:'What best describes what you do?', type:'single', opts:['Residential letting agent','Short-term rental / Airbnb manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator','Facilities manager','Individual landlord','Other'] },
-  { q:'What types of property do you manage?', type:'multi', opts:['Houses and flats — AST','HMO','Short-term rental / holiday let','Residential block / leasehold','Offices','Retail units','Hotels','Mixed residential and commercial'] },
-  { q:'How many properties or units do you manage?', type:'single', opts:['1 to 5','6 to 25','26 to 100','101 to 500','500 or more'] },
-  { q:'Which services do you currently coordinate?', type:'multi', opts:['Cleaning','Compliance certificates','Reactive maintenance','Planned maintenance','Property inspections','Landscaping','Pest control','Specialist trades'] },
-  { q:'Where are your properties located?', type:'multi', opts:['London','South East England','South West England','Midlands','North West England','North East England','Yorkshire','Scotland','Wales','Multiple regions'] },
-  { q:'How do you currently find and manage your service providers?', type:'single', opts:['Mostly ad hoc — WhatsApp / phone','Small group of regular contractors','Large contractor network','In-house staff','I use a property management system'] },
-  { q:'What is your biggest headache right now?', type:'single', opts:['Finding reliable contractors','Keeping track of jobs','Compliance — certificates expiring','Invoices from many suppliers','Coordinating my team','No single portfolio view'] },
+  {
+    q: 'What best describes what you do?', type:'single',
+    opts:['Residential letting agent','Short-term rental / Airbnb manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator','Facilities manager','Individual landlord','Other']
+  },
+  {
+    q: 'What types of property do you manage?', type:'multi-grouped',
+    groups:{
+      'Residential':['Houses & flats — AST','HMO','Short-term rental','Residential block','Serviced apartments'],
+      'Commercial':['Offices','Retail','Industrial','Healthcare','Education'],
+      'Hospitality':['Hotels','Hostels','Guest houses','PBSA'],
+      'Mixed':['Mixed residential/commercial','Estate']
+    }
+  },
+  {
+    q: 'How many properties or units do you manage?', type:'single',
+    opts:['1–5','6–25','26–100','101–500','500+']
+  },
+  {
+    q: 'Which services do you currently coordinate?', type:'multi',
+    opts:['Cleaning','Compliance certificates (CP12, EICR, EPC, FRA, Legionella)','Reactive maintenance','PPM','Inspections & inventory','Landscaping','Pest control','Security','Removals','Specialist trades']
+  },
+  {
+    q: 'Where are your properties located?', type:'multi',
+    opts:['London','South East','South West','Midlands','North West','North East','Yorkshire','Scotland','Wales','Multiple regions']
+  },
+  {
+    q: 'How do you currently manage service providers?', type:'single',
+    opts:['Ad hoc (WhatsApp/phone)','Small regular contractors','Large contractor network','In-house staff','I use a property management system']
+  },
+  {
+    q: 'What is your biggest headache right now?', type:'single',
+    opts:['Finding reliable contractors','Chasing jobs to completion','Compliance tracking','Invoices & payments','Team coordination','No single view across portfolio']
+  }
 ];
 
 function _renderInlineProfiling() {
@@ -5734,30 +5760,68 @@ function _renderInlineProfiling() {
   var q = _PROFILING_QS[_inlineQStep];
   var ans = _inlineAnswers[_inlineQStep];
 
-  var barHtml = '<div style="display:flex;gap:4px;margin-bottom:16px;">' +
-    [0,1,2,3,4,5,6].map(function(i){ return '<div style="flex:1;height:4px;border-radius:999px;background:'+(i<=_inlineQStep?'#1A5FC8':'#f1f5f9')+';""></div>'; }).join('') +
-    '</div>';
+  var barHtml = '<div style="display:flex;gap:4px;margin-bottom:20px;">' +
+    [0,1,2,3,4,5,6].map(function(i){
+      var bg = i < _inlineQStep ? '#1A5FC8' : i === _inlineQStep ? '#0FA3D0' : '#f1f5f9';
+      return '<div style="flex:1;height:4px;border-radius:999px;background:'+bg+';"></div>';
+    }).join('') + '</div>';
 
-  var optHtml = q.opts.map(function(opt) {
-    var sel = q.type === 'single' ? ans.val === opt : (ans.vals||[]).indexOf(opt) !== -1;
-    return '<button onclick="_inlineSelect(\''+opt.replace(/'/g,"\\'")+'\')" style="text-align:left;width:100%;padding:11px 14px;border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;background:'+(sel?'#eff6ff':'#fff')+';font-size:13px;font-family:Inter,sans-serif;color:#374151;cursor:pointer;display:flex;align-items:center;gap:10px;margin-bottom:7px;transition:all 0.1s;">' +
-      '<div style="width:18px;height:18px;border-radius:'+(q.type==='single'?'50%':'5px')+';border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';flex-shrink:0;display:flex;align-items:center;justify-content:center;">' +
-        (sel ? (q.type==='single' ? '<div style="width:6px;height:6px;border-radius:50%;background:#fff;"></div>' : '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M1.5 5l3 3 4-4.5"/></svg>') : '') +
+  function makeOptBtn(opt, sel, isRound) {
+    var safeOpt = opt.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return '<button data-opt="'+opt.replace(/"/g,'&quot;')+'" onclick="window._inlineSelectOpt(this)" style="text-align:left;width:100%;padding:10px 14px;border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:9px;background:'+(sel?'#eff6ff':'#fff')+';font-size:13px;font-family:Inter,sans-serif;color:#374151;cursor:pointer;display:flex;align-items:center;gap:10px;margin-bottom:6px;">' +
+      '<div style="width:17px;height:17px;border-radius:'+(isRound?'50%':'4px')+';border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';flex-shrink:0;display:flex;align-items:center;justify-content:center;">' +
+      (sel ? (isRound ? '<div style="width:5px;height:5px;border-radius:50%;background:#fff;"></div>' : '<svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#fff" stroke-width="2"><path d="M1 4.5l2.5 2.5 5-4.5"/></svg>') : '') +
       '</div>' + opt + '</button>';
-  }).join('');
+  }
+
+  var optHtml = '';
+  var isSingle = q.type === 'single';
+
+  if (q.type === 'multi-grouped') {
+    Object.keys(q.groups).forEach(function(group) {
+      optHtml += '<div style="font-size:10.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;margin:14px 0 8px;font-family:Inter,sans-serif;">'+group+'</div>';
+      q.groups[group].forEach(function(opt) {
+        var sel = (ans.vals||[]).indexOf(opt) !== -1;
+        optHtml += makeOptBtn(opt, sel, false);
+      });
+    });
+  } else {
+    q.opts.forEach(function(opt) {
+      var sel = isSingle ? ans.val === opt : (ans.vals||[]).indexOf(opt) !== -1;
+      optHtml += makeOptBtn(opt, sel, isSingle);
+    });
+  }
 
   container.innerHTML =
-    '<div style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">Profiling questions</div>' +
-    '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:16px;">Question '+(_inlineQStep+1)+' of 7 · <button onclick="switchSettingsTab(4)" style="background:none;border:none;color:#94a3b8;font-size:12.5px;cursor:pointer;font-family:Inter,sans-serif;padding:0;text-decoration:underline;">Skip all</button></div>' +
+    '<div style="max-width:560px;margin:0 auto;padding:24px 24px 40px;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
+      '<span style="font-size:11.5px;font-weight:600;color:#94a3b8;font-family:Inter,sans-serif;">QUESTION '+(_inlineQStep+1)+' OF 7</span>' +
+      '<button onclick="switchSettingsTab(4)" style="background:none;border:none;color:#94a3b8;font-size:11.5px;cursor:pointer;font-family:Inter,sans-serif;padding:0;text-decoration:underline;">Skip all →</button>' +
+    '</div>' +
     barHtml +
-    '<div style="font-size:14.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">'+q.q+'</div>' +
-    '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:14px;">'+(q.type==='multi'?'Select all that apply':'Choose one')+'</div>' +
+    '<div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;line-height:1.3;">'+q.q+'</div>' +
+    '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:16px;">'+(isSingle||q.type==='single'?'Choose one':'Select all that apply')+'</div>' +
     optHtml +
-    '<div style="display:flex;gap:10px;margin-top:16px;">' +
-      (_inlineQStep > 0 ? '<button onclick="_inlineQBack()" style="background:transparent;border:1px solid #e2e8f0;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Back</button>' : '<button onclick="switchSettingsTab(2)" style="background:transparent;border:1px solid #e2e8f0;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Company</button>') +
+    '<div style="display:flex;gap:10px;margin-top:20px;">' +
+      (_inlineQStep > 0
+        ? '<button onclick="_inlineQBack()" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Back</button>'
+        : '<button onclick="switchSettingsTab(2)" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Company</button>') +
       '<button onclick="_inlineQNext()" style="flex:1;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">'+(_inlineQStep===6?'Finish →':'Continue →')+'</button>' +
+    '</div>' +
     '</div>';
+
+  // Wire button clicks via event delegation
+  container.querySelectorAll('button[data-opt]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      window._inlineSelectOpt(this);
+    });
+  });
 }
+
+window._inlineSelectOpt = function(el) {
+  var opt = el.getAttribute('data-opt');
+  _inlineSelect(opt);
+};
 
 function _inlineSelect(opt) {
   var q = _PROFILING_QS[_inlineQStep];
@@ -5813,6 +5877,154 @@ showPage = function(id, e) {
     }, 30);
   }
 };
+
+// =============================================
+// V4 — Property Manager auth (no role selection)
+// Clean, focused, 3-step: contact → password/OTP
+// =============================================
+function showAuthPageV4(mode) {
+  var ex = document.getElementById('authModal'); if (ex) ex.remove();
+  window._auth = { isSignup: mode !== 'login', role: 'manager', step: 'contact', contact: '', countryCode: '+44', name: '' };
+  var COUNTRY_CODES = [
+    {code:'+44',flag:'🇬🇧',name:'UK'},{code:'+1',flag:'🇺🇸',name:'US'},{code:'+91',flag:'🇮🇳',name:'IN'},
+    {code:'+971',flag:'🇦🇪',name:'UAE'},{code:'+61',flag:'🇦🇺',name:'AU'},{code:'+33',flag:'🇫🇷',name:'FR'},
+    {code:'+49',flag:'🇩🇪',name:'DE'},{code:'+92',flag:'🇵🇰',name:'PK'}
+  ];
+  var modal = document.createElement('div');
+  modal.id = 'authModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
+  document.body.appendChild(modal);
+  modal.addEventListener('click', function(e){ if(e.target===modal){ modal.remove(); delete window._auth; } });
+
+  window._authRender = function() {
+    var a = window._auth; var isSignup = a.isSignup; var step = a.step;
+    var heading = isSignup ? 'Create your account' : 'Welcome back';
+    var subhead = isSignup ? 'Property Manager · Keylr Connect' : 'Log in to your Keylr account';
+    var variantSel = '<div style="position:relative;"><select onchange="window._authSwitchVariant(this.value)" style="appearance:none;-webkit-appearance:none;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:5px 26px 5px 9px;font-size:11px;font-family:Inter,sans-serif;color:#374151;cursor:pointer;outline:none;"><option value="4" selected>V4 — PM focused</option><option value="1">V1 — Stepped</option><option value="2">V2 — Split panel</option><option value="3">V3 — Dark hero</option></select><svg style="position:absolute;right:7px;top:50%;transform:translateY(-50%);pointer-events:none;" width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M1.5 3.5l3 3 3-3"/></svg></div>';
+
+    var ccEntry = COUNTRY_CODES.find(function(x){ return x.code === a.countryCode; }) || COUNTRY_CODES[0];
+    var ccListHtml = COUNTRY_CODES.map(function(cc){
+      return '<div onclick="window._authSelectCC(\''+cc.code+'\',\''+cc.flag+'\')" style="display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'#fff\'">'+cc.flag+' '+cc.name+'<span style="color:#94a3b8;margin-left:auto;font-size:12px;">'+cc.code+'</span></div>';
+    }).join('');
+
+    var bodyHtml = '';
+    if (step === 'contact') {
+      bodyHtml =
+        (isSignup ? '<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Full name</label><input id="authName" type="text" placeholder="Your full name" value="'+a.name+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/></div>' : '') +
+        '<div style="margin-bottom:6px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Email or mobile number</label>' +
+        '<div style="position:relative;display:flex;"><div id="ccWrap" style="display:none;flex-shrink:0;position:relative;"><button id="ccBtn" onclick="window._authToggleCC()" style="height:44px;padding:0 10px;background:#f8fafc;border:1.5px solid #e2e8f0;border-right:none;border-radius:10px 0 0 10px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;display:flex;align-items:center;gap:4px;white-space:nowrap;"><span id="ccDisplay">'+ccEntry.flag+' '+ccEntry.code+'</span><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4l3 3 3-3"/></svg></button><div id="ccList" style="display:none;position:absolute;top:48px;left:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.1);z-index:20;min-width:200px;overflow:hidden;">'+ccListHtml+'</div></div>' +
+        '<input id="authContact" type="text" placeholder="you@email.com  or  07700 000000" value="'+a.contact+'" style="flex:1;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/></div>' +
+        '<p style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin:5px 0 0;">Email → password · Mobile → OTP</p></div>' +
+        '<button onclick="window._authContinue()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">Continue →</button>';
+    } else if (step === 'password') {
+      bodyHtml =
+        '<div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e8ecf0;border-radius:10px;padding:10px 14px;margin-bottom:18px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#64748b" stroke-width="1.8"><rect x="1" y="3" width="11" height="8" rx="1.5"/><path d="M1 5.5l5.5 3.5 5.5-3.5"/></svg><span style="font-size:13px;color:#374151;font-family:Inter,sans-serif;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+a.contact+'</span><button onclick="window._authBack()" style="background:none;border:none;color:#1A5FC8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Change</button></div>' +
+        '<div style="margin-bottom:20px;position:relative;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">'+(isSignup?'Create a password':'Password')+'</label><input id="authPwd" type="password" placeholder="••••••••" autofocus style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 44px 11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/><button id="pwdEye" type="button" style="position:absolute;right:13px;bottom:12px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg></button></div>' +
+        '<button onclick="window._authSubmit_v4()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">'+(isSignup?'Create account':'Log in')+'</button>';
+    } else if (step === 'otp') {
+      bodyHtml =
+        '<div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e8ecf0;border-radius:10px;padding:10px 14px;margin-bottom:16px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#64748b" stroke-width="1.8"><rect x="1" y="1" width="11" height="11" rx="2"/><circle cx="6.5" cy="8" r="1"/></svg><span style="font-size:13px;color:#374151;font-family:Inter,sans-serif;flex:1;">'+a.contact+'</span><button onclick="window._authBack()" style="background:none;border:none;color:#1A5FC8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Change</button></div>' +
+        '<p style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;text-align:center;margin:0 0 16px;">Enter the 6-digit code sent to your number</p>' +
+        '<div style="display:flex;gap:8px;justify-content:center;margin-bottom:18px;" id="otpBoxes">' +
+          [0,1,2,3,4,5].map(function(i){ return '<input data-otp="'+i+'" type="text" inputmode="numeric" maxlength="1" style="width:42px;height:50px;border:1.5px solid #e2e8f0;border-radius:10px;text-align:center;font-size:22px;font-weight:700;font-family:Inter,sans-serif;color:#0f172a;outline:none;box-sizing:border-box;transition:border-color 0.15s;">'; }).join('') +
+        '</div>' +
+        '<button onclick="window._authSubmit_v4()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:10px;">Verify &amp; Continue</button>' +
+        '<div style="display:flex;justify-content:center;gap:16px;"><button onclick="window._authBack()" style="background:none;border:none;color:#64748b;font-size:12.5px;cursor:pointer;font-family:Inter,sans-serif;padding:0;">← Change number</button><span style="color:#e2e8f0;">|</span><button id="resendBtn" onclick="window._authResend()" style="background:none;border:none;color:#1A5FC8;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Resend OTP</button></div>';
+    }
+
+    var switchHtml = step === 'contact' ? (isSignup
+      ? '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">Already have an account? <a href="#" onclick="window._authSwitch();return false;" style="color:#1A5FC8;font-weight:600;text-decoration:none;">Log in</a></p>'
+      : '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">No account? <a href="#" onclick="window._authSwitch();return false;" style="color:#1A5FC8;font-weight:600;text-decoration:none;">Sign up free</a></p>') : '';
+
+    modal.innerHTML =
+      '<div style="background:#fff;border-radius:20px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;">' +
+        '<div style="padding:22px 26px 16px;border-bottom:0.5px solid #f1f5f9;">' +
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
+            '<div><div style="font-size:19px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">'+heading+'</div><div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">'+subhead+'</div></div>' +
+            '<div style="display:flex;align-items:center;gap:7px;flex-shrink:0;margin-left:10px;">'+variantSel+'<button id="authCloseBtn" style="background:#f1f5f9;border:none;color:#64748b;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button></div>' +
+          '</div>' +
+        '</div>' +
+        '<div style="padding:20px 26px 22px;">'+bodyHtml+switchHtml+'</div>' +
+      '</div>';
+
+    var cb = document.getElementById('authCloseBtn'); if(cb) cb.addEventListener('click',function(){ modal.remove(); delete window._auth; });
+    var eye = document.getElementById('pwdEye'); if(eye) eye.addEventListener('click',function(){ var f=document.getElementById('authPwd'); if(f) f.type=f.type==='password'?'text':'password'; });
+    var ct = document.getElementById('authContact');
+    if(ct){
+      ct.addEventListener('focus',function(){ this.style.borderColor='#1A5FC8'; }); ct.addEventListener('blur',function(){ this.style.borderColor='#e2e8f0'; });
+      ct.addEventListener('keydown',function(e){ if(e.key==='Enter') window._authContinue(); });
+      ct.addEventListener('input',function(){
+        var val=this.value.trim(); var isPhone=/^[\d\s\+\-\(\)]{3,}$/.test(val)&&/\d{3,}/.test(val);
+        var ccWrap=document.getElementById('ccWrap'); if(ccWrap){ ccWrap.style.display=isPhone?'block':'none'; this.style.borderRadius=isPhone?'0 10px 10px 0':'10px'; }
+      });
+      setTimeout(function(){ if(ct) ct.focus(); },80);
+    }
+    var nm = document.getElementById('authName'); if(nm){ nm.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';}); nm.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';}); }
+    var pwd=document.getElementById('authPwd'); if(pwd){ pwd.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';}); pwd.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';}); pwd.addEventListener('keydown',function(e){if(e.key==='Enter')window._authSubmit_v4();}); setTimeout(function(){if(pwd)pwd.focus();},80); }
+    var ob=document.getElementById('otpBoxes'); if(ob){var ins=ob.querySelectorAll('input');ins.forEach(function(inp,i){inp.addEventListener('input',function(){this.value=this.value.replace(/\D/g,'');if(this.value&&i<ins.length-1)ins[i+1].focus();}); inp.addEventListener('keydown',function(e){if(e.key==='Backspace'&&!this.value&&i>0)ins[i-1].focus();}); inp.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';}); inp.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';});}); setTimeout(function(){if(ins[0])ins[0].focus();},80);}
+  };
+
+  window._authSetRole  = function(r){ window._auth.role=r; window._authRender(); };
+  window._authBack     = function(){ window._auth.step='contact'; window._authRender(); };
+  window._authSwitch   = function(){ var m=window._auth.isSignup?'login':'signup'; modal.remove(); delete window._auth; showAuthPageV4(m); };
+  window._authResend   = function(){ var b=document.getElementById('resendBtn'); if(b){b.textContent='Sent ✓';b.style.color='#10b981';setTimeout(function(){if(b){b.textContent='Resend OTP';b.style.color='#1A5FC8';}},3000);} };
+  window._authToggleCC = function(){ var l=document.getElementById('ccList'); if(l) l.style.display=l.style.display==='none'?'block':'none'; };
+  window._authSelectCC = function(code,flag){ window._auth.countryCode=code; var d=document.getElementById('ccDisplay'); if(d) d.textContent=flag+' '+code; var l=document.getElementById('ccList'); if(l) l.style.display='none'; };
+  window._authContinue = function(){
+    var ct=document.getElementById('authContact'); if(!ct) return;
+    var val=ct.value.trim(); if(!val){ct.style.borderColor='#ef4444';ct.focus();return;}
+    window._auth.contact=val;
+    var nm=document.getElementById('authName'); if(nm) window._auth.name=nm.value.trim();
+    var cleaned=val.replace(/[\s\-\(\)\+]/g,'');
+    window._auth.step=/^\d{7,15}$/.test(cleaned)?'otp':'password';
+    if(/^\d{7,15}$/.test(cleaned)) window._auth.contact=window._auth.countryCode+' '+val;
+    window._authRender();
+  };
+  window._authSubmit_v4 = function(){
+    var a=window._auth;
+    var isPhone=/^\d{7,15}$/.test((a.contact||'').replace(/[\s\-\(\)\+]/g,''));
+    _setUser({name:a.name||'',email:isPhone?'':(a.contact||''),phone:isPhone?(a.contact||''):'',contact:a.contact||'',role:'manager',profileComplete:false});
+    modal.remove(); delete window._auth;
+    if(a.isSignup){ goToDashboard('',false); setTimeout(function(){showPage('settings',null);},500); }
+    else { goToDashboard('',false); }
+  };
+  window._authSwitchVariant=function(v){var a=window._auth;modal.remove();delete window._auth;var m=a&&a.isSignup?'signup':'login';if(v==='1')showAuthPageV1(m);else if(v==='2')showAuthPage(m);else if(v==='3')showAuthPageV3(m);else showAuthPageV4(m);};
+
+  window._authRender();
+}
+
+// =============================================
+// SUPPLIER AUTH — simple lightweight modal
+// =============================================
+function showSupplierAuth() {
+  var ex=document.getElementById('authModal'); if(ex) ex.remove();
+  var modal=document.createElement('div');
+  modal.id='authModal';
+  modal.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
+  document.body.appendChild(modal);
+  modal.addEventListener('click',function(e){if(e.target===modal){modal.remove();}});
+  modal.innerHTML=
+    '<div style="background:#fff;border-radius:20px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;">' +
+      '<div style="background:linear-gradient(135deg,#0f1c38,#1a3356);padding:24px 26px 20px;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+          '<div><div style="font-size:18px;font-weight:800;color:#fff;font-family:Fraunces,serif;margin-bottom:2px;">Join as a Supplier</div><div style="font-size:12px;color:rgba(255,255,255,0.5);font-family:Inter,sans-serif;">Receive verified job requests from landlords</div></div>' +
+          '<button id="supClose" style="background:rgba(255,255,255,0.1);border:none;color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">&times;</button>' +
+        '</div>' +
+      '</div>' +
+      '<div style="padding:22px 26px 26px;">' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">' +
+          '<div><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">First name</label><input type="text" placeholder="First" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/></div>' +
+          '<div><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Last name</label><input type="text" placeholder="Last" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/></div>' +
+        '</div>' +
+        '<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Business / trade name</label><input type="text" placeholder="e.g. SparkRight Electrical Ltd" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/></div>' +
+        '<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Email address</label><input type="email" placeholder="you@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/></div>' +
+        '<div style="margin-bottom:20px;position:relative;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Password</label><input id="supPwd" type="password" placeholder="Create a password" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 40px 10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/><button type="button" onclick="var f=document.getElementById(\'supPwd\');f.type=f.type===\'password\'?\'text\':\'password\';" style="position:absolute;right:12px;bottom:11px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg></button></div>' +
+        '<button onclick="modal.remove();" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">Apply to join →</button>' +
+        '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">Already a supplier? <a href="#" onclick="modal.remove();showAuthPageV4(\'login\');return false;" style="color:#1A5FC8;font-weight:600;text-decoration:none;">Log in</a></p>' +
+      '</div>' +
+    '</div>';
+  var sc = document.getElementById('supClose'); if(sc) sc.addEventListener('click',function(){ modal.remove(); });
+}
 </script>
 
 <!-- =============================================
