@@ -5943,14 +5943,6 @@ function _selectTierInline(name) {
   if(_user) _user.tier = name;
 }
 
-function _finishSetup() {
-  _onboardSteps[3].done = true;
-  _updateWizStepper(4);
-  if (_user) _user.profileComplete = true;
-  // Go directly to dashboard home
-  goToDashboard('', false);
-  setTimeout(function() { showPage('home', null); }, 400);
-}
 
 // Hook showPage to sync settings when tab opens
 var _origShowPage_settings = showPage;
