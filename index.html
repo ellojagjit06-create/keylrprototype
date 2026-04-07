@@ -141,7 +141,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   background:var(--hero-bg);
   position:relative;overflow:hidden;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:100px 32px 80px;
+  padding:100px 48px 80px;
 }
 
 /* Noise texture overlay */
@@ -171,7 +171,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   filter:blur(0px);
 }
 
-.hero-content{position:relative;z-index:2;text-align:center;max-width:1100px;width:100%;box-sizing:border-box;}
+.hero-content{position:relative;z-index:2;text-align:center;max-width:1320px;width:100%;box-sizing:border-box;}
 
 .hero-eyebrow{
   display:inline-flex;align-items:center;gap:8px;
@@ -197,13 +197,13 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
 .hero-sub{
   font-size:18px;font-weight:400;color:rgba(255,255,255,0.5);
-  line-height:1.65;max-width:540px;margin:0 auto 44px;
+  line-height:1.65;max-width:680px;margin:0 auto 44px;
   opacity:0;animation:fadeUp 0.6s var(--ease) forwards 0.4s;
 }
 
 /* Search bar */
 .hero-searchbar-wrap{
-  max-width:800px;width:100%;margin:0 auto;
+  max-width:940px;width:100%;margin:0 auto;
   opacity:0;animation:fadeUp 0.6s var(--ease) forwards 0.55s;
 }
 .hero-searchbar{
@@ -442,7 +442,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 /* =============================================
    LANDING — SECTIONS (white bg)
 ============================================= */
-.lp-section{padding:96px 80px;}
+.lp-section{padding:96px 80px;}.lp-section > *{max-width:1400px;margin-left:auto;margin-right:auto;}
 .lp-section-alt{background:var(--gray-50);}
 .sec-inner{max-width:1400px;margin:0 auto;}
 .sec-label{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);text-align:center;margin-bottom:10px;}
@@ -2314,8 +2314,8 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     <div class="nav-btns" id="navBtns">
       <!-- Auth buttons (logged out) -->
       <div id="navAuthBtns" style="display:flex;align-items:center;gap:8px;">
-        <button class="btn-ghost-light" id="navLoginBtn" onclick="showAuthPageV4('login')">Log in</button>
-        <button class="btn-teal" onclick="showAuthPageV4('signup')">Sign Up <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M8 4l3 2.5-3 2.5"/></svg></button>
+        <button class="btn-ghost-light" id="navLoginBtn" onclick="showAuthPage('login')">Log in</button>
+        <button class="btn-teal" onclick="showAuthPage('signup')">Sign Up <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M8 4l3 2.5-3 2.5"/></svg></button>
       </div>
 
     </div>
@@ -2619,8 +2619,8 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
       <div id="sbAuthArea">
         <p class="db-auth-hint">Sign up or log in to access<br>all the features</p>
         <div class="db-auth-btns">
-          <button class="db-signup-btn" onclick="showAuthPageV4('signup')">Sign up</button>
-          <button class="db-login-btn" onclick="showAuthPageV4('login')">Log in</button>
+          <button class="db-signup-btn" onclick="showAuthPage('signup')">Sign up</button>
+          <button class="db-login-btn" onclick="showAuthPage('login')">Log in</button>
         </div>
       </div>
       <!-- Logged in: profile row -->
@@ -2652,7 +2652,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     <!-- HOME PAGE -->
     <div id="page-home">
       <div style="flex:1;overflow-y:auto;min-height:0;">
-        <div style="max-width:860px;width:100%;margin:0 auto;padding:24px 28px 48px;">
+        <div style="max-width:1100px;width:100%;margin:0 auto;padding:24px 32px 48px;">
 
           <!-- HERO CONNECT CARD -->
           <div class="home-animate" style="background:var(--hero-bg);border-radius:20px;padding:36px 36px 28px;margin-bottom:20px;position:relative;overflow:hidden;">
@@ -5981,7 +5981,7 @@ function showAuthPageV4(mode) {
     var a = window._auth; var isSignup = a.isSignup; var step = a.step;
     var heading = isSignup ? 'Create your account' : 'Welcome back';
     var subhead = isSignup ? 'Property Manager · Keylr Connect' : 'Log in to your Keylr account';
-    var variantSel = '<div style="position:relative;"><select onchange="window._authSwitchVariant(this.value)" style="appearance:none;-webkit-appearance:none;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:5px 26px 5px 9px;font-size:11px;font-family:Inter,sans-serif;color:#374151;cursor:pointer;outline:none;"><option value="4" selected>V4 — PM focused</option><option value="1">V1 — Stepped</option><option value="2">V2 — Split panel</option><option value="3">V3 — Dark hero</option></select><svg style="position:absolute;right:7px;top:50%;transform:translateY(-50%);pointer-events:none;" width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M1.5 3.5l3 3 3-3"/></svg></div>';
+    var variantSel = '';
 
     var ccEntry = COUNTRY_CODES.find(function(x){ return x.code === a.countryCode; }) || COUNTRY_CODES[0];
     var ccListHtml = COUNTRY_CODES.map(function(cc){
@@ -6022,7 +6022,7 @@ function showAuthPageV4(mode) {
         '<div style="padding:22px 26px 16px;border-bottom:0.5px solid #f1f5f9;">' +
           '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
             '<div><div style="font-size:19px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">'+heading+'</div><div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">'+subhead+'</div></div>' +
-            '<div style="display:flex;align-items:center;gap:7px;flex-shrink:0;margin-left:10px;">'+variantSel+'<button id="authCloseBtn" style="background:#f1f5f9;border:none;color:#64748b;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button></div>' +
+            '<button id="authCloseBtn" style="background:#f1f5f9;border:none;color:#64748b;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0;">&times;</button>' +
           '</div>' +
         '</div>' +
         '<div style="padding:20px 26px 22px;">'+bodyHtml+switchHtml+'</div>' +
