@@ -4934,23 +4934,20 @@ function showAuthPage(mode) {
 
       formBody =
         (isSignup ? '<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Full name</label><input id="authName" type="text" placeholder="Your full name" autocomplete="name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/></div>' : '') +
-        '<div style="margin-bottom:16px;">' +
-          '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">Email / Phone Number</label>' +
-          '<div style="position:relative;display:flex;">' +
-            '<div id="ccWrap" style="display:none;flex-shrink:0;position:relative;">' +
-              '<button id="ccBtn" onclick="window._authToggleCC()" style="height:44px;padding:0 10px;background:#f8fafc;border:1.5px solid #e2e8f0;border-right:none;border-radius:10px 0 0 10px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+        '<div style="margin-bottom:16px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Email or mobile number</label>' +
+          '<div style="position:relative;display:flex;align-items:stretch;">' +
+            '<div id="ccWrap" style="display:none;flex-shrink:0;">' +
+              '<button id="ccBtn" onclick="window._authToggleCC()" style="height:100%;padding:0 10px;background:#f8fafc;border:1.5px solid #e2e8f0;border-right:none;border-radius:10px 0 0 10px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
                 '<span id="ccDisplay">' + ccEntry.flag + ' ' + ccEntry.code + '</span>' +
                 '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4l3 3 3-3"/></svg>' +
               '</button>' +
               '<div id="ccList" style="display:none;position:absolute;top:48px;left:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.1);z-index:20;min-width:200px;overflow:hidden;">' + ccListHtml + '</div>' +
             '</div>' +
-            (isSignup ? '<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Full name</label><input id="authName" type="text" placeholder="Sarah Johnson" autocomplete="name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/></div>' : '') +
-          '<input id="authContact" type="text" placeholder="you@email.com  or  07700 000000" value="' + a.contact + '" style="flex:1;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/>' +
+            '<input id="authContact" type="text" placeholder="you@email.com  or  07700 000000" value="' + a.contact + '" style="flex:1;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/>' +
           '</div>' +
           '<p style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin:5px 0 0;">Enter email for password sign-in · mobile for OTP</p>' +
         '</div>' +
-        '<button onclick="window._authContinue()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">Continue →</button>';
-
+        '<button onclick="window._authContinue()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">Continue →</button>'
     } else if (step === 'password') {
       formBody =
         '<div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e8ecf0;border-radius:10px;padding:10px 14px;margin-bottom:18px;">' +
