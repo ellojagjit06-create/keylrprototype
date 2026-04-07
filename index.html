@@ -4678,185 +4678,200 @@ function filterExplore(query) {
 }
 
 function showAuthPage(mode) {
-  var existing = document.getElementById('authModal');
-  if (existing) existing.remove();
+  var ex = document.getElementById('authModal');
+  if (ex) ex.remove();
+
+  // State — stored on window so onclick attrs can reach them
+  window._auth = {
+    isSignup: mode !== 'login',
+    role: 'manager',
+    step: 'both',   // 'both' = email+password shown together by default
+    contact: '',
+    showOtp: false
+  };
 
   var modal = document.createElement('div');
   modal.id = 'authModal';
-  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn 0.15s ease;';
 
-  var isSignup = mode !== 'login';
-  // state
-  var _role = 'manager'; // 'manager' or 'supplier'
-  var _step = 'input';   // 'input' | 'password' | 'otp'
-  var _contact = '';
+  document.body.appendChild(modal);
+  modal.addEventListener('click', function(e){ if(e.target===modal){ modal.remove(); delete window._auth; } });
 
-  function html() {
-    var roleLabel = _role === 'manager' ? 'Property Manager' : 'Supplier';
-    var heading = isSignup ? 'Join as ' + roleLabel : 'Welcome back';
-    var subhead = isSignup
-      ? (_role === 'manager' ? 'Manage properties, book services and track compliance.' : 'Join our network and start receiving job requests.')
-      : 'Log in to your Keylr account';
+  window._authRender = function() {
+    var a = window._auth;
+    var isSignup = a.isSignup;
 
-    var toggleBar = isSignup ? (
-      '<div style="display:flex;gap:0;background:#f1f5f9;border-radius:12px;padding:4px;margin-bottom:22px;">' +
-        '<button id="roleManager" onclick="_authRole(\'manager\')" style="flex:1;border:none;border-radius:9px;padding:10px 12px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;transition:all 0.18s;' + (_role==='manager'?'background:#fff;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,0.1);':'background:transparent;color:#64748b;') + '">' +
-          '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px;margin-right:5px;"><path d="M2 13V6.5L7 2l5 4.5V13"/><path d="M5 13v-4h4v4"/></svg>Property Manager' +
+    var roleHeadings = {
+      manager: { h: isSignup ? 'Join as Property Manager' : 'Welcome back', s: isSignup ? 'Track compliance, book services and manage properties.' : 'Log in to your Keylr account.' },
+      supplier: { h: isSignup ? 'Join as a Supplier' : 'Supplier Login', s: isSignup ? 'Join our network and receive job requests from landlords.' : 'Access your supplier dashboard.' }
+    };
+    var head = roleHeadings[a.role];
+
+    // Role toggle (signup only)
+    var toggleHtml = isSignup ? (
+      '<div style="display:flex;gap:0;background:#f1f5f9;border-radius:10px;padding:4px;margin-bottom:20px;">' +
+        '<button onclick="window._authSetRole(\'manager\')" style="flex:1;border:none;border-radius:7px;padding:9px 8px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;' +
+          (a.role==='manager' ? 'background:#fff;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,0.1);' : 'background:transparent;color:#64748b;') + '">' +
+          '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1.5 12V6L6.5 1.5 11.5 6v6"/><path d="M4.5 12V8h4v4"/></svg>Property Manager' +
         '</button>' +
-        '<button id="roleSupplier" onclick="_authRole(\'supplier\')" style="flex:1;border:none;border-radius:9px;padding:10px 12px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;transition:all 0.18s;' + (_role==='supplier'?'background:#fff;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,0.1);':'background:transparent;color:#64748b;') + '">' +
-          '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px;margin-right:5px;"><circle cx="7" cy="4" r="2.5"/><path d="M2 12c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>Supplier' +
+        '<button onclick="window._authSetRole(\'supplier\')" style="flex:1;border:none;border-radius:7px;padding:9px 8px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;' +
+          (a.role==='supplier' ? 'background:#fff;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,0.1);' : 'background:transparent;color:#64748b;') + '">' +
+          '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6.5" cy="3.5" r="2.5"/><path d="M1 12c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/></svg>Supplier' +
         '</button>' +
       '</div>'
     ) : '';
 
     var bodyHtml = '';
 
-    if (_step === 'input') {
-      bodyHtml =
-        '<div style="margin-bottom:16px;">' +
-          '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">Email or mobile number</label>' +
-          '<input id="authContact" type="text" placeholder="you@email.com or 07700 000000" value="' + _contact + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" autofocus/>' +
-          '<p style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin:6px 0 0;">Enter email for password login, or mobile for OTP</p>' +
-        '</div>' +
-        '<button id="authNext" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">Continue →</button>';
-    } else if (_step === 'password') {
-      bodyHtml =
-        '<div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border-radius:10px;padding:10px 14px;margin-bottom:16px;">' +
-          '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.8"><path d="M1.5 3.5l5.5 4 5.5-4"/><rect x="1.5" y="3" width="11" height="8" rx="1.5"/></svg>' +
-          '<span style="font-size:13px;color:#374151;font-family:Inter,sans-serif;flex:1;">' + _contact + '</span>' +
-          '<button onclick="_authBack()" style="background:none;border:none;color:#1d4ed8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Change</button>' +
-        '</div>' +
-        '<div style="margin-bottom:20px;position:relative;">' +
-          '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">' + (isSignup ? 'Create a password' : 'Password') + '</label>' +
-          '<input id="authPwd" type="password" placeholder="••••••••" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 42px 11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" autofocus/>' +
-          '<button id="pwdToggle" type="button" style="position:absolute;right:12px;bottom:12px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;">' +
-            '<svg id="eyeIcon" width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg>' +
-          '</button>' +
-        '</div>' +
-        '<button id="authSubmit" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">' + (isSignup ? 'Create account' : 'Log in') + '</button>';
-    } else if (_step === 'otp') {
+    if (a.showOtp) {
+      // OTP screen
       bodyHtml =
         '<div style="text-align:center;margin-bottom:20px;">' +
-          '<div style="width:56px;height:56px;background:#eff6ff;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">' +
-            '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="1.8"><path d="M3 5h18M3 12h18M3 19h18"/></svg>' +
+          '<div style="width:52px;height:52px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">' +
+            '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1d4ed8" stroke-width="1.8"><path d="M2 5h18M2 11h18M2 17h18"/></svg>' +
           '</div>' +
-          '<div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">OTP sent to ' + _contact + '</div>' +
-          '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Enter the 6-digit code below</div>' +
+          '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">Code sent to ' + a.contact + '</div>' +
+          '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">Enter the 6-digit code · check your messages</div>' +
         '</div>' +
-        '<div style="display:flex;gap:8px;justify-content:center;margin-bottom:20px;" id="otpInputs">' +
-          [1,2,3,4,5,6].map(function(){ return '<input type="text" maxlength="1" style="width:42px;height:48px;border:1.5px solid #e2e8f0;border-radius:10px;text-align:center;font-size:20px;font-weight:700;font-family:Inter,sans-serif;color:#0f172a;outline:none;box-sizing:border-box;">'; }).join('') +
+        '<div style="display:flex;gap:8px;justify-content:center;margin-bottom:16px;" id="otpBoxes">' +
+          [0,1,2,3,4,5].map(function(i){ return '<input data-otp="'+i+'" type="text" inputmode="numeric" maxlength="1" style="width:42px;height:50px;border:1.5px solid #e2e8f0;border-radius:10px;text-align:center;font-size:22px;font-weight:700;font-family:Inter,sans-serif;color:#0f172a;outline:none;box-sizing:border-box;">'; }).join('') +
         '</div>' +
-        '<button id="authSubmit" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">Verify OTP</button>' +
-        '<button onclick="_authBack()" style="width:100%;background:transparent;border:1.5px solid #e2e8f0;border-radius:12px;padding:12px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Resend / Change number</button>';
+        '<button onclick="window._authSubmit()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:10px;">Verify & Continue</button>' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;">' +
+          '<button onclick="window._authBack()" style="background:none;border:none;color:#64748b;font-size:12.5px;font-weight:500;cursor:pointer;font-family:Inter,sans-serif;padding:0;">← Change number</button>' +
+          '<button onclick="window._authResend()" style="background:none;border:none;color:#1d4ed8;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Resend OTP</button>' +
+        '</div>';
+    } else {
+      // Default: email/mobile + password shown together
+      bodyHtml =
+        '<div style="margin-bottom:14px;">' +
+          '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Email or mobile number</label>' +
+          '<input id="authContact" type="text" placeholder="you@email.com  or  07700 000000" value="' + a.contact + '" autocomplete="email" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;"/>' +
+        '</div>' +
+        '<div style="margin-bottom:6px;position:relative;">' +
+          '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">' + (isSignup ? 'Create password' : 'Password') + '</label>' +
+          '<input id="authPwd" type="password" placeholder="••••••••" autocomplete="' + (isSignup ? 'new-password' : 'current-password') + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 42px 10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;"/>' +
+          '<button id="pwdEye" type="button" style="position:absolute;right:12px;bottom:11px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;">' +
+            '<svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg>' +
+          '</button>' +
+        '</div>' +
+        '<p style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 16px;"> Or enter a mobile number and we\'ll skip the password &amp; send an OTP instead.</p>' +
+        '<button onclick="window._authContinue()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">' + (isSignup ? 'Create account' : 'Log in') + '</button>';
     }
 
     var switchHtml = isSignup
-      ? '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">Already have an account? <a id="authSwitch" href="#" style="color:#1d4ed8;font-weight:600;text-decoration:none;">Log in</a></p>'
-      : '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">No account? <a id="authSwitch" href="#" style="color:#1d4ed8;font-weight:600;text-decoration:none;">Sign up free</a></p>';
+      ? '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">Already have an account? <a href="#" onclick="window._authSwitch();return false;" style="color:#1d4ed8;font-weight:600;text-decoration:none;">Log in</a></p>'
+      : '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">No account? <a href="#" onclick="window._authSwitch();return false;" style="color:#1d4ed8;font-weight:600;text-decoration:none;">Sign up free</a></p>';
 
-    return (
+    modal.innerHTML =
       '<div style="background:#fff;border-radius:20px;width:100%;max-width:440px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;">' +
-        // Header
-        '<div style="padding:26px 28px 20px;border-bottom:1px solid #f1f5f9;">' +
+        '<div style="padding:24px 28px 18px;border-bottom:1px solid #f1f5f9;">' +
           '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
             '<div>' +
-              '<div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:3px;" id="authHeading">' + heading + '</div>' +
-              '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;" id="authSubhead">' + subhead + '</div>' +
+              '<div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:3px;">' + head.h + '</div>' +
+              '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">' + head.s + '</div>' +
             '</div>' +
-            '<button id="authClose" style="background:#f1f5f9;border:none;color:#64748b;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">&times;</button>' +
+            '<button id="authCloseBtn" style="background:#f1f5f9;border:none;color:#64748b;min-width:30px;min-height:30px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:12px;">&times;</button>' +
           '</div>' +
         '</div>' +
-        // Body
-        '<div style="padding:24px 28px 26px;">' +
-          toggleBar +
-          bodyHtml +
-          switchHtml +
+        '<div style="padding:22px 28px 24px;">' +
+          toggleBar + bodyHtml + switchHtml +
         '</div>' +
-      '</div>'
-    );
-  }
+      '</div>';
 
-  function render() {
-    modal.innerHTML = html();
-    // Wire close
-    var cl = document.getElementById('authClose');
-    if (cl) cl.onclick = function(){ modal.remove(); };
-    // Wire switch
-    var sw = document.getElementById('authSwitch');
-    if (sw) sw.onclick = function(e){ e.preventDefault(); modal.remove(); showAuthPage(isSignup?'login':'signup'); };
-    // Wire role toggle
-    if (isSignup) {
-      var rm = document.getElementById('roleManager');
-      var rs = document.getElementById('roleSupplier');
-      if (rm) rm.onclick = function(){ _authRole('manager'); };
-      if (rs) rs.onclick = function(){ _authRole('supplier'); };
-    }
-    // Wire Continue
-    var next = document.getElementById('authNext');
-    if (next) next.onclick = _authContinue;
-    // Wire contact Enter key
-    var ct = document.getElementById('authContact');
-    if (ct) ct.addEventListener('keydown', function(e){ if(e.key==='Enter') _authContinue(); });
-    // Wire password toggle
-    var pt = document.getElementById('pwdToggle');
-    if (pt) pt.onclick = function(){
+    // Wire close button (by ID, not onclick attr)
+    var cb = document.getElementById('authCloseBtn');
+    if (cb) cb.addEventListener('click', function(){ modal.remove(); delete window._auth; });
+
+    // Wire password eye
+    var eye = document.getElementById('pwdEye');
+    if (eye) eye.addEventListener('click', function(){
       var f = document.getElementById('authPwd');
-      f.type = f.type === 'password' ? 'text' : 'password';
-    };
-    // Wire submit
-    var sub = document.getElementById('authSubmit');
-    if (sub) sub.onclick = function(){ modal.remove(); showPage('home', null); };
-    // Focus input
-    var ai = document.getElementById('authContact') || document.getElementById('authPwd');
-    if (ai) setTimeout(function(){ ai.focus(); }, 80);
-    // OTP inputs auto-advance
-    var otpWrap = document.getElementById('otpInputs');
-    if (otpWrap) {
-      var inputs = otpWrap.querySelectorAll('input');
-      inputs.forEach(function(inp, idx) {
-        inp.addEventListener('input', function(){
-          if (this.value && idx < inputs.length-1) inputs[idx+1].focus();
-        });
-        inp.addEventListener('keydown', function(e){
-          if (e.key==='Backspace' && !this.value && idx>0) inputs[idx-1].focus();
-        });
-      });
-      if (inputs[0]) inputs[0].focus();
-    }
-    // Focus border
+      if (f) f.type = f.type === 'password' ? 'text' : 'password';
+    });
+
+    // Focus borders
     ['authContact','authPwd'].forEach(function(id){
       var el = document.getElementById(id);
       if (!el) return;
       el.addEventListener('focus', function(){ this.style.borderColor='#1d4ed8'; });
       el.addEventListener('blur', function(){ this.style.borderColor='#e2e8f0'; });
     });
-  }
 
-  function _authRole(r) {
-    _role = r;
-    render();
-  }
-
-  function _authBack() {
-    _step = 'input';
-    render();
-  }
-
-  function _authContinue() {
+    // Enter key on contact → continue
     var ct = document.getElementById('authContact');
+    if (ct) ct.addEventListener('keydown', function(e){ if(e.key==='Enter') window._authContinue(); });
+
+    // OTP boxes
+    var otpBoxes = document.getElementById('otpBoxes');
+    if (otpBoxes) {
+      var inputs = otpBoxes.querySelectorAll('input');
+      inputs.forEach(function(inp, i) {
+        inp.addEventListener('input', function(){
+          this.value = this.value.replace(/\D/g,'');
+          if (this.value && i < inputs.length-1) inputs[i+1].focus();
+        });
+        inp.addEventListener('keydown', function(e){
+          if (e.key==='Backspace' && !this.value && i>0) inputs[i-1].focus();
+        });
+      });
+      if (inputs[0]) setTimeout(function(){ inputs[0].focus(); }, 80);
+    } else {
+      var fc = document.getElementById('authContact');
+      if (fc) setTimeout(function(){ fc.focus(); }, 80);
+    }
+  };
+
+  window._authSetRole = function(r) {
+    window._auth.role = r;
+    window._authRender();
+  };
+
+  window._authContinue = function() {
+    var ct = document.getElementById('authContact');
+    var pwd = document.getElementById('authPwd');
     if (!ct) return;
     var val = ct.value.trim();
     if (!val) { ct.style.borderColor='#ef4444'; ct.focus(); return; }
-    _contact = val;
-    // Detect phone vs email
-    var isPhone = /^[\d\s\+\-\(\)]{7,}$/.test(val);
-    _step = isPhone ? 'otp' : 'password';
-    render();
-  }
+    window._auth.contact = val;
+    // Detect phone
+    var isPhone = /^[\d\s\+\-\(\)]{7,15}$/.test(val.replace(/\s/g,''));
+    if (isPhone) {
+      window._auth.showOtp = true;
+      window._authRender();
+    } else {
+      // email — submit
+      window._authSubmit();
+    }
+  };
 
-  render();
-  document.body.appendChild(modal);
-  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  window._authBack = function() {
+    window._auth.showOtp = false;
+    window._authRender();
+  };
+
+  window._authResend = function() {
+    var btn = document.querySelector('#otpBoxes + button, [onclick*="_authResend"]');
+    var a = window._auth;
+    // Show brief feedback
+    var resendBtns = modal.querySelectorAll('button');
+    resendBtns.forEach(function(b){ if(b.textContent.trim()==='Resend OTP'){ b.textContent='Sent! ✓'; b.style.color='#10b981'; setTimeout(function(){ b.textContent='Resend OTP'; b.style.color='#1d4ed8'; },3000); } });
+  };
+
+  window._authSubmit = function() {
+    modal.remove();
+    delete window._auth;
+    showPage('home', null);
+  };
+
+  window._authSwitch = function() {
+    var newMode = window._auth.isSignup ? 'login' : 'signup';
+    modal.remove();
+    delete window._auth;
+    showAuthPage(newMode);
+  };
+
+  window._authRender();
 }
 
 function showSupplierCountSlider() {
