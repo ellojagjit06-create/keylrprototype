@@ -4680,67 +4680,185 @@ function filterExplore(query) {
 function showAuthPage(mode) {
   var existing = document.getElementById('authModal');
   if (existing) existing.remove();
-  var isSignup = mode === 'signup';
-  var title = isSignup ? 'Create your account' : 'Welcome back';
-  var subtitle = isSignup ? 'Join thousands of property managers' : 'Log in to your Keylr account';
-  var btnLabel = isSignup ? 'Create account' : 'Log in';
-  var switchTxt = isSignup
-    ? 'Already have an account? <a href="#" id="authSwitch" style="color:#1d4ed8;font-weight:600;text-decoration:none;">Log in</a>'
-    : 'No account? <a href="#" id="authSwitch" style="color:#1d4ed8;font-weight:600;text-decoration:none;">Sign up free</a>';
+
   var modal = document.createElement('div');
   modal.id = 'authModal';
-  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.55);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;';
-  modal.innerHTML =
-    '<div style="background:#fff;border-radius:20px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.22);animation:modalPop 0.22s ease;">' +
-      '<div style="background:linear-gradient(135deg,#12192A,#1E3A5F);padding:28px 32px 22px;">' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;">' +
-          '<div>' +
-            '<div style="font-size:19px;font-weight:800;color:#fff;font-family:Fraunces,serif;margin-bottom:3px;">' + title + '</div>' +
-            '<div style="font-size:12px;color:rgba(255,255,255,0.5);font-family:Inter,sans-serif;">' + subtitle + '</div>' +
-          '</div>' +
-          '<button id="authClose" style="background:rgba(255,255,255,0.1);border:none;color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;">&times;</button>' +
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
+
+  var isSignup = mode !== 'login';
+  // state
+  var _role = 'manager'; // 'manager' or 'supplier'
+  var _step = 'input';   // 'input' | 'password' | 'otp'
+  var _contact = '';
+
+  function html() {
+    var roleLabel = _role === 'manager' ? 'Property Manager' : 'Supplier';
+    var heading = isSignup ? 'Join as ' + roleLabel : 'Welcome back';
+    var subhead = isSignup
+      ? (_role === 'manager' ? 'Manage properties, book services and track compliance.' : 'Join our network and start receiving job requests.')
+      : 'Log in to your Keylr account';
+
+    var toggleBar = isSignup ? (
+      '<div style="display:flex;gap:0;background:#f1f5f9;border-radius:12px;padding:4px;margin-bottom:22px;">' +
+        '<button id="roleManager" onclick="_authRole(\'manager\')" style="flex:1;border:none;border-radius:9px;padding:10px 12px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;transition:all 0.18s;' + (_role==='manager'?'background:#fff;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,0.1);':'background:transparent;color:#64748b;') + '">' +
+          '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px;margin-right:5px;"><path d="M2 13V6.5L7 2l5 4.5V13"/><path d="M5 13v-4h4v4"/></svg>Property Manager' +
+        '</button>' +
+        '<button id="roleSupplier" onclick="_authRole(\'supplier\')" style="flex:1;border:none;border-radius:9px;padding:10px 12px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;transition:all 0.18s;' + (_role==='supplier'?'background:#fff;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,0.1);':'background:transparent;color:#64748b;') + '">' +
+          '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px;margin-right:5px;"><circle cx="7" cy="4" r="2.5"/><path d="M2 12c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>Supplier' +
+        '</button>' +
+      '</div>'
+    ) : '';
+
+    var bodyHtml = '';
+
+    if (_step === 'input') {
+      bodyHtml =
+        '<div style="margin-bottom:16px;">' +
+          '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">Email or mobile number</label>' +
+          '<input id="authContact" type="text" placeholder="you@email.com or 07700 000000" value="' + _contact + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" autofocus/>' +
+          '<p style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin:6px 0 0;">Enter email for password login, or mobile for OTP</p>' +
         '</div>' +
-      '</div>' +
-      '<div style="padding:26px 32px 28px;">' +
-        '<div style="margin-bottom:14px;">' +
-          '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Email address</label>' +
-          '<input id="authEmail" type="email" placeholder="your@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;"/>' +
+        '<button id="authNext" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">Continue →</button>';
+    } else if (_step === 'password') {
+      bodyHtml =
+        '<div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border-radius:10px;padding:10px 14px;margin-bottom:16px;">' +
+          '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.8"><path d="M1.5 3.5l5.5 4 5.5-4"/><rect x="1.5" y="3" width="11" height="8" rx="1.5"/></svg>' +
+          '<span style="font-size:13px;color:#374151;font-family:Inter,sans-serif;flex:1;">' + _contact + '</span>' +
+          '<button onclick="_authBack()" style="background:none;border:none;color:#1d4ed8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Change</button>' +
         '</div>' +
-        '<div style="margin-bottom:22px;position:relative;">' +
-          '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Password</label>' +
-          '<input id="authPwd" type="password" placeholder="' + (isSignup ? 'Create a password' : 'Your password') + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 40px 10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;"/>' +
-          '<button id="authPwdToggle" type="button" style="position:absolute;right:12px;bottom:11px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;align-items:center;">' +
-            '<svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg>' +
+        '<div style="margin-bottom:20px;position:relative;">' +
+          '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">' + (isSignup ? 'Create a password' : 'Password') + '</label>' +
+          '<input id="authPwd" type="password" placeholder="••••••••" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 42px 11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" autofocus/>' +
+          '<button id="pwdToggle" type="button" style="position:absolute;right:12px;bottom:12px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;">' +
+            '<svg id="eyeIcon" width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg>' +
           '</button>' +
         '</div>' +
-        '<button id="authSubmit" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">' + btnLabel + '</button>' +
-        '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">' + switchTxt + '</p>' +
-      '</div>' +
-    '</div>';
+        '<button id="authSubmit" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">' + (isSignup ? 'Create account' : 'Log in') + '</button>';
+    } else if (_step === 'otp') {
+      bodyHtml =
+        '<div style="text-align:center;margin-bottom:20px;">' +
+          '<div style="width:56px;height:56px;background:#eff6ff;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">' +
+            '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="1.8"><path d="M3 5h18M3 12h18M3 19h18"/></svg>' +
+          '</div>' +
+          '<div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">OTP sent to ' + _contact + '</div>' +
+          '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Enter the 6-digit code below</div>' +
+        '</div>' +
+        '<div style="display:flex;gap:8px;justify-content:center;margin-bottom:20px;" id="otpInputs">' +
+          [1,2,3,4,5,6].map(function(){ return '<input type="text" maxlength="1" style="width:42px;height:48px;border:1.5px solid #e2e8f0;border-radius:10px;text-align:center;font-size:20px;font-weight:700;font-family:Inter,sans-serif;color:#0f172a;outline:none;box-sizing:border-box;">'; }).join('') +
+        '</div>' +
+        '<button id="authSubmit" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">Verify OTP</button>' +
+        '<button onclick="_authBack()" style="width:100%;background:transparent;border:1.5px solid #e2e8f0;border-radius:12px;padding:12px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Resend / Change number</button>';
+    }
+
+    var switchHtml = isSignup
+      ? '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">Already have an account? <a id="authSwitch" href="#" style="color:#1d4ed8;font-weight:600;text-decoration:none;">Log in</a></p>'
+      : '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">No account? <a id="authSwitch" href="#" style="color:#1d4ed8;font-weight:600;text-decoration:none;">Sign up free</a></p>';
+
+    return (
+      '<div style="background:#fff;border-radius:20px;width:100%;max-width:440px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;">' +
+        // Header
+        '<div style="padding:26px 28px 20px;border-bottom:1px solid #f1f5f9;">' +
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
+            '<div>' +
+              '<div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:3px;" id="authHeading">' + heading + '</div>' +
+              '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;" id="authSubhead">' + subhead + '</div>' +
+            '</div>' +
+            '<button id="authClose" style="background:#f1f5f9;border:none;color:#64748b;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">&times;</button>' +
+          '</div>' +
+        '</div>' +
+        // Body
+        '<div style="padding:24px 28px 26px;">' +
+          toggleBar +
+          bodyHtml +
+          switchHtml +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function render() {
+    modal.innerHTML = html();
+    // Wire close
+    var cl = document.getElementById('authClose');
+    if (cl) cl.onclick = function(){ modal.remove(); };
+    // Wire switch
+    var sw = document.getElementById('authSwitch');
+    if (sw) sw.onclick = function(e){ e.preventDefault(); modal.remove(); showAuthPage(isSignup?'login':'signup'); };
+    // Wire role toggle
+    if (isSignup) {
+      var rm = document.getElementById('roleManager');
+      var rs = document.getElementById('roleSupplier');
+      if (rm) rm.onclick = function(){ _authRole('manager'); };
+      if (rs) rs.onclick = function(){ _authRole('supplier'); };
+    }
+    // Wire Continue
+    var next = document.getElementById('authNext');
+    if (next) next.onclick = _authContinue;
+    // Wire contact Enter key
+    var ct = document.getElementById('authContact');
+    if (ct) ct.addEventListener('keydown', function(e){ if(e.key==='Enter') _authContinue(); });
+    // Wire password toggle
+    var pt = document.getElementById('pwdToggle');
+    if (pt) pt.onclick = function(){
+      var f = document.getElementById('authPwd');
+      f.type = f.type === 'password' ? 'text' : 'password';
+    };
+    // Wire submit
+    var sub = document.getElementById('authSubmit');
+    if (sub) sub.onclick = function(){ modal.remove(); showPage('home', null); };
+    // Focus input
+    var ai = document.getElementById('authContact') || document.getElementById('authPwd');
+    if (ai) setTimeout(function(){ ai.focus(); }, 80);
+    // OTP inputs auto-advance
+    var otpWrap = document.getElementById('otpInputs');
+    if (otpWrap) {
+      var inputs = otpWrap.querySelectorAll('input');
+      inputs.forEach(function(inp, idx) {
+        inp.addEventListener('input', function(){
+          if (this.value && idx < inputs.length-1) inputs[idx+1].focus();
+        });
+        inp.addEventListener('keydown', function(e){
+          if (e.key==='Backspace' && !this.value && idx>0) inputs[idx-1].focus();
+        });
+      });
+      if (inputs[0]) inputs[0].focus();
+    }
+    // Focus border
+    ['authContact','authPwd'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('focus', function(){ this.style.borderColor='#1d4ed8'; });
+      el.addEventListener('blur', function(){ this.style.borderColor='#e2e8f0'; });
+    });
+  }
+
+  function _authRole(r) {
+    _role = r;
+    render();
+  }
+
+  function _authBack() {
+    _step = 'input';
+    render();
+  }
+
+  function _authContinue() {
+    var ct = document.getElementById('authContact');
+    if (!ct) return;
+    var val = ct.value.trim();
+    if (!val) { ct.style.borderColor='#ef4444'; ct.focus(); return; }
+    _contact = val;
+    // Detect phone vs email
+    var isPhone = /^[\d\s\+\-\(\)]{7,}$/.test(val);
+    _step = isPhone ? 'otp' : 'password';
+    render();
+  }
+
+  render();
   document.body.appendChild(modal);
-  // Wire events after DOM insertion
   modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
-  document.getElementById('authClose').onclick = function(){ modal.remove(); };
-  document.getElementById('authPwdToggle').onclick = function(){
-    var f = document.getElementById('authPwd');
-    f.type = f.type === 'password' ? 'text' : 'password';
-  };
-  // Focus styling
-  ['authEmail','authPwd'].forEach(function(id){
-    var el = document.getElementById(id);
-    el.addEventListener('focus', function(){ this.style.borderColor='#1d4ed8'; });
-    el.addEventListener('blur', function(){ this.style.borderColor='#e2e8f0'; });
-  });
-  var sw = document.getElementById('authSwitch');
-  if (sw) sw.onclick = function(e){ e.preventDefault(); modal.remove(); showAuthPage(isSignup?'login':'signup'); };
 }
 
-
-
-
-// =============================================
-// SUPPLIER COUNT SLIDER WIDGET
-// =============================================
 function showSupplierCountSlider() {
   var area = document.getElementById('chatArea');
   if (!area || document.getElementById('supplierSlider')) return;
