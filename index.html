@@ -4815,7 +4815,7 @@ function showAuthPage(mode) {
             '<svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg>' +
           '</button>' +
         '</div>' +
-        '<button onclick="window._authSubmit()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">' + (isSignup ? 'Create account' : 'Log in') + '</button>';
+        '<button onclick="'+(isSignup && a.role==="manager"?'showPMSignupFlow()':'window._authSubmit()')+'" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">'+(isSignup?'Create account':'Log in')+'</button>';
 
     } else if (step === 'otp') {
       formBody =
@@ -5099,6 +5099,212 @@ function showAuthPageV3(mode) {
   window._authContinue=function(){var ct=document.getElementById('authContact');if(!ct)return;var val=ct.value.trim();if(!val){ct.style.borderColor='#ef4444';ct.focus();return;}window._auth.contact=val;var cleaned=val.replace(/[\s\-\(\)\+]/g,'');window._auth.step=/^\d{7,15}$/.test(cleaned)?'otp':'password';window._auth.contact=(/^\d{7,15}$/.test(cleaned)?window._auth.countryCode+' ':'')+val;window._authRender();};
   window._authSwitchVariant=function(v){var a=window._auth;modal.remove();delete window._auth;var m=a&&a.isSignup?'signup':'login';if(v==='1')showAuthPageV1(m);else if(v==='2')showAuthPage(m);else if(v==='3')showAuthPageV3(m);};
   window._authRender();
+}
+
+function showPMSignupFlow() {
+  // Remove auth modal
+  var ex = document.getElementById('authModal'); if (ex) ex.remove();
+  delete window._auth;
+
+  window._pm = {
+    step: 0, // 0 = signup fields, 1-7 = profiling Q1-Q7, 8 = complete
+    data: { name:'', email:'', phone:'', password:'', q1:'', q2:[], q3:'', q4:[], q5:[], q6:'', q7:'' }
+  };
+
+  var overlay = document.createElement('div');
+  overlay.id = 'pmModal';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.5);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
+  document.body.appendChild(overlay);
+
+  var STEPS = [
+    { id:'signup', label:'Account', title:'Create your account', sub:'Property Manager · Keylr Connect', total:9 },
+    { id:'q1', label:'Role', title:'What best describes what you do?', sub:'Helps us personalise your dashboard', total:9 },
+    { id:'q2', label:'Properties', title:'What types of property do you manage?', sub:'Select all that apply', total:9 },
+    { id:'q3', label:'Portfolio', title:'How many properties or units do you manage?', sub:'Used for tier recommendation', total:9 },
+    { id:'q4', label:'Services', title:'Which services do you currently coordinate?', sub:'Select all that apply', total:9 },
+    { id:'q5', label:'Location', title:'Where are your properties located?', sub:'Select all that apply', total:9 },
+    { id:'q6', label:'How you work', title:'How do you currently find and manage your service providers?', sub:'Shapes your matching experience', total:9 },
+    { id:'q7', label:'Pain point', title:'What is your biggest headache right now?', sub:'Personalises your dashboard and first steps', total:9 },
+    { id:'done', label:'Done', title:'', sub:'', total:9 }
+  ];
+
+  var Q1_OPTS = ['Residential letting agent','Short-term rental / Airbnb manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator (hotel, hostel, B&B)','Facilities manager','Individual landlord','Other'];
+  var Q2_OPTS = {
+    'Residential':['Houses and flats — AST','HMO — houses in multiple occupation','Short-term rental / holiday let','Residential block / leasehold','Serviced apartments'],
+    'Commercial':['Offices','Retail units','Industrial / warehouse','Healthcare / medical','Education'],
+    'Hospitality':['Hotels','Hostels and budget accommodation','Guest houses and B&Bs','Purpose-built student accommodation (PBSA)'],
+    'Mixed use':['Mixed residential and commercial','Mixed-use development or estate']
+  };
+  var Q3_OPTS = ['1 to 5','6 to 25','26 to 100','101 to 500','500 or more'];
+  var Q4_OPTS = ['Cleaning — regular, end of tenancy, turnaround, deep clean','Compliance certificates — gas safety (CP12), EICR, EPC, fire risk, legionella','Reactive maintenance and repairs','Planned and preventive maintenance (PPM)','Property inspections and inventory','Landscaping and outdoor','Pest control','Security and access','Removals and clearance','Specialist trades — plumbing, electrical, gas, carpentry'];
+  var Q5_OPTS = ['London','South East England','South West England','Midlands','North West England','North East England','Yorkshire','Scotland','Wales','Multiple regions'];
+  var Q6_OPTS = ['Mostly ad hoc — WhatsApp, phone, and word of mouth','I have a small group of regular contractors I go back to','I manage a large contractor network with agreed rates','I have in-house staff doing some of the work','I already use a property management system'];
+  var Q7_OPTS = ['Finding reliable, vetted contractors quickly','Keeping track of jobs and chasing completion','Compliance — certificates expiring without warning','Invoices and payments from too many different suppliers','Coordinating my team and knowing who is doing what','No single view of everything across my portfolio'];
+
+  window._pmRender = function() {
+    var p = window._pm;
+    var step = p.step;
+    var s = STEPS[step];
+    var pct = Math.round((step / 8) * 100);
+
+    // Progress dots
+    var dots = STEPS.slice(0,8).map(function(st, i) {
+      var done = i < step;
+      var active = i === step;
+      return '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;">' +
+        '<div style="width:'+(active?'28px':'8px')+';height:8px;border-radius:999px;background:'+(done?'#1A5FC8':active?'linear-gradient(90deg,#1A5FC8,#0FA3D0)':'#e2e8f0')+';transition:all 0.25s;"></div>' +
+      '</div>';
+    }).join('');
+
+    var body = '';
+
+    if (step === 0) {
+      // Signup fields
+      body = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">' +
+        '<div><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">First &amp; last name</label>' +
+        '<input id="pmName" type="text" placeholder="Sarah Johnson" value="'+p.data.name+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;"/></div>' +
+        '<div><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Phone number</label>' +
+        '<input id="pmPhone" type="text" placeholder="+44 7700 000000" value="'+p.data.phone+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;"/></div>' +
+        '</div>' +
+        '<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Email address</label>' +
+        '<input id="pmEmail" type="email" placeholder="you@email.com" value="'+p.data.email+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;"/></div>' +
+        '<div style="margin-bottom:6px;position:relative;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Password</label>' +
+        '<input id="pmPwd" type="password" placeholder="Min. 8 characters" value="'+p.data.password+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 42px 10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;"/>' +
+        '<button id="pmEye" type="button" style="position:absolute;right:12px;bottom:10px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;">' +
+        '<svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg></button></div>' +
+        '<p style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin:0 0 20px;">Verification email and SMS sent after account creation</p>';
+
+    } else if (step >= 1 && step <= 7) {
+      var qOpts = [null, Q1_OPTS, Q2_OPTS, Q3_OPTS, Q4_OPTS, Q5_OPTS, Q6_OPTS, Q7_OPTS][step];
+      var isMulti = [null,false,true,false,true,true,false,false][step];
+      var dataKey = ['','q1','q2','q3','q4','q5','q6','q7'][step];
+      var currentVal = p.data[dataKey];
+
+      if (step === 2) {
+        // Q2 grouped multi-select
+        body = '<div style="max-height:300px;overflow-y:auto;padding-right:4px;">';
+        Object.keys(qOpts).forEach(function(group) {
+          body += '<div style="margin-bottom:14px;"><div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;font-family:Inter,sans-serif;">'+group+'</div>';
+          body += '<div style="display:flex;flex-direction:column;gap:6px;">';
+          qOpts[group].forEach(function(opt) {
+            var sel = currentVal.indexOf(opt) !== -1;
+            body += '<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all 0.12s;">' +
+              '<input type="checkbox" data-opt="'+opt+'" '+(sel?'checked':'')+' style="display:none;" onchange="window._pmToggle(\''+dataKey+'\',this.getAttribute(\'data-opt\'),this.checked)"/>' +
+              '<div style="width:18px;height:18px;border-radius:5px;border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
+              (sel?'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M1.5 5l3 3 4-4.5"/></svg>':'')+'</div>' +
+              '<span style="font-size:13px;color:#374151;font-family:Inter,sans-serif;">'+opt+'</span></label>';
+          });
+          body += '</div></div>';
+        });
+        body += '</div>';
+      } else if (isMulti) {
+        // Flat multi-select (Q4, Q5)
+        body = '<div style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;padding-right:4px;">';
+        qOpts.forEach(function(opt) {
+          var sel = currentVal.indexOf(opt) !== -1;
+          body += '<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all 0.12s;">' +
+            '<input type="checkbox" data-opt="'+opt+'" '+(sel?'checked':'')+' style="display:none;" onchange="window._pmToggle(\''+dataKey+'\',this.getAttribute(\'data-opt\'),this.checked)"/>' +
+            '<div style="width:18px;height:18px;border-radius:5px;border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
+            (sel?'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M1.5 5l3 3 4-4.5"/></svg>':'')+'</div>' +
+            '<span style="font-size:13px;color:#374151;font-family:Inter,sans-serif;line-height:1.4;">'+opt+'</span></label>';
+        });
+        body += '</div>';
+      } else {
+        // Single select (Q1, Q3, Q6, Q7)
+        body = '<div style="display:flex;flex-direction:column;gap:6px;">';
+        qOpts.forEach(function(opt) {
+          var sel = currentVal === opt;
+          body += '<button onclick="window._pmSelect(\''+dataKey+'\',\''+opt.replace(/'/g,"\\'").replace(/"/g,'&quot;')+'\')" style="text-align:left;padding:11px 16px;border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';font-size:13px;font-family:Inter,sans-serif;color:#374151;display:flex;align-items:center;gap:10px;transition:all 0.12s;">' +
+            '<div style="width:18px;height:18px;border-radius:50%;border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
+            (sel?'<div style="width:6px;height:6px;border-radius:50%;background:#fff;"></div>':'')+'</div>'+opt+'</button>';
+        });
+        body += '</div>';
+      }
+
+    } else if (step === 8) {
+      // Done screen
+      body = '<div style="text-align:center;padding:20px 0;">' +
+        '<div style="width:68px;height:68px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;">' +
+        '<svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#16a34a" stroke-width="2"><path d="M5 15l7 7 13-13"/></svg></div>' +
+        '<div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">You\'re all set!</div>' +
+        '<div style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;line-height:1.65;max-width:300px;margin:0 auto 24px;">Your account is ready. Your dashboard has been personalised based on your answers.</div>' +
+        '<div style="display:flex;flex-direction:column;gap:8px;text-align:left;background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:24px;">' +
+        '<div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;font-family:Inter,sans-serif;margin-bottom:4px;">What\'s been set up for you</div>' +
+        ['Dashboard personalised to your role','Service categories configured','Regional suppliers pre-loaded','Compliance certificate stack ready'].map(function(t){ return '<div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;font-family:Inter,sans-serif;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1A5FC8" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>'+t+'</div>'; }).join('') +
+        '</div>';
+    }
+
+    var heading = step === 8
+      ? ''
+      : '<div style="font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">'+s.title+'</div>' +
+        '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:18px;">'+s.sub+'</div>';
+
+    overlay.innerHTML =
+      '<div style="background:#fff;border-radius:20px;width:100%;max-width:520px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;">' +
+
+        // Header
+        '<div style="padding:20px 26px 16px;border-bottom:0.5px solid #f1f5f9;">' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">' +
+            '<div style="display:flex;align-items:center;gap:8px;">' +
+              '<div style="width:26px;height:26px;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);border-radius:7px;display:flex;align-items:center;justify-content:center;">' +
+                '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M6 1C3.5 1 1.5 3 1.5 5.5c0 1 .5 1.9 1.2 2.5L2.5 11l2.2-1C5 10.1 5.5 10.1 6 10.1c2.8 0 5.5-2.2 5.5-4.6S8.5 1 6 1z"/></svg>' +
+              '</div>' +
+              '<span style="font-size:14px;font-weight:700;color:#0f172a;font-family:Fraunces,serif;">Keylr</span>' +
+              '<span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;">· Property Manager setup</span>' +
+            '</div>' +
+            (step < 8 ? '<button id="pmClose" style="background:#f1f5f9;border:none;color:#64748b;width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;">&times;</button>' : '') +
+          '</div>' +
+          // Progress
+          '<div style="display:flex;gap:4px;align-items:center;">'+dots+'</div>' +
+          '<div style="display:flex;justify-content:space-between;margin-top:6px;">' +
+            '<span style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;">Step '+(step+1)+' of 9</span>' +
+            (step > 0 && step < 8 ? '<button onclick="window._pmSkip()" style="background:none;border:none;color:#94a3b8;font-size:11.5px;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Skip →</button>' : '') +
+          '</div>' +
+        '</div>' +
+
+        // Body
+        '<div style="padding:22px 26px 24px;">' +
+          heading + body +
+          '<button onclick="window._pmNext()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-top:18px;">' +
+            (step === 0 ? 'Create account →' : step === 7 ? 'Finish setup' : step === 8 ? 'Go to dashboard' : 'Continue →') +
+          '</button>' +
+          (step > 0 && step < 8 ? '<button onclick="window._pmBack()" style="width:100%;background:transparent;border:none;color:#64748b;font-size:13px;cursor:pointer;font-family:Inter,sans-serif;margin-top:8px;padding:8px;">← Back</button>' : '') +
+        '</div>' +
+      '</div>';
+
+    // Wire events
+    var cl = document.getElementById('pmClose'); if(cl) cl.addEventListener('click',function(){overlay.remove();delete window._pm;});
+    var eye = document.getElementById('pmEye');
+    if(eye) eye.addEventListener('click',function(){var f=document.getElementById('pmPwd');if(f)f.type=f.type==='password'?'text':'password';});
+    // Focus first field
+    var first = document.getElementById('pmName')||document.getElementById('pmEmail');
+    if(first) setTimeout(function(){first.focus();},80);
+    // Wire checkboxes
+    overlay.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+      cb.addEventListener('change',function(){window._pmToggle(cb.closest('label').querySelector('input').getAttribute('data-opt') ? '' : '', cb.getAttribute('data-opt'), cb.checked);});
+    });
+  };
+
+  window._pmNext = function() {
+    var p = window._pm;
+    if (p.step === 0) {
+      var n=document.getElementById('pmName'), e=document.getElementById('pmEmail'), ph=document.getElementById('pmPhone'), pw=document.getElementById('pmPwd');
+      if(n)p.data.name=n.value.trim();if(e)p.data.email=e.value.trim();if(ph)p.data.phone=ph.value.trim();if(pw)p.data.password=pw.value.trim();
+    }
+    p.step = Math.min(p.step+1, 8);
+    window._pmRender();
+  };
+  window._pmBack  = function(){ window._pm.step = Math.max(window._pm.step-1,0); window._pmRender(); };
+  window._pmSkip  = function(){ window._pm.step = Math.min(window._pm.step+1,8); window._pmRender(); };
+  window._pmSelect= function(key,val){ window._pm.data[key]=val; window._pmRender(); };
+  window._pmToggle= function(key,val,checked){
+    var arr=window._pm.data[key]; if(!Array.isArray(arr)){window._pm.data[key]=[];arr=window._pm.data[key];}
+    if(checked){if(arr.indexOf(val)===-1)arr.push(val);}else{var i=arr.indexOf(val);if(i!==-1)arr.splice(i,1);}
+    window._pmRender();
+  };
+  window._pmDone  = function(){ overlay.remove(); delete window._pm; showPage('home',null); };
+
+  window._pmRender();
 }
 </script>
 
