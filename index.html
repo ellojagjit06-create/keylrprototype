@@ -4243,6 +4243,10 @@ function handleChatKey(e) {
 // SEND MESSAGE
 // =============================================
 function sendFromSuggestion(text) {
+  // Capture service type for booking session
+  var services = ['Plumbing','Electrical','Cleaning','Gas Safety','Fire Risk','Boiler','EICR','EPC','Lock','Gardening','Pest'];
+  services.forEach(function(s){ if(text.toLowerCase().indexOf(s.toLowerCase())>=0) _bookingSession.service = s; });
+
   // Disable all existing chip buttons so they can't be clicked again
   document.querySelectorAll('.ai-chip-btn').forEach(btn => {
     btn.disabled = true;
@@ -5053,12 +5057,21 @@ function selectSupplier(el) {
   el.style.borderColor = '#1d4ed8';
   el.style.boxShadow = '0 4px 18px rgba(29,78,216,0.15)';
   el.style.background = '#f8faff';
-  // Build and send selection message
   const name = el.getAttribute('data-name');
   const price = el.getAttribute('data-price');
   const eta = el.getAttribute('data-eta');
-  const msg = 'I\'d like to book with ' + name + ' (' + price + ', ETA: ' + eta + ')';
-  setTimeout(() => { sendFromSuggestion(msg); }, 300);
+  // Store in booking session and show booking form
+  _bookingSession.pro = name;
+  _bookingSession.price = price;
+  _bookingSession.eta = eta;
+  setTimeout(function() {
+    if (typeof showBookingForm === 'function') {
+      showBookingForm(_bookingSession.service || 'Property Service', name, eta, price);
+    } else {
+      const msg = 'I\'d like to book with ' + name + ' (' + price + ', ETA: ' + eta + ')';
+      sendFromSuggestion(msg);
+    }
+  }, 300);
 }
 
 function showBookingDetails(id, service, pro, eta, price, address) {
@@ -7127,6 +7140,579 @@ function removeBizLogo(e) {
   if (_user) _user._logo = null;
   showToast('Logo removed', 'warning');
 }
+
+
+// ═══════════════════════════════════════════════════════════
+// KEYLR ONBOARDING FLOW — Path A: Search → Book → Signup → Pay
+// ═══════════════════════════════════════════════════════════
+
+// ── Persisted booking session (survives signup modal) ──
+var _bookingSession = {
+  service: '', pro: '', eta: '', price: '', address: '',
+  propertyType: '', date: '', time: '', access: '',
+  notes: '', ref: '', confirmId: ''
+};
+
+// ── Step 2: Full Booking Form (pre-signup) ──
+function showBookingForm(service, pro, eta, price) {
+  _bookingSession.service = service || _bookingSession.service;
+  _bookingSession.pro     = pro     || _bookingSession.pro;
+  _bookingSession.eta     = eta     || _bookingSession.eta;
+  _bookingSession.price   = price   || _bookingSession.price;
+
+  var modal = document.createElement('div');
+  modal.id = 'bookingFormModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9600;background:rgba(15,23,42,0.5);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px;animation:modalPop 0.22s ease;';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,0.2);';
+
+  // Header
+  var hdr = document.createElement('div');
+  hdr.style.cssText = 'padding:20px 24px 16px;border-bottom:1px solid #f1f5f9;position:sticky;top:0;background:#fff;z-index:2;';
+  hdr.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;">'
+    + '<div><div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">Book your service</div>'
+    + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">Fill in the details — no account needed yet</div></div>'
+    + '<button onclick="document.getElementById(\'bookingFormModal\').remove()" style="background:#f1f5f9;border:none;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:17px;color:#64748b;display:flex;align-items:center;justify-content:center;">&times;</button>'
+    + '</div>';
+
+  // Summary pill
+  var pill = document.createElement('div');
+  pill.style.cssText = 'margin:16px 24px 0;background:#f0f7ff;border:1px solid #bfdbfe;border-radius:12px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;';
+  pill.innerHTML = '<div style="display:flex;align-items:center;gap:10px;">'
+    + '<div style="width:32px;height:32px;background:#1d4ed8;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+    + '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2"><path d="M7 1l1.5 3h3.5l-2.8 2.3 1 3.7-3.2-2-3.2 2 1-3.7L2 4h3.5z"/></svg></div>'
+    + '<div><div style="font-size:13px;font-weight:700;color:#1e3a5f;font-family:Inter,sans-serif;">'+ (pro||'Selected Professional') +'</div>'
+    + '<div style="font-size:11.5px;color:#3b82f6;font-family:Inter,sans-serif;">'+ (service||'Service') +' · ETA: '+(eta||'TBC')+'</div>'
+    + '</div></div>'
+    + '<div style="font-size:16px;font-weight:800;color:#1d4ed8;font-family:Fraunces,serif;">'+(price||'')+'</div>';
+
+  // Form body
+  var body = document.createElement('div');
+  body.style.cssText = 'padding:20px 24px;display:flex;flex-direction:column;gap:16px;';
+
+  function fieldGroup(label, id, type, placeholder, required, hint) {
+    var req = required ? ' <span style="color:#ef4444;">*</span>' : '';
+    var hintHtml = hint ? '<div style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:3px;">'+hint+'</div>' : '';
+    return '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">'+label+req+'</label>'
+      + '<input id="bf-'+id+'" type="'+type+'" placeholder="'+placeholder+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;background:#fafafa;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor=\'#1d4ed8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#fafafa\'"/>'
+      + hintHtml + '</div>';
+  }
+
+  function selectGroup(label, id, options, required) {
+    var req = required ? ' <span style="color:#ef4444;">*</span>' : '';
+    var opts = options.map(function(o){ return '<option>'+o+'</option>'; }).join('');
+    return '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">'+label+req+'</label>'
+      + '<select id="bf-'+id+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;background:#fafafa;cursor:pointer;">'
+      + opts + '</select></div>';
+  }
+
+  body.innerHTML =
+    // Section: Property
+    '<div style="font-size:11px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;letter-spacing:0.08em;text-transform:uppercase;padding-bottom:6px;border-bottom:1px solid #f1f5f9;">Property details</div>'
+    + fieldGroup('Property address', 'address', 'text', '123 High Street, London, SW1A 1AA', true)
+    + selectGroup('Property type', 'proptype', ['House / flat','HMO','Short-term rental','Block / leasehold','Commercial','Other'], true)
+    + selectGroup('Access method', 'access', ['I will be present','Key safe (code provided)','Key collection','Keyholder contact'], true)
+    // Section: Job
+    + '<div style="font-size:11px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;letter-spacing:0.08em;text-transform:uppercase;padding-bottom:6px;border-bottom:1px solid #f1f5f9;margin-top:4px;">Job details</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
+    + fieldGroup('Preferred date', 'date', 'date', '', true)
+    + fieldGroup('Preferred time', 'time', 'time', '', false)
+    + '</div>'
+    + '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">Notes for the professional</label>'
+    + '<textarea id="bf-notes" placeholder="Describe the issue in detail — e.g. dripping tap under kitchen sink, water pressure reduced over past week..." rows="3" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;background:#fafafa;resize:vertical;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#1d4ed8\'" onblur="this.style.borderColor=\'#e2e8f0\'"></textarea></div>'
+    // Photos hint
+    + '<div style="background:#f8fafc;border:1.5px dashed #d1d5db;border-radius:10px;padding:14px;text-align:center;cursor:pointer;color:#64748b;font-size:13px;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;" onclick="alert(\'Photo upload coming soon\')">'
+    + '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#94a3b8" stroke-width="1.8"><rect x="1" y="3" width="14" height="10" rx="2"/><circle cx="8" cy="8" r="2.5"/><path d="M4 3l1-2h6l1 2"/></svg>'
+    + 'Add photos / videos (optional)</div>';
+
+  // Footer with price
+  var footer = document.createElement('div');
+  footer.style.cssText = 'padding:16px 24px 22px;border-top:1px solid #f1f5f9;position:sticky;bottom:0;background:#fff;z-index:2;';
+  footer.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">'
+    + '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">Total estimate</div>'
+    + '<div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+(price||'TBC')+'</div>'
+    + '</div>'
+    + '<button onclick="submitBookingForm()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">'
+    + '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2"><path d="M2 7h10M8 3l4 4-4 4"/></svg>'
+    + 'Review &amp; confirm booking</button>';
+
+  box.appendChild(hdr);
+  box.appendChild(pill);
+  box.appendChild(body);
+  box.appendChild(footer);
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+}
+
+// ── Submit booking form — save session, show review ──
+function submitBookingForm() {
+  var addr  = document.getElementById('bf-address');
+  var ptype = document.getElementById('bf-proptype');
+  var date  = document.getElementById('bf-date');
+  var access= document.getElementById('bf-access');
+  var notes = document.getElementById('bf-notes');
+  var time  = document.getElementById('bf-time');
+
+  if (!addr || !addr.value.trim()) {
+    addr.style.borderColor = '#ef4444'; addr.focus();
+    if (typeof showToast === 'function') showToast('Property address is required', 'error');
+    return;
+  }
+  if (!date || !date.value) {
+    date.style.borderColor = '#ef4444'; date.focus();
+    if (typeof showToast === 'function') showToast('Please select a preferred date', 'error');
+    return;
+  }
+
+  // Persist all booking data
+  _bookingSession.address      = addr  ? addr.value.trim() : '';
+  _bookingSession.propertyType = ptype ? ptype.value : '';
+  _bookingSession.access       = access? access.value : '';
+  _bookingSession.date         = date  ? date.value : '';
+  _bookingSession.time         = time  ? time.value : '';
+  _bookingSession.notes        = notes ? notes.value.trim() : '';
+
+  // Close form, open review
+  var fm = document.getElementById('bookingFormModal');
+  if (fm) fm.remove();
+  showBookingReview();
+}
+
+// ── Step 3: Review Price & Confirm ──
+function showBookingReview() {
+  var s = _bookingSession;
+  var modal = document.createElement('div');
+  modal.id = 'bookingReviewModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9700;background:rgba(15,23,42,0.5);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px;animation:modalPop 0.22s ease;';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;width:100%;max-width:480px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.2);';
+
+  function row(label, val, bold) {
+    if (!val) return '';
+    return '<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid #f8fafc;">'
+      + '<span style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">'+label+'</span>'
+      + '<span style="font-size:13px;font-weight:'+(bold?'700':'500')+';color:#0f172a;font-family:Inter,sans-serif;text-align:right;max-width:60%;">'+val+'</span>'
+      + '</div>';
+  }
+
+  box.innerHTML = '<div style="padding:20px 22px 16px;border-bottom:1px solid #f1f5f9;">'
+    + '<div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">Review your booking</div>'
+    + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">Confirm everything looks right before payment</div>'
+    + '</div>'
+    + '<div style="padding:16px 22px;">'
+    + row('Service',   s.service, true)
+    + row('Professional', s.pro, true)
+    + row('ETA',       s.eta)
+    + row('Date',      s.date + (s.time ? ' at ' + s.time : ''))
+    + row('Address',   s.address)
+    + row('Property',  s.propertyType)
+    + row('Access',    s.access)
+    + (s.notes ? row('Notes', s.notes) : '')
+    + '</div>'
+    + '<div style="margin:0 22px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">'
+    + '<div style="font-size:13px;color:#15803d;font-family:Inter,sans-serif;font-weight:600;">Total estimate</div>'
+    + '<div style="font-size:22px;font-weight:800;color:#14532d;font-family:Fraunces,serif;">'+(s.price||'TBC')+'</div>'
+    + '</div>'
+    + '<div style="padding:0 22px 22px;display:flex;flex-direction:column;gap:10px;">'
+    + '<button onclick="confirmBookingGate()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:14px;font-size:14.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Confirm booking →</button>'
+    + '<button onclick="document.getElementById(\'bookingReviewModal\').remove();showBookingForm()" style="width:100%;background:none;border:none;color:#64748b;font-size:13px;cursor:pointer;font-family:Inter,sans-serif;">← Edit details</button>'
+    + '</div>';
+
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+}
+
+// ── Step 4: Signup Gate (preserves all booking data) ──
+function confirmBookingGate() {
+  var rev = document.getElementById('bookingReviewModal');
+  if (rev) rev.remove();
+
+  // If already logged in, skip to payment
+  if (_user) { showPaymentCheckout(); return; }
+
+  var modal = document.createElement('div');
+  modal.id = 'bookingSignupModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9800;background:rgba(15,23,42,0.6);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:16px;animation:modalPop 0.22s ease;';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.25);';
+
+  box.innerHTML =
+    // Top progress bar showing they're almost done
+    '<div style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);height:4px;width:80%;"></div>'
+    + '<div style="padding:24px 26px 20px;">'
+    + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">'
+    + '<div style="width:36px;height:36px;background:#eff6ff;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+    + '<svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="#1d4ed8" stroke-width="1.7"><path d="M14 11.5a6 6 0 11-12 0 6 6 0 0112 0z"/><path d="M8.5 7v4M8.5 5v.5"/></svg></div>'
+    + '<div><div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">One last step</div>'
+    + '<div style="font-size:12px;color:#10b981;font-family:Inter,sans-serif;font-weight:600;">Your booking details are saved ✓</div>'
+    + '</div></div>'
+    + '<p style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 20px;line-height:1.5;">Create a free account to confirm your booking. Takes under 30 seconds.</p>'
+    // 4-field form
+    + '<div style="display:flex;flex-direction:column;gap:12px;">'
+    + _bsField('Full name', 'bs-name', 'text', 'Jane Smith')
+    + _bsField('Email address', 'bs-email', 'email', 'jane@example.com')
+    + _bsField('Mobile number', 'bs-phone', 'tel', '+44 7700 000000')
+    + _bsFieldPwd('Password', 'bs-pwd', '8+ characters')
+    + '</div>'
+    + '<div id="bsError" style="display:none;font-size:12px;color:#dc2626;background:#fef2f2;border-radius:8px;padding:8px 12px;margin-top:10px;font-family:Inter,sans-serif;"></div>'
+    + '<button onclick="submitSignupGate()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-top:16px;display:flex;align-items:center;justify-content:center;gap:8px;">'
+    + '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2"><path d="M2 7h10M8 3l4 4-4 4"/></svg>Create account &amp; continue</button>'
+    + '<p style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;text-align:center;margin:10px 0 0;">Already have an account? <a onclick="document.getElementById(\'bookingSignupModal\').remove();showAuthPage(\'login\');window._afterLoginFn=showPaymentCheckout;" style="color:#1d4ed8;cursor:pointer;font-weight:600;">Log in</a></p>'
+    + '</div>';
+
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+  setTimeout(function(){ var n=document.getElementById('bs-name');if(n)n.focus(); }, 80);
+}
+
+function _bsField(label, id, type, placeholder) {
+  return '<div><label style="display:block;font-size:11.5px;font-weight:600;color:#374151;margin-bottom:4px;font-family:Inter,sans-serif;">'+label+'</label>'
+    + '<input id="'+id+'" type="'+type+'" placeholder="'+placeholder+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;background:#fafafa;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#1d4ed8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/></div>';
+}
+
+function _bsFieldPwd(label, id, placeholder) {
+  return '<div><label style="display:block;font-size:11.5px;font-weight:600;color:#374151;margin-bottom:4px;font-family:Inter,sans-serif;">'+label+'</label>'
+    + '<div style="position:relative;">'
+    + '<input id="'+id+'" type="password" placeholder="'+placeholder+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 40px 10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;background:#fafafa;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#1d4ed8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/>'
+    + '<button type="button" onclick="var i=document.getElementById(\''+id+'\');i.type=i.type===\'password\'?\'text\':\'password\';" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;font-size:14px;">👁</button>'
+    + '</div></div>';
+}
+
+function submitSignupGate() {
+  var name  = (document.getElementById('bs-name')  || {value:''}).value.trim();
+  var email = (document.getElementById('bs-email') || {value:''}).value.trim();
+  var phone = (document.getElementById('bs-phone') || {value:''}).value.trim();
+  var pwd   = (document.getElementById('bs-pwd')   || {value:''}).value;
+  var errBox = document.getElementById('bsError');
+
+  if (!name || !email || !pwd) {
+    if (errBox) { errBox.textContent = 'Please fill in all required fields.'; errBox.style.display='block'; }
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (errBox) { errBox.textContent = 'Please enter a valid email address.'; errBox.style.display='block'; }
+    return;
+  }
+  if (pwd.length < 6) {
+    if (errBox) { errBox.textContent = 'Password must be at least 6 characters.'; errBox.style.display='block'; }
+    return;
+  }
+
+  // Create user, booking data fully preserved
+  if (typeof _setUser === 'function') {
+    _setUser({ name: name, email: email, phone: phone, contact: email, role: 'manager', profileComplete: false, _pwd: pwd, _emailVerified: false });
+  }
+
+  var modal = document.getElementById('bookingSignupModal');
+  if (modal) modal.remove();
+
+  // Proceed to payment — booking session intact
+  showPaymentCheckout();
+}
+
+// ── Step 5: Payment Checkout ──
+function showPaymentCheckout() {
+  var s = _bookingSession;
+  var modal = document.createElement('div');
+  modal.id = 'paymentModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9900;background:rgba(15,23,42,0.6);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:16px;animation:modalPop 0.22s ease;';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;width:100%;max-width:460px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.25);';
+
+  var userName = (_user && _user.name) ? _user.name : '';
+
+  box.innerHTML =
+    '<div style="padding:20px 24px 16px;border-bottom:1px solid #f1f5f9;">'
+    + '<div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">Secure payment</div>'
+    + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">Your booking is confirmed once payment clears</div>'
+    + '</div>'
+    // Order summary
+    + '<div style="margin:16px 24px;background:#f8fafc;border-radius:12px;padding:14px 16px;">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;">'
+    + '<div><div style="font-size:13px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">'+(s.service||'Property Service')+'</div>'
+    + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">'+(s.pro||'Your Professional')+' · '+(s.date||'')+'</div></div>'
+    + '<div style="font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+(s.price||'TBC')+'</div>'
+    + '</div></div>'
+    // Payment method picker
+    + '<div style="padding:0 24px 16px;">'
+    + '<div style="font-size:11.5px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Payment method</div>'
+    + '<div style="display:flex;gap:8px;margin-bottom:16px;">'
+    + '<button id="pm-card" onclick="selectPayMethod(\'card\')" style="flex:1;border:2px solid #1d4ed8;border-radius:10px;padding:10px 8px;background:#eff6ff;cursor:pointer;font-size:12px;font-weight:700;color:#1d4ed8;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;">💳 Card</button>'
+    + '<button id="pm-apple" onclick="selectPayMethod(\'apple\')" style="flex:1;border:2px solid #e2e8f0;border-radius:10px;padding:10px 8px;background:#fff;cursor:pointer;font-size:12px;font-weight:700;color:#374151;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;">🍎 Apple Pay</button>'
+    + '<button id="pm-google" onclick="selectPayMethod(\'google\')" style="flex:1;border:2px solid #e2e8f0;border-radius:10px;padding:10px 8px;background:#fff;cursor:pointer;font-size:12px;font-weight:700;color:#374151;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;">G Pay</button>'
+    + '</div>'
+    // Card fields
+    + '<div id="cardFields">'
+    + '<div style="margin-bottom:10px;"><label style="font-size:11.5px;font-weight:600;color:#374151;display:block;margin-bottom:4px;font-family:Inter,sans-serif;">Card number</label>'
+    + '<input type="text" placeholder="1234 5678 9012 3456" maxlength="19" oninput="this.value=this.value.replace(/[^0-9]/g,\'\').replace(/(.{4})/g,\'$1 \').trim()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;letter-spacing:2px;" onfocus="this.style.borderColor=\'#1d4ed8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/></div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">'
+    + '<div><label style="font-size:11.5px;font-weight:600;color:#374151;display:block;margin-bottom:4px;font-family:Inter,sans-serif;">Expiry</label>'
+    + '<input type="text" placeholder="MM / YY" maxlength="7" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1d4ed8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/></div>'
+    + '<div><label style="font-size:11.5px;font-weight:600;color:#374151;display:block;margin-bottom:4px;font-family:Inter,sans-serif;">CVC</label>'
+    + '<input type="text" placeholder="123" maxlength="4" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1d4ed8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/></div>'
+    + '</div>'
+    + '<div style="margin-bottom:10px;"><label style="font-size:11.5px;font-weight:600;color:#374151;display:block;margin-bottom:4px;font-family:Inter,sans-serif;">Billing name</label>'
+    + '<input id="pm-billname" type="text" value="'+userName+'" placeholder="Name on card" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1d4ed8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/></div>'
+    + '<div style="margin-bottom:14px;"><label style="font-size:11.5px;font-weight:600;color:#374151;display:block;margin-bottom:4px;font-family:Inter,sans-serif;">Billing address</label>'
+    + '<input type="text" placeholder="Same as property address" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1d4ed8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/></div>'
+    + '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:4px;">'
+    + '<input type="checkbox" checked style="accent-color:#1d4ed8;width:15px;height:15px;cursor:pointer;"/>'
+    + '<span style="font-size:12.5px;color:#374151;font-family:Inter,sans-serif;">Save card for future bookings</span></label>'
+    + '</div>' // end cardFields
+    + '<button onclick="processPayment()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:14px;font-size:14.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;">'
+    + '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2"><rect x="1" y="4" width="12" height="8" rx="2"/><path d="M1 7h12M4 4V3a3 3 0 016 0v1"/></svg>'
+    + 'Pay '+(s.price||'now')+'</button>'
+    + '<p style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;text-align:center;margin:8px 0 0;display:flex;align-items:center;justify-content:center;gap:4px;">'
+    + '<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#94a3b8" stroke-width="1.5"><rect x="1" y="4" width="9" height="6" rx="1.5"/><path d="M3 4V3a2.5 2.5 0 015 0v1"/></svg>'
+    + '256-bit SSL encryption · PCI DSS compliant</p>'
+    + '</div>';
+
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+}
+
+function selectPayMethod(method) {
+  ['card','apple','google'].forEach(function(m) {
+    var btn = document.getElementById('pm-'+m);
+    if (!btn) return;
+    var active = m === method;
+    btn.style.borderColor = active ? '#1d4ed8' : '#e2e8f0';
+    btn.style.background  = active ? '#eff6ff' : '#fff';
+    btn.style.color       = active ? '#1d4ed8' : '#374151';
+  });
+  var cf = document.getElementById('cardFields');
+  if (cf) cf.style.display = (method === 'card') ? 'block' : 'none';
+}
+
+function processPayment() {
+  // Simulate payment processing
+  var btn = document.querySelector('#paymentModal button:last-of-type');
+  if (btn) { btn.textContent = 'Processing…'; btn.disabled = true; btn.style.opacity = '0.8'; }
+  setTimeout(function() {
+    var pm = document.getElementById('paymentModal');
+    if (pm) pm.remove();
+    showBookingConfirmationScreen();
+  }, 1800);
+}
+
+// ── Step 6: Booking Confirmation Screen ──
+function showBookingConfirmationScreen() {
+  var s = _bookingSession;
+  var confirmId = 'K' + Math.floor(Math.random()*90000+10000);
+  s.confirmId = confirmId;
+  s.ref = confirmId;
+
+  // Auto-create property from booking address
+  if (s.address && typeof _user !== 'undefined' && _user) {
+    if (!_user._properties) _user._properties = [];
+    _user._properties.push({ address: s.address, type: s.propertyType, addedFrom: 'booking', ref: confirmId });
+  }
+
+  // Add job to bookings
+  if (typeof addJobFromBooking === 'function') {
+    addJobFromBooking({ ref: confirmId, service: s.service, pro: s.pro, eta: s.eta, price: s.price, address: s.address, date: s.date });
+  }
+
+  // Set progress to 25%
+  if (typeof setSettingsRing === 'function') setSettingsRing(25);
+  if (typeof setSidebarProgress === 'function') setSidebarProgress(25);
+
+  var modal = document.createElement('div');
+  modal.id = 'bookingConfScreenModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9900;background:rgba(15,23,42,0.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:16px;animation:modalPop 0.22s ease;';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;width:100%;max-width:460px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.25);';
+
+  box.innerHTML =
+    // Green success header
+    '<div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);padding:28px 24px 20px;text-align:center;border-bottom:1px solid #bbf7d0;">'
+    + '<div style="width:56px;height:56px;background:#16a34a;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">'
+    + '<svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#fff" stroke-width="3"><path d="M4 13l6 6 12-12"/></svg></div>'
+    + '<div style="font-size:22px;font-weight:800;color:#14532d;font-family:Fraunces,serif;margin-bottom:6px;">Booking Confirmed! 🎉</div>'
+    + '<div style="font-size:13px;color:#15803d;font-family:Inter,sans-serif;">Your professional has been notified</div>'
+    + '<div style="display:inline-block;background:#fff;border:1px solid #86efac;border-radius:999px;padding:4px 16px;margin-top:10px;font-size:12.5px;font-weight:700;color:#16a34a;font-family:Inter,sans-serif;">Ref: '+confirmId+'</div>'
+    + '</div>'
+    // Details
+    + '<div style="padding:18px 24px;">'
+    + '<div style="background:#f8fafc;border-radius:12px;padding:14px;margin-bottom:16px;display:flex;flex-direction:column;gap:8px;">'
+    + _confRow('Service',      s.service)
+    + _confRow('Professional', s.pro)
+    + _confRow('Date',         s.date + (s.time ? ' at ' + s.time : ''))
+    + _confRow('Address',      s.address)
+    + _confRow('ETA',          s.eta)
+    + _confRow('Total paid',   s.price)
+    + '</div>'
+    // Tracking
+    + '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">'
+    + '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1d4ed8" stroke-width="1.7"><circle cx="9" cy="9" r="7"/><path d="M9 5v4l2.5 2.5"/></svg>'
+    + '<div><div style="font-size:12.5px;font-weight:600;color:#1e3a5f;font-family:Inter,sans-serif;">Real-time tracking</div>'
+    + '<div style="font-size:11.5px;color:#3b82f6;font-family:Inter,sans-serif;">You\'ll receive SMS updates on your professional\'s arrival</div>'
+    + '</div></div>'
+    // CTAs
+    + '<button onclick="goToDashboardFromBooking()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:8px;">Go to my dashboard →</button>'
+    + '<button onclick="document.getElementById(\'bookingConfScreenModal\').remove()" style="width:100%;background:none;border:none;color:#64748b;font-size:13px;cursor:pointer;font-family:Inter,sans-serif;">Close</button>'
+    + '</div>';
+
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+}
+
+function _confRow(label, val) {
+  if (!val) return '';
+  return '<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid #f1f5f9;">'
+    + '<span style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">'+label+'</span>'
+    + '<span style="font-size:12.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;text-align:right;max-width:60%;">'+val+'</span>'
+    + '</div>';
+}
+
+// ── After booking confirmation → Company Details → Dashboard ──
+function goToDashboardFromBooking() {
+  var confModal = document.getElementById('bookingConfScreenModal');
+  if (confModal) confModal.remove();
+
+  // Go to dashboard first
+  if (typeof goToDashboard === 'function') {
+    goToDashboard('', false);
+  } else {
+    var pg = document.getElementById('pg-dashboard');
+    var lp = document.getElementById('pg-landing');
+    if (pg) pg.style.display = 'flex';
+    if (lp) lp.style.display = 'none';
+  }
+
+  // Then show company details prompt after brief delay
+  setTimeout(function() {
+    if (typeof showPage === 'function') showPage('home', null);
+    setTimeout(showCompanyDetailsPrompt, 600);
+  }, 400);
+}
+
+// ── Step 7: Company Details Prompt (first session) ──
+function showCompanyDetailsPrompt() {
+  var modal = document.createElement('div');
+  modal.id = 'companyDetailsPrompt';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9500;background:rgba(15,23,42,0.5);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px;animation:modalPop 0.22s ease;';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,0.2);';
+
+  function fld(label, id, placeholder, required, hint) {
+    var req = required ? ' <span style="color:#ef4444;">*</span>' : ' <span style="font-size:11px;color:#94a3b8;">(optional)</span>';
+    var hintHtml = hint ? '<div style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:3px;">'+hint+'</div>' : '';
+    return '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">'+label+req+'</label>'
+      + '<input id="cd-'+id+'" type="text" placeholder="'+placeholder+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;background:#fafafa;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#1d4ed8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#fafafa\'"/>'
+      + hintHtml + '</div>';
+  }
+
+  box.innerHTML =
+    '<div style="padding:22px 24px 16px;border-bottom:1px solid #f1f5f9;position:sticky;top:0;background:#fff;z-index:2;">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;">'
+    + '<div><div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">Complete your company details</div>'
+    + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">Used for invoices and compliance — skippable once</div>'
+    + '</div>'
+    + '<button onclick="skipCompanyDetails()" style="background:#f1f5f9;border:none;color:#64748b;font-size:11.5px;font-weight:600;cursor:pointer;padding:6px 12px;border-radius:7px;font-family:Inter,sans-serif;">Skip for now</button>'
+    + '</div></div>'
+    + '<div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px;">'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
+    + fld('Trading / Company Name', 'trading', 'e.g. Thompson Properties Ltd', true)
+    + fld('Company Registration No.', 'regno', 'e.g. 12345678', false, 'Companies House')
+    + '</div>'
+    + fld('Legal Company Name', 'legal', 'As registered at Companies House', true)
+    + fld('Registered Address', 'regaddr', 'Official registered business address', true)
+    + fld('Trading Address', 'tradaddr', 'If different from registered address', false)
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
+    + fld('VAT Number', 'vat', 'e.g. GB 123 456 789', false)
+    + '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">Company Logo <span style="font-size:11px;color:#94a3b8;">(optional)</span></label>'
+    + '<div onclick="alert(\'Upload coming soon\')" style="border:1.5px dashed #d1d5db;border-radius:10px;padding:10px;text-align:center;cursor:pointer;color:#94a3b8;font-size:12.5px;font-family:Inter,sans-serif;background:#fafafa;">📁 Upload</div></div>'
+    + '</div>'
+    + '<button onclick="saveCompanyDetailsPrompt()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">'
+    + '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#fff" stroke-width="2"><path d="M2 9.5V4a1 1 0 011-1h5l3 3v6.5H3a1 1 0 01-1-1z"/><path d="M8 3v3.5H4V3"/></svg>'
+    + 'Save &amp; go to dashboard</button>'
+    + '</div>';
+
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+}
+
+function saveCompanyDetailsPrompt() {
+  var trading = (document.getElementById('cd-trading') || {value:''}).value.trim();
+  var legal   = (document.getElementById('cd-legal')   || {value:''}).value.trim();
+  var regaddr = (document.getElementById('cd-regaddr') || {value:''}).value.trim();
+
+  if (!trading || !legal || !regaddr) {
+    if (typeof showToast === 'function') showToast('Please fill in the required fields', 'error');
+    return;
+  }
+
+  if (_user) {
+    _user._bizTradingName = trading;
+    _user._bizLegalName   = (document.getElementById('cd-legal')   || {value:''}).value.trim();
+    _user._bizRegAddr     = (document.getElementById('cd-regaddr') || {value:''}).value.trim();
+    _user._bizRegNum      = (document.getElementById('cd-regno')   || {value:''}).value.trim();
+    _user._bizTradingAddr = (document.getElementById('cd-tradaddr')|| {value:''}).value.trim();
+    _user._bizVat         = (document.getElementById('cd-vat')     || {value:''}).value.trim();
+    _user._companyDone    = true;
+  }
+
+  var m = document.getElementById('companyDetailsPrompt');
+  if (m) m.remove();
+
+  // Update progress to 35% and trigger profiling
+  if (typeof setSettingsRing === 'function') setSettingsRing(35);
+  if (typeof setSidebarProgress === 'function') setSidebarProgress(35);
+  if (typeof showToast === 'function') showToast('Company details saved! +10% progress', 'success');
+  setTimeout(triggerProfilingFromProgress, 1200);
+}
+
+function skipCompanyDetails() {
+  var m = document.getElementById('companyDetailsPrompt');
+  if (m) m.remove();
+  if (typeof showToast === 'function') showToast('You can complete this later in Settings → Business', 'warning');
+  setTimeout(triggerProfilingFromProgress, 800);
+}
+
+// ── Step 8/9: Profiling trigger from progress bar ──
+function triggerProfilingFromProgress() {
+  var modal = document.createElement('div');
+  modal.id = 'profilingPromptModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9400;background:rgba(15,23,42,0.5);backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;padding:0;animation:modalPop 0.22s ease;';
+
+  var sheet = document.createElement('div');
+  sheet.style.cssText = 'background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:600px;padding:24px 28px 36px;box-shadow:0 -8px 40px rgba(0,0,0,0.15);';
+  sheet.innerHTML =
+    '<div style="width:36px;height:4px;background:#e2e8f0;border-radius:2px;margin:0 auto 20px;"></div>'
+    + '<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">'
+    + '<div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden;">'
+    + '<div style="width:35%;height:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:3px;transition:width 0.6s ease;"></div>'
+    + '</div><span style="font-size:13px;font-weight:700;color:#1d4ed8;font-family:Inter,sans-serif;flex-shrink:0;">35%</span></div>'
+    + '<div style="font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:6px;">Boost your profile to 60%</div>'
+    + '<p style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 20px;line-height:1.5;">Answer 7 quick questions so we can personalise your dashboard, match you with the right professionals, and set up compliance tracking.</p>'
+    + '<div style="display:flex;gap:10px;">'
+    + '<button onclick="document.getElementById(\'profilingPromptModal\').remove();if(typeof startDiscoveryFlow===\'function\')startDiscoveryFlow();" style="flex:2;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Start 7 questions →</button>'
+    + '<button onclick="document.getElementById(\'profilingPromptModal\').remove()" style="flex:1;background:#f1f5f9;border:none;color:#374151;border-radius:12px;padding:13px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Later</button>'
+    + '</div>';
+
+  modal.appendChild(sheet);
+  document.body.appendChild(modal);
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+}
+
+// ── Hook: intercept "Book →" clicks in supplier listings ──
+// Expose showBookingForm globally so SP cards can call it
+window.showBookingForm = showBookingForm;
+window.showBookingReview = showBookingReview;
+
+// ── After login, run pending post-login action if any ──
+var _afterLoginFn = null;
+var _origSetUserForBooking = typeof _setUser !== 'undefined' ? _setUser : null;
+
+// ═══ END ONBOARDING FLOW ═══
+
 </script>
 
 <!-- =============================================
