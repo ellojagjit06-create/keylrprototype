@@ -4363,12 +4363,8 @@ function updateFloatBtn(pageId) {
 // =============================================
 // AUTH STUBS
 // =============================================
-function handleSignup() {
-  alert('Sign up coming soon! This would open the registration flow.');
-}
-function handleLogin() {
-  alert('Log in coming soon! This would open the authentication flow.');
-}
+function handleSignup() { showAuthPage('signup'); }
+function handleLogin() { showAuthPage('login'); }
 
 
 // =============================================
@@ -5501,6 +5497,9 @@ var _PROFILING_QS = [
   }
 ];
 
+var _inlineQStep = 0;
+var _inlineAnswers = Array(7).fill(null).map(function(){ return {}; });
+
 function _renderInlineProfiling() {
   var container = document.getElementById('inlineProfilingContent');
   if (!container) return;
@@ -5886,43 +5885,6 @@ function _saveCompanyDetails() {
 // =============================================
 // INLINE PROFILING (step 3)
 // =============================================
-var _inlineQStep = 0;
-var _inlineAnswers = Array(7).fill(null).map(function(){ return {}; });
-var _PROFILING_QS = [
-  {
-    q: 'What best describes what you do?', type:'single',
-    opts:['Residential letting agent','Short-term rental / Airbnb manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator','Facilities manager','Individual landlord','Other']
-  },
-  {
-    q: 'What types of property do you manage?', type:'multi-grouped',
-    groups:{
-      'Residential':['Houses & flats — AST','HMO','Short-term rental','Residential block','Serviced apartments'],
-      'Commercial':['Offices','Retail','Industrial','Healthcare','Education'],
-      'Hospitality':['Hotels','Hostels','Guest houses','PBSA'],
-      'Mixed':['Mixed residential/commercial','Estate']
-    }
-  },
-  {
-    q: 'How many properties or units do you manage?', type:'single',
-    opts:['1–5','6–25','26–100','101–500','500+']
-  },
-  {
-    q: 'Which services do you currently coordinate?', type:'multi',
-    opts:['Cleaning','Compliance certificates (CP12, EICR, EPC, FRA, Legionella)','Reactive maintenance','PPM','Inspections & inventory','Landscaping','Pest control','Security','Removals','Specialist trades']
-  },
-  {
-    q: 'Where are your properties located?', type:'multi',
-    opts:['London','South East','South West','Midlands','North West','North East','Yorkshire','Scotland','Wales','Multiple regions']
-  },
-  {
-    q: 'How do you currently manage service providers?', type:'single',
-    opts:['Ad hoc (WhatsApp/phone)','Small regular contractors','Large contractor network','In-house staff','I use a property management system']
-  },
-  {
-    q: 'What is your biggest headache right now?', type:'single',
-    opts:['Finding reliable contractors','Chasing jobs to completion','Compliance tracking','Invoices & payments','Team coordination','No single view across portfolio']
-  }
-];
 
 
 window._inlineSelectOpt = function(el) {
