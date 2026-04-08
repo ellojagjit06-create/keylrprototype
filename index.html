@@ -5044,28 +5044,38 @@ function showAuthPage(mode) {
 
     // LEFT PANEL - role cards (always visible)
     var leftPanel =
-      '<div style="width:300px;flex-shrink:0;background:linear-gradient(160deg,#0f1c38 0%,#1a3356 60%,#0e2244 100%);padding:28px 24px;display:flex;flex-direction:column;position:relative;overflow:hidden;">' +
-        '<div style="position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:rgba(30,92,200,0.15);pointer-events:none;"></div>' +
-        '<div style="position:absolute;bottom:-40px;left:-40px;width:160px;height:160px;border-radius:50%;background:rgba(15,163,208,0.1);pointer-events:none;"></div>' +
-        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:28px;position:relative;">' +
-          '<div style="width:30px;height:30px;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);border-radius:8px;display:flex;align-items:center;justify-content:center;">' +
-            '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2"><path d="M7 1C4 1 1.5 3 1.5 5.5c0 1.1.5 2.1 1.3 2.8L2.5 11l2.5-1.1c.4.1.8.1 1 .1C9.5 10 12 7.8 12 5.3S9.5 1 7 1z"/></svg>' +
-          '</div>' +
-          '<span style="font-size:16px;font-weight:800;color:#fff;font-family:Fraunces,serif;">Keylr</span>' +
+      '<div style="width:380px;flex-shrink:0;background:linear-gradient(160deg,#0f1c38 0%,#1a3356 60%,#0e2244 100%);padding:32px 28px;display:flex;flex-direction:column;position:relative;overflow:hidden;">' +
+        '<div style="position:absolute;top:-80px;right:-80px;width:260px;height:260px;border-radius:50%;background:rgba(30,92,200,0.12);pointer-events:none;"></div>' +
+        '<div style="position:absolute;bottom:-60px;left:-60px;width:200px;height:200px;border-radius:50%;background:rgba(15,163,208,0.08);pointer-events:none;"></div>' +
+        '<div style="position:relative;margin-bottom:36px;">' +
+          '<svg width="110" height="20" viewBox="0 0 852 151" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.160002 144.91C0.0400018 141.58 0 107.67 0 69.5298L0.0799999 0.209765L18.62 0.0897655L37.12 0.00976562V75.4698V150.93H18.74H0.360001L0.160002 144.91Z" fill="white"/><path d="M111.001 148.19C108.621 145.58 63.5807 96.97 50.7507 83.19C46.9907 79.15 43.5407 75.35 43.0707 74.75C42.2007 73.64 42.2007 73.64 42.9507 72.77C43.3907 72.29 47.5507 67.78 52.2207 62.79C56.8907 57.76 62.4807 51.7 64.6607 49.32C66.8407 46.94 75.2407 37.83 83.2807 29.12C91.3607 20.37 100.671 10.26 104.041 6.62L110.141 0H134.111H158.121L156.541 1.7C155.671 2.61 151.031 7.64 146.241 12.87C135.701 24.4 122.201 39.09 110.981 51.29C90.9007 73.12 86.6607 77.83 86.7407 78.11C86.8207 78.27 90.7007 82.39 95.3807 87.22C104.021 96.21 146.921 140.58 153.371 147.27L156.941 150.91L135.151 150.87L113.401 150.83L111.021 148.18L111.001 148.19Z" fill="white"/><path d="M190.031 133.889V116.859H257.171H324.311V133.889V150.919H257.171H190.031V133.889Z" fill="white"/><path d="M415.029 121.65V92.38L413.519 90.44C412.689 89.41 405.439 79.82 397.399 69.13C389.359 58.47 374.459 38.63 364.239 25.08C354.059 11.53 345.699 0.360001 345.699 0.240001C345.699 0.120001 354.139 0 364.479 0H383.259L407.539 32.48C420.929 50.31 432.059 64.88 432.259 64.8C432.699 64.68 438.239 57.08 466.879 17.03C473.059 8.43 478.409 1.07 478.759 0.67C479.389 0.0400001 480.699 -7.45058e-08 497.729 0.0799999L516.029 0.200001L512.499 4.95C510.599 7.56 501.369 20.08 492.019 32.72C482.669 45.4 472.449 59.3 469.279 63.58C466.109 67.9 459.849 76.37 455.339 82.48L447.099 93.53V122.21V150.93H431.059H415.019V121.66L415.029 121.65Z" fill="white"/><path d="M566.75 150.17C556.77 148.03 548.49 141.61 544.53 132.86C541.84 126.92 541.99 131.67 541.99 62.59V0.200001L558.94 0.0799999L575.85 0V50.39C575.85 80.22 576.05 102.01 576.25 103.75C577.08 110.05 580.29 114.01 586.35 116.23C587.18 116.51 600.77 116.71 630.91 116.86L674.29 117.06L674.41 134.01L674.49 150.92L622.32 150.88C573.6 150.88 569.87 150.8 566.74 150.17H566.75Z" fill="white"/><path d="M699.651 150.45C699.531 150.17 699.491 132.31 699.531 110.72L699.651 71.4999L748.181 71.2999C787.041 71.1399 797.021 70.9799 798.291 70.5499C801.301 69.5599 804.631 67.5399 806.811 65.3599C817.701 54.4299 811.561 35.8099 796.111 33.0399C793.731 32.5999 783.751 32.5299 746.281 32.4899H699.461L699.541 16.3699L699.661 0.209891L741.451 0.0898911C794.171 -0.0301089 799.961 0.209892 809.111 3.21989C813.351 4.56989 820.161 8.08989 824.241 10.9799C828.911 14.3099 835.691 20.9999 838.381 24.9599C846.901 37.5199 849.631 53.3199 845.871 68.2999C843.731 76.5799 840.051 82.8799 833.391 89.5699C827.651 95.2699 821.391 99.2799 814.531 101.65C812.791 102.24 811.201 102.84 811.041 103C810.681 103.32 814.211 107.52 832.151 128.15C837.061 133.81 843.201 140.94 845.781 144C848.391 147.05 850.771 149.86 851.091 150.26C851.641 150.89 850.651 150.93 830.851 150.93H809.971L807.631 148.08C806.361 146.5 798.121 136.35 789.371 125.58C780.581 114.81 772.971 105.5 772.421 104.86L771.391 103.79L753.961 103.87L736.491 103.99V127.48V150.93H718.151C703.851 150.93 699.771 150.81 699.651 150.45Z" fill="white"/><path d="M190.031 74.8698V57.8398H248.661H307.291V74.8698V91.8998H248.661H190.031V74.8698Z" fill="white"/><path d="M190.031 17.0398V0.00976562L257.091 0.0897655L324.111 0.209765L324.231 17.1598L324.311 34.0698H257.171H190.031V17.0398Z" fill="white"/></svg>' +
         '</div>' +
-        '<div style="font-size:20px;font-weight:800;color:#fff;font-family:Fraunces,serif;line-height:1.3;margin-bottom:8px;position:relative;">' + (isSignup ? 'Join thousands of<br>property managers' : 'Welcome back<br>to Keylr') + '</div>' +
-        '<div style="font-size:13px;color:rgba(255,255,255,0.55);font-family:Inter,sans-serif;line-height:1.6;margin-bottom:24px;position:relative;">' + (isSignup ? 'Book vetted professionals. Track jobs. Stay compliant.' : 'Your dashboard is ready and waiting.') + '</div>' +
-        '<div style="display:flex;flex-direction:column;gap:10px;position:relative;">' +
-          '<div style="display:flex;align-items:center;gap:10px;"><div style="width:18px;height:18px;border-radius:50%;background:rgba(15,163,208,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#0FA3D0" stroke-width="2"><path d="M1.5 4.5l2.5 2.5 4-4"/></svg></div><span style="font-size:12px;color:rgba(255,255,255,0.7);font-family:Inter,sans-serif;">Vetted &amp; insured professionals</span></div>' +
-          '<div style="display:flex;align-items:center;gap:10px;"><div style="width:18px;height:18px;border-radius:50%;background:rgba(15,163,208,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#0FA3D0" stroke-width="2"><path d="M1.5 4.5l2.5 2.5 4-4"/></svg></div><span style="font-size:12px;color:rgba(255,255,255,0.7);font-family:Inter,sans-serif;">Real-time job tracking</span></div>' +
-          '<div style="display:flex;align-items:center;gap:10px;"><div style="width:18px;height:18px;border-radius:50%;background:rgba(15,163,208,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#0FA3D0" stroke-width="2"><path d="M1.5 4.5l2.5 2.5 4-4"/></svg></div><span style="font-size:12px;color:rgba(255,255,255,0.7);font-family:Inter,sans-serif;">Compliance certificate alerts</span></div>' +
-        '</div>' +
-        '<div style="margin-top:auto;padding-top:20px;position:relative;">' +
-          '<div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px 14px;">' +
-            '<div style="font-size:11px;color:rgba(255,255,255,0.4);font-family:Inter,sans-serif;margin-bottom:2px;">Trusted by</div>' +
-            '<div style="font-size:16px;font-weight:800;color:#fff;font-family:Fraunces,serif;">2,400+ PMs</div>' +
-            '<div style="font-size:11px;color:rgba(255,255,255,0.4);font-family:Inter,sans-serif;">across the UK</div>' +
-          '</div>' +
+        '<div style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.45);font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;position:relative;">I am a</div>' +
+        '<div style="display:flex;flex-direction:column;gap:10px;position:relative;flex:1;">' +
+          '<button onclick="window._authSetRole(\'manager\')" id="roleCard-manager" style="text-align:left;padding:16px 18px;border-radius:14px;cursor:pointer;border:1.5px solid '+(a.role==='manager'?'rgba(255,255,255,0.6)':'rgba(255,255,255,0.12)')+';background:'+(a.role==='manager'?'rgba(255,255,255,0.12)':'rgba(255,255,255,0.05)')+';transition:all 0.15s;">' +
+            '<div style="display:flex;align-items:center;gap:12px;">' +
+              '<div style="width:38px;height:38px;border-radius:10px;background:'+(a.role==='manager'?'rgba(26,92,200,0.6)':'rgba(255,255,255,0.08)')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
+                '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="1.8"><path d="M2 16V8.5L9 2l7 6.5V16"/><path d="M6 16v-5.5h6V16"/></svg>' +
+              '</div>' +
+              '<div>' +
+                '<div style="font-size:14px;font-weight:700;color:#fff;font-family:Inter,sans-serif;margin-bottom:2px;">Property Manager</div>' +
+                '<div style="font-size:12px;color:rgba(255,255,255,0.5);font-family:Inter,sans-serif;">Book services &amp; track jobs</div>' +
+              '</div>' +
+              (a.role==='manager'?'<svg style="margin-left:auto;flex-shrink:0;" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2"><circle cx="8" cy="8" r="7"/><path d="M4.5 8l2.5 2.5 4-4"/></svg>':'') +
+            '</div>' +
+          '</button>' +
+          '<button onclick="window._authSetRole(\'supplier\')" id="roleCard-supplier" style="text-align:left;padding:16px 18px;border-radius:14px;cursor:pointer;border:1.5px solid '+(a.role==='supplier'?'rgba(255,255,255,0.6)':'rgba(255,255,255,0.12)')+';background:'+(a.role==='supplier'?'rgba(255,255,255,0.12)':'rgba(255,255,255,0.05)')+';transition:all 0.15s;">' +
+            '<div style="display:flex;align-items:center;gap:12px;">' +
+              '<div style="width:38px;height:38px;border-radius:10px;background:'+(a.role==='supplier'?'rgba(26,92,200,0.6)':'rgba(255,255,255,0.08)')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
+                '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="9" cy="5" r="3"/><path d="M3 17c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M13 3l2 2M13 7l2-2"/></svg>' +
+              '</div>' +
+              '<div>' +
+                '<div style="font-size:14px;font-weight:700;color:#fff;font-family:Inter,sans-serif;margin-bottom:2px;">Supplier</div>' +
+                '<div style="font-size:12px;color:rgba(255,255,255,0.5);font-family:Inter,sans-serif;">Offer your trade services</div>' +
+              '</div>' +
+              (a.role==='supplier'?'<svg style="margin-left:auto;flex-shrink:0;" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2"><circle cx="8" cy="8" r="7"/><path d="M4.5 8l2.5 2.5 4-4"/></svg>':'') +
+            '</div>' +
+          '</button>' +
         '</div>' +
       '</div>';
 
@@ -5149,7 +5159,7 @@ function showAuthPage(mode) {
       '</div>';
 
     modal.innerHTML =
-      '<div style="background:#fff;border-radius:20px;width:100%;max-width:700px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.18);display:flex;animation:modalPop 0.22s ease;min-height:440px;">' +
+      '<div style="background:#fff;border-radius:20px;width:100%;max-width:760px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.18);display:flex;animation:modalPop 0.22s ease;min-height:440px;">' +
         leftPanel + rightPanel +
       '</div>';
 
