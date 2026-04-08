@@ -2282,86 +2282,127 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 /* =============================================
    DARK MODE — .dash-dark on #pg-dashboard
 ============================================= */
-.dash-dark .db-sidebar{background:#111827;border-right:1px solid rgba(255,255,255,0.06);}
-.dash-dark .db-sidebar-top{background:#111827;}
-.dash-dark .sidebar-logo-row svg path{fill:#fff;}
-.dash-dark .start-chat-btn{background:#1e293b;color:#e2e8f0;border-color:#334155;}
+.dash-dark{color-scheme:dark;}
+/* Sidebar */
+.dash-dark .db-sidebar{background:#0f172a;border-right:1px solid #1e293b;}
+.dash-dark .db-sidebar-top{background:#0f172a;}
+.dash-dark .sidebar-logo-row svg path{fill:#f1f5f9;}
+.dash-dark .start-chat-btn{background:#1e293b;color:#cbd5e1;border-color:#334155;}
 .dash-dark .start-chat-btn:hover{background:#334155;}
 .dash-dark .db-nav-item{color:#94a3b8;}
 .dash-dark .db-nav-item:hover{background:#1e293b;color:#e2e8f0;}
-.dash-dark .db-nav-item.active{background:#1e3a5f;color:#60a5fa;}
+.dash-dark .db-nav-item.active{background:rgba(30,92,200,0.18);color:#60a5fa;}
 .dash-dark .db-nav-item.active svg{color:#60a5fa;}
-.dash-dark .db-sidebar-bottom{border-top-color:rgba(255,255,255,0.06);}
-.dash-dark .db-auth-hint{color:#64748b;}
+.dash-dark .db-sidebar-bottom{border-top:1px solid #1e293b;}
+.dash-dark .db-auth-hint{color:#475569;}
 .dash-dark .db-signup-btn{background:#1d4ed8;color:#fff;}
 .dash-dark .db-login-btn{background:#1e293b;color:#94a3b8;border-color:#334155;}
 .dash-dark #themeToggleBtn{border-color:rgba(255,255,255,0.1);color:#94a3b8;}
 .dash-dark #themeToggleBtn:hover{background:#1e293b !important;}
-.dash-dark .db-main{background:#0f172a;}
-/* Pages */
-.dash-dark #page-home,
-.dash-dark #page-explore,
-.dash-dark #page-bookings,
-.dash-dark #page-properties,
-.dash-dark #page-pricing,
-.dash-dark #page-settings{background:#0f172a;}
-.dash-dark #page-chat{background:#111827;}
+.dash-dark #sbProfileName{color:#f1f5f9;}
+.dash-dark #sbProfileEmail{color:#64748b;}
+/* Main */
+.dash-dark .db-main{background:#0d1117;}
+.dash-dark #page-home,.dash-dark #page-explore,.dash-dark #page-bookings,
+.dash-dark #page-properties,.dash-dark #page-pricing,.dash-dark #page-settings{background:#0d1117;}
+.dash-dark #page-chat{background:#0f172a;}
 /* Topbar */
-.dash-dark .db-topbar{background:#111827;border-bottom-color:#1e293b;}
+.dash-dark .db-topbar{background:#0f172a;border-bottom:1px solid #1e293b;}
 .dash-dark .db-topbar-title{color:#f1f5f9;}
 .dash-dark .db-topbar-sub{color:#64748b;}
-/* Cards & surfaces */
-.dash-dark .job-card,
-.dash-dark .prop-stat-card,
-.dash-dark .spr-card,
-.dash-dark .spr-upgrade-card{background:#1e293b;border-color:#334155;}
-.dash-dark .spr-card-title,
-.dash-dark .spr-card-sub,
+.dash-dark .db-topbar-action{background:#1e293b;border-color:#334155;color:#94a3b8;}
+/* Home page general text */
+.dash-dark h1,.dash-dark h2,.dash-dark h3{color:#f1f5f9;}
+.dash-dark p{color:#94a3b8;}
+/* Portfolio stats */
+.dash-dark .portfolio-stat-card{background:#1e293b;border-color:#334155;}
+.dash-dark .quick-link-card{background:#1e293b;border-color:#334155;}
+/* Job bookings */
+.dash-dark .job-card{background:#1e293b;border-color:#334155;}
+.dash-dark .job-title{color:#f1f5f9;}
+.dash-dark .job-meta,.dash-dark .job-date,.dash-dark .job-progress-label,.dash-dark .job-progress-pct{color:#64748b;}
+.dash-dark .job-progress-bar{background:#334155;}
+.dash-dark #page-bookings>div:last-child{background:#0f172a;border-top:1px solid #1e293b;}
+.dash-dark #bkChatInput{color:#f1f5f9 !important;}
+/* Bookings stats */
+.dash-dark #page-bookings [style*="background:#fff;border:1px solid #e2e8f0"]{background:#1e293b !important;border-color:#334155 !important;}
+/* Properties */
+.dash-dark .prop-stat-card{background:#1e293b;border-color:#334155;}
+.dash-dark .prop-stat-num{color:#f1f5f9;}
+.dash-dark .prop-stat-label{color:#64748b;}
+.dash-dark .prop-search-wrap{background:#1e293b;border-color:#334155;}
+.dash-dark .prop-search-input{background:transparent;color:#f1f5f9;}
+.dash-dark .prop-search-input::placeholder{color:#475569;}
+.dash-dark .prop-empty-placeholder{background:#1e293b;border-color:#334155;}
+.dash-dark .pep-name{color:#f1f5f9;}
+.dash-dark .pep-addr,.dash-dark .pep-ghost{color:#64748b;}
+.dash-dark #page-properties [style*="background:#fff"]{background:#1e293b !important;}
+/* Properties bottom bar */
+.dash-dark #page-properties>div:last-child{background:#0f172a;border-top:1px solid #1e293b;}
+.dash-dark #prChatInput{color:#f1f5f9 !important;}
+/* Explore */
+.dash-dark .esi-card{background:#1e293b;border-color:#334155;}
+.dash-dark .esi-label{color:#e2e8f0;}
+.dash-dark .esi-icon-wrap{background:#1a2d4a;}
+.dash-dark .explore-section-title{color:#f1f5f9;}
+/* Pricing */
+.dash-dark .spr-card{background:#1e293b;border-color:#334155;}
+.dash-dark .spr-card-title{color:#f1f5f9;}
+.dash-dark .spr-card-sub{color:#64748b;}
+.dash-dark .spr-row{background:#0f172a;border-color:#334155;}
 .dash-dark .spr-row-name{color:#f1f5f9;}
 .dash-dark .spr-row-market{color:#64748b;}
-.dash-dark .spr-row{background:#0f172a;border-color:#334155;}
+.dash-dark .spr-input{color:#f1f5f9;background:transparent;}
+.dash-dark .spr-price-wrap{background:#1e293b;}
+.dash-dark .spr-select{background:#1e293b;color:#f1f5f9;border-color:#334155;}
+.dash-dark .spr-upgrade-card{background:#1e293b;border-color:#334155;}
 .dash-dark .spr-upgrade-title{color:#f1f5f9;}
 .dash-dark .spr-upgrade-desc{color:#94a3b8;}
 .dash-dark .suf-title{color:#e2e8f0;}
 .dash-dark .suf-desc{color:#64748b;}
+.dash-dark .spr-upgrade-feat{background:#0f172a;border-color:#334155;}
 /* Settings page */
-.dash-dark #page-settings > div{background:#0f172a;}
+.dash-dark #page-settings>div{background:#0d1117;}
+.dash-dark #page-settings label{color:#94a3b8 !important;}
+/* Settings header text */
+.dash-dark #settingsName{color:#f1f5f9 !important;}
+.dash-dark #settingsContact{color:#64748b !important;}
+/* Settings ring */
+.dash-dark #settingsRingFill{stroke:#60a5fa;}
+.dash-dark #settingsRingPct{color:#60a5fa !important;}
+/* Settings tabs */
+.dash-dark #stab-profile,.dash-dark #stab-business,.dash-dark #stab-discovery,.dash-dark #stab-subscription{color:#64748b !important;background:none !important;}
+/* All settings inputs */
 .dash-dark #settings-profile input,
 .dash-dark #settings-business input,
 .dash-dark #settings-business select,
 .dash-dark #settings-discovery input{background:#1e293b !important;border-color:#334155 !important;color:#f1f5f9 !important;}
-.dash-dark .settings-eyebrow{color:#60a5fa;}
-.dash-dark .settings-title{color:#f1f5f9;}
+.dash-dark #settings-profile input::placeholder,
+.dash-dark #settings-business input::placeholder{color:#475569 !important;}
+/* Settings subscription cards */
+.dash-dark #subCurrentView>div{background:#1e293b !important;border-color:#334155 !important;}
+.dash-dark #subPlanView>div:first-child>div{background:#1e293b !important;border-color:#334155 !important;}
+/* Discovery */
+.dash-dark .disc-row{border-bottom-color:#1e293b;}
+.dash-dark #discStartPrompt{background:#1a2d4a;border-color:#1d4ed8;}
+.dash-dark #discStartPrompt div div:first-child{color:#f1f5f9 !important;}
+.dash-dark #discAnswersList div[style*="font-size:13.5px"]{color:#f1f5f9 !important;}
 /* Chat */
-.dash-dark .chat-area{background:#111827;}
-.dash-dark .db-topbar-action{background:#1e293b;border-color:#334155;color:#94a3b8;}
-/* Inputs on booking page */
-.dash-dark .prop-search-wrap{background:#1e293b;border-color:#334155;}
-.dash-dark .prop-search-input{background:transparent;color:#f1f5f9;}
-.dash-dark .prop-search-input::placeholder{color:#475569;}
-/* Progress ring in dark */
-.dash-dark #settingsRingFill{stroke:#60a5fa;}
-.dash-dark #settingsRingPct{color:#60a5fa !important;}
-/* Banner in dark */
-.dash-dark #settingsEmailBanner{background:linear-gradient(90deg,#1c1400,#1a1200);border-color:#92400e;}
-/* Bottom chat bars */
-.dash-dark .page-ai-footer{background:#111827;border-top-color:#1e293b;}
+.dash-dark .chat-area{background:#0f172a;}
+.dash-dark .ai-msg-bubble{background:#1e293b;color:#e2e8f0;}
+.dash-dark .user-msg-bubble{background:#1d4ed8;}
+/* Chat bars */
+.dash-dark .page-ai-footer{background:#0f172a;border-top:1px solid #1e293b;}
 .dash-dark .paf-input-row{background:#1e293b;border-color:#334155;}
 .dash-dark .paf-input{color:#f1f5f9;}
 .dash-dark .paf-input::placeholder{color:#475569;}
+/* Settings eyebrow */
+.dash-dark .settings-eyebrow{color:#60a5fa;}
+.dash-dark .settings-title{color:#f1f5f9;}
+/* Disc row titles */
+.dash-dark .disc-row>div>div:first-child{color:#f1f5f9;}
+.dash-dark .disc-row>div>div:last-child{color:#64748b;}
 
-/* Discovery answer rows */
-.disc-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #f8fafc;}
-.disc-row>div{flex:1;}
-
-/* Settings responsive grid */
-@media(max-width:600px){
-  .settings-2col{grid-template-columns:1fr !important;}
-  .sub-plan-grid{grid-template-columns:1fr !important;}
-}
-/* disc-row */
-.disc-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #f1f5f9;}
-.disc-row>div:first-child{flex:1;}
 </style>
 </head>
 </head>
@@ -3424,7 +3465,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           </div>
 
           <!-- TABS -->
-          <div style="display:flex;gap:0;border-bottom:2px solid #e8ecf3;margin-bottom:24px;overflow-x:auto;">
+          <div style="display:flex;gap:0;border-bottom:2px solid #e8ecf3;margin-bottom:24px;overflow-x:auto;flex-shrink:0;overflow-y:hidden;height:44px;align-items:flex-end;">
             <button id="stab-profile" onclick="switchSettingsTab('profile')" style="padding:10px 22px;font-size:13.5px;font-weight:700;font-family:Inter,sans-serif;border:none;background:none;cursor:pointer;color:#1d4ed8;border-bottom:2px solid #1d4ed8;margin-bottom:-2px;white-space:nowrap;">Profile</button>
             <button id="stab-business" onclick="switchSettingsTab('business')" style="padding:10px 22px;font-size:13.5px;font-weight:600;font-family:Inter,sans-serif;border:none;background:none;cursor:pointer;color:#64748b;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;">Business</button>
             <button id="stab-discovery" onclick="switchSettingsTab('discovery')" style="padding:10px 22px;font-size:13.5px;font-weight:600;font-family:Inter,sans-serif;border:none;background:none;cursor:pointer;color:#64748b;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;">Discovery</button>
@@ -3442,28 +3483,26 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
                 </button>
               </div>
               <div style="flex:1;min-width:0;">
-                <div id="settingsName" style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">–</div>
-                <div id="settingsContact" style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">–</div>
+                <div id="settingsName" style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">&#x2013;</div>
+                <div id="settingsContact" style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">&#x2013;</div>
                 <div id="settingsVerifyBadge" style="display:none;margin-top:6px;">
                   <span style="display:inline-flex;align-items:center;gap:5px;background:#fef3c7;border-radius:999px;padding:3px 10px;border:1px solid #fcd34d;">
                     <div style="width:5px;height:5px;background:#f59e0b;border-radius:50%;"></div>
-                    <span style="font-size:11px;font-weight:600;color:#92400e;font-family:Inter,sans-serif;">Email not verified — </span>
-                    <button onclick="alert('Verification email sent!')" style="background:none;border:none;color:#1d4ed8;font-size:11px;font-weight:700;cursor:pointer;padding:0;font-family:Inter,sans-serif;">Verify now</button>
+                    <span style="font-size:11px;font-weight:600;color:#92400e;font-family:Inter,sans-serif;">Email not verified &#x2014; </span>
+                    <button onclick="sendVerifyEmail()" style="background:none;border:none;color:#1d4ed8;font-size:11px;font-weight:700;cursor:pointer;padding:0;font-family:Inter,sans-serif;">Verify now</button>
                   </span>
                 </div>
               </div>
               <button onclick="saveProfileTab()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;flex-shrink:0;">Save changes</button>
             </div>
 
-            <!-- Full name (full width) -->
-            <div style="margin-bottom:16px;">
-              <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Full name</label>
-              <input id="profileName" type="text" placeholder="Your full name" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
-            </div>
-
-            <!-- Email + Phone (2-col, responsive) -->
+            <!-- Row 1: Full name + Email or Phone (2-col) -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;" class="settings-2col">
-              <!-- Email row -->
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Full name</label>
+                <input id="profileName" type="text" placeholder="Your full name" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+              </div>
+              <!-- Email field (email signups) -->
               <div id="profileEmailRow" style="display:none;">
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Email address</label>
                 <div style="position:relative;">
@@ -3471,71 +3510,84 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
                   <span id="profileEmailBadge" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);background:#fef3c7;color:#92400e;font-size:10px;font-weight:700;font-family:Inter,sans-serif;padding:2px 8px;border-radius:999px;white-space:nowrap;">Unverified</span>
                 </div>
               </div>
-              <!-- Phone row -->
+              <!-- Phone field (phone signups) -->
               <div id="profilePhoneRow" style="display:none;">
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Mobile number</label>
                 <input id="profilePhone" type="tel" placeholder="+44 7700 000000" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
               </div>
             </div>
 
-            <!-- Add email (phone signups only) — full width -->
-            <div id="profileAddEmailRow" style="display:none;margin-bottom:16px;">
-              <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Add email address <span style="font-weight:400;color:#94a3b8;">(required to verify account)</span></label>
-              <input id="profileAddEmail" type="email" placeholder="your@email.com" oninput="recalcProgress()" style="width:100%;border:1.5px solid #fcd34d;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fffbeb;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#fcd34d';this.style.background='#fffbeb'"/>
+            <!-- Row 2: Email signup — password (half-width) -->
+            <div id="profileEmailPwdRow" style="display:none;margin-bottom:16px;">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" class="settings-2col">
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Set a password</label>
+                  <input id="profilePwdEmail" type="password" placeholder="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+                </div>
+                <div></div>
+              </div>
             </div>
 
-            <!-- Password (email signups) — full width -->
-            <div id="profilePwdRow" style="display:none;margin-bottom:4px;">
-              <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Set a password</label>
-              <input id="profilePwd" type="password" placeholder="••••••••" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+            <!-- Row 2: Phone signup — add email + password shown after email typed -->
+            <div id="profileAddEmailRow" style="display:none;margin-bottom:16px;">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" class="settings-2col">
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Add email <span style="font-weight:400;color:#94a3b8;">(required to verify)</span></label>
+                  <input id="profileAddEmail" type="email" placeholder="your@email.com" oninput="recalcProgress();onAddEmailInput(this)" style="width:100%;border:1.5px solid #fcd34d;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fffbeb;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#fcd34d';this.style.background='#fffbeb'"/>
+                </div>
+                <div id="profilePwdRow" style="display:none;">
+                  <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Set a password</label>
+                  <input id="profilePwd" type="password" placeholder="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- ═══ BUSINESS TAB ═══ -->
+          <!-- &#x2550;&#x2550;&#x2550; BUSINESS TAB &#x2550;&#x2550;&#x2550; -->
           <div id="settings-business" style="display:none;">
-            <!-- Row 1: Trading name (full width) -->
-            <div style="margin-bottom:16px;">
-              <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Trading name <span style="color:#ef4444;">*</span></label>
-              <input id="bizTradingName" type="text" placeholder="Your business name" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
-            </div>
-            <!-- Row 2: Registration + Legal (2-col) -->
+            <!-- Row 1: Trading name + Registration number -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;" class="settings-2col">
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Trading name <span style="color:#ef4444;">*</span></label>
+                <input id="bizTradingName" type="text" placeholder="Your business name" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
+              </div>
               <div>
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Registration number</label>
                 <input id="bizRegNum" type="text" placeholder="Companies House" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
               </div>
+            </div>
+            <!-- Row 2: Legal name + Registered address -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;" class="settings-2col">
               <div>
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Legal name</label>
                 <input id="bizLegalName" type="text" placeholder="As registered" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
               </div>
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Registered address <span style="color:#ef4444;">*</span></label>
+                <input id="bizRegAddr" type="text" placeholder="Official business address" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
+              </div>
             </div>
-            <!-- Row 3: Registered address (full width) -->
-            <div style="margin-bottom:16px;">
-              <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Registered address <span style="color:#ef4444;">*</span></label>
-              <input id="bizRegAddr" type="text" placeholder="Official business address" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
-            </div>
-            <!-- Row 4: Trading address (full width) -->
-            <div style="margin-bottom:16px;">
-              <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Trading address <span style="font-weight:400;color:#94a3b8;">(if different)</span></label>
-              <input id="bizTradingAddr" type="text" placeholder="If different" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
-            </div>
-            <!-- Row 5: VAT + Logo (2-col) -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;" class="settings-2col">
+            <!-- Row 3: Trading address + VAT number -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;" class="settings-2col">
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Trading address <span style="font-weight:400;color:#94a3b8;">(if different)</span></label>
+                <input id="bizTradingAddr" type="text" placeholder="If different" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
+              </div>
               <div>
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">VAT number</label>
                 <input id="bizVat" type="text" placeholder="GB 123 456 789" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
               </div>
+            </div>
+            <!-- Row 4: Company logo (right column only) -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;" class="settings-2col">
+              <div></div>
               <div>
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Company logo</label>
-                <div onclick="alert('File upload coming soon')" style="width:100%;border:1.5px dashed #d1d5db;border-radius:10px;padding:11px 14px;font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;box-sizing:border-box;background:#f8fafc;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.8"><path d="M7 10V4M4 7l3-3 3 3"/><rect x="1" y="11" width="12" height="2" rx="1"/></svg>Upload
-                </div>
+                <div onclick="alert('File upload coming soon')" style="width:100%;border:1.5px dashed #d1d5db;border-radius:10px;padding:11px 14px;font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;box-sizing:border-box;background:#f8fafc;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.8"><path d="M7 10V4M4 7l3-3 3 3"/><rect x="1" y="11" width="12" height="2" rx="1"/></svg>Upload</div>
               </div>
             </div>
             <div style="display:flex;justify-content:flex-end;">
-              <button onclick="saveBusinessTab()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 26px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10V4a1 1 0 011-1h6l3 3v7H3a1 1 0 01-1-1z"/><path d="M9 3v4H4V3"/></svg>Save business details
-              </button>
+              <button onclick="saveBusinessTab()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 26px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10V4a1 1 0 011-1h6l3 3v7H3a1 1 0 01-1-1z"/><path d="M9 3v4H4V3"/></svg>Save business details</button>
             </div>
           </div>
 
@@ -4708,20 +4760,7 @@ function toggleMobileNav() {
 }
 
 // Settings tab switcher
-function switchSettingsTab(tab) {
-  if (tab === 'pricing' || tab === 'notifications') tab = 'profile';
-  var tabs = ['profile','business','discovery','subscription'];
-  tabs.forEach(function(t) {
-    var btn = document.getElementById('stab-' + t);
-    var panel = document.getElementById('settings-' + t);
-    if (btn) {
-      btn.style.color = (t === tab) ? '#1d4ed8' : '#64748b';
-      btn.style.borderBottomColor = (t === tab) ? '#1d4ed8' : 'transparent';
-      btn.style.fontWeight = (t === tab) ? '700' : '600';
-    }
-    if (panel) panel.style.display = (t === tab) ? 'block' : 'none';
-  });
-}
+
 // Collapsible sidebar — Claude-style
 function toggleSidebar() {
   var sb = document.getElementById('dbSidebar');
@@ -6048,33 +6087,7 @@ var _onboardSteps = [
   { id:'tier', label:'Choose your plan', sub:'Connect · Connect Premium · Copilot', icon:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 2l1.8 3.6 4 .6-2.9 2.8.7 4-3.6-1.9-3.6 1.9.7-4L2.2 6.2l4-.6z"/></svg>', done: false, action: 'showTierStep' },
 ];
 
-function _syncSettingsPage() {
-  if (!_user) return;
-  var ini = document.getElementById('settingsIni');
-  var nm = document.getElementById('settingsName');
-  var ct = document.getElementById('settingsContact');
-  var profileName = document.getElementById('profileName');
-  var profileEmail = document.getElementById('profileEmail');
-  var profilePhone = document.getElementById('profilePhone');
 
-  if (ini) ini.textContent = _getInitials(_user.name || '?');
-  if (nm) nm.textContent = _user.name || '–';
-  if (ct) ct.textContent = _user.email || _user.contact || '–';
-  if (profileName) profileName.value = _user.name || '';
-  if (profileEmail) profileEmail.value = _user.email || '';
-  if (profilePhone) profilePhone.value = _user.phone || '';
-
-  // Show/hide password field: if logged in via phone OTP, show it. If email, prefill email and show
-  var pwdRow = document.getElementById('profilePwd');
-  if (pwdRow) {
-    var isPhone = _user.email === '' && _user.contact;
-    // Always show password for now
-  }
-
-  // Mark step 0 done
-  _onboardSteps[0].done = true;
-  _renderOnboardingSteps();
-}
 
 
 
@@ -6101,405 +6114,21 @@ function toggleDashTheme() {
   }
 }
 
-// =============================================
-// SETTINGS PAGE — full logic
-// =============================================
-
-// Discovery answers store (7 questions)
-var _discAnswers = [null, null, null, null, null, null, null];
-
-// Discovery questions definition
-var _discQuestions = [
-  {
-    q: 'What best describes what you do?',
-    icon: '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#1d4ed8" stroke-width="1.6"><rect x="4" y="8" width="20" height="16" rx="3"/><path d="M9 8V7a5 5 0 0110 0v1"/><path d="M4 15h20"/><path d="M10 19h4M18 19h1"/></svg>',
-    type: 'single',
-    opts: ['Residential letting agent','Short-term rental / Airbnb manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator','Facilities manager','Individual landlord','Other']
-  },
-  {
-    q: 'What types of property do you manage?',
-    icon: '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#1d4ed8" stroke-width="1.6"><path d="M4 24V13L14 5l10 8v11"/><path d="M10 24v-7h8v7"/></svg>',
-    type: 'multi',
-    groups: [
-      { label: 'RESIDENTIAL', opts: ['Houses & flats — AST','HMO — houses in multiple occupation','Short-term rental / holiday let','Residential block / leasehold','Serviced apartments'] },
-      { label: 'COMMERCIAL', opts: ['Offices','Retail units','Industrial / warehouse','Healthcare / medical','Education'] },
-      { label: 'HOSPITALITY', opts: ['Hotels','Hostels and budget accommodation','Guest houses and B&Bs','Purpose-built student accommodation'] },
-      { label: 'MIXED USE', opts: ['Mixed residential and commercial','Mixed-use development or estate'] }
-    ]
-  },
-  {
-    q: 'How many properties/units do you manage?',
-    icon: '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#1d4ed8" stroke-width="1.6"><rect x="4" y="8" width="8" height="16" rx="2"/><rect x="16" y="4" width="8" height="20" rx="2"/><path d="M4 20h8M16 16h8"/></svg>',
-    type: 'single',
-    opts: ['1–5','6–25','26–100','101–500','500+']
-  },
-  {
-    q: 'Which services do you coordinate?',
-    icon: '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#1d4ed8" stroke-width="1.6"><path d="M14 4v6M14 18v6M4 14h6M18 14h6"/><circle cx="14" cy="14" r="4"/></svg>',
-    type: 'multi',
-    opts: ['Cleaning','Compliance certificates (CP12, EICR, EPC, FRA, Legionella)','Reactive maintenance','Planned preventive maintenance (PPM)','Inspections & inventory','Landscaping','Pest control','Security','Removals','Specialist trades']
-  },
-  {
-    q: 'Where are your properties located?',
-    icon: '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#1d4ed8" stroke-width="1.6"><circle cx="14" cy="11" r="4"/><path d="M14 24C8 18 4 15 4 11a10 10 0 0120 0c0 4-4 7-10 13z"/></svg>',
-    type: 'multi',
-    opts: ['London','South East','South West','Midlands','North West','North East','Yorkshire','Scotland','Wales','Multiple regions']
-  },
-  {
-    q: 'How do you manage service providers?',
-    icon: '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#1d4ed8" stroke-width="1.6"><circle cx="10" cy="10" r="4"/><circle cx="20" cy="18" r="4"/><path d="M14 10h4M10 14v4"/></svg>',
-    type: 'single',
-    opts: ['Ad hoc (WhatsApp/phone)','Small regular contractors','Large contractor network','In-house staff','Use a PMS']
-  },
-  {
-    q: 'What is your biggest headache right now?',
-    icon: '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#1d4ed8" stroke-width="1.6"><circle cx="14" cy="14" r="10"/><path d="M14 9v6M14 17v1"/></svg>',
-    type: 'single',
-    opts: ['Finding reliable contractors','Chasing jobs to completion','Compliance tracking','Invoices & payments','Team coordination','No single portfolio view']
-  }
-];
-
-var _discCurrentQ = 0;
-var _discTempAnswers = [null, null, null, null, null, null, null];
-
-function startDiscoveryFlow() {
-  _discCurrentQ = 0;
-  _discTempAnswers = _discAnswers.slice();
-  showDiscoveryModal(_discCurrentQ);
-}
-
-function editDiscoveryQ(qIdx) {
-  _discCurrentQ = qIdx;
-  _discTempAnswers = _discAnswers.slice();
-  showDiscoveryModal(qIdx);
-}
-
-function showDiscoveryModal(qIdx) {
-  var ex = document.getElementById('discoveryModal');
-  if (ex) ex.remove();
-  var qDef = _discQuestions[qIdx];
-  var total = _discQuestions.length;
-
-  // Build dots
-  var dots = '';
-  for (var i = 0; i < total; i++) {
-    dots += '<div style="width:' + (i === qIdx ? '28' : '8') + 'px;height:8px;border-radius:4px;background:' + (i === qIdx ? '#1d4ed8' : (i < qIdx ? '#10b981' : '#e2e8f0')) + ';transition:all 0.3s;"></div>';
-  }
-
-  // Build options
-  var optsHtml = '';
-  var cur = _discTempAnswers[qIdx];
-  if (qDef.groups) {
-    qDef.groups.forEach(function(g) {
-      optsHtml += '<div style="font-size:10px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;letter-spacing:0.1em;margin:16px 0 8px;">' + g.label + '</div>';
-      optsHtml += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">';
-      g.opts.forEach(function(opt) {
-        var sel = cur && cur.indexOf(opt) >= 0;
-        optsHtml += '<div onclick="discToggleOpt(this,\'' + opt.replace(/'/g, "\\'") + '\',' + qIdx + ')" style="display:flex;align-items:center;gap:10px;border:1.5px solid ' + (sel ? '#1d4ed8' : '#e2e8f0') + ';border-radius:10px;padding:11px 14px;cursor:pointer;background:' + (sel ? '#eff6ff' : '#fff') + ';transition:all 0.15s;">' +
-          '<div style="width:16px;height:16px;border-radius:4px;border:1.5px solid ' + (sel ? '#1d4ed8' : '#d1d5db') + ';background:' + (sel ? '#1d4ed8' : 'transparent') + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;">' +
-          (sel ? '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M2 5l2.5 2.5 4-4"/></svg>' : '') + '</div>' +
-          '<span style="font-size:13px;color:#0f172a;font-family:Inter,sans-serif;">' + opt + '</span></div>';
-      });
-      optsHtml += '</div>';
-    });
-  } else {
-    optsHtml += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">';
-    qDef.opts.forEach(function(opt) {
-      var sel = qDef.type === 'single' ? cur === opt : (cur && cur.indexOf(opt) >= 0);
-      optsHtml += '<div onclick="discToggleOpt(this,\'' + opt.replace(/'/g, "\\'") + '\',' + qIdx + ')" style="display:flex;align-items:center;gap:10px;border:1.5px solid ' + (sel ? '#1d4ed8' : '#e2e8f0') + ';border-radius:10px;padding:11px 14px;cursor:pointer;background:' + (sel ? '#eff6ff' : '#fff') + ';transition:all 0.15s;">' +
-        '<div style="width:16px;height:16px;border-radius:' + (qDef.type === 'single' ? '50%' : '4px') + ';border:1.5px solid ' + (sel ? '#1d4ed8' : '#d1d5db') + ';background:' + (sel ? '#1d4ed8' : 'transparent') + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;">' +
-        (sel ? '<div style="width:6px;height:6px;background:#fff;border-radius:50%;"></div>' : '') + '</div>' +
-        '<span style="font-size:13px;color:#0f172a;font-family:Inter,sans-serif;">' + opt + '</span></div>';
-    });
-    optsHtml += '</div>';
-  }
-
-  var modal = document.createElement('div');
-  modal.id = 'discoveryModal';
-  modal.style.cssText = 'position:fixed;inset:0;z-index:9500;background:rgba(15,23,42,0.4);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px;';
-
-  var inner = document.createElement('div');
-  inner.style.cssText = 'background:#f5f7fa;border-radius:20px;width:100%;max-width:760px;max-height:90vh;overflow-y:auto;display:flex;flex-direction:column;animation:modalPop 0.22s ease;';
-
-  inner.innerHTML =
-    '<div style="padding:28px 32px 20px;">' +
-      '<div style="display:flex;justify-content:center;gap:6px;margin-bottom:28px;">' + dots + '</div>' +
-      '<div style="text-align:center;margin-bottom:28px;">' +
-        '<div style="margin-bottom:14px;">' + qDef.icon + '</div>' +
-        '<div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">' + qDef.q + '</div>' +
-        '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">' + (qDef.type === 'multi' ? 'Select all that apply' : 'Select one') + ' — <a onclick="discSkipQ(' + qIdx + ')" style="color:#1d4ed8;cursor:pointer;font-weight:600;">Skip</a></div>' +
-      '</div>' +
-      '<div id="discOptsWrap">' + optsHtml + '</div>' +
-    '</div>' +
-    '<div style="padding:16px 32px 24px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #e8ecf3;background:#fff;border-radius:0 0 20px 20px;position:sticky;bottom:0;">' +
-      (qIdx > 0 ? '<button onclick="discGoBack(' + qIdx + ')" style="background:#f1f5f9;border:none;border-radius:9px;padding:10px 20px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2L4 6l4 4"/></svg> Back</button>' : '<div></div>') +
-      '<button onclick="discContinue(' + qIdx + ')" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:10px 28px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;">' + (qIdx === total - 1 ? 'Finish' : 'Continue') + ' <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6h8M7 3l3 3-3 3"/></svg></button>' +
-    '</div>';
-
-  modal.appendChild(inner);
-  document.body.appendChild(modal);
-  modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
-}
-
-function discToggleOpt(el, opt, qIdx) {
-  var qDef = _discQuestions[qIdx];
-  if (qDef.type === 'single') {
-    _discTempAnswers[qIdx] = opt;
-    showDiscoveryModal(qIdx);
-  } else {
-    var cur = _discTempAnswers[qIdx] || [];
-    var idx = cur.indexOf(opt);
-    if (idx >= 0) cur.splice(idx, 1); else cur.push(opt);
-    _discTempAnswers[qIdx] = cur;
-    showDiscoveryModal(qIdx);
-  }
-}
-
-function discSkipQ(qIdx) {
-  _discTempAnswers[qIdx] = null;
-  discContinue(qIdx);
-}
-
-function discGoBack(qIdx) {
-  var modal = document.getElementById('discoveryModal');
-  if (modal) modal.remove();
-  showDiscoveryModal(qIdx - 1);
-}
-
-function discContinue(qIdx) {
-  _discAnswers[qIdx] = _discTempAnswers[qIdx];
-  updateDiscAnswerRow(qIdx);
-  var modal = document.getElementById('discoveryModal');
-  if (modal) modal.remove();
-  if (qIdx < _discQuestions.length - 1) {
-    showDiscoveryModal(qIdx + 1);
-  } else {
-    // All done — hide start prompt, update progress
-    var sp = document.getElementById('discStartPrompt');
-    if (sp) sp.style.display = 'none';
-    updateSettingsProgress('discovery');
-  }
-}
-
-function updateDiscAnswerRow(qIdx) {
-  var el = document.getElementById('disc-ans-' + qIdx);
-  if (!el) return;
-  var ans = _discAnswers[qIdx];
-  if (!ans || (Array.isArray(ans) && ans.length === 0)) {
-    el.textContent = 'Not set';
-    el.style.color = '#94a3b8';
-  } else {
-    var txt = Array.isArray(ans) ? ans.slice(0,2).join(', ') + (ans.length > 2 ? ' +' + (ans.length-2) + ' more' : '') : ans;
-    el.textContent = txt;
-    el.style.color = '#374151';
-    el.style.fontWeight = '500';
-  }
-}
-
-
-// Business tab progress (updates ring dynamically)
-function updateBizProgress() {
-  updateSettingsProgress('business');
-}
-
-// Plan picker — show/hide toggle
-function showSubPlanPicker() {
-  var cur = document.getElementById('subCurrentView');
-  var picker = document.getElementById('subPlanPicker');
-  if (cur) cur.style.display = 'none';
-  if (picker) picker.style.display = 'block';
-}
-function hideSubPlanPicker() {
-  var cur = document.getElementById('subCurrentView');
-  var picker = document.getElementById('subPlanPicker');
-  if (picker) picker.style.display = 'none';
-  if (cur) cur.style.display = 'block';
-}
-function selectPlan(plan) {
-  // Update current plan label
-  var planNames = { free: 'Connect Free', premium: 'Connect Premium', copilot: 'Copilot' };
-  // Redirect to dashboard home
-  hideSubPlanPicker();
-  showPage('home', null);
-}
-
-// Navigate to settings — show auth modal if guest
-function navToSettings(e) {
-  if (_user) {
-    showPage('settings', e);
-  } else {
-    showAuthPage('signup');
-  }
-}
-
-// Plan picker toggle (legacy alias)
-function showPlanPicker() { showSubPlanPicker(); }
-
-// Profile tab save
-function saveProfileTab() {
-  if (!_user) return;
-  var nm = document.getElementById('profileName');
-  if (nm && nm.value.trim()) _user.name = nm.value.trim();
-  var ae = document.getElementById('profileAddEmail');
-  if (ae && ae.value.trim()) { _user.email = ae.value.trim(); }
-  _syncSettingsPage();
-  updateSettingsProgress('profile');
-  alert('Profile saved!');
-}
-
-// Business tab save
-function saveBusinessTab() {
-  updateBizProgress();
-  updateSettingsProgress('business');
-}
-
-// Live-update ring as user types in any settings field
-function onSettingsInput() {
-  updateSettingsProgress(null);
-}
-
-// Master progress ring updater — fully dynamic
-var _settingsProgress = { profile: 15, business: 0, discovery: 0, subscription: 0 };
-
-function calcSettingsProgress() {
-  // Profile: name filled = 15%
-  var profilePct = 0;
-  var nm = document.getElementById('profileName');
-  if (nm && nm.value.trim()) profilePct = 15;
-  _settingsProgress.profile = profilePct;
-
-  // Business: trading name + reg address required (up to 20%)
-  var bizPct = 0;
-  var tn = document.getElementById('bizTradingName');
-  var ra = document.getElementById('bizRegAddr');
-  if (tn && tn.value.trim()) bizPct += 10;
-  if (ra && ra.value.trim()) bizPct += 10;
-  _settingsProgress.business = bizPct;
-
-  // Discovery: 25% when >= 4 questions answered
-  var discFilled = _discAnswers.filter(function(a){ return a !== null && !(Array.isArray(a) && a.length === 0); }).length;
-  _settingsProgress.discovery = discFilled >= 4 ? 25 : Math.round((discFilled / 7) * 25);
-
-  // Subscription: always 0 on free plan, 40% if upgraded
-  // _settingsProgress.subscription set separately
-
-  var total = _settingsProgress.profile + _settingsProgress.business + _settingsProgress.discovery + _settingsProgress.subscription;
-  return Math.min(100, total);
-}
-
-function updateSettingsProgress(section) {
-  var pct = calcSettingsProgress();
-  setSettingsRing(pct);
-  updateStepDots(pct, section);
-}
-
-function setSettingsRing(pct) {
-  var ring = document.getElementById('settingsRingFill');
-  var label = document.getElementById('settingsRingPct');
-  if (!ring || !label) return;
-  var r = 32; var circ = 2 * Math.PI * r; // 201.1
-  var offset = circ - (pct / 100) * circ;
-  ring.style.strokeDashoffset = offset;
-  // colour: yellow < 50, green >= 50
-  ring.style.stroke = pct >= 50 ? '#10b981' : '#f59e0b';
-  label.textContent = pct + '%';
-  label.style.color = pct >= 50 ? '#10b981' : '#f59e0b';
-}
-
-function updateStepDots(pct, justSaved) {
-  // Step 1 — always green (profile loaded = done)
-  var d1 = document.getElementById('sps1dot');
-  if (d1) { d1.style.background = '#10b981'; d1.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 6l3 3 5-5"/></svg>'; }
-  var p1 = document.getElementById('sps1pct');
-  if (p1) { p1.style.color = '#10b981'; }
-
-  if (justSaved === 'business') {
-    var d2 = document.getElementById('sps2dot');
-    if (d2) { d2.style.background = '#10b981'; d2.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 6l3 3 5-5"/></svg>'; }
-    var p2 = document.getElementById('sps2pct');
-    if (p2) { p2.style.color = '#10b981'; }
-  }
-
-  var discFilled = _discAnswers.filter(function(a){ return a !== null && !(Array.isArray(a) && a.length === 0); }).length;
-  if (discFilled >= 3) {
-    var d3 = document.getElementById('sps3dot');
-    if (d3) { d3.style.background = '#10b981'; d3.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 6l3 3 5-5"/></svg>'; }
-    var p3 = document.getElementById('sps3pct');
-    if (p3) { p3.style.color = '#10b981'; }
-  }
-}
-
-// ─── Override _syncSettingsPage to wire up new fields ───
-function _syncSettingsPage() {
-  if (!_user) return;
-
-  // Avatar initials
-  var ini = document.getElementById('settingsIni');
-  if (ini) ini.textContent = _getInitials(_user.name || '?');
-
-  // Header name & contact
-  var nm = document.getElementById('settingsName');
-  if (nm) nm.textContent = _user.name || '–';
-  var ct = document.getElementById('settingsContact');
-  if (ct) ct.textContent = _user.email || _user.phone || _user.contact || '–';
-
-  // Prefill full name
-  var pn = document.getElementById('profileName');
-  if (pn) pn.value = _user.name || '';
-
-  var isPhone = !_user.email && !!(_user.phone || _user.contact);
-
-  // Email row
-  var emailRow = document.getElementById('profileEmailRow');
-  var emailInp = document.getElementById('profileEmail');
-  var emailBadge = document.getElementById('profileEmailBadge');
-  if (emailRow) emailRow.style.display = isPhone ? 'none' : 'block';
-  if (emailInp && !isPhone) emailInp.value = _user.email || '';
-  if (emailBadge) emailBadge.style.display = !isPhone && _user.email ? 'flex' : 'none';
-
-  // Phone row
-  var phoneRow = document.getElementById('profilePhoneRow');
-  var phoneInp = document.getElementById('profilePhone');
-  if (phoneRow) phoneRow.style.display = isPhone ? 'block' : 'none';
-  if (phoneInp && isPhone) phoneInp.value = _user.phone || _user.contact || '';
-
-  // Add email row (phone signup only)
-  var addEmailRow = document.getElementById('profileAddEmailRow');
-  if (addEmailRow) addEmailRow.style.display = isPhone ? 'block' : 'none';
-
-  // Password row (always shown for email signups; for phone shown after email added)
-  var pwdRow = document.getElementById('profilePwdRow');
-  if (pwdRow) pwdRow.style.display = isPhone ? 'none' : 'block';
-
-  // Verify badge
-  var badge = document.getElementById('settingsVerifyBadge');
-  if (badge) badge.style.display = (!isPhone && _user.email) ? 'inline-flex' : 'none';
-
-  // Init ring at 15%
-  setSettingsRing(15);
-  updateStepDots(15, null);
-}
-
-// =============================================
-// SETTINGS PAGE — full logic
-// =============================================
-
 // SETTINGS PAGE full logic
 var _discAnswers=[null,null,null,null,null,null,null];
 var _discQuestions=[
   {q:'What best describes what you do?',type:'single',opts:['Residential letting agent','Short-term rental manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator','Facilities manager','Individual landlord','Other']},
-  {q:'What types of property do you manage?',type:'multi',groups:[{label:'RESIDENTIAL',opts:['Houses and flats - AST','HMO - houses in multiple occupation','Short-term rental','Residential block / leasehold','Serviced apartments']},{label:'COMMERCIAL',opts:['Offices','Retail units','Industrial / warehouse','Healthcare / medical','Education']},{label:'HOSPITALITY',opts:['Hotels','Hostels','Guest houses and B&Bs','Student accommodation']},{label:'MIXED USE',opts:['Mixed residential and commercial','Mixed-use estate']}]},
+  {q:'What types of property do you manage?',type:'multi',groups:[{label:'RESIDENTIAL',opts:['Houses & flats - AST','HMO - houses in multiple occupation','Short-term rental','Residential block / leasehold','Serviced apartments']},{label:'COMMERCIAL',opts:['Offices','Retail units','Industrial / warehouse','Healthcare / medical','Education']},{label:'HOSPITALITY',opts:['Hotels','Hostels','Guest houses and B&Bs','Student accommodation']},{label:'MIXED USE',opts:['Mixed residential and commercial','Mixed-use estate']}]},
   {q:'How many properties/units?',type:'single',opts:['1-5','6-25','26-100','101-500','500+']},
   {q:'Which services do you coordinate?',type:'multi',opts:['Cleaning','Compliance certificates','Reactive maintenance','PPM','Inspections & inventory','Landscaping','Pest control','Security','Removals','Specialist trades']},
   {q:'Where are your properties located?',type:'multi',opts:['London','South East','South West','Midlands','North West','North East','Yorkshire','Scotland','Wales','Multiple regions']},
   {q:'How do you manage service providers?',type:'single',opts:['Ad hoc (WhatsApp/phone)','Small regular contractors','Large contractor network','In-house staff','Use a PMS']},
-  {q:'What is your biggest headache?',type:'single',opts:['Finding reliable contractors','Chasing jobs','Compliance tracking','Invoices and payments','Team coordination','No single portfolio view']}
+  {q:'What is your biggest headache?',type:'single',opts:['Finding reliable contractors','Chasing jobs','Compliance tracking','Invoices & payments','Team coordination','No single portfolio view']}
 ];
 var _discTempAnswers=[null,null,null,null,null,null,null];
 var _sgInstalled=false;
 function _installSettingsGuard(){
-  if(_sgInstalled)return;
-  _sgInstalled=true;
+  if(_sgInstalled)return;_sgInstalled=true;
   var orig=showPage;
   showPage=function(id,e){
     if(id==='settings'&&!_user){showAuthPage('signup');return;}
@@ -6525,26 +6154,68 @@ function _syncSettingsPage(){
   var ct=document.getElementById('settingsContact');if(ct)ct.textContent=_user.email||_user.phone||_user.contact||'-';
   var pn=document.getElementById('profileName');if(pn)pn.value=_user.name||'';
   var isPhone=!_user.email&&!!(_user.phone||_user.contact);
+  // Email field (email signups)
   var er=document.getElementById('profileEmailRow');if(er)er.style.display=isPhone?'none':'block';
   var ei=document.getElementById('profileEmail');if(ei&&!isPhone)ei.value=_user.email||'';
   var eb=document.getElementById('profileEmailBadge');if(eb)eb.style.display=(!isPhone&&_user.email)?'flex':'none';
+  // Phone field (phone signups)
   var pr=document.getElementById('profilePhoneRow');if(pr)pr.style.display=isPhone?'block':'none';
   var pi=document.getElementById('profilePhone');if(pi&&isPhone)pi.value=_user.phone||_user.contact||'';
+  // Add email row (phone signups)
   var aer=document.getElementById('profileAddEmailRow');if(aer)aer.style.display=isPhone?'block':'none';
-  var pwd=document.getElementById('profilePwdRow');if(pwd)pwd.style.display=isPhone?'none':'block';
+  // Password row: email signups always show; phone signups show when add-email has value
+  var pwd=document.getElementById('profilePwdRow');
+  if(pwd)pwd.style.display=(!isPhone)?'block':'none';
+  // Verify badge (email signups)
   var badge=document.getElementById('settingsVerifyBadge');if(badge)badge.style.display=(!isPhone&&_user.email)?'block':'none';
   recalcProgress();
 }
 
+// Show password field when phone user types an email
+function onAddEmailInput(){
+  var ae=document.getElementById('profileAddEmail');
+  var pwd=document.getElementById('profilePwdRow');
+  if(pwd&&ae){pwd.style.display=ae.value.trim()?'block':'none';}
+  recalcProgress();
+}
+
+// Verify Now: send verification email
+function triggerEmailVerify(){
+  var ei=document.getElementById('profileEmail');
+  var email=(ei&&ei.value.trim())||(_user&&_user.email)||'';
+  if(email){
+    var btn=document.getElementById('verifyNowBtn');
+    if(btn){btn.textContent='Sent!';btn.style.color='#10b981';btn.style.pointerEvents='none';
+      setTimeout(function(){if(btn){btn.textContent='Verify now';btn.style.color='#1d4ed8';btn.style.pointerEvents='auto';}},4000);}
+    alert('Verification email sent to '+email+'!');
+  }
+}
+
 function recalcProgress(){
   var pct=0;
+  // Profile: max 15%
   var pf=0;
-  var ids=['profileName','profileEmail','profilePhone','profileAddEmail'];
-  ids.forEach(function(id){var el=document.getElementById(id);if(el&&el.value.trim()&&el.offsetParent!==null)pf++;});
-  if(pf>=2)pct+=15;else if(pf===1)pct+=7;
+  var nameEl=document.getElementById('profileName');
+  var emailEl=document.getElementById('profileEmail');
+  var phoneEl=document.getElementById('profilePhone');
+  var addEl=document.getElementById('profileAddEmail');
+  if(nameEl&&nameEl.value.trim())pf++;
+  if(emailEl&&emailEl.offsetParent!==null&&emailEl.value.trim())pf++;
+  if(phoneEl&&phoneEl.offsetParent!==null&&phoneEl.value.trim())pf++;
+  if(addEl&&addEl.offsetParent!==null&&addEl.value.trim())pf++;
+  if(pf>=2)pct+=15;else if(pf===1)pct+=8;
+  // Business: max 20%
   var bf=0;
-  ['bizTradingName','bizRegAddr','bizRegNum','bizLegalName'].forEach(function(id){var el=document.getElementById(id);if(el&&el.value.trim())bf++;});
-  if(bf>=2)pct+=Math.round((bf/4)*20);
+  ['bizTradingName','bizRegNum','bizLegalName','bizRegAddr','bizTradingAddr','bizVat'].forEach(function(id){
+    var el=document.getElementById(id);if(el&&el.value.trim())bf++;
+  });
+  // Required fields: TradingName + RegAddr = 10% each; optional fields add up to 0%
+  var tnEl=document.getElementById('bizTradingName');
+  var raEl=document.getElementById('bizRegAddr');
+  if(tnEl&&tnEl.value.trim())pct+=10;
+  if(raEl&&raEl.value.trim())pct+=10;
+  // Business: max 20% total
+  // Discovery: max 25%
   var df=_discAnswers.filter(function(a){return a!==null&&!(Array.isArray(a)&&a.length===0);}).length;
   pct+=Math.round((df/7)*25);
   pct=Math.min(pct,60);
@@ -6590,85 +6261,141 @@ function hidePlanPicker(){
   if(c)c.style.display='block';if(p)p.style.display='none';
 }
 function selectPlan(planName){
-  hidePlanPicker();
-  showPage('home',null);
+  hidePlanPicker();showPage('home',null);
   setTimeout(function(){
     var b=document.createElement('div');
     b.style.cssText='position:fixed;top:20px;right:20px;background:#10b981;color:#fff;padding:14px 22px;border-radius:12px;font-family:Inter,sans-serif;font-size:14px;font-weight:700;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.15);animation:modalPop 0.2s ease;';
-    b.textContent='Upgraded to '+planName+'! Welcome aboard.';
-    document.body.appendChild(b);setTimeout(function(){b.remove();},3000);
+    b.textContent='Upgraded to '+planName+'!';document.body.appendChild(b);setTimeout(function(){b.remove();},3000);
   },300);
 }
+
 
 function startDiscoveryFlow(){_discTempAnswers=_discAnswers.slice();showDiscoveryModal(0);}
 function editDiscoveryQ(q){_discTempAnswers=_discAnswers.slice();showDiscoveryModal(q);}
 
 function showDiscoveryModal(qIdx){
-  var ex=document.getElementById('discoveryModal');if(ex)ex.remove();
   var qDef=_discQuestions[qIdx];
   var total=_discQuestions.length;
-  var dots='';
-  for(var i=0;i<total;i++){dots+='<div style="width:'+(i===qIdx?'28':'8')+'px;height:8px;border-radius:4px;background:'+(i===qIdx?'#1d4ed8':i<qIdx?'#10b981':'#e2e8f0')+';transition:all 0.3s;flex-shrink:0;"></div>';}
   var cur=_discTempAnswers[qIdx];
-  var optsHtml='';
-  function mOpt(opt,isSingle){
+  // Dots
+  var dots='';
+  for(var i=0;i<total;i++){dots+='<div style="width:'+(i===qIdx?'28':'8')+'px;height:8px;border-radius:4px;background:'+(i===qIdx?'#1d4ed8':i<qIdx?'#10b981':'#e2e8f0')+';transition:width 0.25s,background 0.25s;flex-shrink:0;"></div>';}
+  // Build options
+  function mkOpt(opt,isSingle){
     var sel=isSingle?cur===opt:(cur&&cur.indexOf(opt)>=0);
     var br=isSingle?'50%':'4px';
-    var inner=sel?(isSingle?'<div style=\"width:6px;height:6px;background:#fff;border-radius:50%;\"></div>':'<svg width=\"10\" height=\"10\" viewBox=\"0 0 10 10\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\"><path d=\"M2 5l2.5 2.5 4-4\"/></svg>'):'';
+    var innerHtml=sel?(isSingle?'<div style="width:6px;height:6px;background:#fff;border-radius:50%;"></div>':'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M2 5l2.5 2.5 4-4"/></svg>'):'';
     var safeOpt=opt.replace(/"/g,'&quot;');
-    return '<div onclick=\"discToggleOpt(this,this.dataset.opt,'+qIdx+')\" data-opt=\"'+safeOpt+'\" style=\"display:flex;align-items:center;gap:10px;border:1.5px solid '+(sel?'#1d4ed8':'#e2e8f0')+';border-radius:10px;padding:11px 14px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all 0.15s;\"><div style=\"width:16px;height:16px;border-radius:'+br+';border:1.5px solid '+(sel?'#1d4ed8':'#d1d5db')+';background:'+(sel?'#1d4ed8':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;\">'+inner+'</div><span style=\"font-size:13px;color:#0f172a;font-family:Inter,sans-serif;\">'+opt+'</span></div>';
+    return '<div class="disc-opt" onclick="discSelectOpt(this,'+qIdx+')" data-opt="'+safeOpt+'" data-single="'+(isSingle?'1':'0')+'" style="display:flex;align-items:center;gap:10px;border:1.5px solid '+(sel?'#1d4ed8':'#e2e8f0')+';border-radius:10px;padding:11px 14px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:border-color 0.12s,background 0.12s;">'
+      +'<div class="disc-check" style="width:16px;height:16px;border-radius:'+br+';border:1.5px solid '+(sel?'#1d4ed8':'#d1d5db')+';background:'+(sel?'#1d4ed8':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.12s;">'+innerHtml+'</div>'
+      +'<span style="font-size:13px;color:#0f172a;font-family:Inter,sans-serif;">'+opt+'</span>'
+      +'</div>';
   }
+  var optsHtml='';
   if(qDef.groups){
     qDef.groups.forEach(function(g){
-      optsHtml+='<div style=\"font-size:10px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;letter-spacing:0.1em;margin:16px 0 8px;\">'+g.label+'</div><div style=\"display:grid;grid-template-columns:1fr 1fr;gap:8px;\">';
-      g.opts.forEach(function(o){optsHtml+=mOpt(o,false);});
+      optsHtml+='<div style="font-size:10px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;letter-spacing:0.1em;margin:16px 0 8px;">'+g.label+'</div>';
+      optsHtml+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">';
+      g.opts.forEach(function(o){optsHtml+=mkOpt(o,false);});
       optsHtml+='</div>';
     });
   }else{
-    optsHtml+='<div style=\"display:grid;grid-template-columns:'+(qDef.opts.length>6?'1fr 1fr 1fr':'1fr 1fr')+';gap:8px;\">';
-    qDef.opts.forEach(function(o){optsHtml+=mOpt(o,qDef.type==='single');});
+    var cols=qDef.opts.length>6?'1fr 1fr 1fr':'1fr 1fr';
+    optsHtml+='<div style="display:grid;grid-template-columns:'+cols+';gap:8px;">';
+    qDef.opts.forEach(function(o){optsHtml+=mkOpt(o,qDef.type==='single');});
     optsHtml+='</div>';
   }
-  var backBtn=qIdx>0?'<button onclick=\"discGoBack('+qIdx+')\" style=\"background:#f1f5f9;border:none;border-radius:9px;padding:10px 20px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;\">&larr; Back</button>':'<div></div>';
+  var backBtn=qIdx>0?'<button onclick="discGoBack('+qIdx+')" style="background:#f1f5f9;border:none;border-radius:9px;padding:10px 20px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;">&larr; Back</button>':'<div></div>';
   var contLbl=qIdx===total-1?'Finish':'Continue &rarr;';
-  var modal=document.createElement('div');
-  modal.id='discoveryModal';
-  modal.style.cssText='position:fixed;inset:0;z-index:9500;background:rgba(15,23,42,0.4);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px;';
-  var wrap=document.createElement('div');
-  wrap.style.cssText='background:#f5f7fa;border-radius:20px;width:100%;max-width:760px;max-height:90vh;overflow-y:auto;display:flex;flex-direction:column;animation:modalPop 0.22s ease;';
-  wrap.innerHTML='<div style=\"padding:28px 28px 20px;\">'
-    +'<div style=\"display:flex;justify-content:center;gap:6px;margin-bottom:28px;\">'+dots+'</div>'
-    +'<div style=\"text-align:center;margin-bottom:24px;\">'
-    +'<div style=\"font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;\">'+qDef.q+'</div>'
-    +'<div style=\"font-size:13px;color:#64748b;font-family:Inter,sans-serif;\">'+(qDef.type==='multi'?'Select all that apply':'Select one')+'&nbsp;&middot;&nbsp;<a onclick=\"discSkipQ('+qIdx+')\" style=\"color:#1d4ed8;cursor:pointer;font-weight:600;\">Skip</a></div></div>'
-    +'<div id=\"discOptsWrap\">'+optsHtml+'</div></div>'
-    +'<div style=\"padding:16px 28px 24px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #e8ecf3;background:#fff;border-radius:0 0 20px 20px;position:sticky;bottom:0;\">'+backBtn+'<button onclick=\"discContinue('+qIdx+')\" style=\"background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:10px 28px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;\">'+contLbl+'</button></div>';
-  modal.appendChild(wrap);
-  document.body.appendChild(modal);
-  modal.addEventListener('click',function(e){if(e.target===modal)modal.remove();});
+
+  // Reuse modal element — prevents full blink
+  var modal=document.getElementById('discoveryModal');
+  if(!modal){
+    modal=document.createElement('div');
+    modal.id='discoveryModal';
+    modal.style.cssText='position:fixed;inset:0;z-index:9500;background:rgba(15,23,42,0.4);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px;';
+    modal.addEventListener('click',function(e){if(e.target===modal)modal.remove();});
+    document.body.appendChild(modal);
+  }
+  modal.innerHTML='<div style="background:#f5f7fa;border-radius:20px;width:100%;max-width:760px;max-height:90vh;overflow-y:auto;display:flex;flex-direction:column;">'
+    +'<div style="padding:24px 28px 20px;">'
+    // Top row: dots + counter + close
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;">'
+      +'<div style="display:flex;gap:6px;align-items:center;">'+dots+'</div>'
+      +'<div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">'
+        +'<span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;font-weight:600;">'+( qIdx+1)+' / '+total+'</span>'
+        +'<button onclick="document.getElementById(\'discoveryModal\').remove()" style="background:#f1f5f9;border:none;width:30px;height:30px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:18px;line-height:1;font-family:Inter,sans-serif;">&times;</button>'
+      +'</div>'
+    +'</div>'
+    // Question
+    +'<div style="text-align:center;margin-bottom:24px;">'
+      +'<div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">'+qDef.q+'</div>'
+      +'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">'+(qDef.type==='multi'?'Select all that apply':'Select one')+'&nbsp;&middot;&nbsp;<a onclick="discSkipQ('+qIdx+')" style="color:#1d4ed8;cursor:pointer;font-weight:600;">Skip</a></div>'
+    +'</div>'
+    +'<div id="discOptsWrap">'+optsHtml+'</div>'
+    +'</div>'
+    // Footer
+    +'<div style="padding:14px 28px 22px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #e8ecf3;background:#fff;border-radius:0 0 20px 20px;position:sticky;bottom:0;">'
+      +backBtn
+      +'<button onclick="discContinue('+qIdx+')" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:10px 28px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">'+contLbl+'</button>'
+    +'</div>'
+  +'</div>';
 }
 
-function discToggleOpt(el,opt,qIdx){
-  var qDef=_discQuestions[qIdx];
-  if(qDef.type==='single'){_discTempAnswers[qIdx]=opt;showDiscoveryModal(qIdx);}
-  else{var cur=(_discTempAnswers[qIdx]||[]).slice();var i=cur.indexOf(opt);if(i>=0)cur.splice(i,1);else cur.push(opt);_discTempAnswers[qIdx]=cur;showDiscoveryModal(qIdx);}
+// Direct DOM toggle — no re-render, no blink
+function discSelectOpt(el,qIdx){
+  var opt=el.dataset.opt;
+  var isSingle=el.dataset.single==='1';
+  if(isSingle){
+    // Deselect all in same wrap, select this one
+    var wrap=document.getElementById('discOptsWrap');
+    if(wrap){
+      wrap.querySelectorAll('.disc-opt').forEach(function(item){
+        var s=(item.dataset.opt===opt);
+        item.style.borderColor=s?'#1d4ed8':'#e2e8f0';
+        item.style.background=s?'#eff6ff':'#fff';
+        var cb=item.querySelector('.disc-check');
+        if(cb){cb.style.borderColor=s?'#1d4ed8':'#d1d5db';cb.style.background=s?'#1d4ed8':'transparent';cb.innerHTML=s?'<div style="width:6px;height:6px;background:#fff;border-radius:50%;"></div>':'';}
+      });
+    }
+    _discTempAnswers[qIdx]=opt;
+  }else{
+    var cur=(_discTempAnswers[qIdx]||[]).slice();
+    var idx=cur.indexOf(opt);
+    var sel=idx<0;
+    if(sel)cur.push(opt);else cur.splice(idx,1);
+    _discTempAnswers[qIdx]=cur;
+    el.style.borderColor=sel?'#1d4ed8':'#e2e8f0';
+    el.style.background=sel?'#eff6ff':'#fff';
+    var cb=el.querySelector('.disc-check');
+    if(cb){cb.style.borderColor=sel?'#1d4ed8':'#d1d5db';cb.style.background=sel?'#1d4ed8':'transparent';cb.innerHTML=sel?'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M2 5l2.5 2.5 4-4"/></svg>':'';}
+  }
 }
-function discSkipQ(qIdx){_discTempAnswers[qIdx]=null;discContinue(qIdx);}
-function discGoBack(qIdx){var m=document.getElementById('discoveryModal');if(m)m.remove();showDiscoveryModal(qIdx-1);}
-function discContinue(qIdx){
-  _discAnswers[qIdx]=_discTempAnswers[qIdx];
-  updateDiscAnswerRow(qIdx);
+
+function discToggleOpt(el,opt,qIdx){discSelectOpt(el,qIdx);}
+function discSkipQ(q){_discTempAnswers[q]=null;discContinue(q);}
+function discGoBack(q){showDiscoveryModal(q-1);}
+function discContinue(q){
+  _discAnswers[q]=_discTempAnswers[q];
+  updateDiscAnswerRow(q);
   var m=document.getElementById('discoveryModal');if(m)m.remove();
-  if(qIdx<_discQuestions.length-1)showDiscoveryModal(qIdx+1);
+  if(q<_discQuestions.length-1){showDiscoveryModal(q+1);}
   else{var sp=document.getElementById('discStartPrompt');if(sp)sp.style.display='none';recalcProgress();}
 }
-function updateDiscAnswerRow(qIdx){
-  var el=document.getElementById('disc-ans-'+qIdx);if(!el)return;
-  var ans=_discAnswers[qIdx];
+function updateDiscAnswerRow(q){
+  var el=document.getElementById('disc-ans-'+q);if(!el)return;
+  var ans=_discAnswers[q];
   if(!ans||(Array.isArray(ans)&&ans.length===0)){el.textContent='Not set';el.style.color='#94a3b8';el.style.fontWeight='400';}
   else{var txt=Array.isArray(ans)?ans.slice(0,2).join(', ')+(ans.length>2?' +'+(ans.length-2)+' more':''):ans;el.textContent=txt;el.style.color='#374151';el.style.fontWeight='600';}
 }
 
+function sendVerifyEmail(){
+  var email=(_user&&_user.email)?_user.email:'your email address';
+  var t=document.createElement('div');
+  t.style.cssText='position:fixed;top:20px;right:20px;background:#1d4ed8;color:#fff;padding:12px 20px;border-radius:11px;font-family:Inter,sans-serif;font-size:13.5px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.15);animation:modalPop 0.2s ease;display:flex;align-items:center;gap:8px;';
+  t.innerHTML='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2"><rect x="1" y="3" width="12" height="9" rx="2"/><path d="M1 5.5l6 4 6-4"/></svg> Verification email sent to '+email;
+  document.body.appendChild(t);setTimeout(function(){t.remove();},4000);
+}
 </script>
 
 <!-- =============================================
