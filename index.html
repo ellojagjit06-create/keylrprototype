@@ -3596,49 +3596,62 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
           <!-- &#x2550;&#x2550;&#x2550; BUSINESS TAB &#x2550;&#x2550;&#x2550; -->
           <div id="settings-business" style="display:none;">
-            <!-- Row 1: Trading name + Registration number -->
+            <!-- hidden file input for logo -->
+            <input type="file" id="bizLogoInput" accept="image/*" style="display:none;" onchange="bizLogoSelected(this)"/>
+            <!-- Row 1: Trading/Company Name + Company Registration Number -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;" class="settings-2col">
               <div>
-                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Trading name <span style="color:#ef4444;">*</span></label>
-                <input id="bizTradingName" type="text" placeholder="Your business name" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Trading / Company Name <span style="color:#ef4444;">*</span></label>
+                <input id="bizTradingName" type="text" placeholder="e.g. Thompson Properties Ltd" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="validateBizField(this,'bizTradingName')"/>
               </div>
               <div>
-                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Registration number</label>
-                <input id="bizRegNum" type="text" placeholder="Companies House" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Company Registration Number <span style="font-weight:400;color:#94a3b8;">(optional)</span></label>
+                <input id="bizRegNum" type="text" placeholder="e.g. 12345678 (Companies House)" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
               </div>
             </div>
-            <!-- Row 2: Legal name + Registered address -->
+            <!-- Row 2: Legal Company Name + Registered Address -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;" class="settings-2col">
               <div>
-                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Legal name</label>
-                <input id="bizLegalName" type="text" placeholder="As registered" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Legal Company Name <span style="color:#ef4444;">*</span></label>
+                <input id="bizLegalName" type="text" placeholder="As registered at Companies House" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="validateBizField(this,'bizLegalName')"/>
               </div>
               <div>
-                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Registered address <span style="color:#ef4444;">*</span></label>
-                <input id="bizRegAddr" type="text" placeholder="Official business address" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Registered Address <span style="color:#ef4444;">*</span></label>
+                <input id="bizRegAddr" type="text" placeholder="Official registered business address" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="validateBizField(this,'bizRegAddr')"/>
               </div>
             </div>
-            <!-- Row 3: Trading address + VAT number (2-col) -->
+            <!-- Row 3: Trading Address + VAT Number -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:0;" class="settings-2col">
               <div>
-                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Trading address <span style="font-weight:400;color:#94a3b8;">(if different)</span></label>
-                <input id="bizTradingAddr" type="text" placeholder="If different" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Trading Address <span style="font-weight:400;color:#94a3b8;">(optional)</span></label>
+                <input id="bizTradingAddr" type="text" placeholder="If different from registered address" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
               </div>
               <div>
-                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">VAT number</label>
-                <input id="bizVat" type="text" placeholder="GB 123 456 789" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">VAT Number <span style="font-weight:400;color:#94a3b8;">(optional)</span></label>
+                <input id="bizVat" type="text" placeholder="e.g. GB 123 456 789" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
               </div>
             </div>
-            <!-- Row 4: Company logo under Trading address (left col) + empty right -->
+            <!-- Row 4: Company Logo (left col, under Trading Address) -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;margin-top:16px;" class="settings-2col">
               <div>
-                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Company logo</label>
-                <div onclick="alert('File upload coming soon')" style="width:100%;border:1.5px dashed #d1d5db;border-radius:10px;padding:11px 14px;font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;box-sizing:border-box;background:#f8fafc;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.8"><path d="M7 10V4M4 7l3-3 3 3"/><rect x="1" y="11" width="12" height="2" rx="1"/></svg>Upload</div>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Company Logo <span style="font-weight:400;color:#94a3b8;">(optional)</span></label>
+                <div id="bizLogoZone" onclick="document.getElementById('bizLogoInput').click()" style="width:100%;border:1.5px dashed #d1d5db;border-radius:10px;padding:11px 14px;font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;box-sizing:border-box;background:#f8fafc;cursor:pointer;display:flex;align-items:center;gap:10px;transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='#1d4ed8';this.style.background='#eff6ff'" onmouseout="this.style.borderColor='#d1d5db';this.style.background='#f8fafc'">
+                  <img id="bizLogoPreview" src="" alt="" style="display:none;width:32px;height:32px;object-fit:contain;border-radius:6px;"/>
+                  <svg id="bizLogoIcon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#64748b" stroke-width="1.8"><path d="M8 11V5M5 8l3-3 3 3"/><rect x="1" y="12" width="14" height="2" rx="1"/></svg>
+                  <span id="bizLogoLabel">Click to upload logo</span>
+                </div>
               </div>
               <div></div>
             </div>
-                     <div style="display:flex;justify-content:flex-end;">
-              <button onclick="saveBusinessTab()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 26px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10V4a1 1 0 011-1h6l3 3v7H3a1 1 0 01-1-1z"/><path d="M9 3v4H4V3"/></svg>Save business details</button>
+            <!-- Validation error area -->
+            <div id="bizErrors" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 16px;margin-bottom:16px;">
+              <div style="font-size:13px;font-weight:600;color:#dc2626;font-family:Inter,sans-serif;margin-bottom:4px;">Please fix the following:</div>
+              <ul id="bizErrorList" style="margin:0;padding-left:18px;font-size:12.5px;color:#dc2626;font-family:Inter,sans-serif;"></ul>
+            </div>
+            <div style="display:flex;justify-content:flex-end;">
+              <button onclick="saveBusinessTab()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 26px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10V4a1 1 0 011-1h6l3 3v7H3a1 1 0 01-1-1z"/><path d="M9 3v4H4V3"/></svg>Save business details
+              </button>
             </div>
           </div>
 
@@ -6245,32 +6258,36 @@ function triggerEmailVerify(){
 
 function recalcProgress(){
   var pct=0;
-  // Profile: max 15%
-  var pf=0;
+  // ── Profile (max 35%) ──
   var nameEl=document.getElementById('profileName');
   var emailEl=document.getElementById('profileEmail');
   var phoneEl=document.getElementById('profilePhone');
-  var addEl=document.getElementById('profileAddEmail');
-  if(nameEl&&nameEl.value.trim())pf++;
-  if(emailEl&&emailEl.offsetParent!==null&&emailEl.value.trim())pf++;
-  if(phoneEl&&phoneEl.offsetParent!==null&&phoneEl.value.trim())pf++;
-  if(addEl&&addEl.offsetParent!==null&&addEl.value.trim())pf++;
-  if(pf>=2)pct+=15;else if(pf===1)pct+=8;
-  // Business: max 20%
-  var bf=0;
-  ['bizTradingName','bizRegNum','bizLegalName','bizRegAddr','bizTradingAddr','bizVat'].forEach(function(id){
-    var el=document.getElementById(id);if(el&&el.value.trim())bf++;
-  });
-  // Required fields: TradingName + RegAddr = 10% each; optional fields add up to 0%
-  var tnEl=document.getElementById('bizTradingName');
-  var raEl=document.getElementById('bizRegAddr');
-  if(tnEl&&tnEl.value.trim())pct+=10;
-  if(raEl&&raEl.value.trim())pct+=10;
-  // Business: max 20% total
-  // Discovery: max 25%
+  var hasName=nameEl&&nameEl.value.trim().length>0;
+  var hasEmail=emailEl&&emailEl.value.trim().length>2;
+  var hasPhone=phoneEl&&phoneEl.value.trim().length>4;
+  var hasContact=hasEmail||hasPhone;
+  if(hasName)pct+=10;
+  if(hasContact)pct+=10;
+  // Email verified check
+  if(_user&&_user._emailVerified)pct+=15;
+  else if(hasEmail)pct+=5; // partial for unverified
+
+  // ── Business (max 35%) ──
+  var tn=document.getElementById('bizTradingName');
+  var ln=document.getElementById('bizLegalName');
+  var ra=document.getElementById('bizRegAddr');
+  var hasTrading=tn&&tn.value.trim().length>0;
+  var hasLegal=ln&&ln.value.trim().length>0;
+  var hasRegAddr=ra&&ra.value.trim().length>0;
+  if(hasTrading)pct+=12;
+  if(hasLegal)pct+=12;
+  if(hasRegAddr)pct+=11;
+
+  // ── Discovery (max 30%) ──
   var df=_discAnswers.filter(function(a){return a!==null&&!(Array.isArray(a)&&a.length===0);}).length;
-  pct+=Math.round((df/7)*25);
-  pct=Math.min(pct,60);
+  pct+=Math.round((df/7)*30);
+
+  pct=Math.min(pct,100);
   setSettingsRing(pct);
   setSidebarProgress(pct);
 }
@@ -6296,13 +6313,114 @@ function setSidebarProgress(pct){
 
 function saveProfileTab(){
   if(!_user)return;
-  var nm=document.getElementById('profileName');if(nm&&nm.value.trim())_user.name=nm.value.trim();
-  var ae=document.getElementById('profileAddEmail');if(ae&&ae.value.trim())_user.email=ae.value.trim();
+  var errors=[];
+  var nameEl=document.getElementById('profileName');
+  var emailEl=document.getElementById('profileEmail');
+  var phoneEl=document.getElementById('profilePhone');
+  var pwdEl=document.getElementById('profilePwd');
+
+  if(!nameEl||!nameEl.value.trim()){
+    errors.push('Full name is required');
+    if(nameEl){nameEl.style.borderColor='#ef4444';}
+  }
+
+  if(errors.length>0){
+    showToast(errors[0],'error');return;
+  }
+
+  // Save to _user
+  _user.name=nameEl.value.trim();
+  var emailVal=(emailEl&&emailEl.value.trim())||'';
+  var phoneVal=(phoneEl&&phoneEl.value.trim())||'';
+  var addEmailEl=document.getElementById('profileAddEmail');
+  var addEmailVal=(addEmailEl&&addEmailEl.value.trim())||'';
+
+  if(emailVal&&emailVal!==_user.email){
+    _user.email=emailVal;
+    _user._emailVerified=false;
+    // Send verification email automatically
+    sendVerifyEmail();
+  }
+  if(addEmailVal&&!_user.email){
+    _user.email=addEmailVal;
+    _user._emailVerified=false;
+    sendVerifyEmail();
+  }
+  if(phoneVal)_user.phone=phoneVal;
+  if(pwdEl&&pwdEl.value)_user._pwd=pwdEl.value;
+
   if(typeof _syncUserUI==='function')_syncUserUI();
-  recalcProgress();alert('Profile saved!');
+  _syncSettingsPage();
+  recalcProgress();
+  showToast('Profile saved successfully!','success');
 }
 
-function saveBusinessTab(){recalcProgress();alert('Business details saved!');}
+function validateBizField(input, id){
+  var required=['bizTradingName','bizLegalName','bizRegAddr'];
+  if(required.indexOf(id)>=0&&!input.value.trim()){
+    input.style.borderColor='#ef4444';
+    input.style.background='#fef2f2';
+  }else{
+    input.style.borderColor='#e2e8f0';
+    input.style.background='#f8fafc';
+  }
+  recalcProgress();
+}
+
+function bizLogoSelected(input){
+  var file=input.files&&input.files[0];
+  if(!file)return;
+  if(file.size>2*1024*1024){showToast('Logo must be under 2MB','error');return;}
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var preview=document.getElementById('bizLogoPreview');
+    var icon=document.getElementById('bizLogoIcon');
+    var lbl=document.getElementById('bizLogoLabel');
+    var zone=document.getElementById('bizLogoZone');
+    if(preview){preview.src=e.target.result;preview.style.display='block';}
+    if(icon)icon.style.display='none';
+    if(lbl)lbl.textContent=file.name;
+    if(zone){zone.style.borderColor='#10b981';zone.style.borderStyle='solid';}
+    if(_user)_user._logo=e.target.result;
+    showToast('Logo uploaded!','success');
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveBusinessTab(){
+  var errors=[];
+  var required=[
+    {id:'bizTradingName',label:'Trading / Company Name'},
+    {id:'bizLegalName',label:'Legal Company Name'},
+    {id:'bizRegAddr',label:'Registered Address'}
+  ];
+  required.forEach(function(f){
+    var el=document.getElementById(f.id);
+    if(!el||!el.value.trim()){
+      errors.push(f.label+' is required');
+      if(el){el.style.borderColor='#ef4444';el.style.background='#fef2f2';}
+    }else{
+      if(el){el.style.borderColor='#e2e8f0';el.style.background='#f8fafc';}
+    }
+  });
+  var errBox=document.getElementById('bizErrors');
+  var errList=document.getElementById('bizErrorList');
+  if(errors.length>0){
+    if(errBox)errBox.style.display='block';
+    if(errList)errList.innerHTML=errors.map(function(e){return '<li>'+e+'</li>';}).join('');
+    showToast(errors[0],'error');
+    return;
+  }
+  if(errBox)errBox.style.display='none';
+  // Save data to _user
+  if(!_user)_user={};
+  ['bizTradingName','bizLegalName','bizRegAddr','bizRegNum','bizTradingAddr','bizVat'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)_user['_'+id]=el.value.trim();
+  });
+  recalcProgress();
+  showToast('Business details saved!','success');
+}
 
 function showPlanPicker(){
   var c=document.getElementById('subCurrentView');var p=document.getElementById('subPlanView');
@@ -6432,7 +6550,15 @@ function discContinue(q){
   updateDiscAnswerRow(q);
   var m=document.getElementById('discoveryModal');if(m)m.remove();
   if(q<_discQuestions.length-1){showDiscoveryModal(q+1);}
-  else{var sp=document.getElementById('discStartPrompt');if(sp)sp.style.display='none';recalcProgress();}
+  else{
+    var sp=document.getElementById('discStartPrompt');if(sp)sp.style.display='none';
+    recalcProgress();
+    var answered=_discAnswers.filter(function(a){return a!==null&&!(Array.isArray(a)&&a.length===0);}).length;
+    if(typeof showToast==='function'){
+      if(answered===7)showToast('Discovery complete! Progress updated.','success');
+      else showToast('Discovery profile updated.','success');
+    }
+  }
 }
 function updateDiscAnswerRow(q){
   var el=document.getElementById('disc-ans-'+q);if(!el)return;
@@ -6441,13 +6567,7 @@ function updateDiscAnswerRow(q){
   else{var txt=Array.isArray(ans)?ans.slice(0,2).join(', ')+(ans.length>2?' +'+(ans.length-2)+' more':''):ans;el.textContent=txt;el.style.color='#374151';el.style.fontWeight='600';}
 }
 
-function sendVerifyEmail(){
-  var email=(_user&&_user.email)?_user.email:'your email address';
-  var t=document.createElement('div');
-  t.style.cssText='position:fixed;top:20px;right:20px;background:#1d4ed8;color:#fff;padding:12px 20px;border-radius:11px;font-family:Inter,sans-serif;font-size:13.5px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.15);animation:modalPop 0.2s ease;display:flex;align-items:center;gap:8px;';
-  t.innerHTML='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2"><rect x="1" y="3" width="12" height="9" rx="2"/><path d="M1 5.5l6 4 6-4"/></svg> Verification email sent to '+email;
-  document.body.appendChild(t);setTimeout(function(){t.remove();},4000);
-}
+
 
 function togglePwdVisibility(inputId, btn) {
   var inp = document.getElementById(inputId);
@@ -6462,6 +6582,100 @@ function togglePwdVisibility(inputId, btn) {
   }
   btn.style.color = isHidden ? '#1d4ed8' : '#94a3b8';
 }
+
+// ── Toast / Snackbar ──
+function showToast(msg, type) {
+  var existing = document.getElementById('keylrToast');
+  if (existing) existing.remove();
+  var t = document.createElement('div');
+  t.id = 'keylrToast';
+  var bg = type === 'error' ? '#dc2626' : type === 'warning' ? '#d97706' : '#10b981';
+  var icon = type === 'error'
+    ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v.5"/></svg>'
+    : type === 'warning'
+    ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2"><path d="M8 2l6 12H2L8 2z"/><path d="M8 7v3M8 12v.5"/></svg>'
+    : '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M5 8l2.5 2.5 3.5-3.5"/></svg>';
+  t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:12px 20px;border-radius:12px;font-family:Inter,sans-serif;font-size:13.5px;font-weight:600;z-index:99999;box-shadow:0 8px 32px rgba(0,0,0,0.18);display:flex;align-items:center;gap:10px;animation:toastIn 0.25s ease;white-space:nowrap;max-width:90vw;';
+  t.innerHTML = icon + '<span>' + msg + '</span>';
+  document.body.appendChild(t);
+  setTimeout(function() {
+    t.style.animation = 'toastOut 0.25s ease forwards';
+    setTimeout(function() { if (t.parentNode) t.remove(); }, 250);
+  }, type === 'error' ? 4000 : 2800);
+}
+
+// ── Toast CSS animation ──
+(function(){
+  var s = document.createElement('style');
+  s.textContent = '@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(14px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}' +
+    '@keyframes toastOut{from{opacity:1;transform:translateX(-50%) translateY(0)}to{opacity:0;transform:translateX(-50%) translateY(14px)}}';
+  document.head.appendChild(s);
+})();
+
+// ── Email verification ──
+function sendVerifyEmail() {
+  var email = (_user && _user.email) ? _user.email : '';
+  if (!email) { showToast('No email address to verify', 'warning'); return; }
+  var modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9800;background:rgba(15,23,42,0.45);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px;animation:modalPop 0.2s ease;';
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:18px;padding:32px 28px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.18);';
+  
+  var icon = document.createElement('div');
+  icon.style.cssText = 'width:56px;height:56px;background:#eff6ff;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;';
+  icon.innerHTML = '<svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#1d4ed8" stroke-width="1.8"><rect x="2" y="6" width="22" height="16" rx="3"/><path d="M2 10l11 7 11-7"/></svg>';
+
+  var h = document.createElement('div');
+  h.style.cssText = 'font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;';
+  h.textContent = 'Verify your email';
+
+  var sub = document.createElement('div');
+  sub.style.cssText = 'font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:6px;';
+  sub.textContent = 'We sent a verification link to';
+
+  var em = document.createElement('div');
+  em.style.cssText = 'font-size:14px;font-weight:700;color:#1d4ed8;font-family:Inter,sans-serif;margin-bottom:24px;';
+  em.textContent = email;
+
+  var hint = document.createElement('div');
+  hint.style.cssText = 'font-size:12.5px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:20px;';
+  hint.textContent = 'Click the link in the email to verify your account and unlock full features.';
+
+  var btnVerify = document.createElement('button');
+  btnVerify.style.cssText = 'width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:10px;';
+  btnVerify.textContent = 'I have verified my email ✓';
+  btnVerify.onclick = function(){ simulateEmailVerified(); modal.remove(); };
+
+  var btnLater = document.createElement('button');
+  btnLater.style.cssText = 'width:100%;background:none;border:none;color:#64748b;font-size:13px;cursor:pointer;font-family:Inter,sans-serif;';
+  btnLater.textContent = 'Remind me later';
+  btnLater.onclick = function(){ modal.remove(); };
+
+  box.appendChild(icon); box.appendChild(h); box.appendChild(sub); box.appendChild(em);
+  box.appendChild(hint); box.appendChild(btnVerify); box.appendChild(btnLater);
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+}
+
+function simulateEmailVerified() {
+  if (!_user) return;
+  _user._emailVerified = true;
+  // Update badge
+  var badge = document.getElementById('settingsVerifyBadge');
+  if (badge) {
+    badge.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px;background:#d1fae5;border-radius:999px;padding:3px 10px;border:1px solid #a7f3d0;">'
+      + '<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>'
+      + '<span style="font-size:11px;font-weight:600;color:#065f46;font-family:Inter,sans-serif;">Email verified</span></span>';
+    badge.style.display = 'block';
+  }
+  recalcProgress();
+  showToast('Email verified! Profile progress updated.', 'success');
+}
+
+// ── Discovery save wrapper — updates progress after finishing all questions ──
+var _origDiscContinue = typeof discContinue !== 'undefined' ? discContinue : null;
+
 </script>
 
 <!-- =============================================
