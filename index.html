@@ -4923,8 +4923,21 @@ function toggleSidebar() {
 var _userDetails = {firstName:'', lastName:'', email:'', phone:'', address:''};
 
 function openUserModal(editMode) {
-  // Pre-fill from logged-in user if available
-  if (_user && !editMode) {
+  var modal = document.getElementById('userDetailsModal');
+  if (!modal) return;
+
+  // Populate fields from stored details (edit mode) or leave empty
+  var fields = ['udFirstName','udLastName','udEmail','udPhone','udAddress'];
+  var vals = [_userDetails.firstName, _userDetails.lastName, _userDetails.email, _userDetails.phone, _userDetails.address];
+  fields.forEach(function(id, i) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.value = (editMode && vals[i] && vals[i] !== '—') ? vals[i] : '';
+    el.style.borderColor = '#e2e8f0';
+  });
+
+  // Pre-fill from logged-in user if fields are empty
+  if (_user) {
     var nameParts = (_user.name || '').split(' ');
     var firstEl = document.getElementById('udFirstName');
     var lastEl  = document.getElementById('udLastName');
@@ -4933,25 +4946,20 @@ function openUserModal(editMode) {
     if (firstEl && !firstEl.value) firstEl.value = nameParts[0] || '';
     if (lastEl  && !lastEl.value)  lastEl.value  = nameParts.slice(1).join(' ') || '';
     if (emailEl && !emailEl.value) emailEl.value = _user.email || '';
-    if (phoneEl && !phoneEl.value) phoneEl.value = _user.phone || '';
+    if (phoneEl && !phoneEl.value) phoneEl.value = _user.phone || (_user.contact && /^\d/.test(_user.contact.replace(/[\s\+\-\(\)]/g,'')) ? _user.contact : '') || '';
   }
-  var fields = ['udFirstName','udLastName','udEmail','udPhone','udAddress'];
-  var vals = [_userDetails.firstName, _userDetails.lastName, _userDetails.email, _userDetails.phone, _userDetails.address];
-  fields.forEach(function(id, i){
-    var el = document.getElementById(id);
-    if (!el) return;
-    el.value = (editMode && vals[i] && vals[i] !== '—') ? vals[i] : '';
-    el.style.borderColor = '#e2e8f0';
-    el.style.boxShadow = 'none';
-  });
-  document.getElementById('udStep1').style.display = 'block';
-  document.getElementById('udStep2').style.display = 'none';
-  document.getElementById('userDetailsModal').style.display = 'flex';
+
+  // Clear any previous error
+  var errBox = document.getElementById('udError');
+  if (errBox) errBox.style.display = 'none';
+
+  modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
 
 function closeUserModal() {
-  document.getElementById('userDetailsModal').style.display = 'none';
+  var modal = document.getElementById('userDetailsModal');
+  if (modal) modal.style.display = 'none';
   document.body.style.overflow = '';
 }
 
@@ -5530,8 +5538,16 @@ function showAuthPage(mode) {
         });
         _syncUserUI();
       } else {
-        // No stored user — basic login
-        _setUser({ name: a.name||'', email: a.contact||'', contact: a.contact||'', role: a.role||'manager', profileComplete: false });
+        // No stored user — basic login, detect phone vs email
+        var _isPhoneFb = /^\d{7,15}$/.test((a.contact||'').replace(/[\s\-\(\)\+]/g,''));
+        _setUser({
+          name: a.name || '',
+          email: _isPhoneFb ? '' : (a.contact || ''),
+          phone: _isPhoneFb ? (a.contact || '') : '',
+          contact: a.contact || '',
+          role: a.role || 'manager',
+          profileComplete: false
+        });
       }
       modal.remove(); delete window._auth;
       goToDashboard('', false);
@@ -6353,16 +6369,28 @@ function _syncSettingsPage(){
   var pn=document.getElementById('profileName');
   if(pn)pn.value=_user.name||'';
 
-  // Email — always show, pre-filled if email signup
+  // Email — only fill if _user.email is actually an email (not a phone number)
   var ei=document.getElementById('profileEmail');
-  if(ei)ei.value=_user.email||'';
+  if(ei){
+    var emailVal=_user.email||'';
+    // Never put a phone number into the email field
+    var looksLikePhone=/^\+?[\d\s\-\(\)]{6,}$/.test(emailVal)&&!/[@.]/.test(emailVal);
+    ei.value=looksLikePhone?'':emailVal;
+  }
 
   // Email badge
   updateEmailBadge();
 
-  // Phone — pre-filled if phone signup
+  // Phone — pre-filled from phone field or contact if it looks like a phone
   var pi=document.getElementById('profilePhone');
-  if(pi)pi.value=_user.phone||(_user.contact&&/^[\d\s\+\-\(\)]{4,}/.test(_user.contact)?_user.contact:'')||'';
+  if(pi){
+    var phoneVal=_user.phone||'';
+    if(!phoneVal&&_user.contact){
+      var cleanContact=(_user.contact||'').replace(/[\s\-\(\)\+]/g,'');
+      if(/^\d{6,}$/.test(cleanContact))phoneVal=_user.contact;
+    }
+    pi.value=phoneVal;
+  }
 
   // Password — pre-fill if stored from signup
   var pwd=document.getElementById('profilePwd');
