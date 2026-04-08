@@ -6309,16 +6309,6 @@ function _finishSetup() {
 }
 
 // Hook showPage to sync settings when tab opens
-var _origShowPage_settings = showPage;
-showPage = function(id, e) {
-  _origShowPage_settings(id, e);
-  if (id === 'settings') {
-    setTimeout(function(){
-      _syncSettingsPage();
-      switchSettingsTab(1);
-    }, 30);
-  }
-};
 
 // =============================================
 // V4 — Property Manager auth (no role selection)
