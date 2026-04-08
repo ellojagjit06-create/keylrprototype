@@ -1,21 +1,10 @@
-<!-- USER DETAILS MODAL -->
-<div id="userDetailsModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.55);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;">
-  <div style="background:#fff;border-radius:20px;padding:0;width:100%;max-width:480px;position:relative;box-shadow:0 24px 64px rgba(0,0,0,0.22);overflow:hidden;animation:modalPop 0.22s ease;">
-</div>
-  </div>
-</div>
-
-<style>
-@keyframes modalPop{from{opacity:0;transform:scale(0.96)translateY(8px);}to{opacity:1;transform:scale(1)translateY(0);}}
-</style><!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Keylr — Property Management Platform</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,800;0,9..144,900;1,9..144,400;1,9..144,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-
 /* =============================================
    GLOBAL RESET & DESIGN TOKENS
 ============================================= */
@@ -1654,12 +1643,13 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .pep-ghost--sm{width:60%;}
 
 /* Page layout — each page fills the main panel */
-#page-home,#page-explore,#page-bookings,#page-properties,#page-pricing,#page-chat {
+#page-home,#page-explore,#page-bookings,#page-properties,#page-pricing,#page-settings,#page-chat {
   position:absolute;inset:0;
   display:none;
   flex-direction:column;
   overflow:hidden;
 }
+
 .bk-scroll-area,.pr-scroll-area,.px-scroll-area {
   flex:1;
   overflow-y:auto;
@@ -1690,14 +1680,8 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .job-badge-blue{background:var(--blue-badge);color:var(--blue);}
 
 /* Page panel system — absolute fill */
-#page-home,#page-chat,#page-explore,#page-bookings,#page-properties,#page-pricing {
-  position:absolute;
-  inset:0;
-  display:none;
-  flex-direction:column;
-  overflow:hidden;
-}
-#page-home,#page-explore,#page-bookings,#page-properties,#page-pricing {
+
+#page-home,#page-explore,#page-bookings,#page-properties,#page-pricing,#page-settings {
   background:var(--page-bg);
 }
 #page-chat{background:var(--white);}
@@ -2407,7 +2391,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           <span class="hero-chip" onclick="setQuery('Gardener')">🌿 Gardener</span>
         </div>
         <div class="hero-supplier-cta">
-          <button class="hero-supplier-btn" onclick="showAuthPage('signup')">
+          <button class="hero-supplier-btn" onclick="showSupplierAuth()">
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7.5" cy="5" r="2.5"/><path d="M2.5 13c0-2.8 2.2-5 5-5s5 2.2 5 5"/><path d="M11 3l1.5 1.5M11 6l1.5-1.5"/></svg>
             Join as a Supplier
           </button>
@@ -2621,6 +2605,14 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
     <div class="db-sidebar-bottom">
       <!-- Logged out -->
+      <!-- Dark/Light toggle -->
+      <button id="themeToggleBtn" onclick="toggleDashTheme()" style="width:100%;display:flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--gray-200);border-radius:9px;padding:8px 12px;cursor:pointer;font-family:Inter,sans-serif;font-size:12.5px;font-weight:600;color:var(--gray-600);margin-bottom:8px;transition:background 0.15s;" onmouseover="this.style.background='var(--gray-50)'" onmouseout="this.style.background='transparent'">
+        <span id="themeIcon" style="width:16px;height:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg id="themeIconLight" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="2.5"/><path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M3.05 3.05l1.06 1.06M9.89 9.89l1.06 1.06M10.95 3.05l-1.06 1.06M4.11 9.89l-1.06 1.06"/></svg>
+          <svg id="themeIconDark" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" style="display:none;"><path d="M12 9A6 6 0 015 2a6 6 0 100 10 6 6 0 007-3z"/></svg>
+        </span>
+        <span id="themeLabel" class="db-nav-item-label">Light mode</span>
+      </button>
       <div id="sbAuthArea">
         <p class="db-auth-hint">Sign up or log in to access<br>all the features</p>
         <div class="db-auth-btns">
@@ -2899,14 +2891,14 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           <!-- QUICK LINKS -->
           <div class="quick-links-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
             <div class="quick-link-card" onclick="showPage('properties',null);">
-              <div style="display:flex;align-items:center;gap:12px;">
+              <div style="display:flex;align-items:flex-start;gap:12px;">
                 <div style="width:36px;height:36px;background:#eff6ff;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#3b82f6" stroke-width="1.7"><path d="M1 16V8l8-5 8 5v8"/><path d="M6 16v-5h6v5"/></svg></div>
                 <div><div style="font-size:13.5px;font-weight:600;color:#0f172a;">Property portfolio</div><div style="font-size:12px;color:#94a3b8;margin-top:2px;">0 properties · 0 certificates valid</div></div>
               </div>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M5 3l4 4-4 4"/></svg>
             </div>
             <div class="quick-link-card" onclick="showPage('pricing',null);">
-              <div style="display:flex;align-items:center;gap:12px;">
+              <div style="display:flex;align-items:flex-start;gap:12px;">
                 <div style="width:36px;height:36px;background:#eff6ff;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#3b82f6" stroke-width="1.7"><rect x="2" y="4" width="14" height="11" rx="2"/><path d="M6 4V2.5a3 3 0 016 0V4"/><path d="M2 8h14"/></svg></div>
                 <div><div style="font-size:13.5px;font-weight:600;color:#0f172a;">Pricing &amp; preferences</div><div style="font-size:12px;color:#94a3b8;margin-top:2px;">Set budgets and smart matching</div></div>
               </div>
@@ -3211,7 +3203,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h10M7 2v10"/></svg>Add Property
           </button>
         </div>
-                <!-- Stats row -->
+        <!-- Stats row -->
         <div class="prop-stats-row">
           <div class="prop-stat-card">
             <div class="prop-stat-icon" style="color:var(--blue);"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 18V9l8-6 8 6v9"/><path d="M7 18v-5h6v5"/></svg></div>
@@ -3235,96 +3227,266 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="5"/><path d="M11 11l3 3"/></svg>
           <input class="prop-search-input" type="text" placeholder="Search properties..."/>
         </div>
-        <!-- Property grid — empty state showing structure -->
-        <div class="prop-empty-grid">
-          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:56px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;margin-bottom:24px;width:100%;box-sizing:border-box;">
-            <div style="width:72px;height:72px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">
-              <svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#3b82f6" stroke-width="1.5"><path d="M4 28V15l13-10 13 10v13"/><path d="M12 28v-8h10v8"/></svg>
-            </div>
-            <div style="font-size:19px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;margin-bottom:8px;">No properties yet</div>
-            <div style="font-size:13.5px;color:#64748b;max-width:290px;margin:0 auto 26px;line-height:1.65;">Add your first property to track compliance, certificates and all property services in one place.</div>
-            <button onclick="showAuthPage('signup')" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:8px;margin-bottom:18px;">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 1.5v11M1.5 7h11"/></svg>Add Property
-            </button>
-            <div style="display:flex;gap:18px;flex-wrap:wrap;justify-content:center;">
-              <span style="font-size:12px;color:#94a3b8;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Certificate tracking</span>
-              <span style="font-size:12px;color:#94a3b8;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Compliance alerts</span>
-              <span style="font-size:12px;color:#94a3b8;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Service history</span>
-            </div>
+        <!-- Empty state — matches No jobs yet style -->
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:60px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;margin-bottom:24px;">
+          <div style="width:72px;height:72px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#3b82f6" stroke-width="1.5"><path d="M4 28V15l13-10 13 10v13"/><path d="M12 28v-8h10v8"/></svg>
           </div>
-      </div></div>
-      <!-- Fixed chat footer -->
-      <div class="page-ai-footer">
-        <div class="paf-input-row">
-          <svg class="paf-clip-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 7.5l-5.5 5.5a4 4 0 01-5.6-5.6l6-6a2.5 2.5 0 013.5 3.5L5.9 10.4a1 1 0 01-1.4-1.4l5-5"/></svg>
-          <input class="paf-input" id="prChatInput" type="text" placeholder="Type or say your issue"
-            onkeydown="if(event.key==='Enter'&&this.value.trim()){startNewChat();showPage('chat',null);sendFromSuggestion(this.value.trim());this.value='';}"/>
-          <button class="paf-send" onclick="const v=document.getElementById('prChatInput').value.trim();if(v){startNewChat();showPage('chat',null);sendFromSuggestion(v);document.getElementById('prChatInput').value='';}">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1.5 6.5h10M7.5 3l4 3.5-4 3.5"/></svg>
+          <div style="font-size:19px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">No properties yet</div>
+          <div style="font-size:13.5px;color:#64748b;max-width:290px;margin:0 auto 26px;line-height:1.65;">Add your first property to track compliance, certificates and all services in one place.</div>
+          <button onclick="showAuthPage('signup')" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;margin-bottom:20px;">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 1.5v11M1.5 7h11"/></svg>Add your first property
           </button>
+          <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;"><span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Gas & EICR tracking</span><span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Compliance alerts</span><span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Service history</span></div>
+        </div>
+      </div></div>
+      <!-- Fixed chat footer — same pattern as bookings -->
+      <div style="flex-shrink:0;background:#fff;border-top:1px solid #e2e8f0;padding:12px 24px 16px;">
+        <div style="max-width:800px;margin:0 auto;">
+          <div style="display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #e2e8f0;border-radius:999px;padding:10px 10px 10px 18px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M13 7.5l-5.5 5.5a4 4 0 01-5.6-5.6l6-6a2.5 2.5 0 013.5 3.5L5.9 10.4a1 1 0 01-1.4-1.4l5-5"/></svg>
+            <input type="text" id="prChatInput" placeholder="Ask about a property or compliance issue"
+              style="flex:1;border:none;outline:none;font-size:14px;color:#0f172a;background:transparent;font-family:inherit;"
+              onkeydown="if(event.key==='Enter'&&this.value.trim()){startNewChat();showPage('chat',null);sendFromSuggestion(this.value.trim());this.value='';}"/>
+            <button onclick="var v=document.getElementById('prChatInput').value.trim();if(v){startNewChat();showPage('chat',null);sendFromSuggestion(v);document.getElementById('prChatInput').value='';}"              style="width:34px;height:34px;background:#1d4ed8;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2.2"><path d="M1.5 7h11M8.5 3.5l4 3.5-4 3.5"/></svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
-    </div>
     <!-- PRICING / SETTINGS PAGE -->
     <div id="page-pricing">
-      <div class="px-scroll-area"><div class="db-main-inner">
-        <div class="settings-eyebrow">CONFIGURE</div>
-        <div class="settings-title">Settings</div>
-        <div class="settings-tabs"><button class="stab stab-active" id="tab-pricing" onclick="switchSettingsTab('pricing')">Pricing</button><button class="stab" id="tab-notifications" onclick="switchSettingsTab('notifications')">Notifications</button><button class="stab" id="tab-profile" onclick="switchSettingsTab('profile')">Profile</button></div><div id="settings-pricing">
-        <div class="spr-card">
-          <div class="spr-card-header"><div><div class="spr-card-title">Service pricing</div><div class="spr-card-sub">Set your budget per category. Matching providers will be highlighted.</div></div><button class="spr-info-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 7v5M8 5v.5"/></svg></button></div>
-          <div class="spr-rows">
-            <div class="spr-row"><div class="spr-row-info"><div class="spr-row-name">Plumbing &amp; Gas</div><div class="spr-row-market">Market: £80 – £250</div></div><div class="spr-row-controls"><div class="spr-price-wrap"><span class="spr-pound">£</span><input class="spr-input" type="number" value="200" min="0"/></div><select class="spr-select"><option>Fixed Price</option><option>Per Hour</option></select><div class="spr-badge spr-above">↗ Above market</div></div></div>
-            <div class="spr-row"><div class="spr-row-info"><div class="spr-row-name">Electrical</div><div class="spr-row-market">Market: £85 – £650</div></div><div class="spr-row-controls"><div class="spr-price-wrap"><span class="spr-pound">£</span><input class="spr-input" type="number" value="250" min="0"/></div><select class="spr-select"><option>Fixed Price</option><option>Per Hour</option></select><div class="spr-badge spr-below">↘ Below market</div></div></div>
-            <div class="spr-row"><div class="spr-row-info"><div class="spr-row-name">Cleaning</div><div class="spr-row-market">Market: £18 – £300</div></div><div class="spr-row-controls"><div class="spr-price-wrap"><span class="spr-pound">£</span><input class="spr-input" type="number" value="25" min="0"/></div><select class="spr-select"><option>Per Hour</option><option>Fixed Price</option></select><div class="spr-badge spr-below">↘ Below market</div></div></div>
-            <div class="spr-row"><div class="spr-row-info"><div class="spr-row-name">Fire Safety</div><div class="spr-row-market">Market: £185 – £350</div></div><div class="spr-row-controls"><div class="spr-price-wrap"><span class="spr-pound">£</span><input class="spr-input" type="number" value="300" min="0"/></div><select class="spr-select"><option>Fixed Price</option><option>Per Hour</option></select><div class="spr-badge spr-above">↗ Above market</div></div></div>
-            <div class="spr-row"><div class="spr-row-info"><div class="spr-row-name">Inventory &amp; Reports</div><div class="spr-row-market">Market: £95 – £165</div></div><div class="spr-row-controls"><div class="spr-price-wrap"><span class="spr-pound">£</span><input class="spr-input" type="number" value="150" min="0"/></div><select class="spr-select"><option>Fixed Price</option><option>Per Hour</option></select><div class="spr-badge spr-above">↗ Above market</div></div></div>
-            <div class="spr-row"><div class="spr-row-info"><div class="spr-row-name">General Repairs</div><div class="spr-row-market">Market: £22 – £85</div></div><div class="spr-row-controls"><div class="spr-price-wrap"><span class="spr-pound">£</span><input class="spr-input" type="number" value="30" min="0"/></div><select class="spr-select"><option>Per Hour</option><option>Fixed Price</option></select><div class="spr-badge spr-below">↘ Below market</div></div></div>
-          </div>
-          <div class="spr-save-row"><button class="spr-save-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10V4a1 1 0 011-1h6l3 3v7H3a1 1 0 01-1-1z"/><path d="M9 3v4H4V3"/></svg>Save</button></div>
-        </div>
-        <div class="spr-upgrade-card">
-          <div class="spr-upgrade-top"><div class="spr-upgrade-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 1l2.5 5h5.5l-4.5 3.5 2 6L9 13l-5.5 3.5 2-6L1 6h5.5z"/></svg></div><span class="spr-upgrade-tag">Keylr Platform</span></div>
-          <div class="spr-upgrade-title">Go end-to-end with Keylr</div>
-          <div class="spr-upgrade-desc">Upgrade to the full Keylr platform for complete property operations — team management, automated workflows, invoicing, financial dashboards, supplier management, and more.</div>
-          <div class="spr-upgrade-features"><div class="spr-upgrade-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#10b981" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M5 8l2 2 4-4"/></svg><div><div class="suf-title">Team &amp; operations</div><div class="suf-desc">Manage staff, schedules, and daily ops</div></div></div><div class="spr-upgrade-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#10b981" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M5 8l2 2 4-4"/></svg><div><div class="suf-title">Financial tracking</div><div class="suf-desc">Invoices, payments, margins, and reports</div></div></div><div class="spr-upgrade-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#10b981" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M5 8l2 2 4-4"/></svg><div><div class="suf-title">Supplier management</div><div class="suf-desc">Contracts, SLAs, and auto-assignment</div></div></div></div>
-          <div class="spr-upgrade-btns"><button class="spr-upgrade-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 1l2 4h5l-4 3 1.5 5L7 10.5 2.5 13 4 8 0 5h5z"/></svg>Upgrade to Keylr Platform</button><button class="spr-learn-btn">Learn more <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v5M4 6.5h5"/></svg></button></div>
-          <div class="spr-upgrade-note">From £69/month + £1.50/property. Cancel anytime.</div>
-        </div>
-        </div><!-- /settings-pricing -->
+      <div class="px-scroll-area">
+        <div style="max-width:780px;margin:0 auto;padding:28px 28px 60px;">
 
-        <!-- NOTIFICATIONS PANEL -->
-        <div id="settings-notifications" style="display:none;">
-          <div class="spr-card">
-            <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:800;color:#0f172a;margin-bottom:20px;">Notifications</div>
-            <div style="display:flex;flex-direction:column;gap:10px;">
-              <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;"><span style="font-size:14px;color:#0f172a;">Compliance expiry alerts</span><span style="background:#d1fae5;color:#065f46;font-size:12px;font-weight:600;padding:4px 12px;border-radius:999px;">Email + Push</span></div>
-              <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;"><span style="font-size:14px;color:#0f172a;">Job status updates</span><span style="background:#d1fae5;color:#065f46;font-size:12px;font-weight:600;padding:4px 12px;border-radius:999px;">Email + Push</span></div>
-              <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;"><span style="font-size:14px;color:#0f172a;">Quote responses</span><span style="background:#d1fae5;color:#065f46;font-size:12px;font-weight:600;padding:4px 12px;border-radius:999px;">Email + Push</span></div>
-              <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;"><span style="font-size:14px;color:#0f172a;">Provider recommendations</span><span style="background:#d1fae5;color:#065f46;font-size:12px;font-weight:600;padding:4px 12px;border-radius:999px;">Email + Push</span></div>
-              <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;"><span style="font-size:14px;color:#0f172a;">Payment confirmations</span><span style="background:#d1fae5;color:#065f46;font-size:12px;font-weight:600;padding:4px 12px;border-radius:999px;">Email + Push</span></div>
+          <!-- Page heading -->
+          <div style="margin-bottom:6px;">
+            <div style="font-size:11px;font-weight:700;color:var(--blue);letter-spacing:0.1em;font-family:Inter,sans-serif;text-transform:uppercase;margin-bottom:6px;">ACCOUNT</div>
+            <h1 style="font-size:28px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;margin:0 0 4px;">Settings</h1>
+            <p style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">Manage your profile, business details and preferences.</p>
+          </div>
+
+          <!-- Email verification banner -->
+          <div id="settingsEmailBanner" style="background:linear-gradient(90deg,#fffbeb,#fef9e7);border:1px solid #fcd34d;border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:12px;margin:20px 0 0;">
+            <div style="width:34px;height:34px;background:#fef3c7;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#d97706" stroke-width="1.8"><rect x="1" y="4" width="14" height="10" rx="2"/><path d="M1 6.5l7 4.5 7-4.5"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:700;color:#92400e;font-family:Inter,sans-serif;margin-bottom:1px;">Verify your email address</div>
+              <div style="font-size:12px;color:#b45309;font-family:Inter,sans-serif;">We sent a link to <strong>alex@keylr.com</strong>. Verify to unlock all features.</div>
+            </div>
+            <button onclick="this.closest('#settingsEmailBanner')||this.parentElement.parentElement.style.setProperty('display','none')" style="background:#fcd34d;border:none;color:#78350f;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;" onclick="document.getElementById('settingsEmailBanner').style.display='none'">Verify now →</button>
+            <button onclick="document.getElementById('settingsEmailBanner').style.display='none'" style="background:none;border:none;color:#b45309;font-size:18px;cursor:pointer;padding:0 0 0 4px;line-height:1;">&times;</button>
+          </div>
+
+          <!-- Overall profile completion bar -->
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:16px 20px;margin-top:16px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <div style="font-size:13px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Profile completion</div>
+              <div id="settingsProgressPct" style="font-size:13px;font-weight:800;color:#d97706;font-family:Inter,sans-serif;">15%</div>
+            </div>
+            <div style="background:#f1f5f9;border-radius:999px;height:8px;overflow:hidden;">
+              <div id="settingsProgressBar" style="height:100%;width:15%;border-radius:999px;background:linear-gradient(90deg,#f59e0b,#fbbf24);transition:width 0.5s ease,background 0.5s ease;"></div>
+            </div>
+            <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;">
+              <span id="sprStep1" style="font-size:11.5px;font-family:Inter,sans-serif;color:#10b981;display:flex;align-items:center;gap:4px;font-weight:600;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5l3 3 4-4"/></svg>Profile +15%</span>
+              <span id="sprStep2" style="font-size:11.5px;font-family:Inter,sans-serif;color:#94a3b8;display:flex;align-items:center;gap:4px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#cbd5e1" stroke-width="2"><circle cx="5" cy="5" r="4"/></svg>Business +20%</span>
+              <span id="sprStep3" style="font-size:11.5px;font-family:Inter,sans-serif;color:#94a3b8;display:flex;align-items:center;gap:4px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#cbd5e1" stroke-width="2"><circle cx="5" cy="5" r="4"/></svg>Discovery +25%</span>
+              <span id="sprStep4" style="font-size:11.5px;font-family:Inter,sans-serif;color:#94a3b8;display:flex;align-items:center;gap:4px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#cbd5e1" stroke-width="2"><circle cx="5" cy="5" r="4"/></svg>Subscription +40%</span>
             </div>
           </div>
-        </div>
 
-        <!-- PROFILE PANEL -->
-        <div id="settings-profile" style="display:none;">
-          <div class="spr-card">
-            <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:800;color:#0f172a;margin-bottom:24px;">Profile</div>
-            <div style="display:flex;flex-direction:column;gap:18px;">
-              <div><label style="display:block;font-size:13.5px;font-weight:600;color:#0f172a;margin-bottom:6px;">Name</label><input type="text" value="Alex Thompson" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;font-size:14px;color:#0f172a;background:#f8fafc;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#3b82f6';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/></div>
-              <div><label style="display:block;font-size:13.5px;font-weight:600;color:#0f172a;margin-bottom:6px;">Email</label><input type="email" value="alex@keylr.com" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;font-size:14px;color:#0f172a;background:#f8fafc;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#3b82f6';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/></div>
-              <div><label style="display:block;font-size:13.5px;font-weight:600;color:#0f172a;margin-bottom:6px;">Phone</label><input type="tel" value="+44 7700 900100" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;font-size:14px;color:#0f172a;background:#f8fafc;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#3b82f6';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/></div>
-              <div><label style="display:block;font-size:13.5px;font-weight:600;color:#0f172a;margin-bottom:6px;">Company</label><input type="text" value="Thompson Properties Ltd" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;font-size:14px;color:#0f172a;background:#f8fafc;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#3b82f6';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/></div>
+          <!-- Horizontal tabs -->
+          <div style="display:flex;gap:2px;border-bottom:2px solid #e2e8f0;margin-top:28px;overflow-x:auto;">
+            <button id="stab-profile" onclick="switchSettingsTab('profile')" style="padding:10px 20px;font-size:13.5px;font-weight:600;font-family:Inter,sans-serif;border:none;background:none;cursor:pointer;color:#1d4ed8;border-bottom:2px solid #1d4ed8;margin-bottom:-2px;white-space:nowrap;transition:all 0.15s;">Profile</button>
+            <button id="stab-business" onclick="switchSettingsTab('business')" style="padding:10px 20px;font-size:13.5px;font-weight:600;font-family:Inter,sans-serif;border:none;background:none;cursor:pointer;color:#64748b;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all 0.15s;">Business</button>
+            <button id="stab-discovery" onclick="switchSettingsTab('discovery')" style="padding:10px 20px;font-size:13.5px;font-weight:600;font-family:Inter,sans-serif;border:none;background:none;cursor:pointer;color:#64748b;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all 0.15s;">Discovery</button>
+            <button id="stab-subscription" onclick="switchSettingsTab('subscription')" style="padding:10px 20px;font-size:13.5px;font-weight:600;font-family:Inter,sans-serif;border:none;background:none;cursor:pointer;color:#64748b;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all 0.15s;">Subscription</button>
+            <button id="stab-notifications" onclick="switchSettingsTab('notifications')" style="padding:10px 20px;font-size:13.5px;font-weight:600;font-family:Inter,sans-serif;border:none;background:none;cursor:pointer;color:#64748b;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all 0.15s;">Notifications</button>
+          </div>
+
+          <!-- ── PROFILE TAB ── -->
+          <div id="settings-profile" style="margin-top:24px;">
+            <!-- Avatar row -->
+            <div style="display:flex;align-items:center;gap:18px;margin-bottom:28px;">
+              <div style="position:relative;flex-shrink:0;">
+                <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;font-family:Inter,sans-serif;">AT</div>
+                <button style="position:absolute;bottom:0;right:0;width:24px;height:24px;background:#1d4ed8;border:2px solid #fff;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M1 7.5l2-2 4-4 1.5 1.5-4 4-2 .5z"/></svg>
+                </button>
+              </div>
+              <div>
+                <div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Alex Thompson</div>
+                <div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">alex@keylr.com</div>
+                <div style="margin-top:6px;display:inline-flex;align-items:center;gap:5px;background:#fef3c7;border-radius:999px;padding:3px 10px;">
+                  <div style="width:6px;height:6px;background:#f59e0b;border-radius:50%;"></div>
+                  <span style="font-size:11px;font-weight:600;color:#92400e;font-family:Inter,sans-serif;">Email not verified</span>
+                </div>
+              </div>
             </div>
-            <div style="display:flex;justify-content:flex-end;margin-top:24px;">
-              <button onclick="alert('Profile saved!')" style="background:#1d4ed8;color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10V4a1 1 0 011-1h6l3 3v7H3a1 1 0 01-1-1z"/><path d="M9 3v4H4V3"/></svg>Save</button>
+
+            <!-- Fields — two column -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">First name</label>
+                <input type="text" value="Alex" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+              </div>
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Last name</label>
+                <input type="text" value="Thompson" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Email address</label>
+                <div style="position:relative;">
+                  <input type="email" value="alex@keylr.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 44px 11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+                  <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:#fef3c7;color:#92400e;font-size:10px;font-weight:700;font-family:Inter,sans-serif;padding:2px 7px;border-radius:999px;">Unverified</span>
+                </div>
+              </div>
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Phone number</label>
+                <input type="tel" value="+44 7700 900100" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+              </div>
+            </div>
+            <div style="margin-bottom:24px;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Role / Title</label>
+              <input type="text" value="Property Manager" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+            </div>
+
+            <!-- Divider -->
+            <div style="border-top:1px solid #f1f5f9;margin-bottom:24px;"></div>
+
+            <!-- Password section -->
+            <div style="margin-bottom:24px;">
+              <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">Password</div>
+              <div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:14px;">Last changed 3 months ago</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">New password</label>
+                  <input type="password" placeholder="••••••••" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;" onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'"/>
+                </div>
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Confirm password</label>
+                  <input type="password" placeholder="••••••••" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;" onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'"/>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;">
+              <button onclick="alert('Profile saved! +15% completion')" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 26px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10V4a1 1 0 011-1h6l3 3v7H3a1 1 0 01-1-1z"/><path d="M9 3v4H4V3"/></svg>Save changes
+              </button>
             </div>
           </div>
-        </div>
 
-      </div></div>
+          <!-- ── BUSINESS TAB ── -->
+          <div id="settings-business" style="margin-top:24px;display:none;">
+            <div style="margin-bottom:20px;">
+              <div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:2px;">Business details</div>
+              <div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Used for invoicing, compliance records and supplier contracts.</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Trading name</label>
+                <input type="text" value="Thompson Properties Ltd" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+              </div>
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Company number</label>
+                <input type="text" placeholder="e.g. 12345678" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+              </div>
+            </div>
+            <div style="margin-bottom:16px;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Business address</label>
+              <input type="text" placeholder="Full address including postcode" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">VAT number <span style="font-weight:400;color:#94a3b8;">(optional)</span></label>
+                <input type="text" placeholder="GB 123 456 789" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+              </div>
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Portfolio size</label>
+                <select style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;appearance:none;cursor:pointer;">
+                  <option>1–5 properties</option><option>6–20 properties</option><option selected>21–50 properties</option><option>51–100 properties</option><option>100+ properties</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;">
+              <button onclick="alert('Business details saved! +20% completion')" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 26px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save changes</button>
+            </div>
+          </div>
+
+          <!-- ── DISCOVERY TAB ── -->
+          <div id="settings-discovery" style="margin-top:24px;display:none;">
+            <div style="margin-bottom:20px;">
+              <div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:2px;">Service preferences</div>
+              <div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Help us match you with the right professionals faster.</div>
+            </div>
+            <!-- Service budgets -->
+            <div style="border-top:1px solid #f1f5f9;padding-top:6px;">
+              <div style="font-size:13px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;">Service budgets</div>
+              <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fafafa;border-radius:10px;border:1px solid #f1f5f9;"><span style="font-size:13.5px;color:#0f172a;font-family:Inter,sans-serif;">Plumbing &amp; Gas</span><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Market £80–250</span><div style="display:flex;align-items:center;gap:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;overflow:hidden;"><span style="padding:7px 10px;font-size:13px;color:#64748b;font-family:Inter,sans-serif;">£</span><input type="number" value="200" style="width:70px;border:none;outline:none;font-size:13.5px;color:#0f172a;font-family:Inter,sans-serif;padding:7px 0;background:transparent;"/></div><span style="font-size:11.5px;font-weight:600;color:#f59e0b;background:#fef3c7;padding:3px 9px;border-radius:999px;">↗ Above</span></div></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fafafa;border-radius:10px;border:1px solid #f1f5f9;"><span style="font-size:13.5px;color:#0f172a;font-family:Inter,sans-serif;">Electrical</span><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Market £85–650</span><div style="display:flex;align-items:center;gap:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;overflow:hidden;"><span style="padding:7px 10px;font-size:13px;color:#64748b;font-family:Inter,sans-serif;">£</span><input type="number" value="250" style="width:70px;border:none;outline:none;font-size:13.5px;color:#0f172a;font-family:Inter,sans-serif;padding:7px 0;background:transparent;"/></div><span style="font-size:11.5px;font-weight:600;color:#64748b;background:#f1f5f9;padding:3px 9px;border-radius:999px;">↘ Below</span></div></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fafafa;border-radius:10px;border:1px solid #f1f5f9;"><span style="font-size:13.5px;color:#0f172a;font-family:Inter,sans-serif;">Cleaning</span><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Market £18–300</span><div style="display:flex;align-items:center;gap:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;overflow:hidden;"><span style="padding:7px 10px;font-size:13px;color:#64748b;font-family:Inter,sans-serif;">£</span><input type="number" value="25" style="width:70px;border:none;outline:none;font-size:13.5px;color:#0f172a;font-family:Inter,sans-serif;padding:7px 0;background:transparent;"/></div><span style="font-size:11.5px;font-weight:600;color:#64748b;background:#f1f5f9;padding:3px 9px;border-radius:999px;">↘ Below</span></div></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fafafa;border-radius:10px;border:1px solid #f1f5f9;"><span style="font-size:13.5px;color:#0f172a;font-family:Inter,sans-serif;">Fire Safety</span><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Market £185–350</span><div style="display:flex;align-items:center;gap:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;overflow:hidden;"><span style="padding:7px 10px;font-size:13px;color:#64748b;font-family:Inter,sans-serif;">£</span><input type="number" value="300" style="width:70px;border:none;outline:none;font-size:13.5px;color:#0f172a;font-family:Inter,sans-serif;padding:7px 0;background:transparent;"/></div><span style="font-size:11.5px;font-weight:600;color:#f59e0b;background:#fef3c7;padding:3px 9px;border-radius:999px;">↗ Above</span></div></div>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;">
+              <button onclick="alert('Preferences saved! +25% completion')" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 26px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save preferences</button>
+            </div>
+          </div>
+
+          <!-- ── SUBSCRIPTION TAB ── -->
+          <div id="settings-subscription" style="margin-top:24px;display:none;">
+            <div style="margin-bottom:20px;">
+              <div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:2px;">Your plan</div>
+              <div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">You're currently on the free Connect plan.</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;">
+              <div style="border:1.5px solid #e2e8f0;border-radius:14px;padding:20px 18px;background:#fff;">
+                <div style="font-size:11px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Free</div>
+                <div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">£0<span style="font-size:13px;font-weight:500;color:#94a3b8;">/mo</span></div>
+                <div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:14px;">Up to 5 properties</div>
+                <div style="display:flex;flex-direction:column;gap:5px;font-size:12px;color:#374151;font-family:Inter,sans-serif;"><span>✓ AI job booking</span><span>✓ Basic tracking</span><span style="color:#94a3b8;">✗ Rate cards</span></div>
+                <div style="margin-top:14px;background:#f1f5f9;border-radius:8px;padding:8px;text-align:center;font-size:12px;font-weight:600;color:#64748b;font-family:Inter,sans-serif;">Current plan</div>
+              </div>
+              <div style="border:2px solid #1d4ed8;border-radius:14px;padding:20px 18px;background:#eff6ff;position:relative;">
+                <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#1d4ed8;color:#fff;font-size:10px;font-weight:700;font-family:Inter,sans-serif;padding:3px 12px;border-radius:999px;">RECOMMENDED</div>
+                <div style="font-size:11px;font-weight:700;color:#1d4ed8;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Connect Premium</div>
+                <div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">£29<span style="font-size:13px;font-weight:500;color:#94a3b8;">/mo</span></div>
+                <div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:14px;">Up to 100 properties</div>
+                <div style="display:flex;flex-direction:column;gap:5px;font-size:12px;color:#374151;font-family:Inter,sans-serif;"><span>✓ Everything in Free</span><span>✓ Rate card management</span><span>✓ Compliance dashboard</span></div>
+                <button style="margin-top:14px;width:100%;background:#1d4ed8;color:#fff;border:none;border-radius:8px;padding:9px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Upgrade →</button>
+              </div>
+              <div style="border:1.5px solid #e2e8f0;border-radius:14px;padding:20px 18px;background:#fff;">
+                <div style="font-size:11px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Copilot</div>
+                <div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">£99<span style="font-size:13px;font-weight:500;color:#94a3b8;">/mo</span></div>
+                <div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:14px;">Unlimited properties</div>
+                <div style="display:flex;flex-direction:column;gap:5px;font-size:12px;color:#374151;font-family:Inter,sans-serif;"><span>✓ Everything in Premium</span><span>✓ API access</span><span>✓ Dedicated manager</span></div>
+                <button style="margin-top:14px;width:100%;background:#0f172a;color:#fff;border:none;border-radius:8px;padding:9px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Upgrade →</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── NOTIFICATIONS TAB ── -->
+          <div id="settings-notifications" style="margin-top:24px;display:none;">
+            <div style="margin-bottom:20px;">
+              <div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:2px;">Notification preferences</div>
+              <div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Choose how and when we contact you.</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:1px;border-radius:12px;overflow:hidden;border:1px solid #f1f5f9;">
+              <div style="background:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;"><div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">Compliance expiry alerts</div><div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">30, 14 and 7 days before expiry</div></div><div style="display:flex;gap:8px;"><span style="background:#d1fae5;color:#065f46;font-size:11.5px;font-weight:600;padding:4px 12px;border-radius:999px;font-family:Inter,sans-serif;">Email</span><span style="background:#d1fae5;color:#065f46;font-size:11.5px;font-weight:600;padding:4px 12px;border-radius:999px;font-family:Inter,sans-serif;">Push</span></div></div>
+              <div style="background:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #f8fafc;"><div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">Job status updates</div><div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">When a job is confirmed, started or completed</div></div><div style="display:flex;gap:8px;"><span style="background:#d1fae5;color:#065f46;font-size:11.5px;font-weight:600;padding:4px 12px;border-radius:999px;font-family:Inter,sans-serif;">Email</span><span style="background:#d1fae5;color:#065f46;font-size:11.5px;font-weight:600;padding:4px 12px;border-radius:999px;font-family:Inter,sans-serif;">Push</span></div></div>
+              <div style="background:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #f8fafc;"><div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">Quote responses</div><div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">When a supplier replies to your quote request</div></div><div style="display:flex;gap:8px;"><span style="background:#d1fae5;color:#065f46;font-size:11.5px;font-weight:600;padding:4px 12px;border-radius:999px;font-family:Inter,sans-serif;">Email</span><span style="background:#f1f5f9;color:#64748b;font-size:11.5px;font-weight:600;padding:4px 12px;border-radius:999px;font-family:Inter,sans-serif;">Push off</span></div></div>
+              <div style="background:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #f8fafc;"><div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">Payment confirmations</div><div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">Receipts and payment confirmation emails</div></div><div style="display:flex;gap:8px;"><span style="background:#d1fae5;color:#065f46;font-size:11.5px;font-weight:600;padding:4px 12px;border-radius:999px;font-family:Inter,sans-serif;">Email</span><span style="background:#f1f5f9;color:#64748b;font-size:11.5px;font-weight:600;padding:4px 12px;border-radius:999px;font-family:Inter,sans-serif;">Push off</span></div></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
 
   
@@ -4125,29 +4287,7 @@ function renderStars(rating) {
   return s;
 }
 
-function renderStars(rating) {
-  const full = Math.floor(rating);
-  const half = rating % 1 >= 0.5;
-  let s = '';
-  for (let i = 0; i < 5; i++) {
-    if (i < full) s += '<span style="color:#f59e0b;">★</span>';
-    else if (i === full && half) s += '<span style="color:#f59e0b;font-size:10px;">½</span>';
-    else s += '<span style="color:#e2e8f0;">★</span>';
-  }
-  return s;
-}
 
-function renderStars(rating) {
-  const full = Math.floor(rating);
-  const half = rating % 1 >= 0.5;
-  let s = '';
-  for (let i = 0; i < 5; i++) {
-    if (i < full) s += '<span style="color:#f59e0b;font-size:12px;">★</span>';
-    else if (i === full && half) s += '<span style="color:#f59e0b;font-size:10px;">½</span>';
-    else s += '<span style="color:#e2e8f0;font-size:12px;">★</span>';
-  }
-  return s;
-}
 
 function renderSupplierCards(suppText) {
   const cardRegex = /\[([^\]]+)\]/g;
@@ -4408,18 +4548,12 @@ function renderSupplierMessage(text) {
       e.stopPropagation();
       const idx = parseInt(this.closest('[data-supplier-idx]').getAttribute('data-supplier-idx') || this.getAttribute('data-supplier-idx'));
       const s = _supplierRegistry[idx];
-      if (s) selectSupplier(s.name, s.eta, s.price);
+      if (s) { const msg = 'I\'d like to book with ' + s.name + ' (' + s.price + ', ETA: ' + s.eta + ')'; setTimeout(() => { sendFromSuggestion(msg); }, 300); }
     });
   });
   return wrapper;
 }
 
-function selectSupplier(name, eta, price) {
-  document.querySelectorAll('.ai-chip-btn').forEach(b => { b.disabled = true; b.style.opacity = '0.4'; });
-  chatInputEl.value = 'I\'d like to book ' + name;
-  sendBtnEl.disabled = false;
-  sendMessage();
-}
 
 // =============================================
 // RENDER BOOKING CONFIRMATION
@@ -4460,8 +4594,7 @@ document.addEventListener('click', function(e) {
 // =============================================
 // AUTH STUBS
 // =============================================
-function handleSignup() { alert('Sign up coming soon!'); }
-function handleLogin()  { alert('Log in coming soon!'); }
+
 
 // =============================================
 // INLINE EXPLORE CHAT (no redirect)
@@ -4599,10 +4732,17 @@ function toggleMobileNav() {
 
 // Settings tab switcher
 function switchSettingsTab(tab) {
-  ['pricing','notifications','profile'].forEach(function(t) {
-    var btn = document.getElementById('tab-' + t);
+  // Support old 'pricing' call → redirect to 'profile'
+  if (tab === 'pricing') tab = 'profile';
+  var tabs = ['profile','business','discovery','subscription','notifications'];
+  tabs.forEach(function(t) {
+    var btn = document.getElementById('stab-' + t);
     var panel = document.getElementById('settings-' + t);
-    if (btn) btn.className = (t === tab) ? 'stab stab-active' : 'stab';
+    if (btn) {
+      btn.style.color = (t === tab) ? '#1d4ed8' : '#64748b';
+      btn.style.borderBottomColor = (t === tab) ? '#1d4ed8' : 'transparent';
+      btn.style.fontWeight = (t === tab) ? '700' : '600';
+    }
     if (panel) panel.style.display = (t === tab) ? 'block' : 'none';
   });
 }
@@ -5016,7 +5156,7 @@ function showAuthPage(mode) {
               '<div style="width:38px;height:38px;border-radius:10px;background:'+(a.role==='manager'?'#1A5FC8':'rgba(255,255,255,0.08)')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
                 '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="1.8"><path d="M2 16V8.5L9 2l7 6.5V16"/><path d="M6 16v-5.5h6V16"/></svg>' +
               '</div>' +
-              '<div><div style="font-size:14px;font-weight:700;color:#fff;font-family:Inter,sans-serif;">Property Manager</div><div style="font-size:12px;color:rgba(255,255,255,0.5);font-family:Inter,sans-serif;">Book services &amp; track jobs</div></div>' +
+              '<div><div style="font-size:14px;font-weight:700;color:#fff;font-family:Inter,sans-serif;margin-bottom:2px;">Property Manager</div><div style="font-size:11.5px;color:rgba(255,255,255,0.5);font-family:Inter,sans-serif;line-height:1.45;">Book vetted tradespeople &amp; track compliance<br>certificates across your portfolio.</div></div>' +
               (a.role==='manager'?'<svg style="margin-left:auto;flex-shrink:0;" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2"><circle cx="8" cy="8" r="7"/><path d="M4.5 8l2.5 2.5 4-4"/></svg>':'') +
             '</div>' +
           '</button>' +
@@ -5025,7 +5165,7 @@ function showAuthPage(mode) {
               '<div style="width:38px;height:38px;border-radius:10px;background:'+(a.role==='supplier'?'#1A5FC8':'rgba(255,255,255,0.08)')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
                 '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="9" cy="5" r="3"/><path d="M3 17c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>' +
               '</div>' +
-              '<div><div style="font-size:14px;font-weight:700;color:#fff;font-family:Inter,sans-serif;">Supplier</div><div style="font-size:12px;color:rgba(255,255,255,0.5);font-family:Inter,sans-serif;">Offer your trade services</div></div>' +
+              '<div><div style="font-size:14px;font-weight:700;color:#fff;font-family:Inter,sans-serif;margin-bottom:2px;">Supplier</div><div style="font-size:11.5px;color:rgba(255,255,255,0.5);font-family:Inter,sans-serif;line-height:1.45;">Grow your business with verified job leads<br>and build your reputation on Keylr.</div></div>' +
               (a.role==='supplier'?'<svg style="margin-left:auto;flex-shrink:0;" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2"><circle cx="8" cy="8" r="7"/><path d="M4.5 8l2.5 2.5 4-4"/></svg>':'') +
             '</div>' +
           '</button>' +
@@ -5607,7 +5747,6 @@ function _saveAndNextProfile() {
 
 // Aliases for rest of codebase
 function scrollToSettingsSection(n) { wizGoTo(n); }
-function switchSettingsTab(n) { wizGoTo(n); }
 function _openSettingsPanel(n) { wizGoTo(n); }
 function _updateSettingsStepNav() {}
 
@@ -5711,7 +5850,7 @@ function _renderInlineProfiling() {
     '<div style="display:flex;gap:10px;margin-top:20px;">' +
       (_inlineQStep > 0
         ? '<button onclick="_inlineQBack()" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Back</button>'
-        : '<button onclick="switchSettingsTab(2)" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Company</button>') +
+        : '<button onclick="wizGoTo(2)" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Company</button>') +
       '<button onclick="_inlineQNext()" style="flex:1;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">'+(_inlineQStep===6?'Finish →':'Continue →')+'</button>' +
     '</div>' +
     '</div>';
@@ -5771,7 +5910,7 @@ showPage = function(id, e) {
   if (id === 'settings') {
     setTimeout(function(){
       _syncSettingsPage();
-      switchSettingsTab(1);
+      switchSettingsTab('pricing');
     }, 30);
   }
 };
@@ -5785,7 +5924,144 @@ function showAuthPageV4(mode){showAuthPage(mode);}
 // =============================================
 // SUPPLIER AUTH — simple lightweight modal
 // =============================================
-function showSupplierAuth(){showAuthPage('signup');setTimeout(function(){if(window._authSetRole)window._authSetRole('supplier');var lp=document.getElementById('authLeftPanel');if(lp)lp.style.display='none';},60);}
+function showSupplierAuth() {
+  var ex = document.getElementById('authModal');
+  if (ex) ex.remove();
+  var modal = document.createElement('div');
+  modal.id = 'authModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9000;background:rgba(15,23,42,0.5);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;';
+  document.body.appendChild(modal);
+  window._suppAuth = { step: 'contact', contact: '', name: '' };
+
+  function makeInput(id, type, placeholder, val) {
+    var inp = document.createElement('input');
+    inp.id = id; inp.type = type; inp.placeholder = placeholder;
+    if (val) inp.value = val;
+    inp.style.cssText = 'width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;';
+    inp.addEventListener('focus', function() { this.style.borderColor = '#1A5FC8'; });
+    inp.addEventListener('blur', function() { this.style.borderColor = '#e2e8f0'; });
+    return inp;
+  }
+
+  function render() {
+    modal.innerHTML = '';
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'background:#fff;border-radius:20px;width:100%;max-width:440px;position:relative;box-shadow:0 24px 64px rgba(0,0,0,0.2);overflow:hidden;animation:modalPop 0.22s ease;';
+
+    // Header
+    var hdr = document.createElement('div');
+    hdr.style.cssText = 'padding:22px 26px 16px;border-bottom:0.5px solid #f1f5f9;display:flex;justify-content:space-between;align-items:flex-start;';
+    hdr.innerHTML = '<div><div style="font-size:19px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">Join as a Supplier</div><div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">Setting up as a Supplier</div></div>';
+    var closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '&times;';
+    closeBtn.style.cssText = 'background:#f1f5f9;border:none;color:#64748b;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;';
+    closeBtn.onclick = function() { modal.remove(); delete window._suppAuth; };
+    hdr.appendChild(closeBtn);
+    wrap.appendChild(hdr);
+
+    // Body
+    var body = document.createElement('div');
+    body.style.cssText = 'padding:20px 26px 24px;';
+
+    if (window._suppAuth.step === 'contact') {
+      // Name field
+      var nameLabel = document.createElement('label');
+      nameLabel.style.cssText = 'display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;';
+      nameLabel.innerHTML = 'Full name <span style="color:#ef4444;">*</span>';
+      var nameWrap = document.createElement('div');
+      nameWrap.style.marginBottom = '16px';
+      nameWrap.appendChild(nameLabel);
+      nameWrap.appendChild(makeInput('suppName', 'text', 'Your full name', window._suppAuth.name));
+      body.appendChild(nameWrap);
+
+      // Contact field
+      var ctLabel = document.createElement('label');
+      ctLabel.style.cssText = 'display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;';
+      ctLabel.textContent = 'Email or mobile number';
+      var ctHint = document.createElement('p');
+      ctHint.style.cssText = 'font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin:5px 0 0;';
+      ctHint.textContent = 'Enter email for password sign-in \u00b7 mobile for OTP';
+      var ctWrap = document.createElement('div');
+      ctWrap.style.marginBottom = '16px';
+      ctWrap.appendChild(ctLabel);
+      ctWrap.appendChild(makeInput('suppContact', 'text', 'you@email.com  or  07700 000000', window._suppAuth.contact));
+      ctWrap.appendChild(ctHint);
+      body.appendChild(ctWrap);
+
+      // Continue button
+      var contBtn = document.createElement('button');
+      contBtn.textContent = 'Continue \u2192';
+      contBtn.style.cssText = 'width:100%;margin-top:6px;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;';
+      contBtn.onclick = function() { window._suppContinue(); };
+      body.appendChild(contBtn);
+
+      // Switch link
+      var sw = document.createElement('p');
+      sw.style.cssText = 'font-size:12px;color:#94a3b8;text-align:center;margin-top:14px;font-family:Inter,sans-serif;';
+      sw.innerHTML = 'Already have an account? <a style="color:#1A5FC8;cursor:pointer;font-weight:600;" id="suppLoginLink">Log in</a>';
+      body.appendChild(sw);
+      setTimeout(function() {
+        var lnk = document.getElementById('suppLoginLink');
+        if (lnk) lnk.onclick = function() { modal.remove(); delete window._suppAuth; showAuthPage('login'); };
+        var nm = document.getElementById('suppName');
+        if (nm) nm.focus();
+      }, 50);
+
+    } else {
+      // Password step
+      var pill = document.createElement('div');
+      pill.style.cssText = 'display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e8ecf0;border-radius:10px;padding:10px 14px;margin-bottom:18px;';
+      pill.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#64748b" stroke-width="1.8"><rect x="1" y="3" width="11" height="8" rx="1.5"/><path d="M1 5.5l5.5 3.5 5.5-3.5"/></svg>';
+      var pillTxt = document.createElement('span');
+      pillTxt.style.cssText = 'font-size:13px;color:#374151;font-family:Inter,sans-serif;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+      pillTxt.textContent = window._suppAuth.contact;
+      var changeBtn = document.createElement('button');
+      changeBtn.textContent = 'Change';
+      changeBtn.style.cssText = 'background:none;border:none;color:#1A5FC8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;flex-shrink:0;';
+      changeBtn.onclick = function() { window._suppAuth.step = 'contact'; render(); };
+      pill.appendChild(pillTxt);
+      pill.appendChild(changeBtn);
+      body.appendChild(pill);
+
+      var pwdLabel = document.createElement('label');
+      pwdLabel.style.cssText = 'display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;';
+      pwdLabel.textContent = 'Create a password';
+      var pwdWrap = document.createElement('div');
+      pwdWrap.style.marginBottom = '20px';
+      pwdWrap.appendChild(pwdLabel);
+      var pwdInp = makeInput('suppPwd', 'password', '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022', '');
+      pwdWrap.appendChild(pwdInp);
+      body.appendChild(pwdWrap);
+      setTimeout(function() { var p = document.getElementById('suppPwd'); if (p) p.focus(); }, 50);
+
+      var submitBtn = document.createElement('button');
+      submitBtn.textContent = 'Create Supplier Account';
+      submitBtn.style.cssText = 'width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;';
+      submitBtn.onclick = function() { window._suppSubmit(); };
+      body.appendChild(submitBtn);
+    }
+
+    wrap.appendChild(body);
+    modal.appendChild(wrap);
+  }
+
+  window._suppContinue = function() {
+    var nm = document.getElementById('suppName');
+    var ct = document.getElementById('suppContact');
+    if (nm && !nm.value.trim()) { nm.style.borderColor = '#ef4444'; nm.focus(); return; }
+    if (ct && !ct.value.trim()) { ct.style.borderColor = '#ef4444'; ct.focus(); return; }
+    window._suppAuth.name = nm ? nm.value.trim() : '';
+    window._suppAuth.contact = ct ? ct.value.trim() : '';
+    window._suppAuth.step = 'password';
+    render();
+  };
+  window._suppSubmit = function() {
+    _setUser({ name: window._suppAuth.name || '', email: window._suppAuth.contact || '', contact: window._suppAuth.contact || '', role: 'supplier', profileComplete: false });
+    modal.remove(); delete window._suppAuth;
+    goToDashboard('', false);
+  };
+  render();
+}
 // =============================================
 // SETTINGS / PROFILE PAGE
 // =============================================
@@ -5824,605 +6100,35 @@ function _syncSettingsPage() {
   _renderOnboardingSteps();
 }
 
-function _renderOnboardingSteps() {
-  var list = document.getElementById('onboardingStepList');
-  if (!list) return;
-  var done = _onboardSteps.filter(function(s){ return s.done; }).length;
-  var total = _onboardSteps.length;
-  var pct = Math.round((done/total)*100);
-
-  var prog = document.getElementById('stepProgress');
-  if (prog) prog.textContent = done + ' of ' + total + ' steps complete';
-  var ring = document.getElementById('progressRing');
-  if (ring) ring.setAttribute('stroke-dashoffset', (125.6 * (1-pct/100)).toFixed(1));
-  var pctEl = document.getElementById('progressPct');
-  if (pctEl) pctEl.textContent = pct + '%';
-
-  if (done === total) {
-    var ob = document.getElementById('onboardingSteps');
-    if (ob) { ob.style.display = 'none'; return; }
-  }
-
-  list.innerHTML = _onboardSteps.map(function(step, i) {
-    var isDone = step.done;
-    return '<div style="display:flex;align-items:center;gap:12px;padding:13px 16px;border:1px solid '+(isDone?'#dcfce7':'#e2e8f0')+';border-radius:12px;background:'+(isDone?'#f0fdf4':'#fff')+';cursor:'+(isDone?'default':(step.action?'pointer':'default'))+';" '+(step.action&&!isDone?'onclick="'+step.action+'()"':'')+' '+(step.action&&!isDone?'onmouseover="this.style.borderColor=\'#c7d2fe\'" onmouseout="this.style.borderColor=\'#e2e8f0\'"':'')+' >' +
-      '<div style="width:36px;height:36px;border-radius:9px;background:'+(isDone?'#dcfce7':'#f1f5f9')+';color:'+(isDone?'#16a34a':'#64748b')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">' + (isDone ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#16a34a" stroke-width="2"><path d="M3 8l4 4 6-6"/></svg>' : step.icon) + '</div>' +
-      '<div style="flex:1;">' +
-        '<div style="font-size:13.5px;font-weight:600;color:'+(isDone?'#16a34a':'#0f172a')+';font-family:Inter,sans-serif;">' + step.label + '</div>' +
-        '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">' + step.sub + '</div>' +
-      '</div>' +
-      (isDone ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#86efac" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>' : (step.action ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M5 3l4 4-4 4"/></svg>' : '')) +
-    '</div>';
-  }).join('');
-
-  wizGoTo(1);
-}
-function _saveProfileBasic() {
-  var n  = document.getElementById('profileName');
-  var e  = document.getElementById('profileEmail');
-  var ph = document.getElementById('profilePhone');
-  if (n  && _user) _user.name  = n.value.trim();
-  if (e  && _user) _user.email = e.value.trim();
-  if (ph && _user) _user.phone = ph.value.trim();
-  _syncUserUI();
-  _syncSettingsPage();
-  var saveBtn = document.getElementById('saveProfileBtn');
-  if (saveBtn) {
-    saveBtn.textContent = 'Saved ✓';
-    saveBtn.style.background = '#10b981';
-    saveBtn.style.backgroundImage = 'none';
-    setTimeout(function() {
-      if (saveBtn) {
-        saveBtn.textContent = 'Save changes';
-        saveBtn.style.background = '';
-        saveBtn.style.backgroundImage = 'linear-gradient(90deg,#1A5FC8,#0FA3D0)';
-      }
-    }, 2000);
-  }
-}
-
-function showCompanyStep() {
-  var ex = document.getElementById('stepModal'); if(ex) ex.remove();
-  var modal = document.createElement('div');
-  modal.id = 'stepModal';
-  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
-  document.body.appendChild(modal);
-  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
-  modal.innerHTML = '<div style="background:#fff;border-radius:20px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;">' +
-    '<div style="padding:22px 26px 16px;border-bottom:0.5px solid #f1f5f9;position:sticky;top:0;background:#fff;z-index:1;">' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;">' +
-        '<div><div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">Company Details</div>' +
-        '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">Step 2 of 4 · Skippable</div></div>' +
-        '<button id="compClose" style="background:#f1f5f9;border:none;color:#64748b;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">&times;</button>' +
-      '</div>' +
-    '</div>' +
-    '<div style="padding:22px 26px 26px;">' +
-      ['Trading / Company Name|required|text|Your business name','Company Registration Number|optional|text|e.g. 12345678','Legal Company Name|required|text|As on Companies House','Registered Address|required|text|Street, city, postcode','Trading Address|optional|text|If different from registered','VAT Number|optional|text|e.g. GB123456789'].map(function(f){
-        var p = f.split('|'); var req = p[1]==='required';
-        return '<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">'+p[0]+(req?' <span style="color:#ef4444;">*</span>':'<span style="font-size:11px;color:#94a3b8;margin-left:4px;">(optional)</span>')+'</label><input type="'+p[2]+'" placeholder="'+p[3]+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/></div>';
-      }).join('') +
-      '<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Company Logo <span style="font-size:11px;color:#94a3b8;margin-left:4px;">(optional)</span></label><div style="border:1.5px dashed #e2e8f0;border-radius:10px;padding:18px;text-align:center;cursor:pointer;color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;" onmouseover="this.style.borderColor=\'#1A5FC8\'" onmouseout="this.style.borderColor=\'#e2e8f0\'">Click to upload PNG or SVG</div></div>' +
-      '<div style="display:flex;gap:10px;">' +
-        '<button onclick="document.getElementById(\'stepModal\').remove();" style="flex:1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">Skip for now</button>' +
-        '<button onclick="_saveCompanyStep();" style="flex:2;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save &amp; continue</button>' +
-      '</div>' +
-    '</div></div>';
-  var cb = document.getElementById('compClose'); if(cb) cb.addEventListener('click',function(){ modal.remove(); });
-}
-
-function _saveCompanyStep() {
-  _onboardSteps[1].done = true;
-  document.getElementById('stepModal').remove();
-  _renderOnboardingSteps();
-  setTimeout(showProfilingStep, 300);
-}
-
-// =============================================
-// PROFILING (7 questions) — Screen 4
-// =============================================
-var _PROFILING_Q = [
-  { q:'What best describes what you do?', type:'single', opts:['Residential letting agent','Short-term rental / Airbnb manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator','Facilities manager','Individual landlord','Other'] },
-  { q:'What types of property do you manage?', type:'multi', opts:['Houses and flats — AST','HMO','Short-term rental / holiday let','Residential block / leasehold','Serviced apartments','Offices','Retail units','Industrial / warehouse','Hotels','Hostels / B&Bs'] },
-  { q:'How many properties or units do you manage?', type:'single', opts:['1 to 5','6 to 25','26 to 100','101 to 500','500 or more'] },
-  { q:'Which services do you currently coordinate?', type:'multi', opts:['Cleaning','Compliance certificates','Reactive maintenance','Planned / preventive maintenance','Property inspections','Landscaping','Pest control','Security and access','Specialist trades'] },
-  { q:'Where are your properties located?', type:'multi', opts:['London','South East England','South West England','Midlands','North West England','North East England','Yorkshire','Scotland','Wales','Multiple regions'] },
-  { q:'How do you currently find and manage your service providers?', type:'single', opts:['Mostly ad hoc — WhatsApp / phone','Small group of regular contractors','Large contractor network with agreed rates','In-house staff doing some work','I already use a property management system'] },
-  { q:'What is your biggest headache right now?', type:'single', opts:['Finding reliable, vetted contractors quickly','Keeping track of jobs and chasing completion','Compliance — certificates expiring without warning','Invoices and payments from many suppliers','Coordinating my team','No single view across my portfolio'] },
-];
-var _profileQStep = 0;
-var _profileAnswers = [{},{},{},{},{},{},{}];
-
-function showProfilingStep() {
-  _profileQStep = 0; _renderProfilingQ();
-}
-
-function _renderProfilingQ() {
-  var ex = document.getElementById('stepModal'); if(ex) ex.remove();
-  var q = _PROFILING_Q[_profileQStep];
-  var ans = _profileAnswers[_profileQStep];
-  var modal = document.createElement('div');
-  modal.id = 'stepModal';
-  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
-  document.body.appendChild(modal);
-  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
-
-  var optHtml = q.opts.map(function(opt, i) {
-    var sel = q.type==='single' ? ans.val===opt : (ans.vals||[]).indexOf(opt)!==-1;
-    return '<button onclick="_profilingSelect(\''+opt.replace(/'/g,"\\'")+'\')" style="text-align:left;width:100%;padding:11px 14px;border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;background:'+(sel?'#eff6ff':'#fff')+';font-size:13px;font-family:Inter,sans-serif;color:#374151;cursor:pointer;display:flex;align-items:center;gap:10px;margin-bottom:6px;transition:all 0.1s;">' +
-      '<div style="width:18px;height:18px;border-radius:'+(q.type==='single'?'50%':'5px')+';border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';flex-shrink:0;display:flex;align-items:center;justify-content:center;">' +
-      (sel?(q.type==='single'?'<div style="width:6px;height:6px;border-radius:50%;background:#fff;"></div>':'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M1.5 5l3 3 4-4.5"/></svg>'):'')+'</div>'+opt+'</button>';
-  }).join('');
-
-  modal.innerHTML = '<div style="background:#fff;border-radius:20px;width:100%;max-width:480px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;">' +
-    '<div style="padding:20px 24px 14px;border-bottom:0.5px solid #f1f5f9;">' +
-      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">' +
-        '<span style="font-size:12px;font-weight:600;color:#94a3b8;font-family:Inter,sans-serif;">Profiling · '+(_profileQStep+1)+' of 7</span>' +
-        '<button onclick="document.getElementById(\'stepModal\').remove();" style="background:none;border:none;color:#94a3b8;font-size:12px;cursor:pointer;font-family:Inter,sans-serif;">Skip →</button>' +
-      '</div>' +
-      '<div style="display:flex;gap:4px;">' +
-        [0,1,2,3,4,5,6].map(function(i){ return '<div style="flex:1;height:4px;border-radius:999px;background:'+( i<=_profileQStep?'#1A5FC8':'#f1f5f9')+';"></div>'; }).join('') +
-      '</div>' +
-    '</div>' +
-    '<div style="padding:20px 24px 24px;">' +
-      '<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">'+q.q+'</div>' +
-      '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:16px;">'+(q.type==='multi'?'Select all that apply':'Choose one')+'</div>' +
-      optHtml +
-      '<div style="display:flex;gap:10px;margin-top:16px;">' +
-        (_profileQStep>0?'<button onclick="_profileQBack()" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:11px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Back</button>':'') +
-        '<button onclick="_profileQNext()" style="flex:1;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">'+(_profileQStep===6?'Finish':'Continue →')+'</button>' +
-      '</div>' +
-    '</div></div>';
-  var cb = document.getElementById('compClose'); if(cb) cb.addEventListener('click',function(){ modal.remove(); });
-}
-
-function _profilingSelect(opt) {
-  var q = _PROFILING_Q[_profileQStep];
-  var ans = _profileAnswers[_profileQStep];
-  if (q.type==='single') { ans.val = opt; }
-  else { if(!ans.vals) ans.vals=[]; var i=ans.vals.indexOf(opt); if(i===-1) ans.vals.push(opt); else ans.vals.splice(i,1); }
-  _renderProfilingQ();
-}
-function _profileQNext() {
-  if (_profileQStep < 6) { _profileQStep++; _renderProfilingQ(); }
-  else { _onboardSteps[2].done = true; document.getElementById('stepModal').remove(); _renderOnboardingSteps(); setTimeout(showTierStep, 300); }
-}
-function _profileQBack() { if(_profileQStep>0){ _profileQStep--; _renderProfilingQ(); } }
-
-// =============================================
-// TIER RECOMMENDATION — Screen 5
-// =============================================
-function showTierStep() {
-  var ex = document.getElementById('stepModal'); if(ex) ex.remove();
-  var modal = document.createElement('div');
-  modal.id = 'stepModal';
-  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
-  document.body.appendChild(modal);
-  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
-
-  var tiers = [
-    { name:'Connect', badge:'', desc:'Perfect for individual landlords and small portfolios up to 25 units.', price:'Free', features:['Up to 25 properties','Book vetted professionals','Job tracking','Compliance reminders'], recommended:false },
-    { name:'Connect Premium', badge:'Recommended', desc:'Built for letting agents and growing property managers.', price:'£29/mo', features:['Up to 100 properties','Priority SP matching','Rate card management','Compliance dashboard','Team access (2 seats)'], recommended:true },
-    { name:'Copilot', badge:'', desc:'Full platform for large portfolios and property businesses.', price:'£99/mo', features:['Unlimited properties','Dedicated account manager','Full API access','Custom SP networks','Unlimited team seats'], recommended:false },
-  ];
-
-  modal.innerHTML = '<div style="background:#fff;border-radius:20px;width:100%;max-width:680px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;">' +
-    '<div style="padding:22px 26px 16px;border-bottom:0.5px solid #f1f5f9;">' +
-      '<div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">Choose your plan</div>' +
-      '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">Step 4 of 4 · Based on your profile answers</div>' +
-    '</div>' +
-    '<div style="padding:22px 26px 26px;">' +
-      '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">' +
-        tiers.map(function(t){
-          return '<div style="border:'+(t.recommended?'2px solid #1A5FC8':'1px solid #e2e8f0')+';border-radius:14px;padding:16px 14px;cursor:pointer;position:relative;background:'+(t.recommended?'#eff6ff':'#fff')+';transition:all 0.12s;" onclick="_selectTier(\''+t.name+'\')" onmouseover="this.style.borderColor=\'#1A5FC8\'" onmouseout="this.style.borderColor=\''+(t.recommended?'#1A5FC8':'#e2e8f0')+'\'">' +
-            (t.recommended?'<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#1A5FC8;color:#fff;font-size:10.5px;font-weight:700;font-family:Inter,sans-serif;padding:3px 10px;border-radius:999px;white-space:nowrap;">Recommended</div>':'') +
-            '<div style="font-size:14.5px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">'+t.name+'</div>' +
-            '<div style="font-size:18px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">'+t.price+'</div>' +
-            '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:10px;line-height:1.4;">'+t.desc+'</div>' +
-            t.features.map(function(f){ return '<div style="font-size:11.5px;color:#374151;font-family:Inter,sans-serif;display:flex;align-items:flex-start;gap:6px;margin-bottom:4px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#1A5FC8" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path d="M1.5 5.5l3 3 5-5"/></svg>'+f+'</div>'; }).join('') +
-          '</div>';
-        }).join('') +
-      '</div>' +
-    '</div></div>';
-}
-
-function _selectTier(name) {
-  if(_user) _user.tier = name;
-  _onboardSteps[3].done = true;
-  document.getElementById('stepModal').remove();
-  _renderOnboardingSteps();
-}
-
-// =============================================
-// SETTINGS TAB WIZARD
-// =============================================
-window._selectedTier = 'tier-premium'; // default
-
 
 
 // =============================================
-// SETTINGS WIZARD — step navigation
+// DARK / LIGHT MODE TOGGLE
 // =============================================
-var _wizStep = 1;
-
-function wizGoTo(n) {
-  _wizStep = n;
-  for (var i = 1; i <= 4; i++) {
-    var panel = document.getElementById('wiz-panel-'+i);
-    if (panel) panel.style.display = i === n ? 'block' : 'none';
-  }
-  var wb = document.getElementById('wizBody');
-  if (wb) { wb.scrollTop = 0; }
-  _updateWizStepper(n);
-  if (n === 3) { _inlineQStep = 0; _renderInlineProfiling(); }
-}
-
-function _updateWizStepper(active) {
-  var CHECK = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 6.5l3.5 3.5 5.5-6"/></svg>';
-  var ICONS = {
-    1: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLR" stroke-width="2"><circle cx="6.5" cy="4" r="2.3"/><path d="M1.5 11.5c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>',
-    2: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLR" stroke-width="1.8"><rect x="1.5" y="5" width="10" height="7" rx="1.5"/><path d="M4 5V3.5a2.5 2.5 0 015 0V5"/></svg>',
-    3: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLR" stroke-width="1.8"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v.5M6 7c0-1.5 2-1.5 2 0s-1 .8-1 1.8M6.5 10v.5"/></svg>',
-    4: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLR" stroke-width="1.8"><path d="M6.5 1l1.3 3.5H11L8.3 6.6l1 3.4-2.8-2-2.8 2 1-3.4L2 4.5h3.2z"/></svg>'
-  };
-
-  for (var i = 1; i <= 4; i++) {
-    var dot  = document.getElementById('wsd-'+i);
-    var lbl  = document.getElementById('wsl-'+i);
-    var line = document.getElementById('wsline-'+i);
-    if (!dot || !lbl) continue;
-
-    var isActive = (i === active);
-    var isPast   = (i < active);
-
-    if (isPast) {
-      // Completed step: gradient bg, checkmark
-      dot.style.background = 'linear-gradient(135deg,#1A5FC8,#0FA3D0)';
-      dot.style.boxShadow  = 'none';
-      dot.innerHTML = CHECK;
-      lbl.style.color      = '#1A5FC8';
-      lbl.style.fontWeight = '600';
-      if (line) line.style.background = 'linear-gradient(90deg,#1A5FC8,#0FA3D0)';
-    } else if (isActive) {
-      // Current step: solid blue, white icon, glow ring
-      dot.style.background = '#1A5FC8';
-      dot.style.boxShadow  = '0 0 0 4px rgba(26,92,200,0.18)';
-      dot.innerHTML = ICONS[i].replace(/CLR/g, '#fff');
-      lbl.style.color      = '#1A5FC8';
-      lbl.style.fontWeight = '700';
-      if (line) line.style.background = '#e2e8f0';
-    } else {
-      // Future step: grey bg, grey icon
-      dot.style.background = '#e8ecf0';
-      dot.style.boxShadow  = 'none';
-      dot.innerHTML = ICONS[i].replace(/CLR/g, '#94a3b8');
-      lbl.style.color      = '#94a3b8';
-      lbl.style.fontWeight = '500';
-      if (line) line.style.background = '#e2e8f0';
-    }
-  }
-  var ctr = document.getElementById('wizStepCounter');
-  if (ctr) ctr.textContent = 'Step ' + active + ' of 4';
-}
-
-// =============================================
-// FIELD VALIDATION
-// =============================================
-function wizValidateField(el) {
-  var id  = el.id;
-  var val = el.value.trim();
-  var err = document.getElementById('err-' + id);
-  var ok  = true;
-
-  if (id === 'profileEmail') {
-    ok = val !== '' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
-    if (err) err.textContent = val === '' ? 'Email is required' : 'Enter a valid email address';
+var _dashDark = false;
+function toggleDashTheme() {
+  _dashDark = !_dashDark;
+  var db = document.getElementById('pg-dashboard');
+  var icon_l = document.getElementById('themeIconLight');
+  var icon_d = document.getElementById('themeIconDark');
+  var label = document.getElementById('themeLabel');
+  var btn = document.getElementById('themeToggleBtn');
+  if (_dashDark) {
+    db.style.filter = 'invert(1) hue-rotate(180deg)';
+    // Re-invert images/svgs that look bad inverted
+    db.querySelectorAll('img,svg').forEach(function(el){ el.style.filter='invert(1) hue-rotate(180deg)'; });
+    if(icon_l) icon_l.style.display='none';
+    if(icon_d) icon_d.style.display='';
+    if(label) label.textContent='Dark mode';
+    if(btn) btn.style.borderColor='rgba(255,255,255,0.15)';
   } else {
-    ok = val !== '';
+    db.style.filter='';
+    db.querySelectorAll('img,svg').forEach(function(el){ el.style.filter=''; });
+    if(icon_l) icon_l.style.display='';
+    if(icon_d) icon_d.style.display='none';
+    if(label) label.textContent='Light mode';
+    if(btn) btn.style.borderColor='';
   }
-
-  if (!ok) {
-    el.style.borderColor = '#ef4444';
-    if (err) err.style.display = 'block';
-  } else {
-    el.style.borderColor = '#e2e8f0';
-    if (err) err.style.display = 'none';
-  }
-  return ok;
-}
-
-function wizValidateStep(step) {
-  var fields = { 1: ['profileName','profileEmail'], 2: ['coTrading','coLegal','coAddr'] };
-  var ids = fields[step] || [];
-  var valid = true;
-  ids.forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el && !wizValidateField(el)) valid = false;
-  });
-  return valid;
-}
-
-function _saveAndNextProfile() {
-  if (wizValidateStep(1)) {
-    _saveProfileBasic();
-    wizGoTo(2);
-  }
-}
-
-
-// Aliases for rest of codebase
-function scrollToSettingsSection(n) { wizGoTo(n); }
-function switchSettingsTab(n) { wizGoTo(n); }
-function _openSettingsPanel(n) { wizGoTo(n); }
-function _updateSettingsStepNav() {}
-
-
-
-function _saveCompanyDetails() {
-  if (!wizValidateStep(2)) return;
-  _onboardSteps[1].done = true;
-  wizGoTo(3);
-}
-
-// =============================================
-// INLINE PROFILING (step 3)
-// =============================================
-var _inlineQStep = 0;
-var _inlineAnswers = Array(7).fill(null).map(function(){ return {}; });
-var _PROFILING_QS = [
-  {
-    q: 'What best describes what you do?', type:'single',
-    opts:['Residential letting agent','Short-term rental / Airbnb manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator','Facilities manager','Individual landlord','Other']
-  },
-  {
-    q: 'What types of property do you manage?', type:'multi-grouped',
-    groups:{
-      'Residential':['Houses & flats — AST','HMO','Short-term rental','Residential block','Serviced apartments'],
-      'Commercial':['Offices','Retail','Industrial','Healthcare','Education'],
-      'Hospitality':['Hotels','Hostels','Guest houses','PBSA'],
-      'Mixed':['Mixed residential/commercial','Estate']
-    }
-  },
-  {
-    q: 'How many properties or units do you manage?', type:'single',
-    opts:['1–5','6–25','26–100','101–500','500+']
-  },
-  {
-    q: 'Which services do you currently coordinate?', type:'multi',
-    opts:['Cleaning','Compliance certificates (CP12, EICR, EPC, FRA, Legionella)','Reactive maintenance','PPM','Inspections & inventory','Landscaping','Pest control','Security','Removals','Specialist trades']
-  },
-  {
-    q: 'Where are your properties located?', type:'multi',
-    opts:['London','South East','South West','Midlands','North West','North East','Yorkshire','Scotland','Wales','Multiple regions']
-  },
-  {
-    q: 'How do you currently manage service providers?', type:'single',
-    opts:['Ad hoc (WhatsApp/phone)','Small regular contractors','Large contractor network','In-house staff','I use a property management system']
-  },
-  {
-    q: 'What is your biggest headache right now?', type:'single',
-    opts:['Finding reliable contractors','Chasing jobs to completion','Compliance tracking','Invoices & payments','Team coordination','No single view across portfolio']
-  }
-];
-
-function _renderInlineProfiling() {
-  var container = document.getElementById('inlineProfilingContent');
-  if (!container) return;
-  var q = _PROFILING_QS[_inlineQStep];
-  var ans = _inlineAnswers[_inlineQStep];
-
-  var barHtml = '<div style="display:flex;gap:4px;margin-bottom:20px;">' +
-    [0,1,2,3,4,5,6].map(function(i){
-      var bg = i < _inlineQStep ? '#1A5FC8' : i === _inlineQStep ? '#0FA3D0' : '#f1f5f9';
-      return '<div style="flex:1;height:4px;border-radius:999px;background:'+bg+';"></div>';
-    }).join('') + '</div>';
-
-  function makeOptBtn(opt, sel, isRound) {
-    var safeOpt = opt.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    return '<button data-opt="'+opt.replace(/"/g,'&quot;')+'" onclick="window._inlineSelectOpt(this)" style="text-align:left;width:100%;padding:10px 14px;border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:9px;background:'+(sel?'#eff6ff':'#fff')+';font-size:13px;font-family:Inter,sans-serif;color:#374151;cursor:pointer;display:flex;align-items:center;gap:10px;margin-bottom:6px;">' +
-      '<div style="width:17px;height:17px;border-radius:'+(isRound?'50%':'4px')+';border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';flex-shrink:0;display:flex;align-items:center;justify-content:center;">' +
-      (sel ? (isRound ? '<div style="width:5px;height:5px;border-radius:50%;background:#fff;"></div>' : '<svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#fff" stroke-width="2"><path d="M1 4.5l2.5 2.5 5-4.5"/></svg>') : '') +
-      '</div>' + opt + '</button>';
-  }
-
-  var optHtml = '';
-  var isSingle = q.type === 'single';
-
-  if (q.type === 'multi-grouped') {
-    Object.keys(q.groups).forEach(function(group) {
-      optHtml += '<div style="font-size:10.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;margin:14px 0 8px;font-family:Inter,sans-serif;">'+group+'</div>';
-      q.groups[group].forEach(function(opt) {
-        var sel = (ans.vals||[]).indexOf(opt) !== -1;
-        optHtml += makeOptBtn(opt, sel, false);
-      });
-    });
-  } else {
-    q.opts.forEach(function(opt) {
-      var sel = isSingle ? ans.val === opt : (ans.vals||[]).indexOf(opt) !== -1;
-      optHtml += makeOptBtn(opt, sel, isSingle);
-    });
-  }
-
-  container.innerHTML =
-    '<div style="max-width:560px;margin:0 auto;padding:24px 24px 40px;">' +
-    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
-      '<span style="font-size:11.5px;font-weight:600;color:#94a3b8;font-family:Inter,sans-serif;">QUESTION '+(_inlineQStep+1)+' OF 7</span>' +
-      '<button onclick="wizGoTo(4)" style="background:none;border:none;color:#94a3b8;font-size:11.5px;cursor:pointer;font-family:Inter,sans-serif;padding:0;text-decoration:underline;">Skip all →</button>' +
-    '</div>' +
-    barHtml +
-    '<div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;line-height:1.3;">'+q.q+'</div>' +
-    '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:16px;">'+(isSingle||q.type==='single'?'Choose one':'Select all that apply')+'</div>' +
-    optHtml +
-    '<div style="display:flex;gap:10px;margin-top:20px;">' +
-      (_inlineQStep > 0
-        ? '<button onclick="_inlineQBack()" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Back</button>'
-        : '<button onclick="switchSettingsTab(2)" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Company</button>') +
-      '<button onclick="_inlineQNext()" style="flex:1;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">'+(_inlineQStep===6?'Finish →':'Continue →')+'</button>' +
-    '</div>' +
-    '</div>';
-
-  // Wire button clicks via event delegation
-  container.querySelectorAll('button[data-opt]').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      window._inlineSelectOpt(this);
-    });
-  });
-}
-
-window._inlineSelectOpt = function(el) {
-  var opt = el.getAttribute('data-opt');
-  _inlineSelect(opt);
-};
-
-function _inlineSelect(opt) {
-  var q = _PROFILING_QS[_inlineQStep];
-  var ans = _inlineAnswers[_inlineQStep];
-  if (q.type === 'single') { ans.val = opt; }
-  else { if(!ans.vals) ans.vals=[]; var i=ans.vals.indexOf(opt); if(i===-1) ans.vals.push(opt); else ans.vals.splice(i,1); }
-  _renderInlineProfiling();
-}
-function _inlineQNext() {
-  if (_inlineQStep < 6) { _inlineQStep++; _renderInlineProfiling(); }
-  else { _onboardSteps[2].done = true; wizGoTo(4); }
-}
-function _inlineQBack() { if(_inlineQStep>0){ _inlineQStep--; _renderInlineProfiling(); } }
-
-function _selectTierInline(name) {
-  var map = {'Connect':'tier-connect','Connect Premium':'tier-premium','Copilot':'tier-copilot'};
-  window._selectedTier = map[name];
-  ['tier-connect','tier-premium','tier-copilot'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    var active = id === window._selectedTier;
-    el.style.border = active ? '2px solid #1A5FC8' : '1.5px solid #e2e8f0';
-    el.style.background = active ? '#eff6ff' : '#fff';
-  });
-  if(_user) _user.tier = name;
-}
-
-function _finishSetup() {
-  _onboardSteps[3].done = true;
-  _updateWizStepper(4);
-  if (_user) _user.profileComplete = true;
-  // Go directly to dashboard home
-  goToDashboard('', false);
-  setTimeout(function() { showPage('home', null); }, 400);
-}
-
-// Hook showPage to sync settings when tab opens
-
-// =============================================
-// V4 — Property Manager auth (no role selection)
-// Clean, focused, 3-step: contact → password/OTP
-// =============================================
-function showAuthPageV4(mode) {
-  var ex = document.getElementById('authModal'); if (ex) ex.remove();
-  window._auth = { isSignup: mode !== 'login', role: 'manager', step: 'contact', contact: '', countryCode: '+44', name: '' };
-  var COUNTRY_CODES = [
-    {code:'+44',flag:'🇬🇧',name:'UK'},{code:'+1',flag:'🇺🇸',name:'US'},{code:'+91',flag:'🇮🇳',name:'IN'},
-    {code:'+971',flag:'🇦🇪',name:'UAE'},{code:'+61',flag:'🇦🇺',name:'AU'},{code:'+33',flag:'🇫🇷',name:'FR'},
-    {code:'+49',flag:'🇩🇪',name:'DE'},{code:'+92',flag:'🇵🇰',name:'PK'}
-  ];
-  var modal = document.createElement('div');
-  modal.id = 'authModal';
-  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
-  document.body.appendChild(modal);
-  modal.addEventListener('click', function(e){ if(e.target===modal){ modal.remove(); delete window._auth; } });
-
-  window._authRender = function() {
-    var a = window._auth; var isSignup = a.isSignup; var step = a.step;
-    var heading = isSignup ? 'Create your account' : 'Welcome back';
-    var subhead = isSignup ? 'Property Manager · Keylr Connect' : 'Log in to your Keylr account';
-    var variantSel = '<div style="position:relative;"><select onchange="window._authSwitchVariant(this.value)" style="appearance:none;-webkit-appearance:none;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:5px 26px 5px 9px;font-size:11px;font-family:Inter,sans-serif;color:#374151;cursor:pointer;outline:none;"><option value="4" selected>V4 — PM focused</option><option value="1">V1 — Stepped</option><option value="2">V2 — Split panel</option><option value="3">V3 — Dark hero</option></select><svg style="position:absolute;right:7px;top:50%;transform:translateY(-50%);pointer-events:none;" width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M1.5 3.5l3 3 3-3"/></svg></div>';
-
-    var ccEntry = COUNTRY_CODES.find(function(x){ return x.code === a.countryCode; }) || COUNTRY_CODES[0];
-    var ccListHtml = COUNTRY_CODES.map(function(cc){
-      return '<div onclick="window._authSelectCC(\''+cc.code+'\',\''+cc.flag+'\')" style="display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'#fff\'">'+cc.flag+' '+cc.name+'<span style="color:#94a3b8;margin-left:auto;font-size:12px;">'+cc.code+'</span></div>';
-    }).join('');
-
-    var bodyHtml = '';
-    if (step === 'contact') {
-      bodyHtml =
-        (isSignup ? '<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Full name</label><input id="authName" type="text" placeholder="Your full name" value="'+a.name+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/></div>' : '') +
-        '<div style="margin-bottom:6px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Email or mobile number</label>' +
-        '<div style="position:relative;display:flex;"><div id="ccWrap" style="display:none;flex-shrink:0;position:relative;"><button id="ccBtn" onclick="window._authToggleCC()" style="height:44px;padding:0 10px;background:#f8fafc;border:1.5px solid #e2e8f0;border-right:none;border-radius:10px 0 0 10px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;display:flex;align-items:center;gap:4px;white-space:nowrap;"><span id="ccDisplay">'+ccEntry.flag+' '+ccEntry.code+'</span><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4l3 3 3-3"/></svg></button><div id="ccList" style="display:none;position:absolute;top:48px;left:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.1);z-index:20;min-width:200px;overflow:hidden;">'+ccListHtml+'</div></div>' +
-        '<input id="authContact" type="text" placeholder="you@email.com  or  07700 000000" value="'+a.contact+'" style="flex:1;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/></div>' +
-        '<p style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin:5px 0 0;">Email → password · Mobile → OTP</p></div>' +
-        '<button onclick="window._authContinue()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">Continue →</button>';
-    } else if (step === 'password') {
-      bodyHtml =
-        '<div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e8ecf0;border-radius:10px;padding:10px 14px;margin-bottom:18px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#64748b" stroke-width="1.8"><rect x="1" y="3" width="11" height="8" rx="1.5"/><path d="M1 5.5l5.5 3.5 5.5-3.5"/></svg><span style="font-size:13px;color:#374151;font-family:Inter,sans-serif;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+a.contact+'</span><button onclick="window._authBack()" style="background:none;border:none;color:#1A5FC8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Change</button></div>' +
-        '<div style="margin-bottom:20px;position:relative;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">'+(isSignup?'Create a password':'Password')+'</label><input id="authPwd" type="password" placeholder="••••••••" autofocus style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 44px 11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/><button id="pwdEye" type="button" style="position:absolute;right:13px;bottom:12px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg></button></div>' +
-        '<button onclick="window._authSubmit_v4()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">'+(isSignup?'Create account':'Log in')+'</button>';
-    } else if (step === 'otp') {
-      bodyHtml =
-        '<div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e8ecf0;border-radius:10px;padding:10px 14px;margin-bottom:16px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#64748b" stroke-width="1.8"><rect x="1" y="1" width="11" height="11" rx="2"/><circle cx="6.5" cy="8" r="1"/></svg><span style="font-size:13px;color:#374151;font-family:Inter,sans-serif;flex:1;">'+a.contact+'</span><button onclick="window._authBack()" style="background:none;border:none;color:#1A5FC8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Change</button></div>' +
-        '<p style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;text-align:center;margin:0 0 16px;">Enter the 6-digit code sent to your number</p>' +
-        '<div style="display:flex;gap:8px;justify-content:center;margin-bottom:18px;" id="otpBoxes">' +
-          [0,1,2,3,4,5].map(function(i){ return '<input data-otp="'+i+'" type="text" inputmode="numeric" maxlength="1" style="width:42px;height:50px;border:1.5px solid #e2e8f0;border-radius:10px;text-align:center;font-size:22px;font-weight:700;font-family:Inter,sans-serif;color:#0f172a;outline:none;box-sizing:border-box;transition:border-color 0.15s;">'; }).join('') +
-        '</div>' +
-        '<button onclick="window._authSubmit_v4()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:10px;">Verify &amp; Continue</button>' +
-        '<div style="display:flex;justify-content:center;gap:16px;"><button onclick="window._authBack()" style="background:none;border:none;color:#64748b;font-size:12.5px;cursor:pointer;font-family:Inter,sans-serif;padding:0;">← Change number</button><span style="color:#e2e8f0;">|</span><button id="resendBtn" onclick="window._authResend()" style="background:none;border:none;color:#1A5FC8;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Resend OTP</button></div>';
-    }
-
-    var switchHtml = step === 'contact' ? (isSignup
-      ? '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">Already have an account? <a href="#" onclick="window._authSwitch();return false;" style="color:#1A5FC8;font-weight:600;text-decoration:none;">Log in</a></p>'
-      : '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">No account? <a href="#" onclick="window._authSwitch();return false;" style="color:#1A5FC8;font-weight:600;text-decoration:none;">Sign up free</a></p>') : '';
-
-    modal.innerHTML =
-      '<div style="background:#fff;border-radius:20px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;">' +
-        '<div style="padding:22px 26px 16px;border-bottom:0.5px solid #f1f5f9;">' +
-          '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
-            '<div><div style="font-size:19px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">'+heading+'</div><div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">'+subhead+'</div></div>' +
-            '<div style="display:flex;align-items:center;gap:7px;flex-shrink:0;margin-left:10px;">'+variantSel+'<button id="authCloseBtn" style="background:#f1f5f9;border:none;color:#64748b;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button></div>' +
-          '</div>' +
-        '</div>' +
-        '<div style="padding:20px 26px 22px;">'+bodyHtml+switchHtml+'</div>' +
-      '</div>';
-
-    var cb = document.getElementById('authCloseBtn'); if(cb) cb.addEventListener('click',function(){ modal.remove(); delete window._auth; });
-    var eye = document.getElementById('pwdEye'); if(eye) eye.addEventListener('click',function(){ var f=document.getElementById('authPwd'); if(f) f.type=f.type==='password'?'text':'password'; });
-    var ct = document.getElementById('authContact');
-    if(ct){
-      ct.addEventListener('focus',function(){ this.style.borderColor='#1A5FC8'; }); ct.addEventListener('blur',function(){ this.style.borderColor='#e2e8f0'; });
-      ct.addEventListener('keydown',function(e){ if(e.key==='Enter') window._authContinue(); });
-      ct.addEventListener('input',function(){
-        var val=this.value.trim(); var isPhone=/^[\d\s\+\-\(\)]{3,}$/.test(val)&&/\d{3,}/.test(val);
-        var ccWrap=document.getElementById('ccWrap'); if(ccWrap){ ccWrap.style.display=isPhone?'block':'none'; this.style.borderRadius=isPhone?'0 10px 10px 0':'10px'; }
-      });
-      setTimeout(function(){ if(ct) ct.focus(); },80);
-    }
-    var nm = document.getElementById('authName'); if(nm){ nm.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';}); nm.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';}); }
-    var pwd=document.getElementById('authPwd'); if(pwd){ pwd.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';}); pwd.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';}); pwd.addEventListener('keydown',function(e){if(e.key==='Enter')window._authSubmit_v4();}); setTimeout(function(){if(pwd)pwd.focus();},80); }
-    var ob=document.getElementById('otpBoxes'); if(ob){var ins=ob.querySelectorAll('input');ins.forEach(function(inp,i){inp.addEventListener('input',function(){this.value=this.value.replace(/\D/g,'');if(this.value&&i<ins.length-1)ins[i+1].focus();}); inp.addEventListener('keydown',function(e){if(e.key==='Backspace'&&!this.value&&i>0)ins[i-1].focus();}); inp.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';}); inp.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';});}); setTimeout(function(){if(ins[0])ins[0].focus();},80);}
-  };
-
-  window._authSetRole  = function(r){ window._auth.role=r; window._authRender(); };
-  window._authBack     = function(){ window._auth.step='contact'; window._authRender(); };
-  window._authSwitch   = function(){ var m=window._auth.isSignup?'login':'signup'; modal.remove(); delete window._auth; showAuthPageV4(m); };
-  window._authResend   = function(){ var b=document.getElementById('resendBtn'); if(b){b.textContent='Sent ✓';b.style.color='#10b981';setTimeout(function(){if(b){b.textContent='Resend OTP';b.style.color='#1A5FC8';}},3000);} };
-  window._authToggleCC = function(){ var l=document.getElementById('ccList'); if(l) l.style.display=l.style.display==='none'?'block':'none'; };
-  window._authSelectCC = function(code,flag){ window._auth.countryCode=code; var d=document.getElementById('ccDisplay'); if(d) d.textContent=flag+' '+code; var l=document.getElementById('ccList'); if(l) l.style.display='none'; };
-  window._authContinue = function(){
-    var ct=document.getElementById('authContact'); if(!ct) return;
-    var val=ct.value.trim(); if(!val){ct.style.borderColor='#ef4444';ct.focus();return;}
-    window._auth.contact=val;
-    var nm=document.getElementById('authName'); if(nm) window._auth.name=nm.value.trim();
-    var cleaned=val.replace(/[\s\-\(\)\+]/g,'');
-    window._auth.step=/^\d{7,15}$/.test(cleaned)?'otp':'password';
-    if(/^\d{7,15}$/.test(cleaned)) window._auth.contact=window._auth.countryCode+' '+val;
-    window._authRender();
-  };
-  window._authSubmit_v4 = function(){
-    var a=window._auth;
-    var isPhone=/^\d{7,15}$/.test((a.contact||'').replace(/[\s\-\(\)\+]/g,''));
-    _setUser({name:a.name||'',email:isPhone?'':(a.contact||''),phone:isPhone?(a.contact||''):'',contact:a.contact||'',role:'manager',profileComplete:false});
-    modal.remove(); delete window._auth;
-    if(a.isSignup){ goToDashboard('',false); setTimeout(function(){showPage('settings',null);},500); }
-    else { goToDashboard('',false); }
-  };
-  window._authSwitchVariant=function(v){var a=window._auth;modal.remove();delete window._auth;var m=a&&a.isSignup?'signup':'login';if(v==='1')showAuthPageV1(m);else if(v==='2')showAuthPage(m);else if(v==='3')showAuthPageV3(m);else showAuthPageV4(m);};
-
-  window._authRender();
 }
 </script>
 
@@ -6483,9 +6189,4 @@ function showAuthPageV4(mode) {
 </style>
 
 </body>
-</html
-        </div><!-- /db-main-inner -->
-      </div><!-- /scroll -->
-
-    </div>
 </html>
