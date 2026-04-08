@@ -619,6 +619,14 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   background:var(--gray-50);
   position:relative;
   overflow:hidden;
+  padding-left:24px;
+  padding-right:24px;
+}
+@media (min-width:1601px){
+  .db-main{
+    padding-left:120px;
+    padding-right:120px;
+  }
 }
 
 /* Top bar */
@@ -5322,33 +5330,6 @@ function confirmSupplierCount(count) {
   sendFromSuggestion('I want ' + count + ' quote' + (count > 1 ? 's' : '') + ' please');
 }
 
-function showSupplierCountSlider() {
-  var area = document.getElementById('chatArea');
-  if (!area || document.getElementById('supplierSlider')) return;
-  var wrap = document.createElement('div');
-  wrap.id = 'supplierSlider';
-  wrap.style.cssText = 'margin:4px 0 8px 44px;background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px 22px;max-width:420px;box-shadow:0 2px 12px rgba(0,0,0,0.06);';
-  wrap.innerHTML =
-    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">' +
-      '<div style="font-size:13px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">Number of quotes</div>' +
-      '<div id="sliderVal" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;font-size:15px;font-weight:800;font-family:Fraunces,serif;padding:4px 14px;border-radius:8px;min-width:36px;text-align:center;">3</div>' +
-    '</div>' +
-    '<input type="range" id="supplierCountRange" min="1" max="10" value="3"' +
-      ' style="width:100%;accent-color:#1d4ed8;cursor:pointer;margin-bottom:8px;"' +
-      ' oninput="document.getElementById(\'sliderVal\').textContent=this.value;updateSliderHint(this.value)"/>' +
-    '<div style="display:flex;justify-content:space-between;margin-bottom:10px;">' +
-      '<span style="font-size:10.5px;color:#94a3b8;font-family:Inter,sans-serif;">1 — Fastest</span>' +
-      '<span style="font-size:10.5px;color:#94a3b8;font-family:Inter,sans-serif;">10 — Most choice</span>' +
-    '</div>' +
-    '<div id="sliderHint" style="text-align:center;font-size:12px;color:#64748b;font-family:Inter,sans-serif;background:#f8fafc;border-radius:8px;padding:8px;margin-bottom:14px;">3 quotes — good balance of choice</div>' +
-    '<button onclick="confirmSupplierCount(parseInt(document.getElementById(\'supplierCountRange\').value))"' +
-      ' style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;"' +
-      ' onmouseover="this.style.opacity=\'0.88\'" onmouseout="this.style.opacity=\'1\'">' +
-      'Confirm <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M8 3.5l3 3-3 3"/></svg>' +
-    '</button>';
-  area.appendChild(wrap);
-  area.scrollTop = area.scrollHeight;
-}
 
 var _sliderHints = {1:'1 quote — fastest booking',2:'2 quotes — quick comparison',3:'3 quotes — good balance of choice',4:'4 quotes — strong selection',5:'5 quotes — great variety',6:'6 quotes — thorough search',7:'7 quotes — broad market view',8:'8 quotes — maximum coverage',9:'9 quotes — best deal potential',10:'10 quotes — all available pros'};
 
@@ -5480,6 +5461,502 @@ function _launchConfetti() {
 }
 
 // Hook showPage to open settings properly
+
+// =============================================
+// SETTINGS WIZARD FUNCTIONS (restored)
+// =============================================
+var _PROFILING_QS = [
+  {
+    q: 'What best describes what you do?', type:'single',
+    opts:['Residential letting agent','Short-term rental / Airbnb manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator','Facilities manager','Individual landlord','Other']
+  },
+  {
+    q: 'What types of property do you manage?', type:'multi-grouped',
+    groups:{
+      'Residential':['Houses & flats — AST','HMO','Short-term rental','Residential block','Serviced apartments'],
+      'Commercial':['Offices','Retail','Industrial','Healthcare','Education'],
+      'Hospitality':['Hotels','Hostels','Guest houses','PBSA'],
+      'Mixed':['Mixed residential/commercial','Estate']
+    }
+  },
+  {
+    q: 'How many properties or units do you manage?', type:'single',
+    opts:['1–5','6–25','26–100','101–500','500+']
+  },
+  {
+    q: 'Which services do you currently coordinate?', type:'multi',
+    opts:['Cleaning','Compliance certificates (CP12, EICR, EPC, FRA, Legionella)','Reactive maintenance','PPM','Inspections & inventory','Landscaping','Pest control','Security','Removals','Specialist trades']
+  },
+  {
+    q: 'Where are your properties located?', type:'multi',
+    opts:['London','South East','South West','Midlands','North West','North East','Yorkshire','Scotland','Wales','Multiple regions']
+  },
+  {
+    q: 'How do you currently manage service providers?', type:'single',
+    opts:['Ad hoc (WhatsApp/phone)','Small regular contractors','Large contractor network','In-house staff','I use a property management system']
+  },
+  {
+    q: 'What is your biggest headache right now?', type:'single',
+    opts:['Finding reliable contractors','Chasing jobs to completion','Compliance tracking','Invoices & payments','Team coordination','No single view across portfolio']
+  }
+];
+
+function _renderInlineProfiling() {
+  var container = document.getElementById('inlineProfilingContent');
+  if (!container) return;
+  var q = _PROFILING_QS[_inlineQStep];
+  var ans = _inlineAnswers[_inlineQStep];
+
+
+
+var _onboardSteps = [
+  { id:'basic', label:'Account details', sub:'Name, email and phone', icon:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>', done: false, action: null },
+  { id:'company', label:'Company details', sub:'Trading name, address, registration', icon:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="6" width="12" height="9" rx="1.5"/><path d="M5 6V4.5a3 3 0 016 0V6"/></svg>', done: false, action: 'showCompanyStep' },
+  { id:'profiling', label:'Profiling questions', sub:'7 questions · takes under 90 seconds', icon:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8" cy="8" r="6"/><path d="M8 5v.5M7 7.5c0-1.7 2-1.7 2 0s-1 1-1 2M8 11v.5"/></svg>', done: false, action: 'showProfilingStep' },
+  { id:'tier', label:'Choose your plan', sub:'Connect · Connect Premium · Copilot', icon:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 2l1.8 3.6 4 .6-2.9 2.8.7 4-3.6-1.9-3.6 1.9.7-4L2.2 6.2l4-.6z"/></svg>', done: false, action: 'showTierStep' },
+];
+
+function _syncSettingsPage() {
+  if (!_user) return;
+  var ini = document.getElementById('settingsIni');
+  var nm = document.getElementById('settingsName');
+  var ct = document.getElementById('settingsContact');
+  var profileName = document.getElementById('profileName');
+  var profileEmail = document.getElementById('profileEmail');
+  var profilePhone = document.getElementById('profilePhone');
+
+  if (ini) ini.textContent = _getInitials(_user.name || '?');
+  if (nm) nm.textContent = _user.name || '–';
+  if (ct) ct.textContent = _user.email || _user.contact || '–';
+  if (profileName) profileName.value = _user.name || '';
+  if (profileEmail) profileEmail.value = _user.email || '';
+  if (profilePhone) profilePhone.value = _user.phone || '';
+
+  // Show/hide password field: if logged in via phone OTP, show it. If email, prefill email and show
+  var pwdRow = document.getElementById('profilePwd');
+  if (pwdRow) {
+    var isPhone = _user.email === '' && _user.contact;
+    // Always show password for now
+  }
+
+  // Mark step 0 done
+  _onboardSteps[0].done = true;
+  _renderOnboardingSteps();
+}
+
+function _renderOnboardingSteps() {
+  var list = document.getElementById('onboardingStepList');
+  if (!list) return;
+  var done = _onboardSteps.filter(function(s){ return s.done; }).length;
+  var total = _onboardSteps.length;
+  var pct = Math.round((done/total)*100);
+
+  var prog = document.getElementById('stepProgress');
+  if (prog) prog.textContent = done + ' of ' + total + ' steps complete';
+  var ring = document.getElementById('progressRing');
+  if (ring) ring.setAttribute('stroke-dashoffset', (125.6 * (1-pct/100)).toFixed(1));
+  var pctEl = document.getElementById('progressPct');
+  if (pctEl) pctEl.textContent = pct + '%';
+
+  if (done === total) {
+    var ob = document.getElementById('onboardingSteps');
+    if (ob) { ob.style.display = 'none'; return; }
+  }
+
+  list.innerHTML = _onboardSteps.map(function(step, i) {
+    var isDone = step.done;
+    return '<div style="display:flex;align-items:center;gap:12px;padding:13px 16px;border:1px solid '+(isDone?'#dcfce7':'#e2e8f0')+';border-radius:12px;background:'+(isDone?'#f0fdf4':'#fff')+';cursor:'+(isDone?'default':(step.action?'pointer':'default'))+';" '+(step.action&&!isDone?'onclick="'+step.action+'()"':'')+' '+(step.action&&!isDone?'onmouseover="this.style.borderColor=\'#c7d2fe\'" onmouseout="this.style.borderColor=\'#e2e8f0\'"':'')+' >' +
+      '<div style="width:36px;height:36px;border-radius:9px;background:'+(isDone?'#dcfce7':'#f1f5f9')+';color:'+(isDone?'#16a34a':'#64748b')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">' + (isDone ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#16a34a" stroke-width="2"><path d="M3 8l4 4 6-6"/></svg>' : step.icon) + '</div>' +
+      '<div style="flex:1;">' +
+        '<div style="font-size:13.5px;font-weight:600;color:'+(isDone?'#16a34a':'#0f172a')+';font-family:Inter,sans-serif;">' + step.label + '</div>' +
+        '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">' + step.sub + '</div>' +
+      '</div>' +
+      (isDone ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#86efac" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>' : (step.action ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M5 3l4 4-4 4"/></svg>' : '')) +
+    '</div>';
+  }).join('');
+
+  wizGoTo(1);
+}
+function _saveProfileBasic() {
+  var n  = document.getElementById('profileName');
+  var e  = document.getElementById('profileEmail');
+  var ph = document.getElementById('profilePhone');
+  if (n  && _user) _user.name  = n.value.trim();
+  if (e  && _user) _user.email = e.value.trim();
+  if (ph && _user) _user.phone = ph.value.trim();
+  _syncUserUI();
+  _syncSettingsPage();
+  var saveBtn = document.getElementById('saveProfileBtn');
+  if (saveBtn) {
+    saveBtn.textContent = 'Saved ✓';
+    saveBtn.style.background = '#10b981';
+    saveBtn.style.backgroundImage = 'none';
+    setTimeout(function() {
+      if (saveBtn) {
+        saveBtn.textContent = 'Save changes';
+        saveBtn.style.background = '';
+        saveBtn.style.backgroundImage = 'linear-gradient(90deg,#1A5FC8,#0FA3D0)';
+      }
+    }, 2000);
+  }
+}
+
+function showCompanyStep() {
+  var ex = document.getElementById('stepModal'); if(ex) ex.remove();
+  var modal = document.createElement('div');
+  modal.id = 'stepModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
+  document.body.appendChild(modal);
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  modal.innerHTML = '<div style="background:#fff;border-radius:20px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;">' +
+    '<div style="padding:22px 26px 16px;border-bottom:0.5px solid #f1f5f9;position:sticky;top:0;background:#fff;z-index:1;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+        '<div><div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">Company Details</div>' +
+        '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">Step 2 of 4 · Skippable</div></div>' +
+        '<button id="compClose" style="background:#f1f5f9;border:none;color:#64748b;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">&times;</button>' +
+      '</div>' +
+    '</div>' +
+    '<div style="padding:22px 26px 26px;">' +
+      ['Trading / Company Name|required|text|Your business name','Company Registration Number|optional|text|e.g. 12345678','Legal Company Name|required|text|As on Companies House','Registered Address|required|text|Street, city, postcode','Trading Address|optional|text|If different from registered','VAT Number|optional|text|e.g. GB123456789'].map(function(f){
+        var p = f.split('|'); var req = p[1]==='required';
+        return '<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">'+p[0]+(req?' <span style="color:#ef4444;">*</span>':'<span style="font-size:11px;color:#94a3b8;margin-left:4px;">(optional)</span>')+'</label><input type="'+p[2]+'" placeholder="'+p[3]+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/></div>';
+      }).join('') +
+      '<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Company Logo <span style="font-size:11px;color:#94a3b8;margin-left:4px;">(optional)</span></label><div style="border:1.5px dashed #e2e8f0;border-radius:10px;padding:18px;text-align:center;cursor:pointer;color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;" onmouseover="this.style.borderColor=\'#1A5FC8\'" onmouseout="this.style.borderColor=\'#e2e8f0\'">Click to upload PNG or SVG</div></div>' +
+      '<div style="display:flex;gap:10px;">' +
+        '<button onclick="document.getElementById(\'stepModal\').remove();" style="flex:1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">Skip for now</button>' +
+        '<button onclick="_saveCompanyStep();" style="flex:2;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save &amp; continue</button>' +
+      '</div>' +
+    '</div></div>';
+  var cb = document.getElementById('compClose'); if(cb) cb.addEventListener('click',function(){ modal.remove(); });
+}
+
+function _saveCompanyStep() {
+  _onboardSteps[1].done = true;
+  document.getElementById('stepModal').remove();
+  _renderOnboardingSteps();
+  setTimeout(showProfilingStep, 300);
+}
+
+// =============================================
+// PROFILING (7 questions) — Screen 4
+// =============================================
+var _PROFILING_Q = [
+  { q:'What best describes what you do?', type:'single', opts:['Residential letting agent','Short-term rental / Airbnb manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator','Facilities manager','Individual landlord','Other'] },
+  { q:'What types of property do you manage?', type:'multi', opts:['Houses and flats — AST','HMO','Short-term rental / holiday let','Residential block / leasehold','Serviced apartments','Offices','Retail units','Industrial / warehouse','Hotels','Hostels / B&Bs'] },
+  { q:'How many properties or units do you manage?', type:'single', opts:['1 to 5','6 to 25','26 to 100','101 to 500','500 or more'] },
+  { q:'Which services do you currently coordinate?', type:'multi', opts:['Cleaning','Compliance certificates','Reactive maintenance','Planned / preventive maintenance','Property inspections','Landscaping','Pest control','Security and access','Specialist trades'] },
+  { q:'Where are your properties located?', type:'multi', opts:['London','South East England','South West England','Midlands','North West England','North East England','Yorkshire','Scotland','Wales','Multiple regions'] },
+  { q:'How do you currently find and manage your service providers?', type:'single', opts:['Mostly ad hoc — WhatsApp / phone','Small group of regular contractors','Large contractor network with agreed rates','In-house staff doing some work','I already use a property management system'] },
+  { q:'What is your biggest headache right now?', type:'single', opts:['Finding reliable, vetted contractors quickly','Keeping track of jobs and chasing completion','Compliance — certificates expiring without warning','Invoices and payments from many suppliers','Coordinating my team','No single view across my portfolio'] },
+];
+var _profileQStep = 0;
+var _profileAnswers = [{},{},{},{},{},{},{}];
+
+function showProfilingStep() {
+  _profileQStep = 0; _renderProfilingQ();
+}
+
+function _renderProfilingQ() {
+  var ex = document.getElementById('stepModal'); if(ex) ex.remove();
+  var q = _PROFILING_Q[_profileQStep];
+  var ans = _profileAnswers[_profileQStep];
+  var modal = document.createElement('div');
+  modal.id = 'stepModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
+  document.body.appendChild(modal);
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+
+  var optHtml = q.opts.map(function(opt, i) {
+    var sel = q.type==='single' ? ans.val===opt : (ans.vals||[]).indexOf(opt)!==-1;
+    return '<button onclick="_profilingSelect(\''+opt.replace(/'/g,"\\'")+'\')" style="text-align:left;width:100%;padding:11px 14px;border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;background:'+(sel?'#eff6ff':'#fff')+';font-size:13px;font-family:Inter,sans-serif;color:#374151;cursor:pointer;display:flex;align-items:center;gap:10px;margin-bottom:6px;transition:all 0.1s;">' +
+      '<div style="width:18px;height:18px;border-radius:'+(q.type==='single'?'50%':'5px')+';border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';flex-shrink:0;display:flex;align-items:center;justify-content:center;">' +
+      (sel?(q.type==='single'?'<div style="width:6px;height:6px;border-radius:50%;background:#fff;"></div>':'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M1.5 5l3 3 4-4.5"/></svg>'):'')+'</div>'+opt+'</button>';
+  }).join('');
+
+  modal.innerHTML = '<div style="background:#fff;border-radius:20px;width:100%;max-width:480px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;">' +
+    '<div style="padding:20px 24px 14px;border-bottom:0.5px solid #f1f5f9;">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">' +
+        '<span style="font-size:12px;font-weight:600;color:#94a3b8;font-family:Inter,sans-serif;">Profiling · '+(_profileQStep+1)+' of 7</span>' +
+        '<button onclick="document.getElementById(\'stepModal\').remove();" style="background:none;border:none;color:#94a3b8;font-size:12px;cursor:pointer;font-family:Inter,sans-serif;">Skip →</button>' +
+      '</div>' +
+      '<div style="display:flex;gap:4px;">' +
+        [0,1,2,3,4,5,6].map(function(i){ return '<div style="flex:1;height:4px;border-radius:999px;background:'+( i<=_profileQStep?'#1A5FC8':'#f1f5f9')+';"></div>'; }).join('') +
+      '</div>' +
+    '</div>' +
+    '<div style="padding:20px 24px 24px;">' +
+      '<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">'+q.q+'</div>' +
+      '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:16px;">'+(q.type==='multi'?'Select all that apply':'Choose one')+'</div>' +
+      optHtml +
+      '<div style="display:flex;gap:10px;margin-top:16px;">' +
+        (_profileQStep>0?'<button onclick="_profileQBack()" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:11px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Back</button>':'') +
+        '<button onclick="_profileQNext()" style="flex:1;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">'+(_profileQStep===6?'Finish':'Continue →')+'</button>' +
+      '</div>' +
+    '</div></div>';
+  var cb = document.getElementById('compClose'); if(cb) cb.addEventListener('click',function(){ modal.remove(); });
+}
+
+function _profilingSelect(opt) {
+  var q = _PROFILING_Q[_profileQStep];
+  var ans = _profileAnswers[_profileQStep];
+  if (q.type==='single') { ans.val = opt; }
+  else { if(!ans.vals) ans.vals=[]; var i=ans.vals.indexOf(opt); if(i===-1) ans.vals.push(opt); else ans.vals.splice(i,1); }
+  _renderProfilingQ();
+}
+function _profileQNext() {
+  if (_profileQStep < 6) { _profileQStep++; _renderProfilingQ(); }
+  else { _onboardSteps[2].done = true; document.getElementById('stepModal').remove(); _renderOnboardingSteps(); setTimeout(showTierStep, 300); }
+}
+function _profileQBack() { if(_profileQStep>0){ _profileQStep--; _renderProfilingQ(); } }
+
+// =============================================
+// TIER RECOMMENDATION — Screen 5
+// =============================================
+function showTierStep() {
+  var ex = document.getElementById('stepModal'); if(ex) ex.remove();
+  var modal = document.createElement('div');
+  modal.id = 'stepModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
+  document.body.appendChild(modal);
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+
+  var tiers = [
+    { name:'Connect', badge:'', desc:'Perfect for individual landlords and small portfolios up to 25 units.', price:'Free', features:['Up to 25 properties','Book vetted professionals','Job tracking','Compliance reminders'], recommended:false },
+    { name:'Connect Premium', badge:'Recommended', desc:'Built for letting agents and growing property managers.', price:'£29/mo', features:['Up to 100 properties','Priority SP matching','Rate card management','Compliance dashboard','Team access (2 seats)'], recommended:true },
+    { name:'Copilot', badge:'', desc:'Full platform for large portfolios and property businesses.', price:'£99/mo', features:['Unlimited properties','Dedicated account manager','Full API access','Custom SP networks','Unlimited team seats'], recommended:false },
+  ];
+
+  modal.innerHTML = '<div style="background:#fff;border-radius:20px;width:100%;max-width:680px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;">' +
+    '<div style="padding:22px 26px 16px;border-bottom:0.5px solid #f1f5f9;">' +
+      '<div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">Choose your plan</div>' +
+      '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">Step 4 of 4 · Based on your profile answers</div>' +
+    '</div>' +
+    '<div style="padding:22px 26px 26px;">' +
+      '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">' +
+        tiers.map(function(t){
+          return '<div style="border:'+(t.recommended?'2px solid #1A5FC8':'1px solid #e2e8f0')+';border-radius:14px;padding:16px 14px;cursor:pointer;position:relative;background:'+(t.recommended?'#eff6ff':'#fff')+';transition:all 0.12s;" onclick="_selectTier(\''+t.name+'\')" onmouseover="this.style.borderColor=\'#1A5FC8\'" onmouseout="this.style.borderColor=\''+(t.recommended?'#1A5FC8':'#e2e8f0')+'\'">' +
+            (t.recommended?'<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#1A5FC8;color:#fff;font-size:10.5px;font-weight:700;font-family:Inter,sans-serif;padding:3px 10px;border-radius:999px;white-space:nowrap;">Recommended</div>':'') +
+            '<div style="font-size:14.5px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">'+t.name+'</div>' +
+            '<div style="font-size:18px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">'+t.price+'</div>' +
+            '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:10px;line-height:1.4;">'+t.desc+'</div>' +
+            t.features.map(function(f){ return '<div style="font-size:11.5px;color:#374151;font-family:Inter,sans-serif;display:flex;align-items:flex-start;gap:6px;margin-bottom:4px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#1A5FC8" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path d="M1.5 5.5l3 3 5-5"/></svg>'+f+'</div>'; }).join('') +
+          '</div>';
+        }).join('') +
+      '</div>' +
+    '</div></div>';
+}
+
+function _selectTier(name) {
+  if(_user) _user.tier = name;
+  _onboardSteps[3].done = true;
+  document.getElementById('stepModal').remove();
+  _renderOnboardingSteps();
+}
+
+// =============================================
+// SETTINGS TAB WIZARD
+// =============================================
+window._selectedTier = 'tier-premium'; // default
+
+
+
+// =============================================
+// SETTINGS WIZARD — step navigation
+// =============================================
+var _wizStep = 1;
+
+function wizGoTo(n) {
+  _wizStep = n;
+  for (var i = 1; i <= 4; i++) {
+    var panel = document.getElementById('wiz-panel-'+i);
+    if (panel) panel.style.display = i === n ? 'block' : 'none';
+  }
+  var wb = document.getElementById('wizBody');
+  if (wb) { wb.scrollTop = 0; }
+  _updateWizStepper(n);
+  if (n === 3) { _inlineQStep = 0; _renderInlineProfiling(); }
+}
+
+function _updateWizStepper(active) {
+  var CHECK = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 6.5l3.5 3.5 5.5-6"/></svg>';
+  var ICONS = {
+    1: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLR" stroke-width="2"><circle cx="6.5" cy="4" r="2.3"/><path d="M1.5 11.5c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>',
+    2: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLR" stroke-width="1.8"><rect x="1.5" y="5" width="10" height="7" rx="1.5"/><path d="M4 5V3.5a2.5 2.5 0 015 0V5"/></svg>',
+    3: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLR" stroke-width="1.8"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v.5M6 7c0-1.5 2-1.5 2 0s-1 .8-1 1.8M6.5 10v.5"/></svg>',
+    4: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLR" stroke-width="1.8"><path d="M6.5 1l1.3 3.5H11L8.3 6.6l1 3.4-2.8-2-2.8 2 1-3.4L2 4.5h3.2z"/></svg>'
+  };
+
+  for (var i = 1; i <= 4; i++) {
+    var dot  = document.getElementById('wsd-'+i);
+    var lbl  = document.getElementById('wsl-'+i);
+    var line = document.getElementById('wsline-'+i);
+    if (!dot || !lbl) continue;
+
+    var isActive = (i === active);
+    var isPast   = (i < active);
+
+    if (isPast) {
+      // Completed step: gradient bg, checkmark
+      dot.style.background = 'linear-gradient(135deg,#1A5FC8,#0FA3D0)';
+      dot.style.boxShadow  = 'none';
+      dot.innerHTML = CHECK;
+      lbl.style.color      = '#1A5FC8';
+      lbl.style.fontWeight = '600';
+      if (line) line.style.background = 'linear-gradient(90deg,#1A5FC8,#0FA3D0)';
+    } else if (isActive) {
+      // Current step: solid blue, white icon, glow ring
+      dot.style.background = '#1A5FC8';
+      dot.style.boxShadow  = '0 0 0 4px rgba(26,92,200,0.18)';
+      dot.innerHTML = ICONS[i].replace(/CLR/g, '#fff');
+      lbl.style.color      = '#1A5FC8';
+      lbl.style.fontWeight = '700';
+      if (line) line.style.background = '#e2e8f0';
+    } else {
+      // Future step: grey bg, grey icon
+      dot.style.background = '#e8ecf0';
+      dot.style.boxShadow  = 'none';
+      dot.innerHTML = ICONS[i].replace(/CLR/g, '#94a3b8');
+      lbl.style.color      = '#94a3b8';
+      lbl.style.fontWeight = '500';
+      if (line) line.style.background = '#e2e8f0';
+    }
+  }
+  var ctr = document.getElementById('wizStepCounter');
+  if (ctr) ctr.textContent = 'Step ' + active + ' of 4';
+}
+
+// =============================================
+// FIELD VALIDATION
+// =============================================
+function wizValidateField(el) {
+  var id  = el.id;
+  var val = el.value.trim();
+  var err = document.getElementById('err-' + id);
+  var ok  = true;
+
+  if (id === 'profileEmail') {
+    ok = val !== '' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+    if (err) err.textContent = val === '' ? 'Email is required' : 'Enter a valid email address';
+  } else {
+    ok = val !== '';
+  }
+
+  if (!ok) {
+    el.style.borderColor = '#ef4444';
+    if (err) err.style.display = 'block';
+  } else {
+    el.style.borderColor = '#e2e8f0';
+    if (err) err.style.display = 'none';
+  }
+  return ok;
+}
+
+function wizValidateStep(step) {
+  var fields = { 1: ['profileName','profileEmail'], 2: ['coTrading','coLegal','coAddr'] };
+  var ids = fields[step] || [];
+  var valid = true;
+  ids.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el && !wizValidateField(el)) valid = false;
+  });
+  return valid;
+}
+
+function _saveAndNextProfile() {
+  if (wizValidateStep(1)) {
+    _saveProfileBasic();
+    wizGoTo(2);
+  }
+}
+
+
+// Aliases for rest of codebase
+function scrollToSettingsSection(n) { wizGoTo(n); }
+function switchSettingsTab(n) { wizGoTo(n); }
+function _openSettingsPanel(n) { wizGoTo(n); }
+function _updateSettingsStepNav() {}
+
+
+
+function _saveCompanyDetails() {
+  if (!wizValidateStep(2)) return;
+  _onboardSteps[1].done = true;
+  wizGoTo(3);
+}
+
+// =============================================
+// INLINE PROFILING (step 3)
+// =============================================
+var _inlineQStep = 0;
+var _inlineAnswers = Array(7).fill(null).map(function(){ return {}; });
+var _PROFILING_QS = [
+  {
+    q: 'What best describes what you do?', type:'single',
+    opts:['Residential letting agent','Short-term rental / Airbnb manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator','Facilities manager','Individual landlord','Other']
+  },
+  {
+    q: 'What types of property do you manage?', type:'multi-grouped',
+    groups:{
+      'Residential':['Houses & flats — AST','HMO','Short-term rental','Residential block','Serviced apartments'],
+      'Commercial':['Offices','Retail','Industrial','Healthcare','Education'],
+      'Hospitality':['Hotels','Hostels','Guest houses','PBSA'],
+      'Mixed':['Mixed residential/commercial','Estate']
+    }
+  },
+  {
+    q: 'How many properties or units do you manage?', type:'single',
+    opts:['1–5','6–25','26–100','101–500','500+']
+  },
+  {
+    q: 'Which services do you currently coordinate?', type:'multi',
+    opts:['Cleaning','Compliance certificates (CP12, EICR, EPC, FRA, Legionella)','Reactive maintenance','PPM','Inspections & inventory','Landscaping','Pest control','Security','Removals','Specialist trades']
+  },
+  {
+    q: 'Where are your properties located?', type:'multi',
+    opts:['London','South East','South West','Midlands','North West','North East','Yorkshire','Scotland','Wales','Multiple regions']
+  },
+  {
+    q: 'How do you currently manage service providers?', type:'single',
+    opts:['Ad hoc (WhatsApp/phone)','Small regular contractors','Large contractor network','In-house staff','I use a property management system']
+  },
+  {
+    q: 'What is your biggest headache right now?', type:'single',
+    opts:['Finding reliable contractors','Chasing jobs to completion','Compliance tracking','Invoices & payments','Team coordination','No single view across portfolio']
+  }
+];
+
+
+window._inlineSelectOpt = function(el) {
+  var opt = el.getAttribute('data-opt');
+  _inlineSelect(opt);
+};
+
+function _inlineSelect(opt) {
+  var q = _PROFILING_QS[_inlineQStep];
+  var ans = _inlineAnswers[_inlineQStep];
+  if (q.type === 'single') { ans.val = opt; }
+  else { if(!ans.vals) ans.vals=[]; var i=ans.vals.indexOf(opt); if(i===-1) ans.vals.push(opt); else ans.vals.splice(i,1); }
+  _renderInlineProfiling();
+}
+function _inlineQNext() {
+  if (_inlineQStep < 6) { _inlineQStep++; _renderInlineProfiling(); }
+  else { _onboardSteps[2].done = true; wizGoTo(4); }
+}
+function _inlineQBack() { if(_inlineQStep>0){ _inlineQStep--; _renderInlineProfiling(); } }
+
+function _selectTierInline(name) {
+  var map = {'Connect':'tier-connect','Connect Premium':'tier-premium','Copilot':'tier-copilot'};
+  window._selectedTier = map[name];
+  ['tier-connect','tier-premium','tier-copilot'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var active = id === window._selectedTier;
+    el.style.border = active ? '2px solid #1A5FC8' : '1.5px solid #e2e8f0';
+    el.style.background = active ? '#eff6ff' : '#fff';
+  });
+  if(_user) _user.tier = name;
+}
+
+
 var _origShowPage_stg = showPage;
 showPage = function(id, e) {
   _origShowPage_stg(id, e);
