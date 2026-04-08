@@ -2278,6 +2278,77 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   max-width:100% !important;
   width:100%;
 }
+
+/* =============================================
+   DARK MODE — .dash-dark on #pg-dashboard
+============================================= */
+.dash-dark .db-sidebar{background:#111827;border-right:1px solid rgba(255,255,255,0.06);}
+.dash-dark .db-sidebar-top{background:#111827;}
+.dash-dark .sidebar-logo-row svg path{fill:#fff;}
+.dash-dark .start-chat-btn{background:#1e293b;color:#e2e8f0;border-color:#334155;}
+.dash-dark .start-chat-btn:hover{background:#334155;}
+.dash-dark .db-nav-item{color:#94a3b8;}
+.dash-dark .db-nav-item:hover{background:#1e293b;color:#e2e8f0;}
+.dash-dark .db-nav-item.active{background:#1e3a5f;color:#60a5fa;}
+.dash-dark .db-nav-item.active svg{color:#60a5fa;}
+.dash-dark .db-sidebar-bottom{border-top-color:rgba(255,255,255,0.06);}
+.dash-dark .db-auth-hint{color:#64748b;}
+.dash-dark .db-signup-btn{background:#1d4ed8;color:#fff;}
+.dash-dark .db-login-btn{background:#1e293b;color:#94a3b8;border-color:#334155;}
+.dash-dark #themeToggleBtn{border-color:rgba(255,255,255,0.1);color:#94a3b8;}
+.dash-dark #themeToggleBtn:hover{background:#1e293b !important;}
+.dash-dark .db-main{background:#0f172a;}
+/* Pages */
+.dash-dark #page-home,
+.dash-dark #page-explore,
+.dash-dark #page-bookings,
+.dash-dark #page-properties,
+.dash-dark #page-pricing,
+.dash-dark #page-settings{background:#0f172a;}
+.dash-dark #page-chat{background:#111827;}
+/* Topbar */
+.dash-dark .db-topbar{background:#111827;border-bottom-color:#1e293b;}
+.dash-dark .db-topbar-title{color:#f1f5f9;}
+.dash-dark .db-topbar-sub{color:#64748b;}
+/* Cards & surfaces */
+.dash-dark .job-card,
+.dash-dark .prop-stat-card,
+.dash-dark .spr-card,
+.dash-dark .spr-upgrade-card{background:#1e293b;border-color:#334155;}
+.dash-dark .spr-card-title,
+.dash-dark .spr-card-sub,
+.dash-dark .spr-row-name{color:#f1f5f9;}
+.dash-dark .spr-row-market{color:#64748b;}
+.dash-dark .spr-row{background:#0f172a;border-color:#334155;}
+.dash-dark .spr-upgrade-title{color:#f1f5f9;}
+.dash-dark .spr-upgrade-desc{color:#94a3b8;}
+.dash-dark .suf-title{color:#e2e8f0;}
+.dash-dark .suf-desc{color:#64748b;}
+/* Settings page */
+.dash-dark #page-settings > div{background:#0f172a;}
+.dash-dark #settings-profile input,
+.dash-dark #settings-business input,
+.dash-dark #settings-business select,
+.dash-dark #settings-discovery input{background:#1e293b !important;border-color:#334155 !important;color:#f1f5f9 !important;}
+.dash-dark .settings-eyebrow{color:#60a5fa;}
+.dash-dark .settings-title{color:#f1f5f9;}
+/* Chat */
+.dash-dark .chat-area{background:#111827;}
+.dash-dark .db-topbar-action{background:#1e293b;border-color:#334155;color:#94a3b8;}
+/* Inputs on booking page */
+.dash-dark .prop-search-wrap{background:#1e293b;border-color:#334155;}
+.dash-dark .prop-search-input{background:transparent;color:#f1f5f9;}
+.dash-dark .prop-search-input::placeholder{color:#475569;}
+/* Progress ring in dark */
+.dash-dark #settingsRingFill{stroke:#60a5fa;}
+.dash-dark #settingsRingPct{color:#60a5fa !important;}
+/* Banner in dark */
+.dash-dark #settingsEmailBanner{background:linear-gradient(90deg,#1c1400,#1a1200);border-color:#92400e;}
+/* Bottom chat bars */
+.dash-dark .page-ai-footer{background:#111827;border-top-color:#1e293b;}
+.dash-dark .paf-input-row{background:#1e293b;border-color:#334155;}
+.dash-dark .paf-input{color:#f1f5f9;}
+.dash-dark .paf-input::placeholder{color:#475569;}
 </style>
 </head>
 </head>
@@ -3257,135 +3328,207 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     </div>
     <!-- PRICING / SETTINGS PAGE -->
     <div id="page-pricing">
-      <div class="px-scroll-area">
-        <div style="max-width:780px;margin:0 auto;padding:28px 28px 60px;">
+      <div class="px-scroll-area"><div class="db-main-inner">
+        <div class="settings-eyebrow">PRICING</div>
+        <div class="settings-title">Pricing</div>
 
-          <!-- Page heading -->
-          <div style="margin-bottom:6px;">
-            <div style="font-size:11px;font-weight:700;color:var(--blue);letter-spacing:0.1em;font-family:Inter,sans-serif;text-transform:uppercase;margin-bottom:6px;">ACCOUNT</div>
-            <h1 style="font-size:28px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;margin:0 0 4px;">Settings</h1>
-            <p style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">Manage your profile, business details and preferences.</p>
+        <!-- Service pricing card -->
+        <div class="spr-card">
+          <div class="spr-card-header">
+            <div>
+              <div class="spr-card-title">Service pricing</div>
+              <div class="spr-card-sub">Set your budget per category. Matching providers will be highlighted.</div>
+            </div>
+            <button class="spr-info-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 7v5M8 5v.5"/></svg></button>
+          </div>
+          <div class="spr-rows">
+            <div class="spr-row"><div class="spr-row-info"><div class="spr-row-name">Plumbing &amp; Gas</div><div class="spr-row-market">Market: £80 – £250</div></div><div class="spr-row-controls"><div class="spr-price-wrap"><span class="spr-pound">£</span><input class="spr-input" type="number" value="200" min="0"/></div><select class="spr-select"><option>Fixed Price</option><option>Per Hour</option></select><div class="spr-badge spr-above">↗ Above market</div></div></div>
+            <div class="spr-row"><div class="spr-row-info"><div class="spr-row-name">Electrical</div><div class="spr-row-market">Market: £85 – £650</div></div><div class="spr-row-controls"><div class="spr-price-wrap"><span class="spr-pound">£</span><input class="spr-input" type="number" value="250" min="0"/></div><select class="spr-select"><option>Fixed Price</option><option>Per Hour</option></select><div class="spr-badge spr-below">↘ Below market</div></div></div>
+            <div class="spr-row"><div class="spr-row-info"><div class="spr-row-name">Cleaning</div><div class="spr-row-market">Market: £18 – £300</div></div><div class="spr-row-controls"><div class="spr-price-wrap"><span class="spr-pound">£</span><input class="spr-input" type="number" value="25" min="0"/></div><select class="spr-select"><option>Per Hour</option><option>Fixed Price</option></select><div class="spr-badge spr-below">↘ Below market</div></div></div>
+            <div class="spr-row"><div class="spr-row-info"><div class="spr-row-name">Fire Safety</div><div class="spr-row-market">Market: £185 – £350</div></div><div class="spr-row-controls"><div class="spr-price-wrap"><span class="spr-pound">£</span><input class="spr-input" type="number" value="300" min="0"/></div><select class="spr-select"><option>Fixed Price</option><option>Per Hour</option></select><div class="spr-badge spr-above">↗ Above market</div></div></div>
+            <div class="spr-row"><div class="spr-row-info"><div class="spr-row-name">Inventory &amp; Reports</div><div class="spr-row-market">Market: £95 – £165</div></div><div class="spr-row-controls"><div class="spr-price-wrap"><span class="spr-pound">£</span><input class="spr-input" type="number" value="150" min="0"/></div><select class="spr-select"><option>Fixed Price</option><option>Per Hour</option></select><div class="spr-badge spr-above">↗ Above market</div></div></div>
+            <div class="spr-row"><div class="spr-row-info"><div class="spr-row-name">General Repairs</div><div class="spr-row-market">Market: £22 – £85</div></div><div class="spr-row-controls"><div class="spr-price-wrap"><span class="spr-pound">£</span><input class="spr-input" type="number" value="30" min="0"/></div><select class="spr-select"><option>Per Hour</option><option>Fixed Price</option></select><div class="spr-badge spr-below">↘ Below market</div></div></div>
+          </div>
+          <div class="spr-save-row"><button class="spr-save-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10V4a1 1 0 011-1h6l3 3v7H3a1 1 0 01-1-1z"/><path d="M9 3v4H4V3"/></svg>Save pricing</button></div>
+        </div>
+
+        <!-- Upgrade card -->
+        <div class="spr-upgrade-card">
+          <div class="spr-upgrade-top"><div class="spr-upgrade-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 1l2.5 5h5.5l-4.5 3.5 2 6L9 13l-5.5 3.5 2-6L1 6h5.5z"/></svg></div><span class="spr-upgrade-tag">Keylr Platform</span></div>
+          <div class="spr-upgrade-title">Go end-to-end with Keylr</div>
+          <div class="spr-upgrade-desc">Upgrade to the full Keylr platform for complete property operations — team management, automated workflows, invoicing, financial dashboards, supplier management, and more.</div>
+          <div class="spr-upgrade-features">
+            <div class="spr-upgrade-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#10b981" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M5 8l2 2 4-4"/></svg><div><div class="suf-title">Team &amp; operations</div><div class="suf-desc">Manage staff, schedules, and daily ops</div></div></div>
+            <div class="spr-upgrade-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#10b981" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M5 8l2 2 4-4"/></svg><div><div class="suf-title">Financial tracking</div><div class="suf-desc">Invoices, payments, margins, and reports</div></div></div>
+            <div class="spr-upgrade-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#10b981" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M5 8l2 2 4-4"/></svg><div><div class="suf-title">Supplier management</div><div class="suf-desc">Contracts, SLAs, and auto-assignment</div></div></div>
+          </div>
+          <div class="spr-upgrade-btns"><button class="spr-upgrade-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 1l2 4h5l-4 3 1.5 5L7 10.5 2.5 13 4 8 0 5h5z"/></svg>Upgrade to Keylr Platform</button><button class="spr-learn-btn">Learn more <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v5M4 6.5h5"/></svg></button></div>
+          <div class="spr-upgrade-note">From £69/month + £1.50/property. Cancel anytime.</div>
+        </div>
+
+      </div></div>
+    </div>
+
+  
+
+<!-- SETTINGS PAGE -->
+    <div id="page-settings">
+      <div style="flex:1;overflow-y:auto;min-height:0;background:#f5f7fa;">
+        <div style="max-width:820px;margin:0 auto;padding:32px 28px 60px;">
+
+          <!-- ── HEADER ROW: Title + Ring Progress ── -->
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px;">
+            <div>
+              <div style="font-size:11px;font-weight:700;color:#1d4ed8;letter-spacing:0.12em;font-family:Inter,sans-serif;text-transform:uppercase;margin-bottom:6px;">ACCOUNT</div>
+              <h1 style="font-size:30px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;margin:0 0 5px;">Settings</h1>
+              <p style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">Manage your profile, business &amp; subscription.</p>
+            </div>
+            <!-- Ring progress -->
+            <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;">
+              <div style="position:relative;width:76px;height:76px;">
+                <svg width="76" height="76" viewBox="0 0 76 76" style="transform:rotate(-90deg)">
+                  <circle cx="38" cy="38" r="31" fill="none" stroke="#e2e8f0" stroke-width="7"/>
+                  <circle id="settingsRingFill" cx="38" cy="38" r="31" fill="none" stroke="#f59e0b" stroke-width="7"
+                    stroke-dasharray="194.8" stroke-dashoffset="165.6" stroke-linecap="round"
+                    style="transition:stroke-dashoffset 0.6s ease,stroke 0.6s ease;"/>
+                </svg>
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                  <span id="settingsRingPct" style="font-size:15px;font-weight:800;color:#f59e0b;font-family:Inter,sans-serif;line-height:1;transition:color 0.6s;">15%</span>
+                  <span style="font-size:9px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:1px;">done</span>
+                </div>
+              </div>
+              <span style="font-size:11px;color:#64748b;font-family:Inter,sans-serif;font-weight:500;">Profile complete</span>
+            </div>
           </div>
 
-          <!-- Email verification banner -->
-          <div id="settingsEmailBanner" style="background:linear-gradient(90deg,#fffbeb,#fef9e7);border:1px solid #fcd34d;border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:12px;margin:20px 0 0;">
+          <!-- ── EMAIL VERIFICATION BANNER ── -->
+          <div id="settingsEmailBanner" style="background:linear-gradient(90deg,#fffbeb,#fef9e7);border:1px solid #fcd34d;border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:12px;margin-bottom:20px;">
             <div style="width:34px;height:34px;background:#fef3c7;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#d97706" stroke-width="1.8"><rect x="1" y="4" width="14" height="10" rx="2"/><path d="M1 6.5l7 4.5 7-4.5"/></svg>
             </div>
             <div style="flex:1;">
               <div style="font-size:13px;font-weight:700;color:#92400e;font-family:Inter,sans-serif;margin-bottom:1px;">Verify your email address</div>
-              <div style="font-size:12px;color:#b45309;font-family:Inter,sans-serif;">We sent a link to <strong>alex@keylr.com</strong>. Verify to unlock all features.</div>
+              <div style="font-size:12px;color:#b45309;font-family:Inter,sans-serif;">A verification link was sent to <strong>alex@keylr.com</strong>. Complete this first step to unlock all features.</div>
             </div>
-            <button onclick="this.closest('#settingsEmailBanner')||this.parentElement.parentElement.style.setProperty('display','none')" style="background:#fcd34d;border:none;color:#78350f;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;" onclick="document.getElementById('settingsEmailBanner').style.display='none'">Verify now →</button>
-            <button onclick="document.getElementById('settingsEmailBanner').style.display='none'" style="background:none;border:none;color:#b45309;font-size:18px;cursor:pointer;padding:0 0 0 4px;line-height:1;">&times;</button>
+            <button onclick="alert('Verification email resent!')" style="background:#fcd34d;border:none;color:#78350f;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;flex-shrink:0;">Verify now →</button>
+            <button onclick="document.getElementById('settingsEmailBanner').style.display='none'" style="background:none;border:none;color:#b45309;font-size:20px;cursor:pointer;padding:0;line-height:1;flex-shrink:0;">&times;</button>
           </div>
 
-          <!-- Overall profile completion bar -->
-          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:16px 20px;margin-top:16px;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-              <div style="font-size:13px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Profile completion</div>
-              <div id="settingsProgressPct" style="font-size:13px;font-weight:800;color:#d97706;font-family:Inter,sans-serif;">15%</div>
+          <!-- ── PROGRESS STEPS ROW ── -->
+          <div style="background:#fff;border:1px solid #e8ecf3;border-radius:12px;padding:14px 20px;display:flex;gap:0;margin-bottom:28px;overflow:hidden;">
+            <div style="flex:1;display:flex;align-items:center;gap:10px;padding-right:16px;border-right:1px solid #f1f5f9;">
+              <div id="sps1dot" style="width:28px;height:28px;border-radius:50%;background:#10b981;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 6l3 3 5-5"/></svg>
+              </div>
+              <div><div style="font-size:12px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Profile</div><div style="font-size:11px;color:#10b981;font-family:Inter,sans-serif;font-weight:600;">+15%</div></div>
             </div>
-            <div style="background:#f1f5f9;border-radius:999px;height:8px;overflow:hidden;">
-              <div id="settingsProgressBar" style="height:100%;width:15%;border-radius:999px;background:linear-gradient(90deg,#f59e0b,#fbbf24);transition:width 0.5s ease,background 0.5s ease;"></div>
+            <div style="flex:1;display:flex;align-items:center;gap:10px;padding:0 16px;border-right:1px solid #f1f5f9;">
+              <div id="sps2dot" style="width:28px;height:28px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <span style="font-size:11px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;">2</span>
+              </div>
+              <div><div style="font-size:12px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Business</div><div style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;">+20%</div></div>
             </div>
-            <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;">
-              <span id="sprStep1" style="font-size:11.5px;font-family:Inter,sans-serif;color:#10b981;display:flex;align-items:center;gap:4px;font-weight:600;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5l3 3 4-4"/></svg>Profile +15%</span>
-              <span id="sprStep2" style="font-size:11.5px;font-family:Inter,sans-serif;color:#94a3b8;display:flex;align-items:center;gap:4px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#cbd5e1" stroke-width="2"><circle cx="5" cy="5" r="4"/></svg>Business +20%</span>
-              <span id="sprStep3" style="font-size:11.5px;font-family:Inter,sans-serif;color:#94a3b8;display:flex;align-items:center;gap:4px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#cbd5e1" stroke-width="2"><circle cx="5" cy="5" r="4"/></svg>Discovery +25%</span>
-              <span id="sprStep4" style="font-size:11.5px;font-family:Inter,sans-serif;color:#94a3b8;display:flex;align-items:center;gap:4px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#cbd5e1" stroke-width="2"><circle cx="5" cy="5" r="4"/></svg>Subscription +40%</span>
+            <div style="flex:1;display:flex;align-items:center;gap:10px;padding:0 16px;border-right:1px solid #f1f5f9;">
+              <div id="sps3dot" style="width:28px;height:28px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <span style="font-size:11px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;">3</span>
+              </div>
+              <div><div style="font-size:12px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Discovery</div><div style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;">+25%</div></div>
+            </div>
+            <div style="flex:1;display:flex;align-items:center;gap:10px;padding-left:16px;">
+              <div id="sps4dot" style="width:28px;height:28px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <span style="font-size:11px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;">4</span>
+              </div>
+              <div><div style="font-size:12px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Subscription</div><div style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;">+40%</div></div>
             </div>
           </div>
 
-          <!-- Horizontal tabs -->
-          <div style="display:flex;gap:2px;border-bottom:2px solid #e2e8f0;margin-top:28px;overflow-x:auto;">
-            <button id="stab-profile" onclick="switchSettingsTab('profile')" style="padding:10px 20px;font-size:13.5px;font-weight:600;font-family:Inter,sans-serif;border:none;background:none;cursor:pointer;color:#1d4ed8;border-bottom:2px solid #1d4ed8;margin-bottom:-2px;white-space:nowrap;transition:all 0.15s;">Profile</button>
-            <button id="stab-business" onclick="switchSettingsTab('business')" style="padding:10px 20px;font-size:13.5px;font-weight:600;font-family:Inter,sans-serif;border:none;background:none;cursor:pointer;color:#64748b;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all 0.15s;">Business</button>
-            <button id="stab-discovery" onclick="switchSettingsTab('discovery')" style="padding:10px 20px;font-size:13.5px;font-weight:600;font-family:Inter,sans-serif;border:none;background:none;cursor:pointer;color:#64748b;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all 0.15s;">Discovery</button>
-            <button id="stab-subscription" onclick="switchSettingsTab('subscription')" style="padding:10px 20px;font-size:13.5px;font-weight:600;font-family:Inter,sans-serif;border:none;background:none;cursor:pointer;color:#64748b;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all 0.15s;">Subscription</button>
-            <button id="stab-notifications" onclick="switchSettingsTab('notifications')" style="padding:10px 20px;font-size:13.5px;font-weight:600;font-family:Inter,sans-serif;border:none;background:none;cursor:pointer;color:#64748b;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all 0.15s;">Notifications</button>
+          <!-- ── HORIZONTAL TABS ── -->
+          <div style="display:flex;gap:0;border-bottom:2px solid #e8ecf3;margin-bottom:28px;">
+            <button id="stab-profile" onclick="switchSettingsTab('profile')" style="padding:10px 22px;font-size:13.5px;font-weight:700;font-family:Inter,sans-serif;border:none;background:none;cursor:pointer;color:#1d4ed8;border-bottom:2px solid #1d4ed8;margin-bottom:-2px;white-space:nowrap;">Profile</button>
+            <button id="stab-business" onclick="switchSettingsTab('business')" style="padding:10px 22px;font-size:13.5px;font-weight:600;font-family:Inter,sans-serif;border:none;background:none;cursor:pointer;color:#64748b;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;">Business</button>
+            <button id="stab-discovery" onclick="switchSettingsTab('discovery')" style="padding:10px 22px;font-size:13.5px;font-weight:600;font-family:Inter,sans-serif;border:none;background:none;cursor:pointer;color:#64748b;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;">Discovery</button>
+            <button id="stab-subscription" onclick="switchSettingsTab('subscription')" style="padding:10px 22px;font-size:13.5px;font-weight:600;font-family:Inter,sans-serif;border:none;background:none;cursor:pointer;color:#64748b;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;">Subscription</button>
           </div>
 
           <!-- ── PROFILE TAB ── -->
-          <div id="settings-profile" style="margin-top:24px;">
-            <!-- Avatar row -->
-            <div style="display:flex;align-items:center;gap:18px;margin-bottom:28px;">
+          <div id="settings-profile">
+            <!-- Avatar + name row -->
+            <div style="display:flex;align-items:center;gap:18px;margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid #f1f5f9;">
               <div style="position:relative;flex-shrink:0;">
                 <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;font-family:Inter,sans-serif;">AT</div>
-                <button style="position:absolute;bottom:0;right:0;width:24px;height:24px;background:#1d4ed8;border:2px solid #fff;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M1 7.5l2-2 4-4 1.5 1.5-4 4-2 .5z"/></svg>
+                <button title="Change photo" style="position:absolute;bottom:0;right:0;width:24px;height:24px;background:#1d4ed8;border:2px solid #fff;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;">
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M1 7.5l2-2 4-4 1.5 1.5-4 4-2 .5z"/><path d="M6.5 2l1.5 1.5"/></svg>
                 </button>
               </div>
-              <div>
-                <div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Alex Thompson</div>
+              <div style="flex:1;">
+                <div style="font-size:17px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Alex Thompson</div>
                 <div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">alex@keylr.com</div>
-                <div style="margin-top:6px;display:inline-flex;align-items:center;gap:5px;background:#fef3c7;border-radius:999px;padding:3px 10px;">
-                  <div style="width:6px;height:6px;background:#f59e0b;border-radius:50%;"></div>
+                <div style="margin-top:7px;display:inline-flex;align-items:center;gap:5px;background:#fef3c7;border-radius:999px;padding:3px 10px;border:1px solid #fcd34d;">
+                  <div style="width:5px;height:5px;background:#f59e0b;border-radius:50%;"></div>
                   <span style="font-size:11px;font-weight:600;color:#92400e;font-family:Inter,sans-serif;">Email not verified</span>
                 </div>
               </div>
+              <button onclick="alert('Profile saved! +15% progress added.')" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;flex-shrink:0;">Save changes</button>
             </div>
 
-            <!-- Fields — two column -->
+            <!-- Name fields -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
               <div>
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">First name</label>
-                <input type="text" value="Alex" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+                <input type="text" value="Alex" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
               </div>
               <div>
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Last name</label>
-                <input type="text" value="Thompson" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+                <input type="text" value="Thompson" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
               </div>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
               <div>
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Email address</label>
                 <div style="position:relative;">
-                  <input type="email" value="alex@keylr.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 44px 11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
-                  <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:#fef3c7;color:#92400e;font-size:10px;font-weight:700;font-family:Inter,sans-serif;padding:2px 7px;border-radius:999px;">Unverified</span>
+                  <input type="email" value="alex@keylr.com" style="width:100%;border:1.5px solid #fcd34d;border-radius:10px;padding:11px 80px 11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fffbeb;transition:border-color 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#fcd34d';this.style.background='#fffbeb'"/>
+                  <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:#fef3c7;color:#92400e;font-size:10px;font-weight:700;font-family:Inter,sans-serif;padding:2px 8px;border-radius:999px;white-space:nowrap;">Unverified</span>
                 </div>
               </div>
               <div>
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Phone number</label>
-                <input type="tel" value="+44 7700 900100" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+                <input type="tel" value="+44 7700 900100" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
               </div>
             </div>
-            <div style="margin-bottom:24px;">
+            <div style="margin-bottom:28px;">
               <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Role / Title</label>
-              <input type="text" value="Property Manager" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+              <input type="text" value="Property Manager" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
             </div>
 
-            <!-- Divider -->
-            <div style="border-top:1px solid #f1f5f9;margin-bottom:24px;"></div>
-
             <!-- Password section -->
-            <div style="margin-bottom:24px;">
-              <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">Password</div>
-              <div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:14px;">Last changed 3 months ago</div>
+            <div style="border-top:1px solid #f1f5f9;padding-top:22px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                <div>
+                  <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Password</div>
+                  <div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:2px;">Last changed 3 months ago</div>
+                </div>
+              </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                 <div>
                   <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">New password</label>
-                  <input type="password" placeholder="••••••••" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;" onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'"/>
+                  <input type="password" placeholder="••••••••" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
                 </div>
                 <div>
                   <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Confirm password</label>
-                  <input type="password" placeholder="••••••••" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;" onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'"/>
+                  <input type="password" placeholder="••••••••" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
                 </div>
               </div>
-            </div>
-
-            <div style="display:flex;justify-content:flex-end;">
-              <button onclick="alert('Profile saved! +15% completion')" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 26px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10V4a1 1 0 011-1h6l3 3v7H3a1 1 0 01-1-1z"/><path d="M9 3v4H4V3"/></svg>Save changes
-              </button>
             </div>
           </div>
 
           <!-- ── BUSINESS TAB ── -->
-          <div id="settings-business" style="margin-top:24px;display:none;">
-            <div style="margin-bottom:20px;">
-              <div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:2px;">Business details</div>
-              <div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Used for invoicing, compliance records and supplier contracts.</div>
+          <div id="settings-business" style="display:none;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid #f1f5f9;">
+              <div>
+                <div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:3px;">Business details</div>
+                <div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Used for invoices, compliance records and contracts.</div>
+              </div>
+              <button onclick="alert('Business details saved! +20% progress added.')" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;flex-shrink:0;">Save changes</button>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
               <div>
@@ -3401,284 +3544,83 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
               <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Business address</label>
               <input type="text" placeholder="Full address including postcode" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
               <div>
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">VAT number <span style="font-weight:400;color:#94a3b8;">(optional)</span></label>
                 <input type="text" placeholder="GB 123 456 789" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
               </div>
               <div>
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Portfolio size</label>
-                <select style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;appearance:none;cursor:pointer;">
+                <select style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;cursor:pointer;" onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'">
                   <option>1–5 properties</option><option>6–20 properties</option><option selected>21–50 properties</option><option>51–100 properties</option><option>100+ properties</option>
                 </select>
               </div>
             </div>
-            <div style="display:flex;justify-content:flex-end;">
-              <button onclick="alert('Business details saved! +20% completion')" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 26px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save changes</button>
-            </div>
           </div>
 
           <!-- ── DISCOVERY TAB ── -->
-          <div id="settings-discovery" style="margin-top:24px;display:none;">
-            <div style="margin-bottom:20px;">
-              <div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:2px;">Service preferences</div>
-              <div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Help us match you with the right professionals faster.</div>
-            </div>
-            <!-- Service budgets -->
-            <div style="border-top:1px solid #f1f5f9;padding-top:6px;">
-              <div style="font-size:13px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;">Service budgets</div>
-              <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
-                <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fafafa;border-radius:10px;border:1px solid #f1f5f9;"><span style="font-size:13.5px;color:#0f172a;font-family:Inter,sans-serif;">Plumbing &amp; Gas</span><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Market £80–250</span><div style="display:flex;align-items:center;gap:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;overflow:hidden;"><span style="padding:7px 10px;font-size:13px;color:#64748b;font-family:Inter,sans-serif;">£</span><input type="number" value="200" style="width:70px;border:none;outline:none;font-size:13.5px;color:#0f172a;font-family:Inter,sans-serif;padding:7px 0;background:transparent;"/></div><span style="font-size:11.5px;font-weight:600;color:#f59e0b;background:#fef3c7;padding:3px 9px;border-radius:999px;">↗ Above</span></div></div>
-                <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fafafa;border-radius:10px;border:1px solid #f1f5f9;"><span style="font-size:13.5px;color:#0f172a;font-family:Inter,sans-serif;">Electrical</span><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Market £85–650</span><div style="display:flex;align-items:center;gap:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;overflow:hidden;"><span style="padding:7px 10px;font-size:13px;color:#64748b;font-family:Inter,sans-serif;">£</span><input type="number" value="250" style="width:70px;border:none;outline:none;font-size:13.5px;color:#0f172a;font-family:Inter,sans-serif;padding:7px 0;background:transparent;"/></div><span style="font-size:11.5px;font-weight:600;color:#64748b;background:#f1f5f9;padding:3px 9px;border-radius:999px;">↘ Below</span></div></div>
-                <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fafafa;border-radius:10px;border:1px solid #f1f5f9;"><span style="font-size:13.5px;color:#0f172a;font-family:Inter,sans-serif;">Cleaning</span><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Market £18–300</span><div style="display:flex;align-items:center;gap:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;overflow:hidden;"><span style="padding:7px 10px;font-size:13px;color:#64748b;font-family:Inter,sans-serif;">£</span><input type="number" value="25" style="width:70px;border:none;outline:none;font-size:13.5px;color:#0f172a;font-family:Inter,sans-serif;padding:7px 0;background:transparent;"/></div><span style="font-size:11.5px;font-weight:600;color:#64748b;background:#f1f5f9;padding:3px 9px;border-radius:999px;">↘ Below</span></div></div>
-                <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fafafa;border-radius:10px;border:1px solid #f1f5f9;"><span style="font-size:13.5px;color:#0f172a;font-family:Inter,sans-serif;">Fire Safety</span><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Market £185–350</span><div style="display:flex;align-items:center;gap:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;overflow:hidden;"><span style="padding:7px 10px;font-size:13px;color:#64748b;font-family:Inter,sans-serif;">£</span><input type="number" value="300" style="width:70px;border:none;outline:none;font-size:13.5px;color:#0f172a;font-family:Inter,sans-serif;padding:7px 0;background:transparent;"/></div><span style="font-size:11.5px;font-weight:600;color:#f59e0b;background:#fef3c7;padding:3px 9px;border-radius:999px;">↗ Above</span></div></div>
+          <div id="settings-discovery" style="display:none;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid #f1f5f9;">
+              <div>
+                <div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:3px;">Service preferences</div>
+                <div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Help us match you with the right professionals faster.</div>
               </div>
+              <button onclick="alert('Preferences saved! +25% progress added.')" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;flex-shrink:0;">Save preferences</button>
             </div>
-            <div style="display:flex;justify-content:flex-end;">
-              <button onclick="alert('Preferences saved! +25% completion')" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 26px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save preferences</button>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:#fafafa;border-radius:11px;border:1px solid #f1f5f9;"><div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">Plumbing &amp; Gas</div><div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:2px;">Market rate: £80 – £250</div></div><div style="display:flex;align-items:center;gap:10px;"><div style="display:flex;align-items:center;background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;overflow:hidden;"><span style="padding:8px 10px;font-size:13px;color:#64748b;font-family:Inter,sans-serif;border-right:1px solid #f1f5f9;">£</span><input type="number" value="200" style="width:72px;border:none;outline:none;font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;padding:8px 10px;background:transparent;"/></div><span style="font-size:11.5px;font-weight:600;color:#d97706;background:#fef3c7;padding:4px 10px;border-radius:999px;white-space:nowrap;">↗ Above</span></div></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:#fafafa;border-radius:11px;border:1px solid #f1f5f9;"><div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">Electrical</div><div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:2px;">Market rate: £85 – £650</div></div><div style="display:flex;align-items:center;gap:10px;"><div style="display:flex;align-items:center;background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;overflow:hidden;"><span style="padding:8px 10px;font-size:13px;color:#64748b;font-family:Inter,sans-serif;border-right:1px solid #f1f5f9;">£</span><input type="number" value="250" style="width:72px;border:none;outline:none;font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;padding:8px 10px;background:transparent;"/></div><span style="font-size:11.5px;font-weight:600;color:#64748b;background:#f1f5f9;padding:4px 10px;border-radius:999px;white-space:nowrap;">↘ Below</span></div></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:#fafafa;border-radius:11px;border:1px solid #f1f5f9;"><div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">Cleaning</div><div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:2px;">Market rate: £18 – £300</div></div><div style="display:flex;align-items:center;gap:10px;"><div style="display:flex;align-items:center;background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;overflow:hidden;"><span style="padding:8px 10px;font-size:13px;color:#64748b;font-family:Inter,sans-serif;border-right:1px solid #f1f5f9;">£</span><input type="number" value="25" style="width:72px;border:none;outline:none;font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;padding:8px 10px;background:transparent;"/></div><span style="font-size:11.5px;font-weight:600;color:#64748b;background:#f1f5f9;padding:4px 10px;border-radius:999px;white-space:nowrap;">↘ Below</span></div></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:#fafafa;border-radius:11px;border:1px solid #f1f5f9;"><div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">Fire Safety</div><div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:2px;">Market rate: £185 – £350</div></div><div style="display:flex;align-items:center;gap:10px;"><div style="display:flex;align-items:center;background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;overflow:hidden;"><span style="padding:8px 10px;font-size:13px;color:#64748b;font-family:Inter,sans-serif;border-right:1px solid #f1f5f9;">£</span><input type="number" value="300" style="width:72px;border:none;outline:none;font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;padding:8px 10px;background:transparent;"/></div><span style="font-size:11.5px;font-weight:600;color:#d97706;background:#fef3c7;padding:4px 10px;border-radius:999px;white-space:nowrap;">↗ Above</span></div></div>
             </div>
           </div>
 
           <!-- ── SUBSCRIPTION TAB ── -->
-          <div id="settings-subscription" style="margin-top:24px;display:none;">
-            <div style="margin-bottom:20px;">
-              <div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:2px;">Your plan</div>
-              <div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">You're currently on the free Connect plan.</div>
+          <div id="settings-subscription" style="display:none;">
+            <div style="margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid #f1f5f9;">
+              <div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:3px;">Your plan</div>
+              <div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">You're on the free Connect plan. Upgrade to unlock more.</div>
             </div>
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;">
-              <div style="border:1.5px solid #e2e8f0;border-radius:14px;padding:20px 18px;background:#fff;">
-                <div style="font-size:11px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Free</div>
-                <div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">£0<span style="font-size:13px;font-weight:500;color:#94a3b8;">/mo</span></div>
-                <div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:14px;">Up to 5 properties</div>
-                <div style="display:flex;flex-direction:column;gap:5px;font-size:12px;color:#374151;font-family:Inter,sans-serif;"><span>✓ AI job booking</span><span>✓ Basic tracking</span><span style="color:#94a3b8;">✗ Rate cards</span></div>
-                <div style="margin-top:14px;background:#f1f5f9;border-radius:8px;padding:8px;text-align:center;font-size:12px;font-weight:600;color:#64748b;font-family:Inter,sans-serif;">Current plan</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
+              <div style="border:1.5px solid #e2e8f0;border-radius:14px;padding:22px 20px;background:#fff;">
+                <div style="font-size:10.5px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;">Free</div>
+                <div style="font-size:26px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;margin-bottom:5px;">£0<span style="font-size:14px;font-weight:500;color:#94a3b8;">/mo</span></div>
+                <div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:16px;">Up to 5 properties</div>
+                <div style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:#374151;font-family:Inter,sans-serif;margin-bottom:16px;">
+                  <span style="display:flex;align-items:center;gap:6px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5l3 3 4-4"/></svg>AI job booking</span>
+                  <span style="display:flex;align-items:center;gap:6px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5l3 3 4-4"/></svg>Basic tracking</span>
+                  <span style="display:flex;align-items:center;gap:6px;color:#94a3b8;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#d1d5db" stroke-width="2"><path d="M2 8l6-6M8 8L2 2"/></svg>Rate cards</span>
+                </div>
+                <div style="background:#f1f5f9;border-radius:8px;padding:9px;text-align:center;font-size:12.5px;font-weight:600;color:#64748b;font-family:Inter,sans-serif;">Current plan</div>
               </div>
-              <div style="border:2px solid #1d4ed8;border-radius:14px;padding:20px 18px;background:#eff6ff;position:relative;">
-                <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#1d4ed8;color:#fff;font-size:10px;font-weight:700;font-family:Inter,sans-serif;padding:3px 12px;border-radius:999px;">RECOMMENDED</div>
-                <div style="font-size:11px;font-weight:700;color:#1d4ed8;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Connect Premium</div>
-                <div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">£29<span style="font-size:13px;font-weight:500;color:#94a3b8;">/mo</span></div>
-                <div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:14px;">Up to 100 properties</div>
-                <div style="display:flex;flex-direction:column;gap:5px;font-size:12px;color:#374151;font-family:Inter,sans-serif;"><span>✓ Everything in Free</span><span>✓ Rate card management</span><span>✓ Compliance dashboard</span></div>
-                <button style="margin-top:14px;width:100%;background:#1d4ed8;color:#fff;border:none;border-radius:8px;padding:9px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Upgrade →</button>
+              <div style="border:2px solid #1d4ed8;border-radius:14px;padding:22px 20px;background:linear-gradient(160deg,#eff6ff,#dbeafe 100%);position:relative;">
+                <div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#1d4ed8;color:#fff;font-size:10px;font-weight:700;font-family:Inter,sans-serif;padding:3px 12px;border-radius:999px;white-space:nowrap;">RECOMMENDED</div>
+                <div style="font-size:10.5px;font-weight:700;color:#1d4ed8;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;">Connect Premium</div>
+                <div style="font-size:26px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;margin-bottom:5px;">£29<span style="font-size:14px;font-weight:500;color:#94a3b8;">/mo</span></div>
+                <div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:16px;">Up to 100 properties</div>
+                <div style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:#374151;font-family:Inter,sans-serif;margin-bottom:16px;">
+                  <span style="display:flex;align-items:center;gap:6px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5l3 3 4-4"/></svg>Everything in Free</span>
+                  <span style="display:flex;align-items:center;gap:6px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5l3 3 4-4"/></svg>Rate card management</span>
+                  <span style="display:flex;align-items:center;gap:6px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5l3 3 4-4"/></svg>Compliance dashboard</span>
+                </div>
+                <button style="width:100%;background:#1d4ed8;color:#fff;border:none;border-radius:9px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Upgrade now →</button>
               </div>
-              <div style="border:1.5px solid #e2e8f0;border-radius:14px;padding:20px 18px;background:#fff;">
-                <div style="font-size:11px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Copilot</div>
-                <div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">£99<span style="font-size:13px;font-weight:500;color:#94a3b8;">/mo</span></div>
-                <div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:14px;">Unlimited properties</div>
-                <div style="display:flex;flex-direction:column;gap:5px;font-size:12px;color:#374151;font-family:Inter,sans-serif;"><span>✓ Everything in Premium</span><span>✓ API access</span><span>✓ Dedicated manager</span></div>
-                <button style="margin-top:14px;width:100%;background:#0f172a;color:#fff;border:none;border-radius:8px;padding:9px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Upgrade →</button>
+              <div style="border:1.5px solid #e2e8f0;border-radius:14px;padding:22px 20px;background:#fff;">
+                <div style="font-size:10.5px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;">Copilot</div>
+                <div style="font-size:26px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;margin-bottom:5px;">£99<span style="font-size:14px;font-weight:500;color:#94a3b8;">/mo</span></div>
+                <div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:16px;">Unlimited properties</div>
+                <div style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:#374151;font-family:Inter,sans-serif;margin-bottom:16px;">
+                  <span style="display:flex;align-items:center;gap:6px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5l3 3 4-4"/></svg>Everything in Premium</span>
+                  <span style="display:flex;align-items:center;gap:6px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5l3 3 4-4"/></svg>API access</span>
+                  <span style="display:flex;align-items:center;gap:6px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5l3 3 4-4"/></svg>Dedicated manager</span>
+                </div>
+                <button style="width:100%;background:#0f172a;color:#fff;border:none;border-radius:9px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Upgrade now →</button>
               </div>
             </div>
-          </div>
-
-          <!-- ── NOTIFICATIONS TAB ── -->
-          <div id="settings-notifications" style="margin-top:24px;display:none;">
-            <div style="margin-bottom:20px;">
-              <div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:2px;">Notification preferences</div>
-              <div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Choose how and when we contact you.</div>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:1px;border-radius:12px;overflow:hidden;border:1px solid #f1f5f9;">
-              <div style="background:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;"><div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">Compliance expiry alerts</div><div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">30, 14 and 7 days before expiry</div></div><div style="display:flex;gap:8px;"><span style="background:#d1fae5;color:#065f46;font-size:11.5px;font-weight:600;padding:4px 12px;border-radius:999px;font-family:Inter,sans-serif;">Email</span><span style="background:#d1fae5;color:#065f46;font-size:11.5px;font-weight:600;padding:4px 12px;border-radius:999px;font-family:Inter,sans-serif;">Push</span></div></div>
-              <div style="background:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #f8fafc;"><div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">Job status updates</div><div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">When a job is confirmed, started or completed</div></div><div style="display:flex;gap:8px;"><span style="background:#d1fae5;color:#065f46;font-size:11.5px;font-weight:600;padding:4px 12px;border-radius:999px;font-family:Inter,sans-serif;">Email</span><span style="background:#d1fae5;color:#065f46;font-size:11.5px;font-weight:600;padding:4px 12px;border-radius:999px;font-family:Inter,sans-serif;">Push</span></div></div>
-              <div style="background:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #f8fafc;"><div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">Quote responses</div><div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">When a supplier replies to your quote request</div></div><div style="display:flex;gap:8px;"><span style="background:#d1fae5;color:#065f46;font-size:11.5px;font-weight:600;padding:4px 12px;border-radius:999px;font-family:Inter,sans-serif;">Email</span><span style="background:#f1f5f9;color:#64748b;font-size:11.5px;font-weight:600;padding:4px 12px;border-radius:999px;font-family:Inter,sans-serif;">Push off</span></div></div>
-              <div style="background:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #f8fafc;"><div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">Payment confirmations</div><div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">Receipts and payment confirmation emails</div></div><div style="display:flex;gap:8px;"><span style="background:#d1fae5;color:#065f46;font-size:11.5px;font-weight:600;padding:4px 12px;border-radius:999px;font-family:Inter,sans-serif;">Email</span><span style="background:#f1f5f9;color:#64748b;font-size:11.5px;font-weight:600;padding:4px 12px;border-radius:999px;font-family:Inter,sans-serif;">Push off</span></div></div>
-            </div>
+            <div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;text-align:center;">From £69/month + £1.50/property. Cancel anytime. No hidden fees.</div>
           </div>
 
         </div>
-      </div>
-    </div>
-
-  
-
-    <!-- SETTINGS PAGE -->
-    <div id="page-settings">
-      <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;background:#f5f6f8;">
-
-        <!-- WIZARD STEPPER HEADER -->
-        <div style="background:#fff;border-bottom:1px solid #eaecf0;padding:18px 32px 0;flex-shrink:0;">
-          <div style="max-width:680px;margin:0 auto;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-              <div style="font-size:13px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Account Setup</div>
-              <div id="wizStepCounter" style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;">Step 1 of 4</div>
-            </div>
-            <!-- Steps row -->
-            <div style="display:flex;align-items:flex-start;width:100%;padding-bottom:0;">
-
-              <!-- Step 1 -->
-              <div style="display:flex;flex-direction:column;align-items:center;flex:1;cursor:pointer;" onclick="wizGoTo(1)">
-                <div style="display:flex;align-items:center;width:100%;margin-bottom:6px;">
-                  <div id="wsd-1" style="width:32px;height:32px;border-radius:50%;background:#1A5FC8;box-shadow:0 0 0 3px rgba(26,92,200,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.3s;">
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#fff" stroke-width="2"><circle cx="6.5" cy="4" r="2.3"/><path d="M1.5 11.5c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>
-                  </div>
-                  <div id="wsline-1" style="flex:1;height:2px;background:#e2e8f0;transition:background 0.4s;"></div>
-                </div>
-                <div id="wsl-1" style="font-size:11px;font-weight:700;color:#1A5FC8;font-family:Inter,sans-serif;padding-bottom:12px;align-self:flex-start;padding-left:2px;">Profile</div>
-              </div>
-
-              <!-- Step 2 -->
-              <div style="display:flex;flex-direction:column;align-items:center;flex:1;cursor:pointer;" onclick="wizGoTo(2)">
-                <div style="display:flex;align-items:center;width:100%;margin-bottom:6px;">
-                  <div id="wsd-2" style="width:32px;height:32px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.3s;">
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#94a3b8" stroke-width="1.8" id="wsicon-2"><rect x="1.5" y="5" width="10" height="7" rx="1.5"/><path d="M4 5V3.5a2.5 2.5 0 015 0V5"/></svg>
-                  </div>
-                  <div id="wsline-2" style="flex:1;height:2px;background:#e2e8f0;transition:background 0.4s;"></div>
-                </div>
-                <div id="wsl-2" style="font-size:11px;font-weight:500;color:#94a3b8;font-family:Inter,sans-serif;padding-bottom:12px;align-self:center;">Company</div>
-              </div>
-
-              <!-- Step 3 -->
-              <div style="display:flex;flex-direction:column;align-items:center;flex:1;cursor:pointer;" onclick="wizGoTo(3)">
-                <div style="display:flex;align-items:center;width:100%;margin-bottom:6px;">
-                  <div id="wsd-3" style="width:32px;height:32px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.3s;">
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#94a3b8" stroke-width="1.8" id="wsicon-3"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v.5M6 7c0-1.5 2-1.5 2 0s-1 .8-1 1.8M6.5 10v.5"/></svg>
-                  </div>
-                  <div id="wsline-3" style="flex:1;height:2px;background:#e2e8f0;transition:background 0.4s;"></div>
-                </div>
-                <div id="wsl-3" style="font-size:11px;font-weight:500;color:#94a3b8;font-family:Inter,sans-serif;padding-bottom:12px;align-self:center;">Profiling</div>
-              </div>
-
-              <!-- Step 4 (no line after) -->
-              <div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;" onclick="wizGoTo(4)">
-                <div style="display:flex;align-items:center;margin-bottom:6px;">
-                  <div id="wsd-4" style="width:32px;height:32px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.3s;">
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#94a3b8" stroke-width="1.8" id="wsicon-4"><path d="M6.5 1l1.3 3.5H11L8.3 6.6l1 3.4-2.8-2-2.8 2 1-3.4L2 4.5h3.2z"/></svg>
-                  </div>
-                </div>
-                <div id="wsl-4" style="font-size:11px;font-weight:500;color:#94a3b8;font-family:Inter,sans-serif;padding-bottom:12px;align-self:center;">Plan</div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-        <!-- WIZARD BODY -->
-        <div id="wizBody" style="flex:1;overflow-y:auto;">
-
-          <!-- STEP 1: Profile -->
-          <div id="wiz-panel-1" style="max-width:640px;width:100%;margin:0 auto;padding:24px 24px 40px;">
-            <!-- Skip link -->
-            <div style="text-align:right;margin-bottom:10px;">
-              <button onclick="wizGoTo(2)" style="background:none;border:none;color:#94a3b8;font-size:12px;font-family:Inter,sans-serif;cursor:pointer;text-decoration:underline;padding:0;">Skip this step</button>
-            </div>
-            <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
-              <div id="settingsIni" style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);color:#fff;font-size:19px;font-weight:700;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;">?</div>
-              <div><div id="settingsName" style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">–</div><div id="settingsContact" style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:1px;">–</div></div>
-            </div>
-            <div style="background:#fff;border-radius:14px;border:1px solid #e2e8f0;padding:20px;">
-              <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:14px;">Account details</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-                <div>
-                  <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Full name <span style="color:#ef4444;">*</span></label>
-                  <input id="profileName" type="text" placeholder="Sarah Johnson" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="wizValidateField(this)"/>
-                  <div id="err-profileName" style="font-size:11px;color:#ef4444;font-family:Inter,sans-serif;margin-top:3px;display:none;">Required</div>
-                </div>
-                <div>
-                  <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Phone</label>
-                  <input id="profilePhone" type="tel" placeholder="+44 7700 000000" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
-                </div>
-                <div>
-                  <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Email address <span style="color:#ef4444;">*</span></label>
-                  <input id="profileEmail" type="email" placeholder="you@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="wizValidateField(this)"/>
-                  <div id="err-profileEmail" style="font-size:11px;color:#ef4444;font-family:Inter,sans-serif;margin-top:3px;display:none;">Valid email required</div>
-                </div>
-                <div style="position:relative;">
-                  <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Password</label>
-                  <input id="profilePwd" type="password" placeholder="Min. 8 characters" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 36px 9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
-                  <button type="button" onclick="var f=document.getElementById('profilePwd');f.type=f.type==='password'?'text':'password';" style="position:absolute;right:9px;bottom:9px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="7.5" cy="7.5" rx="5.5" ry="3.5"/><circle cx="7.5" cy="7.5" r="1.5"/></svg></button>
-                </div>
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;">
-                <button id="saveProfileBtn" onclick="_saveProfileBasic()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save changes</button>
-                <button onclick="_saveAndNextProfile()" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">Next: Company →</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- STEP 2: Company -->
-          <div id="wiz-panel-2" style="display:none;max-width:640px;width:100%;margin:0 auto;padding:24px 24px 40px;">
-            <div style="text-align:right;margin-bottom:10px;">
-              <button onclick="wizGoTo(3)" style="background:none;border:none;color:#94a3b8;font-size:12px;font-family:Inter,sans-serif;cursor:pointer;text-decoration:underline;padding:0;">Skip this step</button>
-            </div>
-            <div style="background:#fff;border-radius:14px;border:1px solid #e2e8f0;padding:20px;">
-              <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:3px;">Company Details</div>
-              <div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:16px;">Used on invoices and platform communications.</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-                <div>
-                  <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Trading name <span style="color:#ef4444;">*</span></label>
-                  <input id="coTrading" type="text" placeholder="Your business name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="wizValidateField(this)"/>
-                  <div id="err-coTrading" style="font-size:11px;color:#ef4444;font-family:Inter,sans-serif;margin-top:3px;display:none;">Required</div>
-                </div>
-                <div>
-                  <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Reg. number</label>
-                  <input id="coReg" type="text" placeholder="e.g. 12345678" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
-                </div>
-                <div>
-                  <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Legal name <span style="color:#ef4444;">*</span></label>
-                  <input id="coLegal" type="text" placeholder="As on Companies House" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="wizValidateField(this)"/>
-                  <div id="err-coLegal" style="font-size:11px;color:#ef4444;font-family:Inter,sans-serif;margin-top:3px;display:none;">Required</div>
-                </div>
-                <div>
-                  <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">VAT number</label>
-                  <input id="coVat" type="text" placeholder="e.g. GB123456789" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
-                </div>
-                <div style="grid-column:span 2;">
-                  <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.06em;">Registered address <span style="color:#ef4444;">*</span></label>
-                  <input id="coAddr" type="text" placeholder="Street, city, postcode" style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="wizValidateField(this)"/>
-                  <div id="err-coAddr" style="font-size:11px;color:#ef4444;font-family:Inter,sans-serif;margin-top:3px;display:none;">Required</div>
-                </div>
-              </div>
-              <div style="display:flex;gap:10px;">
-                <button onclick="wizGoTo(1)" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Back</button>
-                <button onclick="_saveCompanyDetails()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save &amp; continue →</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- STEP 3: Profiling -->
-          <div id="wiz-panel-3" style="display:none;max-width:640px;width:100%;margin:0 auto;padding:24px 24px 40px;">
-            <div style="background:#fff;border-radius:14px;border:1px solid #e2e8f0;overflow:hidden;">
-              <div id="inlineProfilingContent" style="padding:22px;"></div>
-            </div>
-          </div>
-
-          <!-- STEP 4: Plan -->
-          <div id="wiz-panel-4" style="display:none;max-width:640px;width:100%;margin:0 auto;padding:24px 24px 40px;">
-            <div style="text-align:right;margin-bottom:10px;">
-              <button onclick="_finishSetup()" style="background:none;border:none;color:#94a3b8;font-size:12px;font-family:Inter,sans-serif;cursor:pointer;text-decoration:underline;padding:0;">Skip and go to dashboard</button>
-            </div>
-            <div style="background:#fff;border-radius:14px;border:1px solid #e2e8f0;padding:20px;">
-              <div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:3px;">Choose your plan</div>
-              <div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:18px;">Based on your profile. Change any time in billing.</div>
-              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;">
-                <div id="tier-connect" onclick="_selectTierInline('Connect')" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 14px;cursor:pointer;transition:all 0.18s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 16px rgba(0,0,0,0.07)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-                  <div style="font-size:14px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">Connect</div>
-                  <div style="font-size:20px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">Free</div>
-                  <div style="font-size:11px;color:#64748b;line-height:1.5;margin-bottom:10px;font-family:Inter,sans-serif;">Individual landlords, up to 25 units.</div>
-                  <div style="font-size:11px;color:#374151;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:3px;"><span>✓ 25 properties</span><span>✓ Job tracking</span><span>✓ Compliance alerts</span></div>
-                </div>
-                <div id="tier-premium" onclick="_selectTierInline('Connect Premium')" style="border:2px solid #1A5FC8;border-radius:12px;padding:16px 14px;cursor:pointer;transition:all 0.18s;background:#eff6ff;position:relative;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(26,92,200,0.18)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-                  <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;font-size:10px;font-weight:700;font-family:Inter,sans-serif;padding:3px 10px;border-radius:999px;white-space:nowrap;">Recommended</div>
-                  <div style="font-size:14px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">Connect Premium</div>
-                  <div style="font-size:20px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">£29<span style="font-size:12px;">/mo</span></div>
-                  <div style="font-size:11px;color:#64748b;line-height:1.5;margin-bottom:10px;font-family:Inter,sans-serif;">Letting agents &amp; growing portfolios.</div>
-                  <div style="font-size:11px;color:#374151;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:3px;"><span>✓ 100 properties</span><span>✓ Compliance dashboard</span><span>✓ Team access</span></div>
-                </div>
-                <div id="tier-copilot" onclick="_selectTierInline('Copilot')" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 14px;cursor:pointer;transition:all 0.18s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 16px rgba(0,0,0,0.07)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-                  <div style="font-size:14px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">Copilot</div>
-                  <div style="font-size:20px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">£99<span style="font-size:12px;">/mo</span></div>
-                  <div style="font-size:11px;color:#64748b;line-height:1.5;margin-bottom:10px;font-family:Inter,sans-serif;">Large portfolios &amp; property businesses.</div>
-                  <div style="font-size:11px;color:#374151;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:3px;"><span>✓ Unlimited properties</span><span>✓ API access</span><span>✓ Dedicated manager</span></div>
-                </div>
-              </div>
-              <div style="display:flex;gap:10px;">
-                <button onclick="wizGoTo(3)" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Back</button>
-                <button onclick="_finishSetup()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Complete setup →</button>
-              </div>
-            </div>
-          </div>
-
-        </div><!-- /wizBody -->
       </div>
     </div>
 </main>
@@ -4732,9 +4674,8 @@ function toggleMobileNav() {
 
 // Settings tab switcher
 function switchSettingsTab(tab) {
-  // Support old 'pricing' call → redirect to 'profile'
-  if (tab === 'pricing') tab = 'profile';
-  var tabs = ['profile','business','discovery','subscription','notifications'];
+  if (tab === 'pricing' || tab === 'notifications') tab = 'profile';
+  var tabs = ['profile','business','discovery','subscription'];
   tabs.forEach(function(t) {
     var btn = document.getElementById('stab-' + t);
     var panel = document.getElementById('settings-' + t);
@@ -6111,23 +6052,17 @@ function toggleDashTheme() {
   var db = document.getElementById('pg-dashboard');
   var icon_l = document.getElementById('themeIconLight');
   var icon_d = document.getElementById('themeIconDark');
-  var label = document.getElementById('themeLabel');
-  var btn = document.getElementById('themeToggleBtn');
+  var label  = document.getElementById('themeLabel');
   if (_dashDark) {
-    db.style.filter = 'invert(1) hue-rotate(180deg)';
-    // Re-invert images/svgs that look bad inverted
-    db.querySelectorAll('img,svg').forEach(function(el){ el.style.filter='invert(1) hue-rotate(180deg)'; });
-    if(icon_l) icon_l.style.display='none';
-    if(icon_d) icon_d.style.display='';
-    if(label) label.textContent='Dark mode';
-    if(btn) btn.style.borderColor='rgba(255,255,255,0.15)';
+    db.classList.add('dash-dark');
+    if (icon_l) icon_l.style.display = 'none';
+    if (icon_d) icon_d.style.display = '';
+    if (label)  label.textContent = 'Dark mode';
   } else {
-    db.style.filter='';
-    db.querySelectorAll('img,svg').forEach(function(el){ el.style.filter=''; });
-    if(icon_l) icon_l.style.display='';
-    if(icon_d) icon_d.style.display='none';
-    if(label) label.textContent='Light mode';
-    if(btn) btn.style.borderColor='';
+    db.classList.remove('dash-dark');
+    if (icon_l) icon_l.style.display = '';
+    if (icon_d) icon_d.style.display = 'none';
+    if (label)  label.textContent = 'Light mode';
   }
 }
 </script>
