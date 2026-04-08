@@ -843,7 +843,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
    DASHBOARD MAIN INNER — centered content
 ============================================= */
 .db-main-inner{
-  max-width:860px;width:100%;margin:0 auto;
+  max-width:1100px;width:100%;margin:0 auto;
   padding:24px 28px 32px;
 }
 
@@ -2983,7 +2983,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     <!-- EXPLORE SERVICES PAGE -->
     <div id="page-explore">
       <div style="flex:1;overflow-y:auto;">
-        <div style="max-width:900px;width:100%;margin:0 auto;padding:24px 28px 40px;">
+        <div style="max-width:1100px;width:100%;margin:0 auto;padding:24px 28px 40px;">
 
           <!-- AI ASSISTANT CARD — matching Image 3 -->
           <div style="background:linear-gradient(135deg,#0f1c38 0%,#162845 50%,#1a3356 100%);border-radius:18px;padding:24px 26px 20px;margin-bottom:24px;position:relative;overflow:hidden;">
@@ -3140,7 +3140,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
         <!-- BOOKINGS PAGE -->
     <div id="page-bookings">
       <div style="flex:1;overflow-y:auto;min-height:0;">
-        <div style="max-width:800px;width:100%;margin:0 auto;padding:24px 28px 40px;">
+        <div style="max-width:1100px;width:100%;margin:0 auto;padding:24px 28px 40px;">
           <!-- Header -->
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
             <div>
@@ -4234,8 +4234,8 @@ function renderBookingConfirmed(bookText) {
         <span style="font-size:12px;color:#64748b;font-family:'Inter',sans-serif;font-weight:500;">ETA</span>
         <span style="font-size:13px;font-weight:700;color:#1d4ed8;font-family:'Inter',sans-serif;">⏱ ${escapeHtml(eta)}</span>
       </div>
-      ${price ? `<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:1px solid #f0fdf4;"><span style="font-size:12px;color:#64748b;font-family:'Inter',sans-serif;font-weight:500;">Price</span><span style="font-size:15px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;">${escapeHtml(price)}</span></div>` : ''}
-      ${address ? `<div style="display:flex;justify-content:space-between;align-items:flex-start;"><span style="font-size:12px;color:#64748b;font-family:'Inter',sans-serif;font-weight:500;">Address</span><span style="font-size:12.5px;font-weight:600;color:#0f172a;font-family:'Inter',sans-serif;text-align:right;max-width:60%;">${escapeHtml(address)}</span></div>` : ''}
+      '+(price?'<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:1px solid #f0fdf4;"><span style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">Price</span><span style="font-size:15px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+escapeHtml(price)+'</span></div>':'')+'
+      '+(address?'<div style="display:flex;justify-content:space-between;align-items:flex-start;"><span style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">Address</span><span style="font-size:12.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;text-align:right;max-width:60%;">'+escapeHtml(address)+'</span></div>':'')+'
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
       <button onclick="showBookingDetails('${confirmId}','${escapeHtml(service)}','${escapeHtml(pro)}','${escapeHtml(eta)}','${escapeHtml(price)}','${escapeHtml(address)}')" style="background:#fff;color:#0f172a;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 10px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;" onmouseover="this.style.borderColor='#94a3b8'" onmouseout="this.style.borderColor='#e2e8f0'">
@@ -4770,12 +4770,7 @@ function showBookingDetails(id, service, pro, eta, price, address) {
       </div>
       <div style="padding:22px 24px;">
         <div style="display:flex;flex-direction:column;gap:0;background:#f8fafc;border-radius:14px;overflow:hidden;border:1px solid #e2e8f0;">
-          ${[['Service',service],['Professional',pro],['ETA','⏱ '+eta],['Price',price],['Address',address]].filter(r=>r[1]).map((r,i,arr) =>
-            `<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;${i<arr.length-1?'border-bottom:1px solid #e2e8f0;':''}">
-              <span style="font-size:12px;color:#64748b;font-family:'Inter',sans-serif;font-weight:500;">${r[0]}</span>
-              <span style="font-size:13px;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;text-align:right;max-width:60%;">${r[1]}</span>
-            </div>`
-          ).join('')}
+          ${[['Service',service],['Professional',pro],['ETA','⏱ '+eta],['Price',price],['Address',address]].filter(function(r){return r[1];}).map(function(r,i,arr){return '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;'+(i<arr.length-1?'border-bottom:1px solid #e2e8f0;':'')+'"><span style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">'+r[0]+'</span><span style="font-size:13px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">'+r[1]+'</span></div>';}).join('')}
         </div>
         <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:12px 16px;margin-top:14px;display:flex;align-items:center;gap:10px;">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#16a34a" stroke-width="2"><circle cx="9" cy="9" r="7.5"/><path d="M5.5 9l2.5 2.5 5-5"/></svg>
@@ -5010,12 +5005,12 @@ function showAuthPage(mode) {
 
     // LEFT PANEL - role cards (always visible)
     var leftPanel =
-      '<div style="width:380px;flex-shrink:0;background:linear-gradient(160deg,#0f1c38 0%,#1a3356 60%,#0e2244 100%);padding:32px 28px;display:flex;flex-direction:column;position:relative;overflow:hidden;">' +
+      '<div id="authLeftPanel" style="width:380px;flex-shrink:0;background:linear-gradient(160deg,#0f1c38 0%,#1a3356 60%,#0e2244 100%);padding:32px 28px;display:flex;flex-direction:column;position:relative;overflow:hidden;">' +
         '<div style="position:absolute;top:-80px;right:-80px;width:260px;height:260px;border-radius:50%;background:rgba(30,92,200,0.12);pointer-events:none;"></div>' +
         '<div style="position:absolute;bottom:-60px;left:-60px;width:200px;height:200px;border-radius:50%;background:rgba(15,163,208,0.08);pointer-events:none;"></div>' +
-        '<div style="position:relative;margin-bottom:36px;"><svg width=\"110\" height=\"20\" viewBox=\"0 0 852 151\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M0.160002 144.91C0.0400018 141.58 0 107.67 0 69.5298L0.0799999 0.209765L18.62 0.0897655L37.12 0.00976562V75.4698V150.93H18.74H0.360001L0.160002 144.91Z\" fill=\"white\"/><path d=\"M111.001 148.19C108.621 145.58 63.5807 96.97 50.7507 83.19C46.9907 79.15 43.5407 75.35 43.0707 74.75C42.2007 73.64 42.2007 73.64 42.9507 72.77C43.3907 72.29 47.5507 67.78 52.2207 62.79C56.8907 57.76 62.4807 51.7 64.6607 49.32C66.8407 46.94 75.2407 37.83 83.2807 29.12C91.3607 20.37 100.671 10.26 104.041 6.62L110.141 0H134.111H158.121L156.541 1.7C155.671 2.61 151.031 7.64 146.241 12.87C135.701 24.4 122.201 39.09 110.981 51.29C90.9007 73.12 86.6607 77.83 86.7407 78.11C86.8207 78.27 90.7007 82.39 95.3807 87.22C104.021 96.21 146.921 140.58 153.371 147.27L156.941 150.91L135.151 150.87L113.401 150.83L111.021 148.18L111.001 148.19Z\" fill=\"white\"/><path d=\"M190.031 133.889V116.859H257.171H324.311V133.889V150.919H257.171H190.031V133.889Z\" fill=\"white\"/><path d=\"M415.029 121.65V92.38L413.519 90.44C412.689 89.41 405.439 79.82 397.399 69.13C389.359 58.47 374.459 38.63 364.239 25.08C354.059 11.53 345.699 0.360001 345.699 0.240001C345.699 0.120001 354.139 0 364.479 0H383.259L407.539 32.48C420.929 50.31 432.059 64.88 432.259 64.8C432.699 64.68 438.239 57.08 466.879 17.03C473.059 8.43 478.409 1.07 478.759 0.67C479.389 0.0400001 480.699 -7.45058e-08 497.729 0.0799999L516.029 0.200001L512.499 4.95C510.599 7.56 501.369 20.08 492.019 32.72C482.669 45.4 472.449 59.3 469.279 63.58C466.109 67.9 459.849 76.37 455.339 82.48L447.099 93.53V122.21V150.93H431.059H415.019V121.66L415.029 121.65Z\" fill=\"white\"/><path d=\"M566.75 150.17C556.77 148.03 548.49 141.61 544.53 132.86C541.84 126.92 541.99 131.67 541.99 62.59V0.200001L558.94 0.0799999L575.85 0V50.39C575.85 80.22 576.05 102.01 576.25 103.75C577.08 110.05 580.29 114.01 586.35 116.23C587.18 116.51 600.77 116.71 630.91 116.86L674.29 117.06L674.41 134.01L674.49 150.92L622.32 150.88C573.6 150.88 569.87 150.8 566.74 150.17H566.75Z\" fill=\"white\"/><path d=\"M699.651 150.45C699.531 150.17 699.491 132.31 699.531 110.72L699.651 71.4999L748.181 71.2999C787.041 71.1399 797.021 70.9799 798.291 70.5499C801.301 69.5599 804.631 67.5399 806.811 65.3599C817.701 54.4299 811.561 35.8099 796.111 33.0399C793.731 32.5999 783.751 32.5299 746.281 32.4899H699.461L699.541 16.3699L699.661 0.209891L741.451 0.0898911C794.171 -0.0301089 799.961 0.209892 809.111 3.21989C813.351 4.56989 820.161 8.08989 824.241 10.9799C828.911 14.3099 835.691 20.9999 838.381 24.9599C846.901 37.5199 849.631 53.3199 845.871 68.2999C843.731 76.5799 840.051 82.8799 833.391 89.5699C827.651 95.2699 821.391 99.2799 814.531 101.65C812.791 102.24 811.201 102.84 811.041 103C810.681 103.32 814.211 107.52 832.151 128.15C837.061 133.81 843.201 140.94 845.781 144C848.391 147.05 850.771 149.86 851.091 150.26C851.641 150.89 850.651 150.93 830.851 150.93H809.971L807.631 148.08C806.361 146.5 798.121 136.35 789.371 125.58C780.581 114.81 772.971 105.5 772.421 104.86L771.391 103.79L753.961 103.87L736.491 103.99V127.48V150.93H718.151C703.851 150.93 699.771 150.81 699.651 150.45Z\" fill=\"white\"/><path d=\"M190.031 74.8698V57.8398H248.661H307.291V74.8698V91.8998H248.661H190.031V74.8698Z\" fill=\"white\"/><path d=\"M190.031 17.0398V0.00976562L257.091 0.0897655L324.111 0.209765L324.231 17.1598L324.311 34.0698H257.171H190.031V17.0398Z\" fill=\"white\"/></svg></div>' +
-        '<div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.45);font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;position:relative;">I am a</div>' +
-        '<div style="display:flex;flex-direction:column;gap:10px;position:relative;">' +
+        '<div style="position:relative;margin-bottom:36px;"><svg width="110" height="20" viewBox="0 0 852 151" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.160002 144.91C0.0400018 141.58 0 107.67 0 69.5298L0.0799999 0.209765L18.62 0.0897655L37.12 0.00976562V75.4698V150.93H18.74H0.360001L0.160002 144.91Z" fill="white"/><path d="M111.001 148.19C108.621 145.58 63.5807 96.97 50.7507 83.19C46.9907 79.15 43.5407 75.35 43.0707 74.75C42.2007 73.64 42.2007 73.64 42.9507 72.77C43.3907 72.29 47.5507 67.78 52.2207 62.79C56.8907 57.76 62.4807 51.7 64.6607 49.32C66.8407 46.94 75.2407 37.83 83.2807 29.12C91.3607 20.37 100.671 10.26 104.041 6.62L110.141 0H134.111H158.121L156.541 1.7C155.671 2.61 151.031 7.64 146.241 12.87C135.701 24.4 122.201 39.09 110.981 51.29C90.9007 73.12 86.6607 77.83 86.7407 78.11C86.8207 78.27 90.7007 82.39 95.3807 87.22C104.021 96.21 146.921 140.58 153.371 147.27L156.941 150.91L135.151 150.87L113.401 150.83L111.021 148.18L111.001 148.19Z" fill="white"/><path d="M190.031 133.889V116.859H257.171H324.311V133.889V150.919H257.171H190.031V133.889Z" fill="white"/><path d="M415.029 121.65V92.38L413.519 90.44C412.689 89.41 405.439 79.82 397.399 69.13C389.359 58.47 374.459 38.63 364.239 25.08C354.059 11.53 345.699 0.360001 345.699 0.240001C345.699 0.120001 354.139 0 364.479 0H383.259L407.539 32.48C420.929 50.31 432.059 64.88 432.259 64.8C432.699 64.68 438.239 57.08 466.879 17.03C473.059 8.43 478.409 1.07 478.759 0.67C479.389 0.0400001 480.699 -7.45058e-08 497.729 0.0799999L516.029 0.200001L512.499 4.95C510.599 7.56 501.369 20.08 492.019 32.72C482.669 45.4 472.449 59.3 469.279 63.58C466.109 67.9 459.849 76.37 455.339 82.48L447.099 93.53V122.21V150.93H431.059H415.019V121.66L415.029 121.65Z" fill="white"/><path d="M566.75 150.17C556.77 148.03 548.49 141.61 544.53 132.86C541.84 126.92 541.99 131.67 541.99 62.59V0.200001L558.94 0.0799999L575.85 0V50.39C575.85 80.22 576.05 102.01 576.25 103.75C577.08 110.05 580.29 114.01 586.35 116.23C587.18 116.51 600.77 116.71 630.91 116.86L674.29 117.06L674.41 134.01L674.49 150.92L622.32 150.88C573.6 150.88 569.87 150.8 566.74 150.17H566.75Z" fill="white"/><path d="M699.651 150.45C699.531 150.17 699.491 132.31 699.531 110.72L699.651 71.4999L748.181 71.2999C787.041 71.1399 797.021 70.9799 798.291 70.5499C801.301 69.5599 804.631 67.5399 806.811 65.3599C817.701 54.4299 811.561 35.8099 796.111 33.0399C793.731 32.5999 783.751 32.5299 746.281 32.4899H699.461L699.541 16.3699L699.661 0.209891L741.451 0.0898911C794.171 -0.0301089 799.961 0.209892 809.111 3.21989C813.351 4.56989 820.161 8.08989 824.241 10.9799C828.911 14.3099 835.691 20.9999 838.381 24.9599C846.901 37.5199 849.631 53.3199 845.871 68.2999C843.731 76.5799 840.051 82.8799 833.391 89.5699C827.651 95.2699 821.391 99.2799 814.531 101.65C812.791 102.24 811.201 102.84 811.041 103C810.681 103.32 814.211 107.52 832.151 128.15C837.061 133.81 843.201 140.94 845.781 144C848.391 147.05 850.771 149.86 851.091 150.26C851.641 150.89 850.651 150.93 830.851 150.93H809.971L807.631 148.08C806.361 146.5 798.121 136.35 789.371 125.58C780.581 114.81 772.971 105.5 772.421 104.86L771.391 103.79L753.961 103.87L736.491 103.99V127.48V150.93H718.151C703.851 150.93 699.771 150.81 699.651 150.45Z" fill="white"/><path d="M190.031 74.8698V57.8398H248.661H307.291V74.8698V91.8998H248.661H190.031V74.8698Z" fill="white"/><path d="M190.031 17.0398V0.00976562L257.091 0.0897655L324.111 0.209765L324.231 17.1598L324.311 34.0698H257.171H190.031V17.0398Z" fill="white"/></svg></div>' +
+        '<div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.45);font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">I am a</div>' +
+        '<div style="display:flex;flex-direction:column;gap:10px;">' +
           '<button onclick="window._authSetRole(\'manager\')" style="text-align:left;padding:16px 18px;border-radius:14px;cursor:pointer;border:1.5px solid '+(a.role==='manager'?'#1A5FC8':'rgba(255,255,255,0.12)')+';background:'+(a.role==='manager'?'rgba(26,92,200,0.2)':'rgba(255,255,255,0.05)')+';">' +
             '<div style="display:flex;align-items:center;gap:12px;">' +
               '<div style="width:38px;height:38px;border-radius:10px;background:'+(a.role==='manager'?'#1A5FC8':'rgba(255,255,255,0.08)')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
@@ -5050,7 +5045,7 @@ function showAuthPage(mode) {
       }).join('');
 
       formBody =
-        (isSignup ? '<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Full name</label><input id="authName" type="text" placeholder="Your full name" autocomplete="name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/></div>' : '') +
+        (isSignup ? '<div style="margin-bottom:18px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">Full name <span style="color:#ef4444;">*</span></label><input id="authName" type="text" placeholder="Your full name" autocomplete="name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="if(!this.value.trim()){this.style.borderColor=\'#ef4444\';}else{this.style.borderColor=\'#e2e8f0\';}"/><div id="authNameErr" style="display:none;font-size:11px;color:#ef4444;margin-top:4px;font-family:Inter,sans-serif;">Full name is required</div></div>' : '') +
         '<div style="margin-bottom:16px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Email or mobile number</label>' +
           '<div style="position:relative;display:flex;align-items:stretch;">' +
             '<div id="ccWrap" style="display:none;flex-shrink:0;">' +
@@ -5064,7 +5059,7 @@ function showAuthPage(mode) {
           '</div>' +
           '<p style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin:5px 0 0;">Enter email for password sign-in · mobile for OTP</p>' +
         '</div>' +
-        '<button onclick="window._authContinue()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">Continue →</button>'
+        '<button onclick="window._authContinue()" style="width:100%;margin-top:22px;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">Continue →</button>'
     } else if (step === 'password') {
       formBody =
         '<div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e8ecf0;border-radius:10px;padding:10px 14px;margin-bottom:18px;">' +
@@ -5109,17 +5104,7 @@ function showAuthPage(mode) {
           '<div style="flex:1;min-width:0;">' +
             '<div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">' + formHead + '</div>' +
           '</div>' +
-          '<div style="display:flex;align-items:center;gap:7px;flex-shrink:0;margin-left:10px;">' +
-            '<div style="position:relative;">' +
-              '<select id="variantPicker" onchange="window._authSwitchVariant(this.value)" style="appearance:none;-webkit-appearance:none;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:5px 26px 5px 9px;font-size:11px;font-family:Inter,sans-serif;color:#374151;cursor:pointer;outline:none;">'+
-                '<option value=\"2\" selected>V2 — Split panel</option>'+
-                '<option value=\"1\">V1 — Stepped modal</option>'+
-                '<option value=\"3\">V3 — Dark hero</option>'+
-              '</select>' +
-              '<svg style="position:absolute;right:7px;top:50%;transform:translateY(-50%);pointer-events:none;" width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M1.5 3.5l3 3 3-3"/></svg>' +
-            '</div>' +
-            '<button id="authCloseBtn" style="background:#f1f5f9;border:none;color:#64748b;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button>' +
-          '</div>' +
+          '<button id="authCloseBtn" style="background:#f1f5f9;border:none;color:#64748b;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0;">&times;</button>' +
         '</div>' +
         '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:16px;">' + role.formHead[isSignup ? 'signup' : 'login'].replace(role.formHead[isSignup ? 'signup' : 'login'], role.formSub[isSignup ? 'signup' : 'login']) + '</div>' +
         '<div style="height:0.5px;background:#e8ecf0;margin-bottom:20px;"></div>' +
@@ -5215,14 +5200,7 @@ function showAuthPage(mode) {
       goToDashboard('', false);
     }
   };
-  window._authSwitchVariant = function(v) {
-    var a = window._auth;
-    modal.remove(); delete window._auth;
-    var m = a && a.isSignup ? 'signup' : 'login';
-    if (v === '1') showAuthPageV1(m);
-    else if (v === '2') showAuthPage(m);
-    else if (v === '3') showAuthPageV3(m);
-  };
+  window._authSwitchVariant=function(){showAuthPage(window._auth&&window._auth.isSignup?'signup':'login');modal.remove();delete window._auth;};
   window._authResend  = function(){
     var b = document.getElementById('resendBtn');
     if(b){ b.textContent='Sent ✓'; b.style.color='#10b981'; setTimeout(function(){ if(b){ b.textContent='Resend OTP'; b.style.color='#1A5FC8'; } }, 3000); }
@@ -5236,13 +5214,14 @@ function showAuthPage(mode) {
     var l = document.getElementById('ccList'); if(l) l.style.display = 'none';
   };
   window._authContinue = function(){
-    var ct = document.getElementById('authContact');
-    if(!ct) return;
-    var val = ct.value.trim();
-    if(!val){ ct.style.borderColor='#ef4444'; ct.focus(); return; }
-    window._auth.contact = val;
-    var nm = document.getElementById('authName'); if(nm) window._auth.name = nm.value.trim();
-    var cleaned = val.replace(/[\s\-\(\)\+]/g,'');
+    var _aa=window._auth;if(_aa&&_aa.isSignup){var _nm=document.getElementById('authName');var _ne=document.getElementById('authNameErr');if(_nm&&!_nm.value.trim()){_nm.style.borderColor='#ef4444';if(_ne)_ne.style.display='block';_nm.focus();return;}if(_ne)_ne.style.display='none';}
+    var ct=document.getElementById('authContact');if(!ct)return;
+    var val=ct.value.trim();if(!val){ct.style.borderColor='#ef4444';ct.focus();return;}
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)&&!/^\d{7,15}$/.test(val.replace(/[\s\-\(\)\+]/g,''))){ct.style.borderColor='#ef4444';ct.focus();return;}
+    ct.style.borderColor='#e2e8f0';
+    window._auth.contact=val;
+    var nm=document.getElementById('authName');if(nm)window._auth.name=nm.value.trim();
+    var cleaned=val.replace(/[\s\-\(\)\+]/g,'');
     var isPhone = /^\d{7,15}$/.test(cleaned);
     if(isPhone){
       window._auth.contact = window._auth.countryCode + ' ' + val;
@@ -5297,134 +5276,516 @@ function confirmSupplierCount(count) {
   sendFromSuggestion('I want ' + count + ' quote' + (count > 1 ? 's' : '') + ' please');
 }
 
-function showAuthPageV1(mode) {
-  var ex = document.getElementById('authModal'); if (ex) ex.remove();
-  window._auth = { isSignup: mode !== 'login', role: 'manager', step: 'contact', contact: '', countryCode: '+44' };
-  var COUNTRY_CODES = [{code:'+44',flag:'🇬🇧',name:'UK'},{code:'+1',flag:'🇺🇸',name:'US'},{code:'+91',flag:'🇮🇳',name:'IN'},{code:'+971',flag:'🇦🇪',name:'UAE'},{code:'+61',flag:'🇦🇺',name:'AU'},{code:'+33',flag:'🇫🇷',name:'FR'},{code:'+49',flag:'🇩🇪',name:'DE'},{code:'+92',flag:'🇵🇰',name:'PK'}];
-  var modal = document.createElement('div');
-  modal.id = 'authModal';
-  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
-  document.body.appendChild(modal);
-  modal.addEventListener('click', function(e){ if(e.target===modal){ modal.remove(); delete window._auth; } });
+function showAuthPageV1(mode){showAuthPage(mode);}
 
-  window._authRender = function() {
-    var a = window._auth; var isSignup = a.isSignup; var step = a.step;
-    var heads = { manager:{contact:isSignup?'Join as Property Manager':'Welcome back',password:isSignup?'Create your password':'Enter password',otp:'Verify your number'}, supplier:{contact:isSignup?'Join as a Supplier':'Supplier Login',password:isSignup?'Create your password':'Enter password',otp:'Verify your number'} };
-    var subs = { manager:{contact:isSignup?'Book services, track compliance and manage your portfolio.':'Log in to your Keylr account.',password:isSignup?'Choose a secure password.':'Password for '+a.contact,otp:'Code sent to '+a.contact}, supplier:{contact:isSignup?'Receive verified job requests.':'Access your supplier dashboard.',password:isSignup?'Choose a secure password.':'Password for '+a.contact,otp:'Code sent to '+a.contact} };
-    var variantSel = '<div style="position:relative;"><select onchange="window._authSwitchVariant(this.value)" style="appearance:none;-webkit-appearance:none;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:5px 26px 5px 9px;font-size:11px;font-family:Inter,sans-serif;color:#374151;cursor:pointer;outline:none;"><option value="1" selected>V1 — Stepped modal</option><option value="2">V2 — Split panel</option><option value="3">V3 — Dark hero</option></select><svg style="position:absolute;right:7px;top:50%;transform:translateY(-50%);pointer-events:none;" width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M1.5 3.5l3 3 3-3"/></svg></div>';
-    var toggleHtml = (isSignup && step==='contact') ? ('<div style="display:flex;background:#f1f5f9;border-radius:10px;padding:4px;margin-bottom:18px;"><button onclick="window._authSetRole(\'manager\')" style="flex:1;border:none;border-radius:7px;padding:9px 6px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.15s;'+(a.role==='manager'?'background:#fff;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,0.1);':'background:transparent;color:#64748b;')+'"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1.5 12V6L6.5 1.5 11.5 6v6"/><path d="M4.5 12V8h4v4"/></svg>Property Manager</button><button onclick="window._authSetRole(\'supplier\')" style="flex:1;border:none;border-radius:7px;padding:9px 6px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.15s;'+(a.role==='supplier'?'background:#fff;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,0.1);':'background:transparent;color:#64748b;')+'"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6.5" cy="3.5" r="2.5"/><path d="M1 12c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/></svg>Supplier</button></div>') : '';
-    var ccEntry = COUNTRY_CODES.find(function(x){return x.code===a.countryCode;})||COUNTRY_CODES[0];
-    var ccListHtml = COUNTRY_CODES.map(function(cc){return '<div onclick="window._authSelectCC(\''+cc.code+'\',\''+cc.flag+'\')" style="display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'#fff\'">'+cc.flag+' '+cc.name+'<span style="color:#94a3b8;margin-left:auto;font-size:12px;">'+cc.code+'</span></div>';}).join('');
-    var bodyHtml = '';
-    if (step==='contact') {
-      bodyHtml = '<div style="margin-bottom:16px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">Email or mobile number</label><div style="position:relative;display:flex;"><div id="ccWrap" style="display:none;flex-shrink:0;position:relative;"><button id="ccBtn" onclick="window._authToggleCC()" style="height:44px;padding:0 10px;background:#f8fafc;border:1.5px solid #e2e8f0;border-right:none;border-radius:10px 0 0 10px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;display:flex;align-items:center;gap:4px;white-space:nowrap;"><span id="ccDisplay">'+ccEntry.flag+' '+ccEntry.code+'</span><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4l3 3 3-3"/></svg></button><div id="ccList" style="display:none;position:absolute;top:48px;left:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.1);z-index:20;min-width:200px;overflow:hidden;">'+ccListHtml+'</div></div><input id="authContact" type="text" placeholder="you@email.com  or  07700 000000" value="'+a.contact+'" style="flex:1;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/></div><p style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin:5px 0 0;">Email → password  ·  Mobile → OTP</p></div><button onclick="window._authContinue()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">Continue →</button>';
-    } else if (step==='password') {
-      bodyHtml =
-      '<div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e8ecf0;border-radius:10px;padding:10px 14px;margin-bottom:18px;">'+
-      '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#64748b" stroke-width="1.8"><rect x="1" y="3" width="11" height="8" rx="1.5"/><path d="M1 5.5l5.5 3.5 5.5-3.5"/></svg>'+
-      '<span style="font-size:13px;color:#374151;font-family:Inter,sans-serif;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+a.contact+'</span>'+
-      '<button onclick="window._authBack()" style="background:none;border:none;color:#1A5FC8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Change</button>'+
-      '</div>'+
-      (isSignup ? '<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">Full name</label><input id="authName" type="text" placeholder="Your full name" autocomplete="name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;"/></div>' : '')+
-      '<div style="margin-bottom:20px;position:relative;">'+
-      '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">'+(isSignup?'Create a password':'Password')+'</label>'+
-      '<input id="authPwd" type="password" placeholder="••••••••" autofocus style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 44px 11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;"/>'+
-      '<button id="pwdEye" type="button" style="position:absolute;right:13px;bottom:12px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg></button>'+
-      '</div>'+
-      '<button onclick="window._authSubmit()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">'+(isSignup?'Create account':'Log in')+'</button>'
-    } else if (step==='otp') {
-      bodyHtml = '<div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e8ecf0;border-radius:10px;padding:10px 14px;margin-bottom:16px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#64748b" stroke-width="1.8"><rect x="1" y="1" width="11" height="11" rx="2"/><circle cx="6.5" cy="8" r="1"/></svg><span style="font-size:13px;color:#374151;font-family:Inter,sans-serif;flex:1;">'+a.contact+'</span><button onclick="window._authBack()" style="background:none;border:none;color:#1A5FC8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Change</button></div><p style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;text-align:center;margin:0 0 16px;">Enter the 6-digit code sent to your number</p><div style="display:flex;gap:8px;justify-content:center;margin-bottom:18px;" id="otpBoxes">'+[0,1,2,3,4,5].map(function(i){return '<input data-otp="'+i+'" type="text" inputmode="numeric" maxlength="1" style="width:42px;height:50px;border:1.5px solid #e2e8f0;border-radius:10px;text-align:center;font-size:22px;font-weight:700;font-family:Inter,sans-serif;color:#0f172a;outline:none;box-sizing:border-box;transition:border-color 0.15s;">';}).join('')+'</div><button onclick="window._authSubmit()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:10px;">Verify &amp; Continue</button><div style="display:flex;align-items:center;justify-content:center;gap:16px;"><button onclick="window._authBack()" style="background:none;border:none;color:#64748b;font-size:12.5px;cursor:pointer;font-family:Inter,sans-serif;padding:0;">← Change number</button><span style="color:#e2e8f0;">|</span><button id="resendBtn" onclick="window._authResend()" style="background:none;border:none;color:#1A5FC8;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Resend OTP</button></div>';
-    }
-    var switchHtml = (step==='contact') ? (isSignup ? '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">Have an account? <a href="#" onclick="window._authSwitch();return false;" style="color:#1A5FC8;font-weight:600;text-decoration:none;">Log in</a></p>' : '<p style="text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;">No account? <a href="#" onclick="window._authSwitch();return false;" style="color:#1A5FC8;font-weight:600;text-decoration:none;">Sign up free</a></p>') : '';
-    modal.innerHTML = '<div style="background:#fff;border-radius:20px;width:100%;max-width:440px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;"><div style="padding:22px 26px 16px;border-bottom:0.5px solid #f1f5f9;"><div style="display:flex;justify-content:space-between;align-items:flex-start;"><div><div style="font-size:19px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">'+heads[a.role][step]+'</div><div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">'+subs[a.role][step]+'</div></div><div style="display:flex;align-items:center;gap:7px;flex-shrink:0;margin-left:10px;">'+variantSel+'<button id="authCloseBtn" style="background:#f1f5f9;border:none;color:#64748b;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button></div></div></div><div style="padding:20px 26px 22px;">'+toggleHtml+bodyHtml+switchHtml+'</div></div>';
-    var cb=document.getElementById('authCloseBtn'); if(cb) cb.addEventListener('click',function(){modal.remove();delete window._auth;});
-    var eye=document.getElementById('pwdEye'); if(eye) eye.addEventListener('click',function(){var f=document.getElementById('authPwd');if(f)f.type=f.type==='password'?'text':'password';});
-    var ct=document.getElementById('authContact'); if(ct){ct.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';});ct.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';});ct.addEventListener('keydown',function(e){if(e.key==='Enter')window._authContinue();});ct.addEventListener('input',function(){var val=this.value.trim();var isPhone=/^[\d\s\+\-\(\)]{3,}$/.test(val)&&/\d{3,}/.test(val);var ccWrap=document.getElementById('ccWrap');if(ccWrap){ccWrap.style.display=isPhone?'block':'none';this.style.borderRadius=isPhone?'0 10px 10px 0':'10px';}});setTimeout(function(){if(ct)ct.focus();},80);}
-    var pwd=document.getElementById('authPwd'); if(pwd){pwd.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';});pwd.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';});pwd.addEventListener('keydown',function(e){if(e.key==='Enter')window._authSubmit();});setTimeout(function(){if(pwd)pwd.focus();},80);}
-    var ob=document.getElementById('otpBoxes'); if(ob){var ins=ob.querySelectorAll('input');ins.forEach(function(inp,i){inp.addEventListener('input',function(){this.value=this.value.replace(/\D/g,'');if(this.value&&i<ins.length-1)ins[i+1].focus();});inp.addEventListener('keydown',function(e){if(e.key==='Backspace'&&!this.value&&i>0)ins[i-1].focus();});inp.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';});inp.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';});});setTimeout(function(){if(ins[0])ins[0].focus();},80);}
-  };
-  window._authSetRole = function(r){window._auth.role=r;window._auth.step='contact';window._authRender();};
-  window._authBack    = function(){window._auth.step='contact';window._authRender();};
-  window._authSwitch  = function(){var m=window._auth.isSignup?'login':'signup';modal.remove();delete window._auth;showAuthPageV1(m);};
-  window._authSubmit  = function(){modal.remove();delete window._auth;showPage('home',null);};
-  window._authResend  = function(){var b=document.getElementById('resendBtn');if(b){b.textContent='Sent ✓';b.style.color='#10b981';setTimeout(function(){if(b){b.textContent='Resend OTP';b.style.color='#1A5FC8';}},3000);}};
-  window._authToggleCC= function(){var l=document.getElementById('ccList');if(l)l.style.display=l.style.display==='none'?'block':'none';};
-  window._authSelectCC= function(code,flag){window._auth.countryCode=code;var d=document.getElementById('ccDisplay');if(d)d.textContent=flag+' '+code;var l=document.getElementById('ccList');if(l)l.style.display='none';};
-  window._authContinue= function(){var ct=document.getElementById('authContact');if(!ct)return;var val=ct.value.trim();if(!val){ct.style.borderColor='#ef4444';ct.focus();return;}window._auth.contact=val;var cleaned=val.replace(/[\s\-\(\)\+]/g,'');window._auth.step=/^\d{7,15}$/.test(cleaned)?'otp':'password';window._auth.contact=(/^\d{7,15}$/.test(cleaned)?window._auth.countryCode+' ':'')+val;window._authRender();};
-  window._authSwitchVariant=function(v){var a=window._auth;modal.remove();delete window._auth;var m=a&&a.isSignup?'signup':'login';if(v==='1')showAuthPageV1(m);else if(v==='2')showAuthPage(m);else if(v==='3')showAuthPageV3(m);};
-  window._authRender();
+function showAuthPageV3(mode){showAuthPage(mode);}
+
+function _renderOnboardingSteps() {
+  var list = document.getElementById('onboardingStepList');
+  if (!list) return;
+  var done = _onboardSteps.filter(function(s){ return s.done; }).length;
+  var total = _onboardSteps.length;
+  var pct = Math.round((done/total)*100);
+
+  var prog = document.getElementById('stepProgress');
+  if (prog) prog.textContent = done + ' of ' + total + ' steps complete';
+  var ring = document.getElementById('progressRing');
+  if (ring) ring.setAttribute('stroke-dashoffset', (125.6 * (1-pct/100)).toFixed(1));
+  var pctEl = document.getElementById('progressPct');
+  if (pctEl) pctEl.textContent = pct + '%';
+
+  if (done === total) {
+    var ob = document.getElementById('onboardingSteps');
+    if (ob) { ob.style.display = 'none'; return; }
+  }
+
+  list.innerHTML = _onboardSteps.map(function(step, i) {
+    var isDone = step.done;
+    return '<div style="display:flex;align-items:center;gap:12px;padding:13px 16px;border:1px solid '+(isDone?'#dcfce7':'#e2e8f0')+';border-radius:12px;background:'+(isDone?'#f0fdf4':'#fff')+';cursor:'+(isDone?'default':(step.action?'pointer':'default'))+';" '+(step.action&&!isDone?'onclick="'+step.action+'()"':'')+' '+(step.action&&!isDone?'onmouseover="this.style.borderColor=\'#c7d2fe\'" onmouseout="this.style.borderColor=\'#e2e8f0\'"':'')+' >' +
+      '<div style="width:36px;height:36px;border-radius:9px;background:'+(isDone?'#dcfce7':'#f1f5f9')+';color:'+(isDone?'#16a34a':'#64748b')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">' + (isDone ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#16a34a" stroke-width="2"><path d="M3 8l4 4 6-6"/></svg>' : step.icon) + '</div>' +
+      '<div style="flex:1;">' +
+        '<div style="font-size:13.5px;font-weight:600;color:'+(isDone?'#16a34a':'#0f172a')+';font-family:Inter,sans-serif;">' + step.label + '</div>' +
+        '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">' + step.sub + '</div>' +
+      '</div>' +
+      (isDone ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#86efac" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>' : (step.action ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M5 3l4 4-4 4"/></svg>' : '')) +
+    '</div>';
+  }).join('');
+
+  wizGoTo(1);
+}
+function _saveProfileBasic() {
+  var n  = document.getElementById('profileName');
+  var e  = document.getElementById('profileEmail');
+  var ph = document.getElementById('profilePhone');
+  if (n  && _user) _user.name  = n.value.trim();
+  if (e  && _user) _user.email = e.value.trim();
+  if (ph && _user) _user.phone = ph.value.trim();
+  _syncUserUI();
+  _syncSettingsPage();
+  var saveBtn = document.getElementById('saveProfileBtn');
+  if (saveBtn) {
+    saveBtn.textContent = 'Saved ✓';
+    saveBtn.style.background = '#10b981';
+    saveBtn.style.backgroundImage = 'none';
+    setTimeout(function() {
+      if (saveBtn) {
+        saveBtn.textContent = 'Save changes';
+        saveBtn.style.background = '';
+        saveBtn.style.backgroundImage = 'linear-gradient(90deg,#1A5FC8,#0FA3D0)';
+      }
+    }, 2000);
+  }
 }
 
-function showAuthPageV3(mode) {
-  var ex = document.getElementById('authModal'); if (ex) ex.remove();
-  window._auth = { isSignup: mode !== 'login', role: 'manager', step: 'contact', contact: '', countryCode: '+44' };
-  var COUNTRY_CODES = [{code:'+44',flag:'🇬🇧',name:'UK'},{code:'+1',flag:'🇺🇸',name:'US'},{code:'+91',flag:'🇮🇳',name:'IN'},{code:'+971',flag:'🇦🇪',name:'UAE'},{code:'+61',flag:'🇦🇺',name:'AU'},{code:'+33',flag:'🇫🇷',name:'FR'},{code:'+49',flag:'🇩🇪',name:'DE'},{code:'+92',flag:'🇵🇰',name:'PK'}];
+function showCompanyStep() {
+  var ex = document.getElementById('stepModal'); if(ex) ex.remove();
   var modal = document.createElement('div');
-  modal.id = 'authModal';
+  modal.id = 'stepModal';
   modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
   document.body.appendChild(modal);
-  modal.addEventListener('click', function(e){ if(e.target===modal){ modal.remove(); delete window._auth; } });
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  modal.innerHTML = '<div style="background:#fff;border-radius:20px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;">' +
+    '<div style="padding:22px 26px 16px;border-bottom:0.5px solid #f1f5f9;position:sticky;top:0;background:#fff;z-index:1;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+        '<div><div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">Company Details</div>' +
+        '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">Step 2 of 4 · Skippable</div></div>' +
+        '<button id="compClose" style="background:#f1f5f9;border:none;color:#64748b;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">&times;</button>' +
+      '</div>' +
+    '</div>' +
+    '<div style="padding:22px 26px 26px;">' +
+      ['Trading / Company Name|required|text|Your business name','Company Registration Number|optional|text|e.g. 12345678','Legal Company Name|required|text|As on Companies House','Registered Address|required|text|Street, city, postcode','Trading Address|optional|text|If different from registered','VAT Number|optional|text|e.g. GB123456789'].map(function(f){
+        var p = f.split('|'); var req = p[1]==='required';
+        return '<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">'+p[0]+(req?' <span style="color:#ef4444;">*</span>':'<span style="font-size:11px;color:#94a3b8;margin-left:4px;">(optional)</span>')+'</label><input type="'+p[2]+'" placeholder="'+p[3]+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/></div>';
+      }).join('') +
+      '<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Company Logo <span style="font-size:11px;color:#94a3b8;margin-left:4px;">(optional)</span></label><div style="border:1.5px dashed #e2e8f0;border-radius:10px;padding:18px;text-align:center;cursor:pointer;color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;" onmouseover="this.style.borderColor=\'#1A5FC8\'" onmouseout="this.style.borderColor=\'#e2e8f0\'">Click to upload PNG or SVG</div></div>' +
+      '<div style="display:flex;gap:10px;">' +
+        '<button onclick="document.getElementById(\'stepModal\').remove();" style="flex:1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">Skip for now</button>' +
+        '<button onclick="_saveCompanyStep();" style="flex:2;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save &amp; continue</button>' +
+      '</div>' +
+    '</div></div>';
+  var cb = document.getElementById('compClose'); if(cb) cb.addEventListener('click',function(){ modal.remove(); });
+}
 
-  window._authRender = function() {
-    var a = window._auth; var isSignup = a.isSignup; var step = a.step;
-    var variantSel = '<div style="position:relative;"><select onchange="window._authSwitchVariant(this.value)" style="appearance:none;-webkit-appearance:none;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:5px 26px 5px 9px;font-size:11px;font-family:Inter,sans-serif;color:rgba(255,255,255,0.7);cursor:pointer;outline:none;"><option value="3" selected>V3 — Dark hero</option><option value="1">V1 — Stepped modal</option><option value="2">V2 — Split panel</option></select><svg style="position:absolute;right:7px;top:50%;transform:translateY(-50%);pointer-events:none;" width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.8"><path d="M1.5 3.5l3 3 3-3"/></svg></div>';
-    var ccEntry = COUNTRY_CODES.find(function(x){return x.code===a.countryCode;})||COUNTRY_CODES[0];
-    var ccListHtml = COUNTRY_CODES.map(function(cc){return '<div onclick="window._authSelectCC(\''+cc.code+'\',\''+cc.flag+'\')" style="display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'#fff\'">'+cc.flag+' '+cc.name+'<span style="color:#94a3b8;margin-left:auto;font-size:12px;">'+cc.code+'</span></div>';}).join('');
-    var leftPanel = '<div style="width:300px;flex-shrink:0;background:#0f1c38;padding:28px 24px;display:flex;flex-direction:column;position:relative;overflow:hidden;"><div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 20% 30%,rgba(30,92,200,0.25) 0%,transparent 70%);pointer-events:none;"></div><div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:26px;"><div style="display:flex;align-items:center;gap:8px;"><div style="width:28px;height:28px;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);border-radius:7px;display:flex;align-items:center;justify-content:center;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M6 1C3.5 1 1.5 3 1.5 5.5c0 1 .5 1.9 1.2 2.5L2.5 11l2.2-1C5 10.1 5.5 10.1 6 10.1c2.8 0 5.5-2.2 5.5-4.6S8.5 1 6 1z"/></svg></div><span style="font-size:15px;font-weight:800;color:#fff;font-family:Fraunces,serif;">Keylr</span></div>'+variantSel+'</div><div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">'+(isSignup?'Sign up':'Log in')+'</div><div style="font-size:22px;font-weight:800;color:#fff;font-family:Fraunces,serif;line-height:1.2;margin-bottom:8px;">'+(isSignup?'Create Your<br>Account':'Welcome<br>Back')+'</div><div style="font-size:12.5px;color:rgba(255,255,255,0.5);line-height:1.6;margin-bottom:24px;">'+(isSignup?'Select your role to get started.':'Select your account type.')+'</div>'+(isSignup?'<div style="font-size:10.5px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">I am a…</div><div onclick="window._authSetRole(\'manager\')" style="border:'+(a.role==='manager'?'1.5px solid rgba(30,92,200,0.9);background:rgba(30,92,200,0.15)':'1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04)')+';border-radius:11px;padding:13px;margin-bottom:9px;cursor:pointer;"><div style="display:flex;align-items:center;gap:10px;"><div style="width:34px;height:34px;border-radius:8px;background:'+(a.role==='manager'?'#1A5FC8':'rgba(255,255,255,0.08)')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="'+(a.role==='manager'?'#fff':'rgba(255,255,255,0.5)')+'" stroke-width="1.8"><path d="M2 13V7L7.5 2l5.5 5v6"/><path d="M5 13V9h5v4"/></svg></div><div><div style="font-size:12.5px;font-weight:700;color:'+(a.role==='manager'?'#fff':'rgba(255,255,255,0.6)')+';margin-bottom:1px;">Property Manager</div><div style="font-size:11px;color:'+(a.role==='manager'?'rgba(255,255,255,0.5)':'rgba(255,255,255,0.3)')+';">Book services &amp; track compliance</div></div></div></div><div onclick="window._authSetRole(\'supplier\')" style="border:'+(a.role==='supplier'?'1.5px solid rgba(30,92,200,0.9);background:rgba(30,92,200,0.15)':'1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04)')+';border-radius:11px;padding:13px;cursor:pointer;"><div style="display:flex;align-items:center;gap:10px;"><div style="width:34px;height:34px;border-radius:8px;background:'+(a.role==='supplier'?'#1A5FC8':'rgba(255,255,255,0.08)')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="'+(a.role==='supplier'?'#fff':'rgba(255,255,255,0.5)')+'" stroke-width="1.8"><rect x="2" y="7" width="11" height="7" rx="1.5"/><path d="M5 7V5.5a2.5 2.5 0 015 0V7"/></svg></div><div><div style="font-size:12.5px;font-weight:700;color:'+(a.role==='supplier'?'#fff':'rgba(255,255,255,0.6)')+';margin-bottom:1px;">Supplier</div><div style="font-size:11px;color:'+(a.role==='supplier'?'rgba(255,255,255,0.5)':'rgba(255,255,255,0.3)')+';">Receive jobs &amp; manage orders</div></div></div></div>':'')+'<div style="margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,0.07);">'+(isSignup?'<p style="font-size:12px;color:rgba(255,255,255,0.35);margin:0;text-align:center;">Have an account? <a href="#" onclick="window._authSwitch();return false;" style="color:rgba(100,180,255,0.85);font-weight:600;text-decoration:none;">Log in</a></p>':'<p style="font-size:12px;color:rgba(255,255,255,0.35);margin:0;text-align:center;">No account? <a href="#" onclick="window._authSwitch();return false;" style="color:rgba(100,180,255,0.85);font-weight:600;text-decoration:none;">Sign up free</a></p>')+'</div></div></div>';
-    var formHead = isSignup ? (a.role==='manager'?'Create your account':'Join as a Supplier') : 'Welcome back';
-    var formSub = isSignup ? (a.role==='manager'?'Setting up as Property Manager':'Setting up as Supplier') : 'Log in to your Keylr account';
-    var bodyHtml = '';
-    if (step==='contact') {
-      bodyHtml='<div style="margin-bottom:16px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">Email or mobile number</label><div style="position:relative;display:flex;"><div id="ccWrap" style="display:none;flex-shrink:0;position:relative;"><button id="ccBtn" onclick="window._authToggleCC()" style="height:44px;padding:0 10px;background:#f8fafc;border:1.5px solid #e2e8f0;border-right:none;border-radius:10px 0 0 10px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;display:flex;align-items:center;gap:4px;white-space:nowrap;"><span id="ccDisplay">'+ccEntry.flag+' '+ccEntry.code+'</span><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4l3 3 3-3"/></svg></button><div id="ccList" style="display:none;position:absolute;top:48px;left:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.1);z-index:20;min-width:200px;overflow:hidden;">'+ccListHtml+'</div></div><input id="authContact" type="text" placeholder="you@email.com  or  07700 000000" value="'+a.contact+'" style="flex:1;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;"/></div><p style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin:5px 0 0;">Email → password  ·  Mobile → OTP</p></div><button onclick="window._authContinue()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;">Continue →</button>';
-    } else if (step==='password') {
-      bodyHtml =
-      '<div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e8ecf0;border-radius:10px;padding:10px 14px;margin-bottom:18px;">'+
-      '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#64748b" stroke-width="1.8"><rect x="1" y="3" width="11" height="8" rx="1.5"/><path d="M1 5.5l5.5 3.5 5.5-3.5"/></svg>'+
-      '<span style="font-size:13px;color:#374151;font-family:Inter,sans-serif;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+a.contact+'</span>'+
-      '<button onclick="window._authBack()" style="background:none;border:none;color:#1A5FC8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Change</button>'+
-      '</div>'+
-      (isSignup?'<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">Full name</label><input id="authName" type="text" placeholder="Your full name" autocomplete="name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;"/></div>':'')+
-      '<div style="margin-bottom:20px;position:relative;">'+
-      '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">'+(isSignup?'Create a password':'Password')+'</label>'+
-      '<input id="authPwd" type="password" placeholder="••••••••" autofocus style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 44px 11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;"/>'+
-      '<button id="pwdEye" type="button" style="position:absolute;right:13px;bottom:12px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg></button>'+
-      '</div>'+
-      '<button onclick="window._authSubmit()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">'+(isSignup?'Create account':'Log in')+'</button>'
-    } else if (step==='otp') {
-      bodyHtml='<div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e8ecf0;border-radius:10px;padding:10px 14px;margin-bottom:16px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#64748b" stroke-width="1.8"><rect x="1" y="1" width="11" height="11" rx="2"/><circle cx="6.5" cy="8" r="1"/></svg><span style="font-size:13px;color:#374151;flex:1;">'+a.contact+'</span><button onclick="window._authBack()" style="background:none;border:none;color:#1A5FC8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Change</button></div><p style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;text-align:center;margin:0 0 16px;">Enter the 6-digit code</p><div style="display:flex;gap:8px;justify-content:center;margin-bottom:18px;" id="otpBoxes">'+[0,1,2,3,4,5].map(function(i){return '<input data-otp="'+i+'" type="text" inputmode="numeric" maxlength="1" style="width:42px;height:50px;border:1.5px solid #e2e8f0;border-radius:10px;text-align:center;font-size:22px;font-weight:700;font-family:Inter,sans-serif;color:#0f172a;outline:none;box-sizing:border-box;transition:border-color 0.15s;">';}).join('')+'</div><button onclick="window._authSubmit()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:10px;">Verify &amp; Continue</button><div style="display:flex;justify-content:center;gap:16px;"><button onclick="window._authBack()" style="background:none;border:none;color:#64748b;font-size:12.5px;cursor:pointer;font-family:Inter,sans-serif;padding:0;">← Change number</button><span style="color:#e2e8f0;">|</span><button id="resendBtn" onclick="window._authResend()" style="background:none;border:none;color:#1A5FC8;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Resend OTP</button></div>';
-    }
-    var rightPanel = '<div style="flex:1;padding:28px;display:flex;flex-direction:column;min-width:0;"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;"><div><div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">'+formHead+'</div><div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">'+formSub+'</div></div><button id="authCloseBtn" style="background:#f1f5f9;border:none;color:#64748b;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0;margin-left:10px;">&times;</button></div><div style="height:0.5px;background:#e8ecf0;margin:14px 0 18px;"></div>'+bodyHtml+'</div>';
-    modal.innerHTML='<div style="background:#fff;border-radius:20px;width:100%;max-width:720px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.18);display:flex;animation:modalPop 0.22s ease;min-height:440px;">'+leftPanel+rightPanel+'</div>';
-    var cb=document.getElementById('authCloseBtn');if(cb)cb.addEventListener('click',function(){modal.remove();delete window._auth;});
-    var eye=document.getElementById('pwdEye');if(eye)eye.addEventListener('click',function(){var f=document.getElementById('authPwd');if(f)f.type=f.type==='password'?'text':'password';});
-    var ct=document.getElementById('authContact');if(ct){ct.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';});ct.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';});ct.addEventListener('keydown',function(e){if(e.key==='Enter')window._authContinue();});ct.addEventListener('input',function(){var val=this.value.trim();var isPhone=/^[\d\s\+\-\(\)]{3,}$/.test(val)&&/\d{3,}/.test(val);var ccWrap=document.getElementById('ccWrap');if(ccWrap){ccWrap.style.display=isPhone?'block':'none';this.style.borderRadius=isPhone?'0 10px 10px 0':'10px';}});setTimeout(function(){if(ct)ct.focus();},80);}
-    var pwd=document.getElementById('authPwd');if(pwd){pwd.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';});pwd.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';});pwd.addEventListener('keydown',function(e){if(e.key==='Enter')window._authSubmit();});setTimeout(function(){if(pwd)pwd.focus();},80);}
-    var ob=document.getElementById('otpBoxes');if(ob){var ins=ob.querySelectorAll('input');ins.forEach(function(inp,i){inp.addEventListener('input',function(){this.value=this.value.replace(/\D/g,'');if(this.value&&i<ins.length-1)ins[i+1].focus();});inp.addEventListener('keydown',function(e){if(e.key==='Backspace'&&!this.value&&i>0)ins[i-1].focus();});inp.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';});inp.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';});});setTimeout(function(){if(ins[0])ins[0].focus();},80);}
+function _saveCompanyStep() {
+  _onboardSteps[1].done = true;
+  document.getElementById('stepModal').remove();
+  _renderOnboardingSteps();
+  setTimeout(showProfilingStep, 300);
+}
+
+// =============================================
+// PROFILING (7 questions) — Screen 4
+// =============================================
+var _PROFILING_Q = [
+  { q:'What best describes what you do?', type:'single', opts:['Residential letting agent','Short-term rental / Airbnb manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator','Facilities manager','Individual landlord','Other'] },
+  { q:'What types of property do you manage?', type:'multi', opts:['Houses and flats — AST','HMO','Short-term rental / holiday let','Residential block / leasehold','Serviced apartments','Offices','Retail units','Industrial / warehouse','Hotels','Hostels / B&Bs'] },
+  { q:'How many properties or units do you manage?', type:'single', opts:['1 to 5','6 to 25','26 to 100','101 to 500','500 or more'] },
+  { q:'Which services do you currently coordinate?', type:'multi', opts:['Cleaning','Compliance certificates','Reactive maintenance','Planned / preventive maintenance','Property inspections','Landscaping','Pest control','Security and access','Specialist trades'] },
+  { q:'Where are your properties located?', type:'multi', opts:['London','South East England','South West England','Midlands','North West England','North East England','Yorkshire','Scotland','Wales','Multiple regions'] },
+  { q:'How do you currently find and manage your service providers?', type:'single', opts:['Mostly ad hoc — WhatsApp / phone','Small group of regular contractors','Large contractor network with agreed rates','In-house staff doing some work','I already use a property management system'] },
+  { q:'What is your biggest headache right now?', type:'single', opts:['Finding reliable, vetted contractors quickly','Keeping track of jobs and chasing completion','Compliance — certificates expiring without warning','Invoices and payments from many suppliers','Coordinating my team','No single view across my portfolio'] },
+];
+var _profileQStep = 0;
+var _profileAnswers = [{},{},{},{},{},{},{}];
+
+function showProfilingStep() {
+  _profileQStep = 0; _renderProfilingQ();
+}
+
+function _renderProfilingQ() {
+  var ex = document.getElementById('stepModal'); if(ex) ex.remove();
+  var q = _PROFILING_Q[_profileQStep];
+  var ans = _profileAnswers[_profileQStep];
+  var modal = document.createElement('div');
+  modal.id = 'stepModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
+  document.body.appendChild(modal);
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+
+  var optHtml = q.opts.map(function(opt, i) {
+    var sel = q.type==='single' ? ans.val===opt : (ans.vals||[]).indexOf(opt)!==-1;
+    return '<button onclick="_profilingSelect(\''+opt.replace(/'/g,"\\'")+'\')" style="text-align:left;width:100%;padding:11px 14px;border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;background:'+(sel?'#eff6ff':'#fff')+';font-size:13px;font-family:Inter,sans-serif;color:#374151;cursor:pointer;display:flex;align-items:center;gap:10px;margin-bottom:6px;transition:all 0.1s;">' +
+      '<div style="width:18px;height:18px;border-radius:'+(q.type==='single'?'50%':'5px')+';border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';flex-shrink:0;display:flex;align-items:center;justify-content:center;">' +
+      (sel?(q.type==='single'?'<div style="width:6px;height:6px;border-radius:50%;background:#fff;"></div>':'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M1.5 5l3 3 4-4.5"/></svg>'):'')+'</div>'+opt+'</button>';
+  }).join('');
+
+  modal.innerHTML = '<div style="background:#fff;border-radius:20px;width:100%;max-width:480px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;">' +
+    '<div style="padding:20px 24px 14px;border-bottom:0.5px solid #f1f5f9;">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">' +
+        '<span style="font-size:12px;font-weight:600;color:#94a3b8;font-family:Inter,sans-serif;">Profiling · '+(_profileQStep+1)+' of 7</span>' +
+        '<button onclick="document.getElementById(\'stepModal\').remove();" style="background:none;border:none;color:#94a3b8;font-size:12px;cursor:pointer;font-family:Inter,sans-serif;">Skip →</button>' +
+      '</div>' +
+      '<div style="display:flex;gap:4px;">' +
+        [0,1,2,3,4,5,6].map(function(i){ return '<div style="flex:1;height:4px;border-radius:999px;background:'+( i<=_profileQStep?'#1A5FC8':'#f1f5f9')+';"></div>'; }).join('') +
+      '</div>' +
+    '</div>' +
+    '<div style="padding:20px 24px 24px;">' +
+      '<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">'+q.q+'</div>' +
+      '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:16px;">'+(q.type==='multi'?'Select all that apply':'Choose one')+'</div>' +
+      optHtml +
+      '<div style="display:flex;gap:10px;margin-top:16px;">' +
+        (_profileQStep>0?'<button onclick="_profileQBack()" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:11px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Back</button>':'') +
+        '<button onclick="_profileQNext()" style="flex:1;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">'+(_profileQStep===6?'Finish':'Continue →')+'</button>' +
+      '</div>' +
+    '</div></div>';
+  var cb = document.getElementById('compClose'); if(cb) cb.addEventListener('click',function(){ modal.remove(); });
+}
+
+function _profilingSelect(opt) {
+  var q = _PROFILING_Q[_profileQStep];
+  var ans = _profileAnswers[_profileQStep];
+  if (q.type==='single') { ans.val = opt; }
+  else { if(!ans.vals) ans.vals=[]; var i=ans.vals.indexOf(opt); if(i===-1) ans.vals.push(opt); else ans.vals.splice(i,1); }
+  _renderProfilingQ();
+}
+function _profileQNext() {
+  if (_profileQStep < 6) { _profileQStep++; _renderProfilingQ(); }
+  else { _onboardSteps[2].done = true; document.getElementById('stepModal').remove(); _renderOnboardingSteps(); setTimeout(showTierStep, 300); }
+}
+function _profileQBack() { if(_profileQStep>0){ _profileQStep--; _renderProfilingQ(); } }
+
+// =============================================
+// TIER RECOMMENDATION — Screen 5
+// =============================================
+function showTierStep() {
+  var ex = document.getElementById('stepModal'); if(ex) ex.remove();
+  var modal = document.createElement('div');
+  modal.id = 'stepModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
+  document.body.appendChild(modal);
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+
+  var tiers = [
+    { name:'Connect', badge:'', desc:'Perfect for individual landlords and small portfolios up to 25 units.', price:'Free', features:['Up to 25 properties','Book vetted professionals','Job tracking','Compliance reminders'], recommended:false },
+    { name:'Connect Premium', badge:'Recommended', desc:'Built for letting agents and growing property managers.', price:'£29/mo', features:['Up to 100 properties','Priority SP matching','Rate card management','Compliance dashboard','Team access (2 seats)'], recommended:true },
+    { name:'Copilot', badge:'', desc:'Full platform for large portfolios and property businesses.', price:'£99/mo', features:['Unlimited properties','Dedicated account manager','Full API access','Custom SP networks','Unlimited team seats'], recommended:false },
+  ];
+
+  modal.innerHTML = '<div style="background:#fff;border-radius:20px;width:100%;max-width:680px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;">' +
+    '<div style="padding:22px 26px 16px;border-bottom:0.5px solid #f1f5f9;">' +
+      '<div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">Choose your plan</div>' +
+      '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">Step 4 of 4 · Based on your profile answers</div>' +
+    '</div>' +
+    '<div style="padding:22px 26px 26px;">' +
+      '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">' +
+        tiers.map(function(t){
+          return '<div style="border:'+(t.recommended?'2px solid #1A5FC8':'1px solid #e2e8f0')+';border-radius:14px;padding:16px 14px;cursor:pointer;position:relative;background:'+(t.recommended?'#eff6ff':'#fff')+';transition:all 0.12s;" onclick="_selectTier(\''+t.name+'\')" onmouseover="this.style.borderColor=\'#1A5FC8\'" onmouseout="this.style.borderColor=\''+(t.recommended?'#1A5FC8':'#e2e8f0')+'\'">' +
+            (t.recommended?'<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#1A5FC8;color:#fff;font-size:10.5px;font-weight:700;font-family:Inter,sans-serif;padding:3px 10px;border-radius:999px;white-space:nowrap;">Recommended</div>':'') +
+            '<div style="font-size:14.5px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">'+t.name+'</div>' +
+            '<div style="font-size:18px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">'+t.price+'</div>' +
+            '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:10px;line-height:1.4;">'+t.desc+'</div>' +
+            t.features.map(function(f){ return '<div style="font-size:11.5px;color:#374151;font-family:Inter,sans-serif;display:flex;align-items:flex-start;gap:6px;margin-bottom:4px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#1A5FC8" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path d="M1.5 5.5l3 3 5-5"/></svg>'+f+'</div>'; }).join('') +
+          '</div>';
+        }).join('') +
+      '</div>' +
+    '</div></div>';
+}
+
+function _selectTier(name) {
+  if(_user) _user.tier = name;
+  _onboardSteps[3].done = true;
+  document.getElementById('stepModal').remove();
+  _renderOnboardingSteps();
+}
+
+// =============================================
+// SETTINGS TAB WIZARD
+// =============================================
+window._selectedTier = 'tier-premium'; // default
+
+
+
+// =============================================
+// SETTINGS WIZARD — step navigation
+// =============================================
+var _wizStep = 1;
+
+function wizGoTo(n) {
+  _wizStep = n;
+  for (var i = 1; i <= 4; i++) {
+    var panel = document.getElementById('wiz-panel-'+i);
+    if (panel) panel.style.display = i === n ? 'block' : 'none';
+  }
+  var wb = document.getElementById('wizBody');
+  if (wb) { wb.scrollTop = 0; }
+  _updateWizStepper(n);
+  if (n === 3) { _inlineQStep = 0; _renderInlineProfiling(); }
+}
+
+function _updateWizStepper(active) {
+  var CHECK = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 6.5l3.5 3.5 5.5-6"/></svg>';
+  var ICONS = {
+    1: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLR" stroke-width="2"><circle cx="6.5" cy="4" r="2.3"/><path d="M1.5 11.5c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>',
+    2: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLR" stroke-width="1.8"><rect x="1.5" y="5" width="10" height="7" rx="1.5"/><path d="M4 5V3.5a2.5 2.5 0 015 0V5"/></svg>',
+    3: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLR" stroke-width="1.8"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v.5M6 7c0-1.5 2-1.5 2 0s-1 .8-1 1.8M6.5 10v.5"/></svg>',
+    4: '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="CLR" stroke-width="1.8"><path d="M6.5 1l1.3 3.5H11L8.3 6.6l1 3.4-2.8-2-2.8 2 1-3.4L2 4.5h3.2z"/></svg>'
   };
-  window._authSetRole=function(r){window._auth.role=r;window._auth.step='contact';window._authRender();};
-  window._authBack=function(){window._auth.step='contact';window._authRender();};
-  window._authSwitch=function(){var m=window._auth.isSignup?'login':'signup';modal.remove();delete window._auth;showAuthPageV3(m);};
-  window._authSubmit=function(){var a=window._auth;if(a&&a.isSignup){_setUser({name:a.name||'',email:/\d{5,}/.test((a.contact||'').replace(/[\s\-\(\)\+]/g,''))?'':a.contact,contact:a.contact||'',role:a.role||'manager'});modal.remove();delete window._auth;goToDashboardIfNeeded();setTimeout(function(){showPage('settings',null);},400);}else{_setUser({name:a.name||'',email:a.contact||'',contact:a.contact||'',role:a.role||'manager'});modal.remove();delete window._auth;goToDashboardIfNeeded();}}
-  window._authResend=function(){var b=document.getElementById('resendBtn');if(b){b.textContent='Sent ✓';b.style.color='#10b981';setTimeout(function(){if(b){b.textContent='Resend OTP';b.style.color='#1A5FC8';}},3000);}};
-  window._authToggleCC=function(){var l=document.getElementById('ccList');if(l)l.style.display=l.style.display==='none'?'block':'none';};
-  window._authSelectCC=function(code,flag){window._auth.countryCode=code;var d=document.getElementById('ccDisplay');if(d)d.textContent=flag+' '+code;var l=document.getElementById('ccList');if(l)l.style.display='none';};
-  window._authContinue=function(){var ct=document.getElementById('authContact');if(!ct)return;var val=ct.value.trim();if(!val){ct.style.borderColor='#ef4444';ct.focus();return;}window._auth.contact=val;var nm=document.getElementById('authName');if(nm)window._auth.name=nm.value.trim();var cleaned=val.replace(/[\s\-\(\)\+]/g,'');window._auth.step=/^\d{7,15}$/.test(cleaned)?'otp':'password';window._auth.contact=(/^\d{7,15}$/.test(cleaned)?window._auth.countryCode+' ':'')+val;window._authRender();};
-  window._authSwitchVariant=function(v){var a=window._auth;modal.remove();delete window._auth;var m=a&&a.isSignup?'signup':'login';if(v==='1')showAuthPageV1(m);else if(v==='2')showAuthPage(m);else if(v==='3')showAuthPageV3(m);};
-  window._authRender();
-bodyHtml =
-      '<div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e8ecf0;border-radius:10px;padding:10px 14px;margin-bottom:18px;">'+
-      '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#64748b" stroke-width="1.8"><rect x="1" y="3" width="11" height="8" rx="1.5"/><path d="M1 5.5l5.5 3.5 5.5-3.5"/></svg>'+
-      '<span style="font-size:13px;color:#374151;font-family:Inter,sans-serif;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+a.contact+'</span>'+
-      '<button onclick="window._authBack()" style="background:none;border:none;color:#1A5FC8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Change</button>'+
-      '</div>'+
-      (isSignup ? '<div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">Full name</label><input id="authName" type="text" placeholder="Your full name" autocomplete="name" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;"/></div>' : '')+
-      '<div style="margin-bottom:20px;position:relative;">'+
-      '<label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">'+(isSignup?'Create a password':'Password')+'</label>'+
-      '<input id="authPwd" type="password" placeholder="••••••••" autofocus style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 44px 11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;"/>'+
-      '<button id="pwdEye" type="button" style="position:absolute;right:13px;bottom:12px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg></button>'+
-      '</div>'+
-      '<button onclick="window._authSubmit()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">'+(isSignup?'Create account':'Log in')+'</button>'}
 
+  for (var i = 1; i <= 4; i++) {
+    var dot  = document.getElementById('wsd-'+i);
+    var lbl  = document.getElementById('wsl-'+i);
+    var line = document.getElementById('wsline-'+i);
+    if (!dot || !lbl) continue;
+
+    var isActive = (i === active);
+    var isPast   = (i < active);
+
+    if (isPast) {
+      // Completed step: gradient bg, checkmark
+      dot.style.background = 'linear-gradient(135deg,#1A5FC8,#0FA3D0)';
+      dot.style.boxShadow  = 'none';
+      dot.innerHTML = CHECK;
+      lbl.style.color      = '#1A5FC8';
+      lbl.style.fontWeight = '600';
+      if (line) line.style.background = 'linear-gradient(90deg,#1A5FC8,#0FA3D0)';
+    } else if (isActive) {
+      // Current step: solid blue, white icon, glow ring
+      dot.style.background = '#1A5FC8';
+      dot.style.boxShadow  = '0 0 0 4px rgba(26,92,200,0.18)';
+      dot.innerHTML = ICONS[i].replace(/CLR/g, '#fff');
+      lbl.style.color      = '#1A5FC8';
+      lbl.style.fontWeight = '700';
+      if (line) line.style.background = '#e2e8f0';
+    } else {
+      // Future step: grey bg, grey icon
+      dot.style.background = '#e8ecf0';
+      dot.style.boxShadow  = 'none';
+      dot.innerHTML = ICONS[i].replace(/CLR/g, '#94a3b8');
+      lbl.style.color      = '#94a3b8';
+      lbl.style.fontWeight = '500';
+      if (line) line.style.background = '#e2e8f0';
+    }
+  }
+  var ctr = document.getElementById('wizStepCounter');
+  if (ctr) ctr.textContent = 'Step ' + active + ' of 4';
+}
+
+// =============================================
+// FIELD VALIDATION
+// =============================================
+function wizValidateField(el) {
+  var id  = el.id;
+  var val = el.value.trim();
+  var err = document.getElementById('err-' + id);
+  var ok  = true;
+
+  if (id === 'profileEmail') {
+    ok = val !== '' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+    if (err) err.textContent = val === '' ? 'Email is required' : 'Enter a valid email address';
+  } else {
+    ok = val !== '';
+  }
+
+  if (!ok) {
+    el.style.borderColor = '#ef4444';
+    if (err) err.style.display = 'block';
+  } else {
+    el.style.borderColor = '#e2e8f0';
+    if (err) err.style.display = 'none';
+  }
+  return ok;
+}
+
+function wizValidateStep(step) {
+  var fields = { 1: ['profileName','profileEmail'], 2: ['coTrading','coLegal','coAddr'] };
+  var ids = fields[step] || [];
+  var valid = true;
+  ids.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el && !wizValidateField(el)) valid = false;
+  });
+  return valid;
+}
+
+function _saveAndNextProfile() {
+  if (wizValidateStep(1)) {
+    _saveProfileBasic();
+    wizGoTo(2);
+  }
+}
+
+
+// Aliases for rest of codebase
+function scrollToSettingsSection(n) { wizGoTo(n); }
+function switchSettingsTab(n) { wizGoTo(n); }
+function _openSettingsPanel(n) { wizGoTo(n); }
+function _updateSettingsStepNav() {}
+
+
+
+function _saveCompanyDetails() {
+  if (!wizValidateStep(2)) return;
+  _onboardSteps[1].done = true;
+  wizGoTo(3);
+}
+
+// =============================================
+// INLINE PROFILING (step 3)
+// =============================================
+var _inlineQStep = 0;
+var _inlineAnswers = Array(7).fill(null).map(function(){ return {}; });
+var _PROFILING_QS = [
+  {
+    q: 'What best describes what you do?', type:'single',
+    opts:['Residential letting agent','Short-term rental / Airbnb manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator','Facilities manager','Individual landlord','Other']
+  },
+  {
+    q: 'What types of property do you manage?', type:'multi-grouped',
+    groups:{
+      'Residential':['Houses & flats — AST','HMO','Short-term rental','Residential block','Serviced apartments'],
+      'Commercial':['Offices','Retail','Industrial','Healthcare','Education'],
+      'Hospitality':['Hotels','Hostels','Guest houses','PBSA'],
+      'Mixed':['Mixed residential/commercial','Estate']
+    }
+  },
+  {
+    q: 'How many properties or units do you manage?', type:'single',
+    opts:['1–5','6–25','26–100','101–500','500+']
+  },
+  {
+    q: 'Which services do you currently coordinate?', type:'multi',
+    opts:['Cleaning','Compliance certificates (CP12, EICR, EPC, FRA, Legionella)','Reactive maintenance','PPM','Inspections & inventory','Landscaping','Pest control','Security','Removals','Specialist trades']
+  },
+  {
+    q: 'Where are your properties located?', type:'multi',
+    opts:['London','South East','South West','Midlands','North West','North East','Yorkshire','Scotland','Wales','Multiple regions']
+  },
+  {
+    q: 'How do you currently manage service providers?', type:'single',
+    opts:['Ad hoc (WhatsApp/phone)','Small regular contractors','Large contractor network','In-house staff','I use a property management system']
+  },
+  {
+    q: 'What is your biggest headache right now?', type:'single',
+    opts:['Finding reliable contractors','Chasing jobs to completion','Compliance tracking','Invoices & payments','Team coordination','No single view across portfolio']
+  }
+];
+
+function _renderInlineProfiling() {
+  var container = document.getElementById('inlineProfilingContent');
+  if (!container) return;
+  var q = _PROFILING_QS[_inlineQStep];
+  var ans = _inlineAnswers[_inlineQStep];
+
+  var barHtml = '<div style="display:flex;gap:4px;margin-bottom:20px;">' +
+    [0,1,2,3,4,5,6].map(function(i){
+      var bg = i < _inlineQStep ? '#1A5FC8' : i === _inlineQStep ? '#0FA3D0' : '#f1f5f9';
+      return '<div style="flex:1;height:4px;border-radius:999px;background:'+bg+';"></div>';
+    }).join('') + '</div>';
+
+  function makeOptBtn(opt, sel, isRound) {
+    var safeOpt = opt.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return '<button data-opt="'+opt.replace(/"/g,'&quot;')+'" onclick="window._inlineSelectOpt(this)" style="text-align:left;width:100%;padding:10px 14px;border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:9px;background:'+(sel?'#eff6ff':'#fff')+';font-size:13px;font-family:Inter,sans-serif;color:#374151;cursor:pointer;display:flex;align-items:center;gap:10px;margin-bottom:6px;">' +
+      '<div style="width:17px;height:17px;border-radius:'+(isRound?'50%':'4px')+';border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';flex-shrink:0;display:flex;align-items:center;justify-content:center;">' +
+      (sel ? (isRound ? '<div style="width:5px;height:5px;border-radius:50%;background:#fff;"></div>' : '<svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#fff" stroke-width="2"><path d="M1 4.5l2.5 2.5 5-4.5"/></svg>') : '') +
+      '</div>' + opt + '</button>';
+  }
+
+  var optHtml = '';
+  var isSingle = q.type === 'single';
+
+  if (q.type === 'multi-grouped') {
+    Object.keys(q.groups).forEach(function(group) {
+      optHtml += '<div style="font-size:10.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;margin:14px 0 8px;font-family:Inter,sans-serif;">'+group+'</div>';
+      q.groups[group].forEach(function(opt) {
+        var sel = (ans.vals||[]).indexOf(opt) !== -1;
+        optHtml += makeOptBtn(opt, sel, false);
+      });
+    });
+  } else {
+    q.opts.forEach(function(opt) {
+      var sel = isSingle ? ans.val === opt : (ans.vals||[]).indexOf(opt) !== -1;
+      optHtml += makeOptBtn(opt, sel, isSingle);
+    });
+  }
+
+  container.innerHTML =
+    '<div style="max-width:560px;margin:0 auto;padding:24px 24px 40px;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
+      '<span style="font-size:11.5px;font-weight:600;color:#94a3b8;font-family:Inter,sans-serif;">QUESTION '+(_inlineQStep+1)+' OF 7</span>' +
+      '<button onclick="wizGoTo(4)" style="background:none;border:none;color:#94a3b8;font-size:11.5px;cursor:pointer;font-family:Inter,sans-serif;padding:0;text-decoration:underline;">Skip all →</button>' +
+    '</div>' +
+    barHtml +
+    '<div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;line-height:1.3;">'+q.q+'</div>' +
+    '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:16px;">'+(isSingle||q.type==='single'?'Choose one':'Select all that apply')+'</div>' +
+    optHtml +
+    '<div style="display:flex;gap:10px;margin-top:20px;">' +
+      (_inlineQStep > 0
+        ? '<button onclick="_inlineQBack()" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Back</button>'
+        : '<button onclick="switchSettingsTab(2)" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;color:#374151;">← Company</button>') +
+      '<button onclick="_inlineQNext()" style="flex:1;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">'+(_inlineQStep===6?'Finish →':'Continue →')+'</button>' +
+    '</div>' +
+    '</div>';
+
+  // Wire button clicks via event delegation
+  container.querySelectorAll('button[data-opt]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      window._inlineSelectOpt(this);
+    });
+  });
+}
+
+window._inlineSelectOpt = function(el) {
+  var opt = el.getAttribute('data-opt');
+  _inlineSelect(opt);
+};
+
+function _inlineSelect(opt) {
+  var q = _PROFILING_QS[_inlineQStep];
+  var ans = _inlineAnswers[_inlineQStep];
+  if (q.type === 'single') { ans.val = opt; }
+  else { if(!ans.vals) ans.vals=[]; var i=ans.vals.indexOf(opt); if(i===-1) ans.vals.push(opt); else ans.vals.splice(i,1); }
+  _renderInlineProfiling();
+}
+function _inlineQNext() {
+  if (_inlineQStep < 6) { _inlineQStep++; _renderInlineProfiling(); }
+  else { _onboardSteps[2].done = true; wizGoTo(4); }
+}
+function _inlineQBack() { if(_inlineQStep>0){ _inlineQStep--; _renderInlineProfiling(); } }
+
+function _selectTierInline(name) {
+  var map = {'Connect':'tier-connect','Connect Premium':'tier-premium','Copilot':'tier-copilot'};
+  window._selectedTier = map[name];
+  ['tier-connect','tier-premium','tier-copilot'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var active = id === window._selectedTier;
+    el.style.border = active ? '2px solid #1A5FC8' : '1.5px solid #e2e8f0';
+    el.style.background = active ? '#eff6ff' : '#fff';
+  });
+  if(_user) _user.tier = name;
+}
+
+function _finishSetup() {
+  _onboardSteps[3].done = true;
+  _updateWizStepper(4);
+  if (_user) _user.profileComplete = true;
+  // Go directly to dashboard home
+  goToDashboard('', false);
+  setTimeout(function() { showPage('home', null); }, 400);
+}
+
+// Hook showPage to sync settings when tab opens
+var _origShowPage_settings = showPage;
+showPage = function(id, e) {
+  _origShowPage_settings(id, e);
+  if (id === 'settings') {
+    setTimeout(function(){
+      _syncSettingsPage();
+      switchSettingsTab(1);
+    }, 30);
+  }
+};
+
+// =============================================
+// V4 — Property Manager auth (no role selection)
+// Clean, focused, 3-step: contact → password/OTP
+// =============================================
+function showAuthPageV4(mode){showAuthPage(mode);}
+
+// =============================================
+// SUPPLIER AUTH — simple lightweight modal
+// =============================================
+function showSupplierAuth(){showAuthPage('signup');setTimeout(function(){if(window._authSetRole)window._authSetRole('supplier');var lp=document.getElementById('authLeftPanel');if(lp)lp.style.display='none';},60);}
 // =============================================
 // SETTINGS / PROFILE PAGE
 // =============================================
@@ -6072,189 +6433,6 @@ function showAuthPageV4(mode) {
   window._authSwitchVariant=function(v){var a=window._auth;modal.remove();delete window._auth;var m=a&&a.isSignup?'signup':'login';if(v==='1')showAuthPageV1(m);else if(v==='2')showAuthPage(m);else if(v==='3')showAuthPageV3(m);else showAuthPageV4(m);};
 
   window._authRender();
-}
-
-// =============================================
-// SUPPLIER AUTH — simple lightweight modal
-// =============================================
-function showSupplierAuth() {
-  var ex = document.getElementById('authModal'); if (ex) ex.remove();
-  window._authSup = { step: 'contact', contact: '', name: '', countryCode: '+44' };
-  var COUNTRY_CODES = [
-    {code:'+44',flag:'🇬🇧',name:'UK'},{code:'+1',flag:'🇺🇸',name:'US'},{code:'+91',flag:'🇮🇳',name:'IN'},
-    {code:'+971',flag:'🇦🇪',name:'UAE'},{code:'+61',flag:'🇦🇺',name:'AU'},{code:'+33',flag:'🇫🇷',name:'FR'},
-    {code:'+49',flag:'🇩🇪',name:'DE'},{code:'+92',flag:'🇵🇰',name:'PK'}
-  ];
-  var modal = document.createElement('div');
-  modal.id = 'authModal';
-  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
-  document.body.appendChild(modal);
-  modal.addEventListener('click', function(e){ if(e.target===modal){ modal.remove(); delete window._authSup; } });
-
-  function renderSup() {
-    var s = window._authSup;
-    var card = document.createElement('div');
-    card.style.cssText = 'background:#fff;border-radius:20px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:modalPop 0.22s ease;';
-
-    // Header
-    var hdr = document.createElement('div');
-    hdr.style.cssText = 'padding:22px 26px 16px;border-bottom:0.5px solid #f1f5f9;display:flex;justify-content:space-between;align-items:flex-start;';
-    var hdrLeft = document.createElement('div');
-    hdrLeft.innerHTML = '<div style="font-size:19px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">' +
-      (s.step==='contact' ? 'Join as a Supplier' : s.step==='password' ? 'Create your password' : 'Verify your number') +
-      '</div><div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">' +
-      (s.step==='contact' ? 'Receive verified job requests from property managers' : s.step==='password' ? 'Signing up as a Supplier' : 'We sent a 6-digit code to '+s.contact) +
-      '</div>';
-    var closeBtn = document.createElement('button');
-    closeBtn.innerHTML = '&times;';
-    closeBtn.style.cssText = 'background:#f1f5f9;border:none;color:#64748b;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:10px;line-height:1;';
-    closeBtn.addEventListener('click', function(){ modal.remove(); delete window._authSup; });
-    hdr.appendChild(hdrLeft); hdr.appendChild(closeBtn);
-    card.appendChild(hdr);
-
-    // Body
-    var body = document.createElement('div');
-    body.style.cssText = 'padding:20px 26px 22px;';
-
-    if (s.step === 'contact') {
-      // Full name
-      body.appendChild(mkInput('Full name','text','Your full name','supName'));
-      document.getElementById('supName') && (document.getElementById('supName').style.marginBottom = '14px');
-      // Email/mobile with CC picker
-      var emailLbl = document.createElement('label');
-      emailLbl.textContent = 'Email or mobile number';
-      emailLbl.style.cssText = 'font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;';
-      var contactRow = document.createElement('div');
-      contactRow.style.cssText = 'position:relative;display:flex;margin-bottom:5px;';
-      // CC wrap (hidden by default)
-      var ccWrap = document.createElement('div');
-      ccWrap.id = 'supCcWrap';
-      ccWrap.style.cssText = 'display:none;flex-shrink:0;position:relative;';
-      var ccBtn = document.createElement('button');
-      ccBtn.id = 'supCcBtn'; ccBtn.type = 'button';
-      ccBtn.style.cssText = 'height:44px;padding:0 10px;background:#f8fafc;border:1.5px solid #e2e8f0;border-right:none;border-radius:10px 0 0 10px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;display:flex;align-items:center;gap:4px;white-space:nowrap;';
-      var ccSpan = document.createElement('span'); ccSpan.id='supCcDisplay'; ccSpan.textContent='🇬🇧 +44';
-      var ccArr = document.createElement('span'); ccArr.innerHTML='<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4l3 3 3-3"/></svg>';
-      ccBtn.appendChild(ccSpan); ccBtn.appendChild(ccArr);
-      var ccList = document.createElement('div'); ccList.id='supCcList';
-      ccList.style.cssText='display:none;position:absolute;top:48px;left:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.1);z-index:20;min-width:190px;overflow:hidden;';
-      COUNTRY_CODES.forEach(function(cc){
-        var item = document.createElement('div');
-        item.style.cssText='display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;';
-        item.textContent=cc.flag+' '+cc.name;
-        var codeSpan=document.createElement('span'); codeSpan.textContent=cc.code; codeSpan.style.cssText='color:#94a3b8;margin-left:auto;font-size:12px;';
-        item.appendChild(codeSpan);
-        item.addEventListener('mouseover',function(){this.style.background='#f8fafc';}); item.addEventListener('mouseout',function(){this.style.background='';});
-        item.addEventListener('click',function(){ window._authSup.countryCode=cc.code; ccSpan.textContent=cc.flag+' '+cc.code; ccList.style.display='none'; });
-        ccList.appendChild(item);
-      });
-      ccBtn.addEventListener('click',function(){ ccList.style.display=ccList.style.display==='none'?'block':'none'; });
-      ccWrap.appendChild(ccBtn); ccWrap.appendChild(ccList);
-      var contactInp = document.createElement('input');
-      contactInp.id='supContact'; contactInp.type='text'; contactInp.placeholder='you@email.com  or  07700 000000';
-      contactInp.style.cssText='flex:1;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;';
-      contactInp.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';});
-      contactInp.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';});
-      contactInp.addEventListener('keydown',function(e){if(e.key==='Enter')supContinue();});
-      contactInp.addEventListener('input',function(){
-        var val=this.value.trim(); var isPhone=/^[\d\s\+\-\(\)]{3,}$/.test(val)&&/\d{3,}/.test(val);
-        ccWrap.style.display=isPhone?'block':'none'; this.style.borderRadius=isPhone?'0 10px 10px 0':'10px';
-      });
-      contactRow.appendChild(ccWrap); contactRow.appendChild(contactInp);
-      var hint=document.createElement('p'); hint.textContent='Email → password · Mobile → OTP verification';
-      hint.style.cssText='font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin:5px 0 18px;';
-      body.appendChild(emailLbl); body.appendChild(contactRow); body.appendChild(hint);
-      var contBtn=document.createElement('button'); contBtn.textContent='Continue →';
-      contBtn.style.cssText='width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:14px;';
-      contBtn.addEventListener('click',supContinue);
-      body.appendChild(contBtn);
-      var switchP=document.createElement('p'); switchP.style.cssText='text-align:center;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin:0;';
-      switchP.innerHTML='Already a supplier? <a href="#" style="color:#1A5FC8;font-weight:600;text-decoration:none;">Log in</a>';
-      switchP.querySelector('a').addEventListener('click',function(e){e.preventDefault();modal.remove();delete window._authSup;showAuthPage('login');});
-      body.appendChild(switchP);
-
-    } else if (s.step === 'password') {
-      body.appendChild(mkChip(s.contact, function(){ window._authSup.step='contact'; modal.innerHTML=''; modal.appendChild(card); renderSup(); }));
-      var pwdWrap=document.createElement('div'); pwdWrap.style.cssText='margin-bottom:20px;position:relative;';
-      var pwdLbl=document.createElement('label'); pwdLbl.textContent='Create a password'; pwdLbl.style.cssText='font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;';
-      var pwdInp=document.createElement('input'); pwdInp.id='supPwd'; pwdInp.type='password'; pwdInp.placeholder='••••••••';
-      pwdInp.style.cssText='width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 44px 11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;';
-      pwdInp.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';}); pwdInp.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';});
-      var eyeBtn=document.createElement('button'); eyeBtn.type='button';
-      eyeBtn.style.cssText='position:absolute;right:13px;bottom:12px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;';
-      eyeBtn.innerHTML='<svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg>';
-      eyeBtn.addEventListener('click',function(){pwdInp.type=pwdInp.type==='password'?'text':'password';});
-      pwdWrap.appendChild(pwdLbl); pwdWrap.appendChild(pwdInp); pwdWrap.appendChild(eyeBtn);
-      body.appendChild(pwdWrap);
-      var subBtn=document.createElement('button'); subBtn.textContent='Create account →';
-      subBtn.style.cssText='width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;';
-      subBtn.addEventListener('click',function(){modal.remove();delete window._authSup;});
-      body.appendChild(subBtn);
-
-    } else if (s.step === 'otp') {
-      body.appendChild(mkChip(s.contact, function(){ window._authSup.step='contact'; modal.innerHTML=''; modal.appendChild(card); renderSup(); }));
-      var otpRow=document.createElement('div'); otpRow.style.cssText='display:flex;gap:8px;justify-content:center;margin:16px 0;';
-      for(var i=0;i<6;i++){
-        var box=document.createElement('input'); box.type='text'; box.inputMode='numeric'; box.maxLength=1;
-        box.style.cssText='width:42px;height:50px;border:1.5px solid #e2e8f0;border-radius:10px;text-align:center;font-size:22px;font-weight:700;font-family:Inter,sans-serif;color:#0f172a;outline:none;box-sizing:border-box;';
-        box.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';}); box.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';});
-        (function(idx,el){el.addEventListener('input',function(){this.value=this.value.replace(/\D/g,'');var next=otpRow.children[idx+1];if(this.value&&next)next.focus();});el.addEventListener('keydown',function(e){if(e.key==='Backspace'&&!this.value&&idx>0)otpRow.children[idx-1].focus();});})(i,box);
-        otpRow.appendChild(box);
-      }
-      body.appendChild(otpRow);
-      var verBtn=document.createElement('button'); verBtn.textContent='Verify & Continue →';
-      verBtn.style.cssText='width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:10px;';
-      verBtn.addEventListener('click',function(){modal.remove();delete window._authSup;});
-      body.appendChild(verBtn);
-      var resendRow=document.createElement('div'); resendRow.style.cssText='display:flex;justify-content:center;gap:16px;';
-      var backBtn=document.createElement('button'); backBtn.textContent='← Change number'; backBtn.style.cssText='background:none;border:none;color:#64748b;font-size:12.5px;cursor:pointer;font-family:Inter,sans-serif;padding:0;';
-      backBtn.addEventListener('click',function(){window._authSup.step='contact';modal.innerHTML='';modal.appendChild(card);renderSup();});
-      var resend=document.createElement('button'); resend.textContent='Resend OTP'; resend.style.cssText='background:none;border:none;color:#1A5FC8;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;';
-      resend.addEventListener('click',function(){resend.textContent='Sent ✓';resend.style.color='#10b981';setTimeout(function(){resend.textContent='Resend OTP';resend.style.color='#1A5FC8';},3000);});
-      resendRow.appendChild(backBtn); resendRow.appendChild(resend);
-      body.appendChild(resendRow);
-    }
-
-    card.appendChild(body);
-    modal.innerHTML=''; modal.appendChild(card);
-    setTimeout(function(){var f=document.getElementById('supName')||document.getElementById('supContact');if(f)f.focus();},80);
-  }
-
-  function mkInput(label, type, placeholder, id) {
-    var wrap=document.createElement('div'); wrap.style.marginBottom='14px';
-    var lbl=document.createElement('label'); lbl.textContent=label;
-    lbl.style.cssText='font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;';
-    var inp=document.createElement('input'); inp.type=type; inp.placeholder=placeholder; inp.id=id;
-    inp.style.cssText='width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;';
-    inp.addEventListener('focus',function(){this.style.borderColor='#1A5FC8';});
-    inp.addEventListener('blur',function(){this.style.borderColor='#e2e8f0';});
-    wrap.appendChild(lbl); wrap.appendChild(inp);
-    return wrap;
-  }
-
-  function mkChip(contact, onBack) {
-    var wrap=document.createElement('div');
-    wrap.style.cssText='display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e8ecf0;border-radius:10px;padding:10px 14px;margin-bottom:18px;';
-    var icon=document.createElement('span'); icon.innerHTML='<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#64748b" stroke-width="1.8"><rect x="1" y="3" width="11" height="8" rx="1.5"/><path d="M1 5.5l5.5 3.5 5.5-3.5"/></svg>';
-    var txt=document.createElement('span'); txt.textContent=contact; txt.style.cssText='font-size:13px;color:#374151;font-family:Inter,sans-serif;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
-    var chg=document.createElement('button'); chg.textContent='Change'; chg.style.cssText='background:none;border:none;color:#1A5FC8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;';
-    chg.addEventListener('click',onBack);
-    wrap.appendChild(icon); wrap.appendChild(txt); wrap.appendChild(chg);
-    return wrap;
-  }
-
-  function supContinue() {
-    var nm=document.getElementById('supName'); if(nm) window._authSup.name=nm.value.trim();
-    var ct=document.getElementById('supContact'); if(!ct) return;
-    var val=ct.value.trim(); if(!val){ct.style.borderColor='#ef4444';ct.focus();return;}
-    window._authSup.contact=val;
-    var cleaned=val.replace(/[\s\-\(\)\+]/g,'');
-    window._authSup.step=/^\d{7,15}$/.test(cleaned)?'otp':'password';
-    if(/^\d{7,15}$/.test(cleaned)) window._authSup.contact=window._authSup.countryCode+' '+val;
-    renderSup();
-  }
-
-  renderSup();
 }
 </script>
 
