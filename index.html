@@ -5701,74 +5701,43 @@ function showAuthPage(mode, forcedRole) {
 function showSupplierCountSlider() {
   var area = document.getElementById('chatArea');
   if (!area || document.getElementById('supplierSlider')) return;
+  window._sqVal = 3;
 
   var wrap = document.createElement('div');
   wrap.id = 'supplierSlider';
-  wrap.style.cssText = 'margin:4px 0 8px 44px;background:#fff;border:1.5px solid #e2e8f0;border-radius:18px;padding:20px 20px 18px;box-shadow:0 4px 16px rgba(0,0,0,0.06);animation:modalPop 0.2s ease;';
-
-  var tiers = [
-    {n:1, label:'Solo Pick',     sub:'Fastest booking',       icon:'⚡', grad:'linear-gradient(135deg,#f59e0b,#fb923c)', bg:'#fffbeb'},
-    {n:2, label:'Quick Compare', sub:'2 options side by side', icon:'⇄', grad:'linear-gradient(135deg,#10b981,#34d399)', bg:'#f0fdf4'},
-    {n:3, label:'Smart Choice',  sub:'Best balance of speed & choice', icon:'✦', grad:'linear-gradient(135deg,#1A5FC8,#0FA3D0)', bg:'#eff6ff'},
-    {n:5, label:'Strong Field',  sub:'5 competing pros',      icon:'★', grad:'linear-gradient(135deg,#7c3aed,#a78bfa)', bg:'#f5f3ff'},
-    {n:8, label:'Wide Search',   sub:'Deep market coverage',  icon:'◎', grad:'linear-gradient(135deg,#db2777,#f472b6)', bg:'#fdf2f8'},
-    {n:10,label:'Full Market',   sub:'Every available pro',   icon:'⊛', grad:'linear-gradient(135deg,#0f172a,#334155)', bg:'#f8fafc'},
-  ];
-
-  function getTier(n) {
-    var t = tiers[0];
-    tiers.forEach(function(x){ if(n >= x.n) t = x; });
-    return t;
-  }
-
-  window._sqVal = 3;
+  wrap.style.cssText = 'margin:6px 0 8px 44px;background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:14px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);animation:modalPop 0.18s ease;max-width:420px;';
 
   function render() {
-    var t = getTier(window._sqVal);
+    var n = window._sqVal;
+    var labels = {1:'Fastest',2:'Quick',3:'Balanced',4:'Good mix',5:'More options',6:'Wide',7:'Wider',8:'Very wide',9:'Near max',10:'Maximum'};
     wrap.innerHTML =
-      // Header row
-      '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;">' +
-        '<div>' +
-          '<div style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">How many quotes?</div>' +
-          '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:2px;">Tap a number to select</div>' +
-        '</div>' +
-        // Big animated number badge
-        '<div style="width:56px;height:56px;border-radius:14px;background:' + t.grad + ';display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.15);flex-shrink:0;transition:all 0.2s;">' +
-          '<span style="font-size:24px;font-weight:900;color:#fff;font-family:Fraunces,serif;line-height:1;">' + window._sqVal + '</span>' +
-          '<span style="font-size:9px;color:rgba(255,255,255,0.8);font-family:Inter,sans-serif;font-weight:600;">quote' + (window._sqVal > 1 ? 's' : '') + '</span>' +
-        '</div>' +
+      // Top row: label + count badge
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">' +
+        '<div style="font-size:13px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">How many quotes?</div>' +
+        '<div style="background:linear-gradient(135deg,#1A5FC8,#0FA3D0);color:#fff;font-size:13px;font-weight:700;font-family:Fraunces,serif;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;">' + n + '</div>' +
       '</div>' +
-      // Number grid — 1-10 tappable buttons
-      '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:14px;">' +
-        [1,2,3,4,5,6,7,8,9,10].map(function(n) {
-          var active = n === window._sqVal;
-          var inRange = n <= window._sqVal;
-          var nt = getTier(n);
-          return '<button onclick="sqSetVal(' + n + ')" style="' +
-            'border:none;border-radius:10px;padding:0;height:44px;cursor:pointer;' +
-            'background:' + (active ? nt.grad : (inRange ? 'rgba(26,95,200,0.08)' : '#f1f5f9')) + ';' +
-            'color:' + (active ? '#fff' : (inRange ? '#1A5FC8' : '#64748b')) + ';' +
-            'font-size:16px;font-weight:' + (active ? '800' : '600') + ';font-family:Fraunces,serif;' +
-            'transform:' + (active ? 'scale(1.06)' : 'scale(1)') + ';' +
-            'box-shadow:' + (active ? '0 3px 10px rgba(26,95,200,0.25)' : 'none') + ';' +
-            'transition:all 0.15s;">' +
-            n +
-          '</button>';
-        }).join('') +
+      // Custom slider track
+      '<div style="position:relative;padding:4px 0;margin-bottom:6px;">' +
+        '<input type="range" min="1" max="10" value="' + n + '" oninput="sqSetVal(parseInt(this.value))" style="width:100%;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;outline:none;cursor:pointer;background:linear-gradient(to right,#1A5FC8 ' + ((n-1)/9*100).toFixed(0) + '%,#e2e8f0 ' + ((n-1)/9*100).toFixed(0) + '%);margin:0;">' +
       '</div>' +
-      // Tier badge
-      '<div style="background:' + t.bg + ';border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;">' +
-        '<span style="font-size:20px;line-height:1;color:' + t.grad.match(/#[0-9a-f]{6}/i)[0] + ';">' + t.icon + '</span>' +
-        '<div>' +
-          '<div style="font-size:13px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">' + t.label + '</div>' +
-          '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">' + t.sub + '</div>' +
-        '</div>' +
+      // Min/max labels
+      '<div style="display:flex;justify-content:space-between;margin-bottom:8px;">' +
+        '<span style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;">1 — fastest</span>' +
+        '<span style="font-size:11px;color:#1A5FC8;font-weight:600;font-family:Inter,sans-serif;">' + n + ' quote' + (n>1?'s':'') + ' · ' + (labels[n]||'') + '</span>' +
+        '<span style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;">10 — max</span>' +
       '</div>' +
       // Confirm button
-      '<button onclick="confirmSupplierCount(window._sqVal)" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity 0.15s;" onmouseover="this.style.opacity=0.88" onmouseout="this.style.opacity=1">' +
-        'Get ' + window._sqVal + ' quote' + (window._sqVal > 1 ? 's' : '') +
-        '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#fff" stroke-width="2.2"><path d="M3 6.5h7M7.5 3.5l3 3-3 3"/></svg>' +
+      '<button onclick="confirmSupplierCount(window._sqVal)" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:10px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;transition:opacity 0.15s;" onmouseover="this.style.opacity=0.88" onmouseout="this.style.opacity=1">' +
+        'Get ' + n + ' quote' + (n>1?'s':'') + ' →' +
       '</button>';
+
+    // Style the range thumb via injected CSS
+    if (!document.getElementById('sqSliderStyle')) {
+      var style = document.createElement('style');
+      style.id = 'sqSliderStyle';
+      style.textContent = 'input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);cursor:pointer;box-shadow:0 1px 4px rgba(26,95,200,0.35);}input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);cursor:pointer;border:none;box-shadow:0 1px 4px rgba(26,95,200,0.35);}';
+      document.head.appendChild(style);
+    }
   }
 
   render();
@@ -5779,30 +5748,23 @@ function showSupplierCountSlider() {
 function sqSetVal(n) {
   window._sqVal = n;
   var wrap = document.getElementById('supplierSlider');
-  if (wrap) {
-    // Re-render the whole component to update all states
-    var area = wrap.parentNode;
-    var next = wrap.nextSibling;
-    wrap.remove();
-    var newWrap = document.createElement('div');
-    newWrap.id = 'supplierSlider';
-    newWrap.style.cssText = 'margin:4px 0 8px 44px;background:#fff;border:1.5px solid #e2e8f0;border-radius:18px;padding:20px 20px 18px;box-shadow:0 4px 16px rgba(0,0,0,0.06);';
-    // Borrow render from closure — just re-call showSupplierCountSlider after reset
-    window._sqVal = n;
-    if (area) {
-      // Inline mini-render to avoid duplicate
-      var tiers=[{n:1,label:'Solo Pick',sub:'Fastest booking',icon:'⚡',grad:'linear-gradient(135deg,#f59e0b,#fb923c)',bg:'#fffbeb'},{n:2,label:'Quick Compare',sub:'2 options side by side',icon:'⇄',grad:'linear-gradient(135deg,#10b981,#34d399)',bg:'#f0fdf4'},{n:3,label:'Smart Choice',sub:'Best balance of speed & choice',icon:'✦',grad:'linear-gradient(135deg,#1A5FC8,#0FA3D0)',bg:'#eff6ff'},{n:5,label:'Strong Field',sub:'5 competing pros',icon:'★',grad:'linear-gradient(135deg,#7c3aed,#a78bfa)',bg:'#f5f3ff'},{n:8,label:'Wide Search',sub:'Deep market coverage',icon:'◎',grad:'linear-gradient(135deg,#db2777,#f472b6)',bg:'#fdf2f8'},{n:10,label:'Full Market',sub:'Every available pro',icon:'⊛',grad:'linear-gradient(135deg,#0f172a,#334155)',bg:'#f8fafc'}];
-      function gt(v){var t=tiers[0];tiers.forEach(function(x){if(v>=x.n)t=x;});return t;}
-      var t=gt(n);
-      newWrap.innerHTML=
-        '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;"><div><div style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">How many quotes?</div><div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:2px;">Tap a number to select</div></div><div style="width:56px;height:56px;border-radius:14px;background:'+t.grad+';display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.15);flex-shrink:0;"><span style="font-size:24px;font-weight:900;color:#fff;font-family:Fraunces,serif;line-height:1;">'+n+'</span><span style="font-size:9px;color:rgba(255,255,255,0.8);font-family:Inter,sans-serif;font-weight:600;">quote'+(n>1?'s':'')+'</span></div></div>'+
-        '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:14px;">'+[1,2,3,4,5,6,7,8,9,10].map(function(x){var active=x===n;var inRange=x<=n;var xt=gt(x);return'<button onclick="sqSetVal('+x+')" style="border:none;border-radius:10px;padding:0;height:44px;cursor:pointer;background:'+(active?xt.grad:(inRange?'rgba(26,95,200,0.08)':'#f1f5f9'))+';color:'+(active?'#fff':(inRange?'#1A5FC8':'#64748b'))+';font-size:16px;font-weight:'+(active?'800':'600')+';font-family:Fraunces,serif;transform:'+(active?'scale(1.06)':'scale(1)')+';box-shadow:'+(active?'0 3px 10px rgba(26,95,200,0.25)':'none')+';transition:all 0.15s;">'+x+'</button>';}).join('')+'</div>'+
-        '<div style="background:'+t.bg+';border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;"><span style="font-size:20px;line-height:1;">'+t.icon+'</span><div><div style="font-size:13px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">'+t.label+'</div><div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">'+t.sub+'</div></div></div>'+
-        '<button onclick="confirmSupplierCount(window._sqVal)" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;" onmouseover="this.style.opacity=0.88" onmouseout="this.style.opacity=1">Get '+n+' quote'+(n>1?'s':'')+' <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#fff" stroke-width="2.2"><path d="M3 6.5h7M7.5 3.5l3 3-3 3"/></svg></button>';
-      if(next) area.insertBefore(newWrap,next); else area.appendChild(newWrap);
-      area.scrollTop=area.scrollHeight;
-    }
-  }
+  if (!wrap) return;
+  var labels = {1:'Fastest',2:'Quick',3:'Balanced',4:'Good mix',5:'More options',6:'Wide',7:'Wider',8:'Very wide',9:'Near max',10:'Maximum'};
+
+  // Update badge
+  var badge = wrap.querySelector('div>div:last-child');
+  // Update track fill
+  var inp = wrap.querySelector('input[type=range]');
+  if (inp) { inp.value = n; inp.style.background = 'linear-gradient(to right,#1A5FC8 ' + ((n-1)/9*100).toFixed(0) + '%,#e2e8f0 ' + ((n-1)/9*100).toFixed(0) + '%)'; }
+  // Update middle label
+  var spans = wrap.querySelectorAll('span');
+  if (spans[1]) spans[1].textContent = n + ' quote' + (n>1?'s':'') + ' · ' + (labels[n]||'');
+  // Update badge number
+  var topRow = wrap.querySelector('div');
+  if (topRow) { var badgeEl = topRow.lastChild; if (badgeEl) badgeEl.textContent = n; }
+  // Update button
+  var btn = wrap.querySelector('button');
+  if (btn) btn.textContent = 'Get ' + n + ' quote' + (n>1?'s':'') + ' →';
 }
 
 function updateSliderHint(val) { if (typeof sqSetVal === 'function') sqSetVal(parseInt(val)); }
@@ -5812,7 +5774,6 @@ function confirmSupplierCount(count) {
   if (s) s.remove();
   sendFromSuggestion('I want ' + count + ' quote' + (count > 1 ? 's' : '') + ' please');
 }
-
 function showAuthPageV1(mode){showAuthPage(mode);}
 
 function showAuthPageV3(mode){showAuthPage(mode);}
