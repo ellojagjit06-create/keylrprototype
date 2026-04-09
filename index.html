@@ -3589,7 +3589,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
               <div id="profilePwdSection">
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Password</label>
                 <div style="position:relative;">
-                  <input id="profilePwd" type="password" placeholder="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 44px 11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+                  <input id="profilePwd" type="password" readonly placeholder="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;" value="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 44px 11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
                   <button type="button" id="profilePwdEye" onclick="togglePwdVisibility('profilePwd',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:0;color:#94a3b8;display:flex;align-items:center;">
                     <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg>
                   </button>
@@ -6590,47 +6590,162 @@ function _updateProfilePwdSection(){
   var emailEl = document.getElementById('profileEmail');
   var emailVal = emailEl ? emailEl.value.trim() : '';
   var isPhoneUser = _user && _user._authMethod === 'phone';
-  // Show password section if: has email entered (for phone users), or always for email users
   var show = !isPhoneUser || emailVal.length > 0;
   sec.style.display = show ? '' : 'none';
-  // Show verify button if email entered and not yet verified
+  // Verify button
   var verifyBtn = document.getElementById('profileVerifyEmailBtn');
   if (verifyBtn) {
     var emailVerified = _user && _user._emailVerified;
     verifyBtn.style.display = (emailVal && !emailVerified) ? 'inline' : 'none';
   }
-  // Password label: "Set password" for phone users without password, "Password" otherwise
+  // Password field: always readonly, always shows bullets
+  var inp = document.getElementById('profilePwd');
+  if (inp) {
+    inp.setAttribute('readonly', '');
+    inp.style.background = '#fafafa';
+    inp.style.color = '#94a3b8';
+    inp.style.cursor = 'default';
+  }
+  // Password label
   var pwLabel = sec.querySelector('label');
-  if (pwLabel && isPhoneUser) pwLabel.textContent = 'Set password';
+  if (pwLabel) pwLabel.textContent = isPhoneUser ? 'Set password' : 'Password';
+  // Change password button label
+  var btn = document.getElementById('profileChangePwdBtn');
+  if (btn) { btn.textContent = 'Change password'; btn.onclick = profileChangePwd; }
 }
 
 function profileChangePwd(){
-  var inp = document.getElementById('profilePwd');
-  if (inp) {
-    inp.removeAttribute('readonly');
-    inp.focus();
-    inp.value = '';
-    inp.placeholder = 'Enter new password';
-    inp.style.borderColor = '#1A5FC8';
+  // Show change password modal with new + confirm fields
+  var modal = document.createElement('div');
+  modal.id = 'changePwdModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(15,23,42,0.45);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;animation:modalPop 0.2s ease;';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;padding:32px 28px 28px;max-width:400px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.18);';
+
+  // Icon
+  var ico = document.createElement('div');
+  ico.style.cssText = 'width:52px;height:52px;background:#eff6ff;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;';
+  ico.innerHTML = '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1A5FC8" stroke-width="1.8"><rect x="3" y="10" width="16" height="11" rx="2"/><path d="M7 10V7a4 4 0 018 0v3"/><circle cx="11" cy="15.5" r="1.5" fill="#1A5FC8" stroke="none"/></svg>';
+
+  var h = document.createElement('div');
+  h.style.cssText = 'font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;text-align:center;margin-bottom:6px;';
+  h.textContent = 'Change password';
+
+  var sub = document.createElement('div');
+  sub.style.cssText = 'font-size:13px;color:#64748b;font-family:Inter,sans-serif;text-align:center;margin-bottom:22px;';
+  sub.textContent = 'Enter and confirm your new password below.';
+
+  // New password field
+  function makePwdField(id, placeholder) {
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'position:relative;margin-bottom:14px;';
+    var inp = document.createElement('input');
+    inp.id = id; inp.type = 'password'; inp.placeholder = placeholder;
+    inp.style.cssText = 'width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 44px 11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color 0.15s;';
+    inp.addEventListener('focus', function(){ this.style.borderColor='#1A5FC8'; });
+    inp.addEventListener('blur',  function(){ this.style.borderColor='#e2e8f0'; });
+    var eye = document.createElement('button');
+    eye.type = 'button';
+    eye.style.cssText = 'position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;';
+    eye.innerHTML = '<svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="5.5" ry="3.5"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none"/></svg>';
+    eye.onclick = function(){ inp.type = inp.type==='password'?'text':'password'; };
+    wrap.appendChild(inp); wrap.appendChild(eye);
+    return wrap;
   }
-  // Show confirm modal after save
-  var btn = document.getElementById('profileChangePwdBtn');
-  if (btn) { btn.textContent = 'Save password'; btn.onclick = profileSavePwd; }
+
+  var newWrap  = makePwdField('cpNewPwd',  'New password (min 8 chars)');
+  var confWrap = makePwdField('cpConfPwd', 'Confirm new password');
+
+  var errMsg = document.createElement('div');
+  errMsg.id = 'cpErr';
+  errMsg.style.cssText = 'font-size:12px;color:#ef4444;font-family:Inter,sans-serif;margin-bottom:10px;display:none;';
+
+  // Buttons row
+  var row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:10px;margin-top:6px;';
+
+  var btnCancel = document.createElement('button');
+  btnCancel.style.cssText = 'flex:1;background:#f1f5f9;border:none;border-radius:12px;padding:12px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;transition:background 0.15s;';
+  btnCancel.textContent = 'Cancel';
+  btnCancel.onmouseover = function(){ this.style.background='#e2e8f0'; };
+  btnCancel.onmouseout  = function(){ this.style.background='#f1f5f9'; };
+  btnCancel.onclick = function(){ modal.remove(); };
+
+  var btnSave = document.createElement('button');
+  btnSave.style.cssText = 'flex:1;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border:none;border-radius:12px;padding:12px;font-size:13.5px;font-weight:700;color:#fff;cursor:pointer;font-family:Inter,sans-serif;transition:opacity 0.15s;';
+  btnSave.textContent = 'Update password';
+  btnSave.onmouseover = function(){ this.style.opacity='0.88'; };
+  btnSave.onmouseout  = function(){ this.style.opacity='1'; };
+  btnSave.onclick = function(){
+    var np = document.getElementById('cpNewPwd');
+    var cp = document.getElementById('cpConfPwd');
+    var err = document.getElementById('cpErr');
+    if (!np || !cp) return;
+    if (!np.value.trim() || np.value.length < 8) {
+      err.textContent = 'Password must be at least 8 characters.'; err.style.display='block'; np.style.borderColor='#ef4444'; return;
+    }
+    if (np.value !== cp.value) {
+      err.textContent = 'Passwords do not match.'; err.style.display='block'; cp.style.borderColor='#ef4444'; return;
+    }
+    // Save password
+    if (_user) { _user._pwd = np.value; _updateUser({_pwd: np.value}); }
+    modal.remove();
+    // Show confetti + success then redirect to landing
+    _showPwdChangedSuccess();
+  };
+
+  row.appendChild(btnCancel); row.appendChild(btnSave);
+  box.appendChild(ico); box.appendChild(h); box.appendChild(sub);
+  box.appendChild(newWrap); box.appendChild(confWrap); box.appendChild(errMsg); box.appendChild(row);
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  setTimeout(function(){ var f=document.getElementById('cpNewPwd'); if(f) f.focus(); }, 80);
 }
 
 function profileSavePwd(){
-  var inp = document.getElementById('profilePwd');
-  if (!inp || !inp.value.trim()) { inp && (inp.style.borderColor='#ef4444'); return; }
-  if (inp.value.length < 8) {
-    showToast('Password must be at least 8 characters','error'); return;
+  // Legacy alias — delegate to modal flow
+  profileChangePwd();
+}
+
+function _showPwdChangedSuccess(){
+  // Launch confetti
+  _launchConfetti();
+  // Show a brief success overlay then redirect to landing
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(255,255,255,0.92);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;animation:modalPop 0.3s ease;';
+  overlay.innerHTML =
+    '<div style="text-align:center;padding:40px;">' +
+      '<div style="font-size:52px;margin-bottom:16px;">🎉</div>' +
+      '<div style="font-size:24px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">Password updated!</div>' +
+      '<div style="font-size:14px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:24px;">Your password has been changed successfully.<br>Please log in again with your new password.</div>' +
+      '<button onclick="_pwdSuccessGoToLogin()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px 32px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Go to login</button>' +
+    '</div>';
+  document.body.appendChild(overlay);
+}
+
+function _pwdSuccessGoToLogin(){
+  // Remove success overlay and log out to landing
+  document.querySelectorAll('[style*="backdrop-filter"]').forEach(function(el){ if(el.innerHTML.includes('Password updated')) el.remove(); });
+  _clearUser();
+  if (typeof backToLanding === 'function') backToLanding(null);
+}
+
+function _launchConfetti(){
+  var colors = ['#1A5FC8','#0FA3D0','#f59e0b','#10b981','#8b5cf6','#ef4444'];
+  for (var i = 0; i < 80; i++) {
+    (function(i){
+      setTimeout(function(){
+        var c = document.createElement('div');
+        var col = colors[Math.floor(Math.random()*colors.length)];
+        var size = Math.random()*8+4;
+        c.style.cssText = 'position:fixed;z-index:100000;pointer-events:none;width:'+size+'px;height:'+size+'px;background:'+col+';border-radius:'+(Math.random()>0.5?'50%':'2px')+';left:'+(Math.random()*100)+'vw;top:-10px;animation:confettiFall '+(Math.random()*2+1.5)+'s ease-in forwards;transform:rotate('+(Math.random()*360)+'deg);';
+        document.body.appendChild(c);
+        setTimeout(function(){ c.remove(); }, 4000);
+      }, i*30);
+    })(i);
   }
-  if (_user) _user.password = inp.value;
-  inp.value = '';
-  inp.placeholder = '••••••••';
-  inp.style.borderColor = '#e2e8f0';
-  var btn = document.getElementById('profileChangePwdBtn');
-  if (btn) { btn.textContent = 'Change password'; btn.onclick = profileChangePwd; }
-  showToast('Password updated successfully','success');
 }
 
 function profileVerifyEmail(){
@@ -9443,6 +9558,12 @@ button:active { transform: scale(0.98); }
 /* Sidebar nav items */
 .db-sidebar nav div, #suppSidebar nav div { transition: background 0.12s ease, color 0.12s ease; }
 
+
+/* ── Confetti animation ── */
+@keyframes confettiFall {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+}
 </style>
 
 </body>
