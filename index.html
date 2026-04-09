@@ -6304,7 +6304,7 @@ function showSupplierAuth() {
   function render() {
     modal.innerHTML = '';
     var wrap = document.createElement('div');
-    wrap.style.cssText = 'background:#fff;border-radius:20px;width:100%;max-width:440px;position:relative;box-shadow:0 24px 64px rgba(0,0,0,0.2);overflow:hidden;animation:modalPop 0.22s ease;';
+    wrap.style.cssText = 'background:#fff;border-radius:20px;width:100%;max-width:440px;position:relative;box-shadow:0 24px 64px rgba(0,0,0,0.2);animation:modalPop 0.22s ease;';
 
     // Header
     var hdr = document.createElement('div');
@@ -6322,7 +6322,17 @@ function showSupplierAuth() {
     body.style.cssText = 'padding:20px 26px 24px;';
 
     if (window._suppAuth.step === 'contact') {
-            // Contact field
+      // Full name field
+      var nameLabel = document.createElement('label');
+      nameLabel.style.cssText = 'display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;';
+      nameLabel.innerHTML = 'Full name <span style="color:#ef4444;">*</span>';
+      var nameWrap = document.createElement('div');
+      nameWrap.style.marginBottom = '14px';
+      nameWrap.appendChild(nameLabel);
+      nameWrap.appendChild(makeInput('suppName', 'text', 'Your full name', window._suppAuth.name));
+      body.appendChild(nameWrap);
+
+      // Contact field
       var ctLabel = document.createElement('label');
       ctLabel.style.cssText = 'display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;';
       ctLabel.textContent = 'Email or mobile number';
@@ -6528,11 +6538,13 @@ function _syncSettingsPage(){
     pi.value=phoneVal;
   }
 
-  // Password — pre-fill if stored from signup
+  // Password — pre-fill with dots if stored from signup (field is readonly)
   var pwd=document.getElementById('profilePwd');
-  if(pwd&&_user._pwd&&!pwd.value)pwd.value=_user._pwd;
-  var pwdE=document.getElementById('profilePwdEmail');
-  if(pwdE&&_user._pwd&&!pwdE.value)pwdE.value=_user._pwd;
+  if(pwd){
+    if(!pwd.value) pwd.value = _user._pwd ? '••••••••' : '';
+  }
+  // Update password section visibility for phone users
+  setTimeout(_updateProfilePwdSection, 50);
 
   // Verify badge
   var badge=document.getElementById('settingsVerifyBadge');
@@ -6749,10 +6761,11 @@ function _launchConfetti(){
 }
 
 function profileVerifyEmail(){
-  showToast('Verification email sent! Check your inbox.','success');
-  var btn = document.getElementById('profileVerifyEmailBtn');
-  if (btn) btn.style.display = 'none';
-  if (_user) _user._emailVerified = true;
+  // Show the same email verification popup used elsewhere
+  if (!_user) return;
+  var email = (_user.email || '');
+  if (!email) { showToast('Please enter your email address first', 'warning'); return; }
+  sendVerifyEmail();
 }
 
 function validateProfPhone(inp){
