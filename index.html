@@ -5521,8 +5521,10 @@ function showAuthPage(mode, forcedRole) {
         _emailVerified: false
       });
       modal.remove(); delete window._auth;
-      goToDashboard('', false);
-      if (a.role === 'manager') {
+      if (a.role === 'supplier') {
+        showSupplierOnboarding();
+      } else {
+        goToDashboard('', false);
         setTimeout(function(){ showPage('settings', null); }, 500);
       }
     } else {
@@ -6297,7 +6299,7 @@ function showSupplierAuth() {
 
     // Body
     var body = document.createElement('div');
-    body.style.cssText = 'padding:20px 26px 24px;';
+    body.style.cssText = 'padding:20px 26px 16px;';
 
     if (window._suppAuth.step === 'contact') {
       // Name field
@@ -6392,9 +6394,20 @@ function showSupplierAuth() {
     render();
   };
   window._suppSubmit = function() {
-    _setUser({ name: window._suppAuth.name || '', email: window._suppAuth.contact || '', contact: window._suppAuth.contact || '', role: 'supplier', profileComplete: false });
+    var isPhone = /^\d{7,15}$/.test((window._suppAuth.contact||'').replace(/[\s\-\(\)\+]/g,''));
+    var pwdEl = document.getElementById('suppPwd');
+    _setUser({
+      name: window._suppAuth.name || '',
+      email: isPhone ? '' : (window._suppAuth.contact || ''),
+      phone: isPhone ? (window._suppAuth.contact || '') : '',
+      contact: window._suppAuth.contact || '',
+      role: 'supplier',
+      profileComplete: false,
+      _pwd: pwdEl ? pwdEl.value : ''
+    });
     modal.remove(); delete window._suppAuth;
-    goToDashboard('', false);
+    // Redirect to supplier onboarding (not property manager dashboard)
+    showSupplierOnboarding();
   };
   render();
 }
@@ -7712,6 +7725,378 @@ var _afterLoginFn = null;
 var _origSetUserForBooking = typeof _setUser !== 'undefined' ? _setUser : null;
 
 // ═══ END ONBOARDING FLOW ═══
+
+
+
+// ═══════════════════════════════════════════════════════════
+// SUPPLIER ONBOARDING FLOW
+// Multi-step full-page onboarding for new suppliers
+// ═══════════════════════════════════════════════════════════
+
+var _suppOnboard = {
+  step: 0,
+  operationType: '',   // 'sole_trader' | 'company'
+  trades: [],
+  coverage: [],
+  bio: '',
+  rate: '',
+  availability: '',
+  insurance: false,
+  dbs: false
+};
+
+var _suppOnboardSteps = [
+  { id:'operate',      title:'How do you operate?',           sub:'This determines your verification path and compliance requirements.' },
+  { id:'trades',       title:'What trades do you cover?',     sub:'Select all that apply — you can update this later.' },
+  { id:'coverage',     title:'Where do you work?',            sub:'Select the regions you cover.' },
+  { id:'rate',         title:'Your rates & availability',     sub:'Give property managers a clear picture of what to expect.' },
+  { id:'compliance',   title:'Insurance & compliance',        sub:'Required to receive bookings on Keylr.' },
+  { id:'bio',          title:'Your professional profile',     sub:'Help property managers choose you with confidence.' },
+];
+
+function showSupplierOnboarding() {
+  // Hide any existing screens
+  var pg_landing = document.getElementById('pg-landing');
+  var pg_dashboard = document.getElementById('pg-dashboard');
+  if (pg_landing)   pg_landing.style.display = 'none';
+  if (pg_dashboard) pg_dashboard.style.display = 'none';
+
+  // Remove any existing onboarding screen
+  var ex = document.getElementById('supplierOnboardingScreen');
+  if (ex) ex.remove();
+
+  // Create full-page onboarding screen
+  var screen = document.createElement('div');
+  screen.id = 'supplierOnboardingScreen';
+  screen.style.cssText = 'position:fixed;inset:0;background:#f0f2f5;z-index:10000;display:flex;flex-direction:column;font-family:Inter,sans-serif;overflow:hidden;';
+  document.body.appendChild(screen);
+
+  _suppOnboard.step = 0;
+  _renderSuppOnboard();
+}
+
+function _renderSuppOnboard() {
+  var screen = document.getElementById('supplierOnboardingScreen');
+  if (!screen) return;
+  var step = _suppOnboard.step;
+  var total = _suppOnboardSteps.length;
+  var stepDef = _suppOnboardSteps[step];
+  var pct = Math.round((step / total) * 100);
+
+  screen.innerHTML =
+    // Top nav bar
+    '<div style="background:#fff;border-bottom:1px solid #e8ecf3;padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">'
+      + '<div style="display:flex;align-items:center;gap:10px;">'
+        + '<div style="width:32px;height:32px;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);border-radius:8px;display:flex;align-items:center;justify-content:center;">'
+          + '<svg width="18" height="18" viewBox="0 0 852 151" fill="none"><path d="M0 145V0l18.6.09L37.1 0v75.5V151H18.7H.36L0 145z" fill="#fff"/><path d="M111 148L51 83l43-48 35-36h24l-46 51-10 11 98 100h-44z" fill="#fff"/><path d="M190 134v-17h67h67v17v17H257h-67v-17z" fill="#fff"/></svg>'
+        + '</div>'
+        + '<span style="font-size:15px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">Keylr</span>'
+        + '<span style="font-size:10px;font-weight:700;color:#1d4ed8;background:#eff6ff;border-radius:4px;padding:2px 7px;letter-spacing:0.04em;">Pro</span>'
+      + '</div>'
+      // Progress bar
+      + '<div style="flex:1;margin:0 32px;display:flex;align-items:center;gap:12px;">'
+        + '<div style="flex:1;height:5px;background:#e2e8f0;border-radius:3px;overflow:hidden;">'
+          + '<div style="width:' + pct + '%;height:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:3px;transition:width 0.5s ease;"></div>'
+        + '</div>'
+        + '<span style="font-size:12px;color:#94a3b8;font-weight:600;white-space:nowrap;">Setup</span>'
+      + '</div>'
+      + (step > 0
+        ? '<button onclick="_suppOnboardBack()" style="background:none;border:none;color:#64748b;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;padding:0;">'
+            + '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3L5 7l4 4"/></svg>Back</button>'
+        : '<div style="width:60px;"></div>')
+    + '</div>'
+    // Main content
+    + '<div style="flex:1;overflow-y:auto;display:flex;align-items:flex-start;justify-content:center;padding:48px 24px 32px;">'
+      + '<div style="width:100%;max-width:640px;">'
+        + '<div style="text-align:center;margin-bottom:36px;">'
+          + '<div style="font-size:24px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">' + stepDef.title + '</div>'
+          + '<div style="font-size:14px;color:#64748b;line-height:1.5;">' + stepDef.sub + '</div>'
+        + '</div>'
+        + _buildSuppOnboardStep(step)
+      + '</div>'
+    + '</div>'
+    // Bottom nav
+    + '<div style="background:#fff;border-top:1px solid #e8ecf3;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">'
+      + '<button onclick="_suppSkipStep()" style="background:none;border:none;color:#94a3b8;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Skip for now</button>'
+      + '<div style="display:flex;align-items:center;gap:8px;">'
+        + '<span style="font-size:12.5px;color:#94a3b8;font-family:Inter,sans-serif;">' + (step+1) + ' of ' + total + '</span>'
+        + '<button onclick="_suppOnboardNext()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;">'
+          + (step === total-1 ? 'Finish setup' : 'Continue')
+          + '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6.5h9M8 3.5l3 3-3 3"/></svg>'
+        + '</button>'
+      + '</div>'
+    + '</div>';
+}
+
+function _buildSuppOnboardStep(step) {
+  var id = _suppOnboardSteps[step].id;
+
+  if (id === 'operate') {
+    return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">'
+      + _suppOpCard('sole_trader',
+          '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="14" cy="9" r="5"/><path d="M4 24c0-5.5 4.5-10 10-10s10 4.5 10 10"/></svg>',
+          'Sole Trader',
+          'You are the business — personal ID verification, individual insurance and DBS.')
+      + _suppOpCard('company',
+          '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="10" width="20" height="14" rx="2"/><path d="M9 10V8a5 5 0 0110 0v2"/><path d="M4 16h20"/><path d="M11 20h2M15 20h2"/></svg>',
+          'Company',
+          'Registered at Companies House — company-level verification, director ID checks.')
+      + '</div>';
+  }
+
+  if (id === 'trades') {
+    var trades = [
+      { icon:'🔧', label:'Plumbing' },
+      { icon:'⚡', label:'Electrical' },
+      { icon:'🔥', label:'Gas & Heating' },
+      { icon:'🧹', label:'Cleaning' },
+      { icon:'🔒', label:'Locksmith' },
+      { icon:'🪟', label:'Windows & Glazing' },
+      { icon:'🏗️', label:'Building & Construction' },
+      { icon:'🎨', label:'Decorating & Painting' },
+      { icon:'🌿', label:'Landscaping & Gardening' },
+      { icon:'🛡️', label:'Fire Safety' },
+      { icon:'🔍', label:'Inspection & Inventory' },
+      { icon:'🏠', label:'Roofing' },
+      { icon:'❄️', label:'Air Conditioning' },
+      { icon:'🐭', label:'Pest Control' },
+      { icon:'📋', label:'Compliance Certificates' },
+      { icon:'🚚', label:'Removals' },
+    ];
+    return '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">'
+      + trades.map(function(t) {
+          var sel = _suppOnboard.trades.indexOf(t.label) >= 0;
+          return '<div onclick="_suppToggleTrade(\'' + t.label + '\',this)" data-trade="'+t.label+'" style="border:1.5px solid '+(sel?'#1d4ed8':'#e2e8f0')+';border-radius:12px;padding:14px 12px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all 0.15s;display:flex;align-items:center;gap:8px;">'
+            + '<span style="font-size:18px;line-height:1;">'+t.icon+'</span>'
+            + '<span style="font-size:13px;font-weight:600;color:'+(sel?'#1d4ed8':'#374151')+';font-family:Inter,sans-serif;">'+t.label+'</span>'
+          + '</div>';
+        }).join('')
+      + '</div>';
+  }
+
+  if (id === 'coverage') {
+    var regions = ['London','South East','South West','East of England','Midlands','North West','North East','Yorkshire & Humber','Scotland','Wales','Northern Ireland','Nationwide'];
+    return '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">'
+      + regions.map(function(r) {
+          var sel = _suppOnboard.coverage.indexOf(r) >= 0;
+          return '<div onclick="_suppToggleCoverage(\'' + r + '\',this)" data-region="'+r+'" style="border:1.5px solid '+(sel?'#1d4ed8':'#e2e8f0')+';border-radius:12px;padding:13px 14px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all 0.15s;">'
+            + '<div style="font-size:13px;font-weight:600;color:'+(sel?'#1d4ed8':'#374151')+';font-family:Inter,sans-serif;">'+r+'</div>'
+          + '</div>';
+        }).join('')
+      + '</div>';
+  }
+
+  if (id === 'rate') {
+    return '<div style="display:flex;flex-direction:column;gap:16px;max-width:480px;margin:0 auto;">'
+      + _suppInput('Hourly rate (optional)', 'so-rate', 'text', 'e.g. £45/hr or from £60/hr', _suppOnboard.rate)
+      + '<div><label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;font-family:Inter,sans-serif;">Typical availability</label>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+      + ['Weekdays','Evenings','Weekends','Flexible / All week','Emergency callouts'].map(function(a){
+          var sel = _suppOnboard.availability === a;
+          return '<div onclick="_suppSetAvailability(\'' + a + '\',this)" data-avail="'+a+'" style="border:1.5px solid '+(sel?'#1d4ed8':'#e2e8f0')+';border-radius:10px;padding:11px 14px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';font-size:13px;font-weight:600;color:'+(sel?'#1d4ed8':'#374151')+';font-family:Inter,sans-serif;transition:all 0.15s;">'+a+'</div>';
+        }).join('')
+      + '</div></div></div>';
+  }
+
+  if (id === 'compliance') {
+    return '<div style="display:flex;flex-direction:column;gap:16px;max-width:480px;margin:0 auto;">'
+      + '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:20px;">'
+      + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;">Compliance checklist</div>'
+      + _suppCheck('comp-insurance', 'Public liability insurance', 'Required — min £1m cover', '🛡️', _suppOnboard.insurance)
+      + _suppCheck('comp-dbs', 'DBS / Background check', 'Enhanced preferred for residential work', '✅', _suppOnboard.dbs)
+      + '</div>'
+      + '<div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:12px;padding:14px 16px;font-size:12.5px;color:#92400e;font-family:Inter,sans-serif;line-height:1.5;">'
+      + '<strong>You can start receiving quotes without these</strong> — but verified suppliers are prioritised in matching. Upload documents in your dashboard settings.'
+      + '</div>'
+      + '</div>';
+  }
+
+  if (id === 'bio') {
+    return '<div style="display:flex;flex-direction:column;gap:16px;max-width:480px;margin:0 auto;">'
+      + '<div><label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;font-family:Inter,sans-serif;">Professional bio</label>'
+      + '<textarea id="so-bio" placeholder="Tell property managers about your experience, specialist skills, and what makes you stand out..." rows="5" style="width:100%;border:1.5px solid #e2e8f0;border-radius:12px;padding:12px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;background:#fafafa;resize:vertical;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#1d4ed8\'" onblur="this.style.borderColor=\'#e2e8f0\'">' + (_suppOnboard.bio||'') + '</textarea>'
+      + '<div style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:4px;">Tip: mention years of experience, certifications, and types of properties you specialise in.</div>'
+      + '</div>'
+      + '<div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:12px;padding:16px;display:flex;align-items:center;gap:12px;">'
+      + '<div style="width:40px;height:40px;background:#1d4ed8;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+      + '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.8"><path d="M10 2l2.5 5h5.5l-4.5 3.5 2 6L10 14l-5.5 3.5 2-6L2 7h5.5z"/></svg></div>'
+      + '<div><div style="font-size:13px;font-weight:700;color:#1e3a5f;font-family:Inter,sans-serif;">Almost there!</div>'
+      + '<div style="font-size:12px;color:#3b82f6;font-family:Inter,sans-serif;margin-top:2px;">Your profile goes live after a quick review — usually within 24 hours.</div>'
+      + '</div></div>'
+      + '</div>';
+  }
+
+  return '<div style="text-align:center;color:#94a3b8;">Step ' + (step+1) + '</div>';
+}
+
+function _suppOpCard(type, iconSvg, title, desc) {
+  var sel = _suppOnboard.operationType === type;
+  return '<div onclick="_suppSelectOpType(\'' + type + '\',this)" data-optype="' + type + '" style="border:2px solid '+(sel?'#1d4ed8':'#e2e8f0')+';border-radius:16px;padding:28px 22px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all 0.2s;position:relative;">'
+    + (sel ? '<div style="position:absolute;top:12px;right:12px;width:20px;height:20px;background:#1d4ed8;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M2 5l2.5 2.5 3.5-3.5"/></svg></div>' : '')
+    + '<div style="width:52px;height:52px;background:'+(sel?'#dbeafe':'#f1f5f9')+';border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:'+(sel?'#1d4ed8':'#64748b')+';">'
+    + iconSvg + '</div>'
+    + '<div style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">' + title + '</div>'
+    + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;">' + desc + '</div>'
+    + '</div>';
+}
+
+function _suppInput(label, id, type, placeholder, val) {
+  return '<div><label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;font-family:Inter,sans-serif;">'+label+'</label>'
+    + '<input id="'+id+'" type="'+type+'" placeholder="'+placeholder+'" value="'+(val||'')+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;background:#fafafa;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#1d4ed8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#fafafa\'"/></div>';
+}
+
+function _suppCheck(id, label, sub, icon, checked) {
+  return '<label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;padding:12px;border-radius:10px;transition:background 0.1s;margin-bottom:6px;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'\'">'
+    + '<input type="checkbox" id="'+id+'" '+(checked?'checked':'')+' style="width:18px;height:18px;accent-color:#1d4ed8;cursor:pointer;margin-top:1px;flex-shrink:0;" onchange="_suppSaveCompliance()"/>'
+    + '<div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">'+icon+' '+label+'</div>'
+    + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">'+sub+'</div></div>'
+    + '</label>';
+}
+
+// ── Interaction handlers ──
+function _suppSelectOpType(type, el) {
+  _suppOnboard.operationType = type;
+  document.querySelectorAll('[data-optype]').forEach(function(card) {
+    var active = card.getAttribute('data-optype') === type;
+    card.style.borderColor = active ? '#1d4ed8' : '#e2e8f0';
+    card.style.background  = active ? '#eff6ff' : '#fff';
+    // Update checkmark
+    var existingCheck = card.querySelector('[data-check]');
+    if (existingCheck) existingCheck.remove();
+    if (active) {
+      var check = document.createElement('div');
+      check.setAttribute('data-check','1');
+      check.style.cssText = 'position:absolute;top:12px;right:12px;width:20px;height:20px;background:#1d4ed8;border-radius:50%;display:flex;align-items:center;justify-content:center;';
+      check.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M2 5l2.5 2.5 3.5-3.5"/></svg>';
+      card.appendChild(check);
+    }
+    // Update icon color
+    var iconWrap = card.querySelector('div > div');
+    if (iconWrap) {
+      iconWrap.style.background = active ? '#dbeafe' : '#f1f5f9';
+      iconWrap.style.color      = active ? '#1d4ed8' : '#64748b';
+    }
+  });
+}
+
+function _suppToggleTrade(trade, el) {
+  var idx = _suppOnboard.trades.indexOf(trade);
+  if (idx >= 0) _suppOnboard.trades.splice(idx, 1);
+  else _suppOnboard.trades.push(trade);
+  var sel = _suppOnboard.trades.indexOf(trade) >= 0;
+  el.style.borderColor = sel ? '#1d4ed8' : '#e2e8f0';
+  el.style.background  = sel ? '#eff6ff' : '#fff';
+  var txt = el.querySelector('span:last-child');
+  if (txt) txt.style.color = sel ? '#1d4ed8' : '#374151';
+}
+
+function _suppToggleCoverage(region, el) {
+  var idx = _suppOnboard.coverage.indexOf(region);
+  if (idx >= 0) _suppOnboard.coverage.splice(idx, 1);
+  else _suppOnboard.coverage.push(region);
+  var sel = _suppOnboard.coverage.indexOf(region) >= 0;
+  el.style.borderColor = sel ? '#1d4ed8' : '#e2e8f0';
+  el.style.background  = sel ? '#eff6ff' : '#fff';
+  var txt = el.querySelector('div');
+  if (txt) txt.style.color = sel ? '#1d4ed8' : '#374151';
+}
+
+function _suppSetAvailability(avail, el) {
+  _suppOnboard.availability = avail;
+  document.querySelectorAll('[data-avail]').forEach(function(card) {
+    var active = card.getAttribute('data-avail') === avail;
+    card.style.borderColor = active ? '#1d4ed8' : '#e2e8f0';
+    card.style.background  = active ? '#eff6ff' : '#fff';
+    card.style.color       = active ? '#1d4ed8' : '#374151';
+  });
+}
+
+function _suppSaveCompliance() {
+  var ins = document.getElementById('comp-insurance');
+  var dbs = document.getElementById('comp-dbs');
+  if (ins) _suppOnboard.insurance = ins.checked;
+  if (dbs) _suppOnboard.dbs = dbs.checked;
+}
+
+function _suppOnboardNext() {
+  var step = _suppOnboard.step;
+  var id   = _suppOnboardSteps[step].id;
+
+  // Save current step data
+  if (id === 'rate') {
+    var rateEl = document.getElementById('so-rate');
+    if (rateEl) _suppOnboard.rate = rateEl.value.trim();
+  }
+  if (id === 'bio') {
+    var bioEl = document.getElementById('so-bio');
+    if (bioEl) _suppOnboard.bio = bioEl.value.trim();
+  }
+  if (id === 'compliance') {
+    _suppSaveCompliance();
+  }
+
+  if (step >= _suppOnboardSteps.length - 1) {
+    _suppOnboardFinish();
+  } else {
+    _suppOnboard.step = step + 1;
+    _renderSuppOnboard();
+  }
+}
+
+function _suppOnboardBack() {
+  if (_suppOnboard.step > 0) {
+    _suppOnboard.step--;
+    _renderSuppOnboard();
+  }
+}
+
+function _suppSkipStep() {
+  if (_suppOnboard.step >= _suppOnboardSteps.length - 1) {
+    _suppOnboardFinish();
+  } else {
+    _suppOnboard.step++;
+    _renderSuppOnboard();
+  }
+}
+
+function _suppOnboardFinish() {
+  // Save onboarding data to user
+  if (_user) {
+    _user._suppOperationType  = _suppOnboard.operationType;
+    _user._suppTrades         = _suppOnboard.trades;
+    _user._suppCoverage       = _suppOnboard.coverage;
+    _user._suppRate           = _suppOnboard.rate;
+    _user._suppAvailability   = _suppOnboard.availability;
+    _user._suppInsurance      = _suppOnboard.insurance;
+    _user._suppDbs            = _suppOnboard.dbs;
+    _user._suppBio            = _suppOnboard.bio;
+    _user.profileComplete     = true;
+    if (typeof _updateUser === 'function') _updateUser({});
+  }
+
+  // Remove onboarding screen
+  var screen = document.getElementById('supplierOnboardingScreen');
+  if (screen) screen.remove();
+
+  // Go to dashboard as supplier
+  if (typeof goToDashboard === 'function') {
+    goToDashboard('', false);
+  } else {
+    var pg = document.getElementById('pg-dashboard');
+    var lp = document.getElementById('pg-landing');
+    if (pg) pg.style.display = 'flex';
+    if (lp) lp.style.display = 'none';
+  }
+
+  // Show welcome toast
+  setTimeout(function() {
+    if (typeof showToast === 'function') {
+      showToast('Welcome to Keylr! Your supplier profile is being reviewed.', 'success');
+    }
+  }, 600);
+}
+
+// ═══ END SUPPLIER ONBOARDING ═══
 
 </script>
 
