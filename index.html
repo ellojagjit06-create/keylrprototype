@@ -3589,13 +3589,13 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
               <div id="profilePwdSection">
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Password</label>
                 <div style="position:relative;">
-                  <input id="profilePwd" type="password" readonly placeholder="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;" value="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 44px 11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+                  <input id="profilePwd" type="password" placeholder="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;" value="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 44px 11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
                   <button type="button" id="profilePwdEye" onclick="togglePwdVisibility('profilePwd',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:0;color:#94a3b8;display:flex;align-items:center;">
                     <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg>
                   </button>
                 </div>
                 <div id="profilePwdActions" style="margin-top:6px;display:flex;align-items:center;gap:12px;">
-                  <button id="profileChangePwdBtn" onclick="profileChangePwd()" type="button" style="background:none;border:none;color:#1A5FC8;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Change password</button>
+                  <button id="profileChangePwdBtn" onclick="profileChangePwd()" type="button" style="display:none;background:none;border:none;color:#1A5FC8;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Change password</button>
                   <span id="profileVerifyEmailBtn" style="display:none;"><button onclick="profileVerifyEmail()" type="button" style="background:none;border:none;color:#10b981;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Verify email</button></span>
                 </div>
               </div>
@@ -6538,11 +6538,9 @@ function _syncSettingsPage(){
     pi.value=phoneVal;
   }
 
-  // Password — pre-fill with dots if stored from signup (field is readonly)
+  // Password — let _updateProfilePwdSection handle display/state
   var pwd=document.getElementById('profilePwd');
-  if(pwd){
-    if(!pwd.value) pwd.value = _user._pwd ? '••••••••' : '';
-  }
+  if(pwd) pwd.value = ''; // clear; _updateProfilePwdSection will set correct state
   // Update password section visibility for phone users
   setTimeout(_updateProfilePwdSection, 50);
 
@@ -6599,31 +6597,82 @@ function onProfileEmailInput(inp){
 function _updateProfilePwdSection(){
   var sec = document.getElementById('profilePwdSection');
   if (!sec) return;
-  var emailEl = document.getElementById('profileEmail');
+  var emailEl  = document.getElementById('profileEmail');
   var emailVal = emailEl ? emailEl.value.trim() : '';
-  var isPhoneUser = _user && _user._authMethod === 'phone';
+  var isPhoneUser  = _user && _user._authMethod === 'phone';
+  var hasSavedPwd  = _user && !!_user._pwd;
+
+  // Show password section only when: not a phone user OR phone user has typed an email
   var show = !isPhoneUser || emailVal.length > 0;
   sec.style.display = show ? '' : 'none';
-  // Verify button
+  if (!show) return;
+
+  // Password label
+  var pwLabel = sec.querySelector('label');
+  if (pwLabel) pwLabel.textContent = (isPhoneUser && !hasSavedPwd) ? 'Set password' : 'Password';
+
+  var inp = document.getElementById('profilePwd');
+  var btn = document.getElementById('profileChangePwdBtn');
+  var actionsDiv = document.getElementById('profilePwdActions');
+
+  if (isPhoneUser && !hasSavedPwd) {
+    // Phone user, no password yet — editable input + "Save password" button
+    if (inp) {
+      inp.removeAttribute('readonly');
+      inp.value = '';
+      inp.placeholder = 'Create a password (min 8 chars)';
+      inp.style.background = '#fff';
+      inp.style.color = '#0f172a';
+      inp.style.cursor = 'text';
+      inp.style.borderColor = '#e2e8f0';
+    }
+    // Show "Save password" button, hide "Change password"
+    if (btn) { btn.textContent = 'Save password'; btn.style.display = 'inline'; btn.onclick = profileSaveFirstPwd; }
+  } else {
+    // Has a password (email or phone user) — readonly bullets + "Change password" button
+    if (inp) {
+      inp.setAttribute('readonly', '');
+      if (!inp.value) inp.value = '••••••••';
+      inp.style.background = '#fafafa';
+      inp.style.color = '#94a3b8';
+      inp.style.cursor = 'default';
+    }
+    if (btn) { btn.textContent = 'Change password'; btn.style.display = 'inline'; btn.onclick = profileChangePwd; }
+  }
+
+  // Verify email button
   var verifyBtn = document.getElementById('profileVerifyEmailBtn');
   if (verifyBtn) {
     var emailVerified = _user && _user._emailVerified;
     verifyBtn.style.display = (emailVal && !emailVerified) ? 'inline' : 'none';
   }
-  // Password field: always readonly, always shows bullets
+}
+
+function profileSaveFirstPwd(){
   var inp = document.getElementById('profilePwd');
-  if (inp) {
-    inp.setAttribute('readonly', '');
-    inp.style.background = '#fafafa';
-    inp.style.color = '#94a3b8';
-    inp.style.cursor = 'default';
+  if (!inp || !inp.value.trim()) {
+    if (inp) inp.style.borderColor = '#ef4444';
+    showToast('Please enter a password','error'); return;
   }
-  // Password label
-  var pwLabel = sec.querySelector('label');
-  if (pwLabel) pwLabel.textContent = isPhoneUser ? 'Set password' : 'Password';
-  // Change password button label
+  if (inp.value.length < 8) {
+    inp.style.borderColor = '#ef4444';
+    showToast('Password must be at least 8 characters','error'); return;
+  }
+  // Save
+  if (_user) { _user._pwd = inp.value; _updateUser({_pwd: inp.value}); }
+  // Lock field
+  inp.setAttribute('readonly','');
+  inp.value = '••••••••';
+  inp.style.background = '#fafafa';
+  inp.style.color = '#94a3b8';
+  inp.style.cursor = 'default';
+  inp.style.borderColor = '#e2e8f0';
+  // Swap button to "Change password"
   var btn = document.getElementById('profileChangePwdBtn');
   if (btn) { btn.textContent = 'Change password'; btn.onclick = profileChangePwd; }
+  // Show verify email button if applicable
+  _updateProfilePwdSection();
+  showToast('Password saved!','success');
 }
 
 function profileChangePwd(){
