@@ -8105,11 +8105,7 @@ function _buildSuppOnboardStep(step) {
           + '<div>'+_suppField('Account number','','pm-acc-num','text','12345678')+'</div>'
         + '</div>'
         + _suppField('Bank name','','pm-bank','text','e.g. Barclays, Lloyds, Starling')
-        + '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;">'
-          + '<div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">Business bank account?</div>'
-            + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">Confirm whether you use a dedicated business account or a personal account.</div></div>'
-          + _suppToggle('pm-biz-acc','',false)
-        + '</div>'
+
       + '</div>'
       // Monthly invoicing
       + '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;">'
@@ -8189,6 +8185,7 @@ function _buildSuppOnboardStep(step) {
           + '<div>' + _suppField('Expiry date','','ins-expiry','date','') + '</div>'
         + '</div>'
         + _suppUploadField('Upload insurance certificate','PDF or image — details extracted automatically via OCR','main-ins-upload')
+        + '<div style="margin-top:12px;"></div>'
         + _suppExpandCheck('comp-el','Employers\' liability insurance','Legally required if your company has employees. Minimum £5,000,000 coverage.',_suppOnboard.employersLiability||false,'el')
         + _suppExpandCheck('comp-pi','Professional indemnity insurance','Required for design, advisory, or consultancy work (architects, surveyors, etc.).',_suppOnboard.profIndemnity||false,'pi')
       + '</div>'
@@ -8218,10 +8215,15 @@ function _buildSuppOnboardStep(step) {
             }).join('')
         + '</div>'
         // ── Cert detail cards (one per selected cert, outside the grid) ──
-        + (selCerts.length > 0 ? '<div style="display:flex;flex-direction:column;gap:10px;margin-top:14px;">' + selCerts.map(function(c){
+        // Registration number labels for auto-verified certs
+        + (selCerts.length > 0 ? '<div style="display:flex;flex-direction:column;gap:14px;margin-top:14px;">' + selCerts.map(function(c){
               var sid = 'ci_' + c.replace(/[^a-z0-9]/gi,'_');
-              return '<div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;">' +
-                '<div style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e2e8f0;">' + c + '</div>' +
+              var isAuto = autoVerified.indexOf(c) >= 0;
+              var regNumLabels = {'Gas Safe':'Gas Safe registration number','NICEIC / NAPIT':'NICEIC / NAPIT number','CSCS':'CSCS card number'};
+              var regNumPh    = {'Gas Safe':'Enter your Gas Safe number','NICEIC / NAPIT':'Enter your NICEIC / NAPIT number','CSCS':'Enter your CSCS number'};
+              var autoLabel = isAuto ? ('<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">' + c + '</div><span style="font-size:11px;background:#dbeafe;color:#1d4ed8;border-radius:4px;padding:1px 8px;font-weight:700;font-family:Inter,sans-serif;">Auto-verified</span></div>' + '<div style="margin-bottom:12px;"><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">' + (regNumLabels[c]||c+' number') + '</label><input type="text" placeholder="' + (regNumPh[c]||'Enter your number') + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;"></div>') : ('<div style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;">' + c + '</div>');
+              return '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;">' +
+                autoLabel +
                 '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
                   '<div>' +
                     '<label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">Expiry date</label>' +
@@ -8303,40 +8305,17 @@ function _buildSuppOnboardStep(step) {
         + '<div style="font-size:13.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:4px;">DBS policy statement <span style="font-size:11.5px;color:#94a3b8;font-weight:400;">(recommended)</span></div>'
         + '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:8px;line-height:1.5;">Companies with a compliant DBS policy do not need individual certificates for each employee. Your policy should cover: check frequency, escalation process, named compliance owner, and record retention.</div>'
         + '<textarea rows="4" placeholder="Describe your company\'s DBS checking procedures, frequency of checks, escalation process, and compliance ownership." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 13px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;resize:vertical;margin-bottom:10px;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"></textarea>'
-        + '<button style="background:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;margin-bottom:10px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M6.5 1l1 2.7h2.8l-2.3 1.7.9 2.8L6.5 6.7l-2.4 1.5.9-2.8L2.7 3.7h2.8z"/></svg> Draft with AI <span style="font-size:11.5px;color:#94a3b8;font-weight:400;">AI generates a compliant policy template you can customise.</span></button>'
+        + '<button onclick="_suppDraftWithAI(\'dbs-policy\')" onmouseover="this.style.background=\'linear-gradient(90deg,#1A5FC8,#0FA3D0)\';this.style.color=\'#fff\';this.style.borderColor=\'transparent\';this.querySelector(\'svg\').style.stroke=\'#fff\';" onmouseout="this.style.background=\'none\';this.style.color=\'#374151\';this.style.borderColor=\'#e2e8f0\';this.querySelector(\'svg\').style.stroke=\'#1A5FC8\';" style="background:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;transition:all 0.2s;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M6.5 1l1 2.7h2.8l-2.3 1.7.9 2.8L6.5 6.7l-2.4 1.5.9-2.8L2.7 3.7h2.8z"/></svg> Draft with AI</button>'
+        + '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:10px;">AI generates a compliant policy template you can customise.</div>'
         + _suppUploadField('Upload DBS policy document','PDF of your formal DBS procedures','company-dbs-upload')
         + '<div style="font-size:13.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-top:14px;margin-bottom:4px;">Worker vetting policy</div>'
         + '<textarea rows="4" placeholder="Describe how you vet operatives before dispatching them: ID checks, trade verification, reference checks, ongoing monitoring." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 13px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;resize:vertical;margin-bottom:10px;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"></textarea>'
-        + '<button style="background:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;margin-bottom:10px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M6.5 1l1 2.7h2.8l-2.3 1.7.9 2.8L6.5 6.7l-2.4 1.5.9-2.8L2.7 3.7h2.8z"/></svg> Draft with AI <span style="font-size:11.5px;color:#94a3b8;font-weight:400;">AI generates a comprehensive vetting policy you can adapt.</span></button>'
+        + '<button onclick="_suppDraftWithAI(\'vetting-policy\')" onmouseover="this.style.background=\'linear-gradient(90deg,#1A5FC8,#0FA3D0)\';this.style.color=\'#fff\';this.style.borderColor=\'transparent\';this.querySelector(\'svg\').style.stroke=\'#fff\';" onmouseout="this.style.background=\'none\';this.style.color=\'#374151\';this.style.borderColor=\'#e2e8f0\';this.querySelector(\'svg\').style.stroke=\'#1A5FC8\';" style="background:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;transition:all 0.2s;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M6.5 1l1 2.7h2.8l-2.3 1.7.9 2.8L6.5 6.7l-2.4 1.5.9-2.8L2.7 3.7h2.8z"/></svg> Draft with AI</button>'
+        + '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:10px;">AI generates a comprehensive vetting policy you can adapt.</div>'
         + _suppUploadField('Upload vetting policy document','PDF — reviewed by our compliance team within 2–3 days','vetting-upload')
       + '</div>' : '')
       // ── DBS Check ──
-      + '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;">'
-        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
-          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#64748b" stroke-width="1.6"><path d="M7.5 1l5 2v5c0 3-5 6-5 6S2.5 11 2.5 8V3z"/></svg>'
-          + '<span style="font-size:14.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">DBS Check (Basic)</span>'
-          + '<span style="font-size:11px;background:#fef2f2;color:#dc2626;border-radius:4px;padding:1px 7px;font-weight:700;font-family:Inter,sans-serif;">Required</span>'
-        + '</div>'
-        + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;margin-bottom:14px;">A Basic DBS certificate confirms you have no unspent criminal convictions. This is a mandatory requirement for all sole traders listing on the marketplace. An Enhanced DBS is <strong>not</strong> required at sign-up — it\'s only triggered when a client flags a sensitive environment (schools, care homes, hospitals).</div>'
-        + _suppUploadField('Upload Basic DBS certificate','PDF or image of your certificate','dbs-upload')
-          + '<div style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:6px;">Don\'t have a DBS certificate?</div>'
-          + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:8px;">You can apply for a Basic DBS check online through the official DBS website. It costs £18 and typically arrives within 14 days. You can continue onboarding and upload it later.</div>'
-          + '<a href="#" style="font-size:13px;color:#1d4ed8;font-weight:600;font-family:Inter,sans-serif;text-decoration:none;">Apply for a Basic DBS check on GOV.UK ↗</a>'
-        + '</div>'
-        + '<div style="font-size:13.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:10px;">Criminal record declaration</div>'
-        + ['I confirm I have no unspent criminal convictions|This declaration covers unspent offences only under the Rehabilitation of Offenders Act 1974.',
-           'I have unspent convictions to declare|Having a record doesn\'t automatically disqualify you — we review each case individually.'].map(function(opt){
-            var parts = opt.split('|');
-            var sel = _suppOnboard.dbsDeclared === parts[0];
-            return '<div onclick="_suppSetDbsDecl(\''+parts[0].replace(/'/g,"\\'")+'\')" style="border:1px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;padding:14px 16px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;">'
-              + '<div style="width:18px;height:18px;border-radius:50%;border:2px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">'
-                + (sel?'<div style="width:7px;height:7px;border-radius:50%;background:#fff;"></div>':'')
-              + '</div>'
-              + '<div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">'+parts[0]+'</div>'
-                + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">'+parts[1]+'</div></div>'
-            + '</div>';
-          }).join('')
-      + '</div>'
+
       // Right to work
       + '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;">'
         + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
@@ -8358,7 +8337,7 @@ function _buildSuppOnboardStep(step) {
         + '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;">If a client requires document verification, you can provide your UKVI share code later — verified via the Home Office API.</div>'
       + '</div>'
       // Job references
-      + '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;">'
+      + '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin-top:20px;">'
         + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
           + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#f59e0b" stroke-width="1.6"><path d="M7.5 1l1.5 3.5H13l-3.5 2.5 1.3 4L7.5 9 4.2 11l1.3-4L2 4.5h4z"/></svg>'
           + '<span style="font-size:14.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Job references & portfolio</span>'
@@ -8734,11 +8713,13 @@ function _suppSaveCompliance() {
 
 // Expandable insurance toggle card — when ON shows input fields
 function _suppExpandCheck(id, label, sub, checked, prefix) {
-  var uploadId = 'upload-' + id;
-  var fields = checked
-    ? '<div style="margin-top:14px;border-top:1px solid #e2e8f0;padding-top:14px;display:flex;flex-direction:column;gap:12px;">'      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'        + '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">' + prefix.toUpperCase() + ' insurance provider</label>'          + '<input type="text" placeholder="e.g. ' + (prefix==='el'?'Zurich, Aviva':'Hiscox, AXA') + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"></div>'        + '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">' + prefix.toUpperCase() + ' policy number</label>'          + '<input type="text" placeholder="e.g. ' + (prefix==='el'?'EL-12345':'PI-12345') + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"></div>'      + '</div>'      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'        + '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">' + prefix.toUpperCase() + ' coverage amount</label>'          + '<input type="text" placeholder="' + (prefix==='el'?'Min £5,000,000':'e.g. £500,000') + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"></div>'        + '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">' + prefix.toUpperCase() + ' expiry date</label>'          + '<input type="date" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#374151;"></div>'      + '</div>'      + _suppUploadField('Upload ' + prefix.toUpperCase() + ' insurance certificate','PDF or image — details extracted automatically')    + '</div>'    : '';
+  // For PSC confirm — just a toggle, no inner fields
+  var isPscConfirm = id === 'comp-psc-confirm';
+  var fields = (!isPscConfirm && checked)
+    ? '<div style="margin-top:14px;border-top:1px solid #e2e8f0;padding-top:14px;display:flex;flex-direction:column;gap:12px;">'      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'        + '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">' + prefix.toUpperCase() + ' insurance provider</label>'          + '<input type="text" placeholder="e.g. ' + (prefix==='el'?'Zurich, Aviva':'Hiscox, AXA') + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"></div>'        + '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">' + prefix.toUpperCase() + ' policy number</label>'          + '<input type="text" placeholder="e.g. ' + (prefix==='el'?'EL-12345':'PI-12345') + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"></div>'      + '</div>'      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'        + '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">' + prefix.toUpperCase() + ' coverage amount</label>'          + '<input type="text" placeholder="' + (prefix==='el'?'Min £5,000,000':'e.g. £500,000') + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"></div>'        + '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">' + prefix.toUpperCase() + ' expiry date</label>'          + '<input type="date" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#374151;"></div>'      + '</div>'      + _suppUploadField('Upload ' + prefix.toUpperCase() + ' insurance certificate','PDF or image — details extracted automatically','ins-'+prefix+'-upload')    + '</div>'    : '';
   return '<div id="wrap-' + id + '" style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:10px;">'    + '<div style="display:flex;align-items:center;justify-content:space-between;">'      + '<div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:2px;">' + label + '</div>'        + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">' + sub + '</div></div>'      + _suppToggle(id, "_suppToggleCheck(\'" + id + "\')", checked)    + '</div>'    + fields  + '</div>';
 }
+
 
 // Upload field with functional file picker + remove
 function _suppUploadField(label, hint, fieldId) {
@@ -8848,6 +8829,37 @@ function _suppSetJobs(val){_suppOnboard.jobsCompleted=val;_renderSuppOnboard();}
 function _suppWriteWithAI(){
   var bio=document.getElementById('so-bio');
   if(bio){bio.value='I am a professional '+(_suppOnboard.primaryTrade||'tradesperson')+' with '+(_suppOnboard.experience||'several years')+' of experience. I specialise in high-quality work for property managers across '+(_suppOnboard.coverage&&_suppOnboard.coverage.length?_suppOnboard.coverage.join(', '):'the UK')+'. Known for reliability, prompt responses, and professional standards.';} 
+}
+
+function _suppDraftWithAI(target) {
+  var draftTexts = {
+    'dbs-policy': 'Our company maintains a rigorous DBS checking policy for all operatives. All employees and subcontractors dispatched to client properties must hold a valid Basic DBS certificate before commencing work. DBS checks are renewed every 3 years or upon change of role. Our designated compliance owner reviews all certificates quarterly. Any disclosures are reviewed individually by senior management before a decision is made. Records are retained securely for 6 years in line with data protection requirements.',
+    'vetting-policy': 'Before dispatching any operative to a client property, we conduct a thorough vetting process. This includes: (1) Identity verification — valid photo ID and proof of address checked against official documents; (2) Right to Work check — verified against Home Office records; (3) Trade verification — licences, certifications and qualifications are checked and documented; (4) Reference checks — minimum 2 professional references contacted; (5) Ongoing monitoring — annual rechecks for long-term operatives. All vetting records are maintained securely and available for audit upon request by Keylr compliance team.',
+  };
+  var text = draftTexts[target] || '';
+  if (!text) return;
+  // Find the textarea nearest to the button
+  var allTextareas = document.querySelectorAll('textarea');
+  var targetTa = null;
+  if (target === 'dbs-policy') {
+    for (var i=0; i<allTextareas.length; i++) {
+      if (allTextareas[i].placeholder && allTextareas[i].placeholder.indexOf('DBS checking procedures') >= 0) { targetTa = allTextareas[i]; break; }
+    }
+  } else if (target === 'vetting-policy') {
+    for (var i=0; i<allTextareas.length; i++) {
+      if (allTextareas[i].placeholder && allTextareas[i].placeholder.indexOf('vet operatives') >= 0) { targetTa = allTextareas[i]; break; }
+    }
+  }
+  if (targetTa) {
+    targetTa.value = '';
+    var words = text.split(' ');
+    var idx = 0;
+    var timer = setInterval(function(){
+      if (idx >= words.length) { clearInterval(timer); return; }
+      targetTa.value += (idx > 0 ? ' ' : '') + words[idx];
+      idx++;
+    }, 40);
+  }
 }
 
 function _suppSaveCurrentStep(){
