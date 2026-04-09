@@ -7735,7 +7735,10 @@ var _origSetUserForBooking = typeof _setUser !== 'undefined' ? _setUser : null;
 
 var _suppOnboard = {
   step: 0,
-  operationType: '',   // 'sole_trader' | 'company'
+  operationType: '',        // 'sole_trader' | 'company'
+  sector: '',               // 'residential' | 'commercial' | 'both'
+  sectorSubRes: [],         // residential sub-types
+  sectorSubCom: [],         // commercial sub-types
   trades: [],
   coverage: [],
   bio: '',
@@ -7745,30 +7748,30 @@ var _suppOnboard = {
   dbs: false
 };
 
+// Steps AFTER "How do you operate?" — same for both sole trader & company
+// Step 0 = operate type (always)
+// Steps 1+ = the flow
 var _suppOnboardSteps = [
-  { id:'operate',      title:'How do you operate?',           sub:'This determines your verification path and compliance requirements.' },
-  { id:'trades',       title:'What trades do you cover?',     sub:'Select all that apply — you can update this later.' },
-  { id:'coverage',     title:'Where do you work?',            sub:'Select the regions you cover.' },
-  { id:'rate',         title:'Your rates & availability',     sub:'Give property managers a clear picture of what to expect.' },
-  { id:'compliance',   title:'Insurance & compliance',        sub:'Required to receive bookings on Keylr.' },
-  { id:'bio',          title:'Your professional profile',     sub:'Help property managers choose you with confidence.' },
+  { id:'operate',    title:'How do you operate?',         sub:'This determines your verification path and compliance requirements.' },
+  { id:'sector',     title:'What sectors do you serve?',  sub:'This determines which service categories, insurance thresholds, and job types you\'ll be shown.' },
+  { id:'trades',     title:'What trades do you cover?',   sub:'Select all that apply — you can update this later.' },
+  { id:'coverage',   title:'Where do you work?',          sub:'Select the regions you cover.' },
+  { id:'rate',       title:'Your rates & availability',   sub:'Give property managers a clear picture of what to expect.' },
+  { id:'compliance', title:'Insurance & compliance',      sub:'Required to receive bookings on Keylr.' },
+  { id:'bio',        title:'Your professional profile',   sub:'Help property managers choose you with confidence.' },
 ];
 
 function showSupplierOnboarding() {
-  // Hide any existing screens
   var pg_landing = document.getElementById('pg-landing');
   var pg_dashboard = document.getElementById('pg-dashboard');
   if (pg_landing)   pg_landing.style.display = 'none';
   if (pg_dashboard) pg_dashboard.style.display = 'none';
-
-  // Remove any existing onboarding screen
   var ex = document.getElementById('supplierOnboardingScreen');
   if (ex) ex.remove();
 
-  // Create full-page onboarding screen
   var screen = document.createElement('div');
   screen.id = 'supplierOnboardingScreen';
-  screen.style.cssText = 'position:fixed;inset:0;background:#f0f2f5;z-index:10000;display:flex;flex-direction:column;font-family:Inter,sans-serif;overflow:hidden;';
+  screen.style.cssText = 'position:fixed;inset:0;background:#eef0f3;z-index:10000;display:flex;flex-direction:column;font-family:Inter,sans-serif;overflow:hidden;';
   document.body.appendChild(screen);
 
   _suppOnboard.step = 0;
@@ -7778,179 +7781,240 @@ function showSupplierOnboarding() {
 function _renderSuppOnboard() {
   var screen = document.getElementById('supplierOnboardingScreen');
   if (!screen) return;
-  var step = _suppOnboard.step;
-  var total = _suppOnboardSteps.length;
+  var step    = _suppOnboard.step;
+  var total   = _suppOnboardSteps.length;
   var stepDef = _suppOnboardSteps[step];
-  var pct = Math.round((step / total) * 100);
+  var pct     = Math.round((step / total) * 100);
+  var isFirst = step === 0;
+  var isLast  = step === total - 1;
 
-  screen.innerHTML =
-    // Top nav bar
-    '<div style="background:#fff;border-bottom:1px solid #e8ecf3;padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">'
-      + '<div style="display:flex;align-items:center;gap:10px;">'
-        + '<div style="width:32px;height:32px;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);border-radius:8px;display:flex;align-items:center;justify-content:center;">'
-          + '<svg width="18" height="18" viewBox="0 0 852 151" fill="none"><path d="M0 145V0l18.6.09L37.1 0v75.5V151H18.7H.36L0 145z" fill="#fff"/><path d="M111 148L51 83l43-48 35-36h24l-46 51-10 11 98 100h-44z" fill="#fff"/><path d="M190 134v-17h67h67v17v17H257h-67v-17z" fill="#fff"/></svg>'
-        + '</div>'
-        + '<span style="font-size:15px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">Keylr</span>'
-        + '<span style="font-size:10px;font-weight:700;color:#1d4ed8;background:#eff6ff;border-radius:4px;padding:2px 7px;letter-spacing:0.04em;">Pro</span>'
+  // ── Top nav bar ──
+  var navBar = '<div style="background:#fff;border-bottom:1px solid #e2e8f0;padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">'
+    + '<div style="display:flex;align-items:center;gap:10px;">'
+      + '<div style="width:32px;height:32px;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+        + '<svg width="16" height="16" viewBox="0 0 852 151" fill="none"><path d="M0 145V0l18.6.09L37.1 0v75.5V151H18.7H.36L0 145z" fill="#fff"/><path d="M111 148L51 83l43-48 35-36h24l-46 51-10 11 98 100h-44z" fill="#fff"/><path d="M190 134v-17h67h67v17v17H257h-67v-17z" fill="#fff"/></svg>'
       + '</div>'
-      // Progress bar
-      + '<div style="flex:1;margin:0 32px;display:flex;align-items:center;gap:12px;">'
-        + '<div style="flex:1;height:5px;background:#e2e8f0;border-radius:3px;overflow:hidden;">'
-          + '<div style="width:' + pct + '%;height:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:3px;transition:width 0.5s ease;"></div>'
-        + '</div>'
-        + '<span style="font-size:12px;color:#94a3b8;font-weight:600;white-space:nowrap;">Setup</span>'
-      + '</div>'
-      + (step > 0
-        ? '<button onclick="_suppOnboardBack()" style="background:none;border:none;color:#64748b;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;padding:0;">'
-            + '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3L5 7l4 4"/></svg>Back</button>'
-        : '<div style="width:60px;"></div>')
+      + '<span style="font-size:15px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">Keylr</span>'
+      + '<span style="font-size:10px;font-weight:700;color:#1d4ed8;background:#eff6ff;border-radius:4px;padding:2px 7px;letter-spacing:0.04em;">Pro</span>'
     + '</div>'
-    // Main content
-    + '<div style="flex:1;overflow-y:auto;display:flex;align-items:flex-start;justify-content:center;padding:48px 24px 32px;">'
-      + '<div style="width:100%;max-width:640px;">'
-        + '<div style="text-align:center;margin-bottom:36px;">'
-          + '<div style="font-size:24px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">' + stepDef.title + '</div>'
-          + '<div style="font-size:14px;color:#64748b;line-height:1.5;">' + stepDef.sub + '</div>'
-        + '</div>'
-        + _buildSuppOnboardStep(step)
+    + '<div style="flex:1;margin:0 40px;display:flex;align-items:center;gap:10px;">'
+      + '<div style="flex:1;height:4px;background:#e2e8f0;border-radius:2px;overflow:hidden;">'
+        + '<div style="width:'+pct+'%;height:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:2px;transition:width 0.5s ease;"></div>'
       + '</div>'
+      + '<span style="font-size:12px;color:#94a3b8;font-weight:600;white-space:nowrap;font-family:Inter,sans-serif;">Setup</span>'
     + '</div>'
-    // Bottom nav
-    + '<div style="background:#fff;border-top:1px solid #e8ecf3;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">'
-      + '<button onclick="_suppSkipStep()" style="background:none;border:none;color:#94a3b8;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Skip for now</button>'
-      + '<div style="display:flex;align-items:center;gap:8px;">'
-        + '<span style="font-size:12.5px;color:#94a3b8;font-family:Inter,sans-serif;">' + (step+1) + ' of ' + total + '</span>'
-        + '<button onclick="_suppOnboardNext()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;">'
-          + (step === total-1 ? 'Finish setup' : 'Continue')
-          + '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6.5h9M8 3.5l3 3-3 3"/></svg>'
-        + '</button>'
+    + '<div style="width:60px;"></div>'
+  + '</div>';
+
+  // ── Page body ──
+  var body = '<div style="flex:1;overflow-y:auto;display:flex;align-items:flex-start;justify-content:center;padding:52px 24px 40px;">'
+    + '<div style="width:100%;max-width:680px;">'
+      + '<div style="text-align:center;margin-bottom:40px;">'
+        + '<div style="font-size:26px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:10px;">'+stepDef.title+'</div>'
+        + '<div style="font-size:14px;color:#64748b;line-height:1.5;max-width:500px;margin:0 auto;">'+stepDef.sub+'</div>'
       + '</div>'
-    + '</div>';
+      + _buildSuppOnboardStep(step)
+    + '</div>'
+  + '</div>';
+
+  // ── Bottom nav — matches reference: Back left, Continue right ──
+  var bottomNav = '<div style="background:#fff;border-top:1px solid #e2e8f0;padding:20px 32px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">'
+    + (isFirst
+        ? '<div></div>'
+        : '<button onclick="_suppOnboardBack()" style="background:none;border:none;color:#374151;font-size:14px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;padding:0;">'
+            + '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 4L6 8l4 4"/></svg>Back'
+          + '</button>')
+    + '<button onclick="_suppOnboardNext()" style="background:#10b981;color:#fff;border:none;border-radius:10px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;">'
+      + (isLast ? 'Finish setup' : 'Continue')
+      + '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2.2"><path d="M3 7h8M8 4l3 3-3 3"/></svg>'
+    + '</button>'
+  + '</div>';
+
+  screen.innerHTML = navBar + body + bottomNav;
 }
 
 function _buildSuppOnboardStep(step) {
   var id = _suppOnboardSteps[step].id;
 
+  // ── Step 0: Operate type ──
   if (id === 'operate') {
-    return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">'
+    return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:560px;margin:0 auto;">'
       + _suppOpCard('sole_trader',
-          '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="14" cy="9" r="5"/><path d="M4 24c0-5.5 4.5-10 10-10s10 4.5 10 10"/></svg>',
+          '<svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="15" cy="10" r="5.5"/><path d="M4 26c0-6 5-10.5 11-10.5S26 20 26 26"/></svg>',
           'Sole Trader',
           'You are the business — personal ID verification, individual insurance and DBS.')
       + _suppOpCard('company',
-          '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="10" width="20" height="14" rx="2"/><path d="M9 10V8a5 5 0 0110 0v2"/><path d="M4 16h20"/><path d="M11 20h2M15 20h2"/></svg>',
+          '<svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="12" width="22" height="14" rx="2"/><path d="M10 12V10a5 5 0 0110 0v2"/><path d="M4 18h22"/><path d="M12 22h2M16 22h2"/></svg>',
           'Company',
           'Registered at Companies House — company-level verification, director ID checks.')
       + '</div>';
   }
 
+  // ── Step 1: Sector selection + conditional sub-type chips ──
+  if (id === 'sector') {
+    var s = _suppOnboard.sector;
+
+    // Sub-type chips for residential
+    var resSubTypes = ['AST (Assured Shorthold)', 'HMO', 'STR / Short-let', 'Block management'];
+    // Sub-type chips for commercial
+    var comSubTypes = ['Offices', 'Retail', 'Industrial', 'Hospitality', 'Mixed use'];
+
+    var resChips = (s === 'residential' || s === 'both')
+      ? '<div style="margin-top:22px;">'
+          + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:10px;">Residential sub-types <span style="color:#94a3b8;">(optional)</span></div>'
+          + '<div style="display:flex;flex-wrap:wrap;gap:8px;">'
+          + resSubTypes.map(function(sub){
+              var sel = _suppOnboard.sectorSubRes.indexOf(sub) >= 0;
+              return '<button onclick="_suppToggleSectorSub(\'res\',\''+sub+'\',this)" data-sub="'+sub+'" style="padding:7px 14px;border-radius:999px;border:1.5px solid '+(sel?'#10b981':'#d1d5db')+';background:'+(sel?'#ecfdf5':'#fff')+';color:'+(sel?'#065f46':'#374151')+';font-size:13px;font-weight:500;font-family:Inter,sans-serif;cursor:pointer;transition:all 0.15s;">'+sub+'</button>';
+            }).join('')
+          + '</div></div>'
+      : '';
+
+    var comChips = (s === 'commercial' || s === 'both')
+      ? '<div style="margin-top:22px;">'
+          + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:10px;">Commercial sub-types <span style="color:#94a3b8;">(optional)</span></div>'
+          + '<div style="display:flex;flex-wrap:wrap;gap:8px;">'
+          + comSubTypes.map(function(sub){
+              var sel = _suppOnboard.sectorSubCom.indexOf(sub) >= 0;
+              return '<button onclick="_suppToggleSectorSub(\'com\',\''+sub+'\',this)" data-sub="'+sub+'" style="padding:7px 14px;border-radius:999px;border:1.5px solid '+(sel?'#10b981':'#d1d5db')+';background:'+(sel?'#ecfdf5':'#fff')+';color:'+(sel?'#065f46':'#374151')+';font-size:13px;font-weight:500;font-family:Inter,sans-serif;cursor:pointer;transition:all 0.15s;">'+sub+'</button>';
+            }).join('')
+          + '</div></div>'
+      : '';
+
+    return '<div style="max-width:660px;margin:0 auto;">'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:4px;">'
+        + _suppSectorCard('residential',
+            '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 24V13L14 4l10 9v11"/><path d="M10 24v-7h8v7"/></svg>',
+            'Residential')
+        + _suppSectorCard('commercial',
+            '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="8" width="20" height="16" rx="1.5"/><path d="M4 14h20"/><path d="M10 8V5h8v3"/><path d="M10 17h2M16 17h2M10 21h2M16 21h2"/></svg>',
+            'Commercial')
+        + _suppSectorCard('both',
+            '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 22V13L10 6l7 7v9"/><rect x="14" y="10" width="11" height="12" rx="1.5"/><path d="M14 16h11"/></svg>',
+            'Both')
+      + '</div>'
+      + resChips
+      + comChips
+      + '</div>';
+  }
+
+  // ── Step 2: Trades ──
   if (id === 'trades') {
     var trades = [
-      { icon:'🔧', label:'Plumbing' },
-      { icon:'⚡', label:'Electrical' },
-      { icon:'🔥', label:'Gas & Heating' },
-      { icon:'🧹', label:'Cleaning' },
-      { icon:'🔒', label:'Locksmith' },
-      { icon:'🪟', label:'Windows & Glazing' },
-      { icon:'🏗️', label:'Building & Construction' },
-      { icon:'🎨', label:'Decorating & Painting' },
-      { icon:'🌿', label:'Landscaping & Gardening' },
-      { icon:'🛡️', label:'Fire Safety' },
-      { icon:'🔍', label:'Inspection & Inventory' },
-      { icon:'🏠', label:'Roofing' },
-      { icon:'❄️', label:'Air Conditioning' },
-      { icon:'🐭', label:'Pest Control' },
-      { icon:'📋', label:'Compliance Certificates' },
-      { icon:'🚚', label:'Removals' },
+      {icon:'🔧',label:'Plumbing'},{icon:'⚡',label:'Electrical'},{icon:'🔥',label:'Gas & Heating'},
+      {icon:'🧹',label:'Cleaning'},{icon:'🔒',label:'Locksmith'},{icon:'🪟',label:'Windows & Glazing'},
+      {icon:'🏗️',label:'Building & Construction'},{icon:'🎨',label:'Decorating'},{icon:'🌿',label:'Landscaping'},
+      {icon:'🛡️',label:'Fire Safety'},{icon:'🔍',label:'Inspection & Inventory'},{icon:'🏠',label:'Roofing'},
+      {icon:'❄️',label:'Air Conditioning'},{icon:'🐭',label:'Pest Control'},
+      {icon:'📋',label:'Compliance Certificates'},{icon:'🚚',label:'Removals'},
     ];
-    return '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">'
-      + trades.map(function(t) {
+    return '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;max-width:660px;margin:0 auto;">'
+      + trades.map(function(t){
           var sel = _suppOnboard.trades.indexOf(t.label) >= 0;
-          return '<div onclick="_suppToggleTrade(\'' + t.label + '\',this)" data-trade="'+t.label+'" style="border:1.5px solid '+(sel?'#1d4ed8':'#e2e8f0')+';border-radius:12px;padding:14px 12px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all 0.15s;display:flex;align-items:center;gap:8px;">'
+          return '<div onclick="_suppToggleTrade(\''+t.label+'\',this)" data-trade="'+t.label+'" style="border:1.5px solid '+(sel?'#10b981':'#e2e8f0')+';border-radius:12px;padding:14px 12px;cursor:pointer;background:'+(sel?'#ecfdf5':'#fff')+';transition:all 0.15s;display:flex;align-items:center;gap:8px;">'
             + '<span style="font-size:18px;line-height:1;">'+t.icon+'</span>'
-            + '<span style="font-size:13px;font-weight:600;color:'+(sel?'#1d4ed8':'#374151')+';font-family:Inter,sans-serif;">'+t.label+'</span>'
+            + '<span style="font-size:13px;font-weight:600;color:'+(sel?'#065f46':'#374151')+';font-family:Inter,sans-serif;">'+t.label+'</span>'
           + '</div>';
         }).join('')
       + '</div>';
   }
 
+  // ── Step 3: Coverage ──
   if (id === 'coverage') {
     var regions = ['London','South East','South West','East of England','Midlands','North West','North East','Yorkshire & Humber','Scotland','Wales','Northern Ireland','Nationwide'];
-    return '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">'
-      + regions.map(function(r) {
+    return '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;max-width:660px;margin:0 auto;">'
+      + regions.map(function(r){
           var sel = _suppOnboard.coverage.indexOf(r) >= 0;
-          return '<div onclick="_suppToggleCoverage(\'' + r + '\',this)" data-region="'+r+'" style="border:1.5px solid '+(sel?'#1d4ed8':'#e2e8f0')+';border-radius:12px;padding:13px 14px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all 0.15s;">'
-            + '<div style="font-size:13px;font-weight:600;color:'+(sel?'#1d4ed8':'#374151')+';font-family:Inter,sans-serif;">'+r+'</div>'
+          return '<div onclick="_suppToggleCoverage(\''+r+'\',this)" data-region="'+r+'" style="border:1.5px solid '+(sel?'#10b981':'#e2e8f0')+';border-radius:12px;padding:13px 14px;cursor:pointer;background:'+(sel?'#ecfdf5':'#fff')+';transition:all 0.15s;">'
+            + '<div style="font-size:13px;font-weight:600;color:'+(sel?'#065f46':'#374151')+';font-family:Inter,sans-serif;">'+r+'</div>'
           + '</div>';
         }).join('')
       + '</div>';
   }
 
+  // ── Step 4: Rates & availability ──
   if (id === 'rate') {
+    var avails = ['Weekdays','Evenings','Weekends','Flexible / All week','Emergency callouts'];
     return '<div style="display:flex;flex-direction:column;gap:16px;max-width:480px;margin:0 auto;">'
-      + _suppInput('Hourly rate (optional)', 'so-rate', 'text', 'e.g. £45/hr or from £60/hr', _suppOnboard.rate)
+      + '<div><label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;font-family:Inter,sans-serif;">Hourly rate <span style="font-weight:400;color:#94a3b8;">(optional)</span></label>'
+        + '<input id="so-rate" type="text" placeholder="e.g. £45/hr or from £60/hr" value="'+(_suppOnboard.rate||'')+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;background:#fafafa;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#10b981\'" onblur="this.style.borderColor=\'#e2e8f0\'"/></div>'
       + '<div><label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;font-family:Inter,sans-serif;">Typical availability</label>'
-      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
-      + ['Weekdays','Evenings','Weekends','Flexible / All week','Emergency callouts'].map(function(a){
-          var sel = _suppOnboard.availability === a;
-          return '<div onclick="_suppSetAvailability(\'' + a + '\',this)" data-avail="'+a+'" style="border:1.5px solid '+(sel?'#1d4ed8':'#e2e8f0')+';border-radius:10px;padding:11px 14px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';font-size:13px;font-weight:600;color:'+(sel?'#1d4ed8':'#374151')+';font-family:Inter,sans-serif;transition:all 0.15s;">'+a+'</div>';
-        }).join('')
-      + '</div></div></div>';
+        + '<div style="display:flex;flex-wrap:wrap;gap:8px;">'
+          + avails.map(function(a){
+              var sel = _suppOnboard.availability === a;
+              return '<button onclick="_suppSetAvailability(\''+a+'\',this)" data-avail="'+a+'" style="padding:8px 16px;border-radius:999px;border:1.5px solid '+(sel?'#10b981':'#d1d5db')+';background:'+(sel?'#ecfdf5':'#fff')+';color:'+(sel?'#065f46':'#374151')+';font-size:13px;font-weight:500;font-family:Inter,sans-serif;cursor:pointer;transition:all 0.15s;">'+a+'</button>';
+            }).join('')
+        + '</div>'
+      + '</div>'
+    + '</div>';
   }
 
+  // ── Step 5: Compliance ──
   if (id === 'compliance') {
     return '<div style="display:flex;flex-direction:column;gap:16px;max-width:480px;margin:0 auto;">'
       + '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:20px;">'
-      + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;">Compliance checklist</div>'
-      + _suppCheck('comp-insurance', 'Public liability insurance', 'Required — min £1m cover', '🛡️', _suppOnboard.insurance)
-      + _suppCheck('comp-dbs', 'DBS / Background check', 'Enhanced preferred for residential work', '✅', _suppOnboard.dbs)
+        + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:14px;">Compliance checklist</div>'
+        + _suppCompCheck('comp-insurance','Public liability insurance','Required — min £1m cover','🛡️',_suppOnboard.insurance)
+        + _suppCompCheck('comp-dbs','DBS / Background check','Enhanced preferred for residential work','✅',_suppOnboard.dbs)
       + '</div>'
       + '<div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:12px;padding:14px 16px;font-size:12.5px;color:#92400e;font-family:Inter,sans-serif;line-height:1.5;">'
-      + '<strong>You can start receiving quotes without these</strong> — but verified suppliers are prioritised in matching. Upload documents in your dashboard settings.'
+        + '<strong>You can start receiving quotes without these</strong> — but verified suppliers are prioritised in matching. Upload documents in your dashboard settings.'
       + '</div>'
-      + '</div>';
+    + '</div>';
   }
 
+  // ── Step 6: Bio ──
   if (id === 'bio') {
     return '<div style="display:flex;flex-direction:column;gap:16px;max-width:480px;margin:0 auto;">'
       + '<div><label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;font-family:Inter,sans-serif;">Professional bio</label>'
-      + '<textarea id="so-bio" placeholder="Tell property managers about your experience, specialist skills, and what makes you stand out..." rows="5" style="width:100%;border:1.5px solid #e2e8f0;border-radius:12px;padding:12px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;background:#fafafa;resize:vertical;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#1d4ed8\'" onblur="this.style.borderColor=\'#e2e8f0\'">' + (_suppOnboard.bio||'') + '</textarea>'
-      + '<div style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:4px;">Tip: mention years of experience, certifications, and types of properties you specialise in.</div>'
+        + '<textarea id="so-bio" placeholder="Tell property managers about your experience, specialist skills, and what makes you stand out..." rows="5" style="width:100%;border:1.5px solid #e2e8f0;border-radius:12px;padding:12px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;background:#fafafa;resize:vertical;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#10b981\'" onblur="this.style.borderColor=\'#e2e8f0\'">'+(_suppOnboard.bio||'')+'</textarea>'
+        + '<div style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:4px;">Tip: mention years of experience, certifications, and types of properties you specialise in.</div>'
       + '</div>'
-      + '<div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:12px;padding:16px;display:flex;align-items:center;gap:12px;">'
-      + '<div style="width:40px;height:40px;background:#1d4ed8;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
-      + '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.8"><path d="M10 2l2.5 5h5.5l-4.5 3.5 2 6L10 14l-5.5 3.5 2-6L2 7h5.5z"/></svg></div>'
-      + '<div><div style="font-size:13px;font-weight:700;color:#1e3a5f;font-family:Inter,sans-serif;">Almost there!</div>'
-      + '<div style="font-size:12px;color:#3b82f6;font-family:Inter,sans-serif;margin-top:2px;">Your profile goes live after a quick review — usually within 24 hours.</div>'
-      + '</div></div>'
-      + '</div>';
+      + '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:16px;display:flex;align-items:center;gap:12px;">'
+        + '<div style="width:40px;height:40px;background:#10b981;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2"><path d="M4 10l4 4 8-8"/></svg></div>'
+        + '<div><div style="font-size:13px;font-weight:700;color:#14532d;font-family:Inter,sans-serif;">Almost there!</div>'
+          + '<div style="font-size:12px;color:#15803d;font-family:Inter,sans-serif;margin-top:2px;">Your profile goes live after a quick review — usually within 24 hours.</div>'
+        + '</div>'
+      + '</div>'
+    + '</div>';
   }
 
-  return '<div style="text-align:center;color:#94a3b8;">Step ' + (step+1) + '</div>';
+  return '';
 }
 
+// ── Card builders ──
 function _suppOpCard(type, iconSvg, title, desc) {
   var sel = _suppOnboard.operationType === type;
-  return '<div onclick="_suppSelectOpType(\'' + type + '\',this)" data-optype="' + type + '" style="border:2px solid '+(sel?'#1d4ed8':'#e2e8f0')+';border-radius:16px;padding:28px 22px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all 0.2s;position:relative;">'
-    + (sel ? '<div style="position:absolute;top:12px;right:12px;width:20px;height:20px;background:#1d4ed8;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M2 5l2.5 2.5 3.5-3.5"/></svg></div>' : '')
-    + '<div style="width:52px;height:52px;background:'+(sel?'#dbeafe':'#f1f5f9')+';border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:'+(sel?'#1d4ed8':'#64748b')+';">'
-    + iconSvg + '</div>'
-    + '<div style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">' + title + '</div>'
-    + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;">' + desc + '</div>'
-    + '</div>';
+  var col = sel ? '#10b981' : '#e2e8f0';
+  return '<div onclick="_suppSelectOpType(\''+type+'\',this)" data-optype="'+type+'" style="border:2px solid '+col+';border-radius:16px;padding:28px 22px;cursor:pointer;background:'+(sel?'#f0fdf4':'#fff')+';transition:all 0.2s;position:relative;">'
+    + (sel ? '<div style="position:absolute;top:12px;right:12px;width:22px;height:22px;background:#10b981;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 5.5l2.5 2.5 4-4"/></svg></div>' : '')
+    + '<div style="width:52px;height:52px;background:'+(sel?'#d1fae5':'#f1f5f9')+';border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:'+(sel?'#10b981':'#64748b')+';">'
+      + iconSvg
+    + '</div>'
+    + '<div style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">'+title+'</div>'
+    + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;">'+desc+'</div>'
+  + '</div>';
 }
 
-function _suppInput(label, id, type, placeholder, val) {
-  return '<div><label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;font-family:Inter,sans-serif;">'+label+'</label>'
-    + '<input id="'+id+'" type="'+type+'" placeholder="'+placeholder+'" value="'+(val||'')+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;background:#fafafa;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#1d4ed8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#fafafa\'"/></div>';
+function _suppSectorCard(type, iconSvg, title) {
+  var sel = _suppOnboard.sector === type;
+  var col = sel ? '#10b981' : '#e2e8f0';
+  return '<div onclick="_suppSelectSector(\''+type+'\',this)" data-sector="'+type+'" style="border:2px solid '+col+';border-radius:14px;padding:24px 18px;cursor:pointer;background:'+(sel?'#f0fdf4':'#fff')+';transition:all 0.2s;position:relative;text-align:center;">'
+    + (sel ? '<div style="position:absolute;top:10px;right:10px;width:20px;height:20px;background:#10b981;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 5l2 2.5 4-4"/></svg></div>' : '')
+    + '<div style="display:flex;justify-content:center;margin-bottom:12px;color:'+(sel?'#10b981':'#64748b')+';">'
+      + iconSvg
+    + '</div>'
+    + '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">'+title+'</div>'
+  + '</div>';
 }
 
-function _suppCheck(id, label, sub, icon, checked) {
-  return '<label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;padding:12px;border-radius:10px;transition:background 0.1s;margin-bottom:6px;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'\'">'
-    + '<input type="checkbox" id="'+id+'" '+(checked?'checked':'')+' style="width:18px;height:18px;accent-color:#1d4ed8;cursor:pointer;margin-top:1px;flex-shrink:0;" onchange="_suppSaveCompliance()"/>'
+function _suppCompCheck(id, label, sub, icon, checked) {
+  return '<label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;padding:10px;border-radius:10px;transition:background 0.1s;margin-bottom:4px;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'\'">'
+    + '<input type="checkbox" id="'+id+'" '+(checked?'checked':'')+' style="width:18px;height:18px;accent-color:#10b981;cursor:pointer;margin-top:2px;flex-shrink:0;" onchange="_suppSaveCompliance()"/>'
     + '<div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">'+icon+' '+label+'</div>'
-    + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">'+sub+'</div></div>'
-    + '</label>';
+      + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">'+sub+'</div></div>'
+  + '</label>';
 }
 
 // ── Interaction handlers ──
@@ -7958,56 +8022,70 @@ function _suppSelectOpType(type, el) {
   _suppOnboard.operationType = type;
   document.querySelectorAll('[data-optype]').forEach(function(card) {
     var active = card.getAttribute('data-optype') === type;
-    card.style.borderColor = active ? '#1d4ed8' : '#e2e8f0';
-    card.style.background  = active ? '#eff6ff' : '#fff';
-    // Update checkmark
-    var existingCheck = card.querySelector('[data-check]');
-    if (existingCheck) existingCheck.remove();
+    card.style.borderColor = active ? '#10b981' : '#e2e8f0';
+    card.style.background  = active ? '#f0fdf4' : '#fff';
+    // Checkmark
+    var ck = card.querySelector('[data-ck]');
+    if (ck) ck.remove();
     if (active) {
-      var check = document.createElement('div');
-      check.setAttribute('data-check','1');
-      check.style.cssText = 'position:absolute;top:12px;right:12px;width:20px;height:20px;background:#1d4ed8;border-radius:50%;display:flex;align-items:center;justify-content:center;';
-      check.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M2 5l2.5 2.5 3.5-3.5"/></svg>';
-      card.appendChild(check);
+      var ck2 = document.createElement('div');
+      ck2.setAttribute('data-ck','1');
+      ck2.style.cssText = 'position:absolute;top:12px;right:12px;width:22px;height:22px;background:#10b981;border-radius:50%;display:flex;align-items:center;justify-content:center;';
+      ck2.innerHTML = '<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 5.5l2.5 2.5 4-4"/></svg>';
+      card.appendChild(ck2);
     }
-    // Update icon color
-    var iconWrap = card.querySelector('div > div');
-    if (iconWrap) {
-      iconWrap.style.background = active ? '#dbeafe' : '#f1f5f9';
-      iconWrap.style.color      = active ? '#1d4ed8' : '#64748b';
+    // Icon bg
+    var iconWrap = card.querySelector('div > div:first-child');
+    if (iconWrap && !iconWrap.getAttribute('data-ck')) {
+      iconWrap.style.background = active ? '#d1fae5' : '#f1f5f9';
+      iconWrap.style.color      = active ? '#10b981' : '#64748b';
     }
   });
 }
 
+function _suppSelectSector(type, el) {
+  _suppOnboard.sector = type;
+  // Re-render to show/hide sub-type chips
+  _renderSuppOnboard();
+}
+
+function _suppToggleSectorSub(group, sub, el) {
+  var arr = group === 'res' ? _suppOnboard.sectorSubRes : _suppOnboard.sectorSubCom;
+  var idx = arr.indexOf(sub);
+  if (idx >= 0) arr.splice(idx, 1); else arr.push(sub);
+  var sel = arr.indexOf(sub) >= 0;
+  el.style.borderColor = sel ? '#10b981' : '#d1d5db';
+  el.style.background  = sel ? '#ecfdf5' : '#fff';
+  el.style.color       = sel ? '#065f46' : '#374151';
+}
+
 function _suppToggleTrade(trade, el) {
   var idx = _suppOnboard.trades.indexOf(trade);
-  if (idx >= 0) _suppOnboard.trades.splice(idx, 1);
-  else _suppOnboard.trades.push(trade);
+  if (idx >= 0) _suppOnboard.trades.splice(idx, 1); else _suppOnboard.trades.push(trade);
   var sel = _suppOnboard.trades.indexOf(trade) >= 0;
-  el.style.borderColor = sel ? '#1d4ed8' : '#e2e8f0';
-  el.style.background  = sel ? '#eff6ff' : '#fff';
+  el.style.borderColor = sel ? '#10b981' : '#e2e8f0';
+  el.style.background  = sel ? '#ecfdf5' : '#fff';
   var txt = el.querySelector('span:last-child');
-  if (txt) txt.style.color = sel ? '#1d4ed8' : '#374151';
+  if (txt) txt.style.color = sel ? '#065f46' : '#374151';
 }
 
 function _suppToggleCoverage(region, el) {
   var idx = _suppOnboard.coverage.indexOf(region);
-  if (idx >= 0) _suppOnboard.coverage.splice(idx, 1);
-  else _suppOnboard.coverage.push(region);
+  if (idx >= 0) _suppOnboard.coverage.splice(idx, 1); else _suppOnboard.coverage.push(region);
   var sel = _suppOnboard.coverage.indexOf(region) >= 0;
-  el.style.borderColor = sel ? '#1d4ed8' : '#e2e8f0';
-  el.style.background  = sel ? '#eff6ff' : '#fff';
+  el.style.borderColor = sel ? '#10b981' : '#e2e8f0';
+  el.style.background  = sel ? '#ecfdf5' : '#fff';
   var txt = el.querySelector('div');
-  if (txt) txt.style.color = sel ? '#1d4ed8' : '#374151';
+  if (txt) txt.style.color = sel ? '#065f46' : '#374151';
 }
 
 function _suppSetAvailability(avail, el) {
   _suppOnboard.availability = avail;
-  document.querySelectorAll('[data-avail]').forEach(function(card) {
-    var active = card.getAttribute('data-avail') === avail;
-    card.style.borderColor = active ? '#1d4ed8' : '#e2e8f0';
-    card.style.background  = active ? '#eff6ff' : '#fff';
-    card.style.color       = active ? '#1d4ed8' : '#374151';
+  document.querySelectorAll('[data-avail]').forEach(function(btn) {
+    var active = btn.getAttribute('data-avail') === avail;
+    btn.style.borderColor = active ? '#10b981' : '#d1d5db';
+    btn.style.background  = active ? '#ecfdf5' : '#fff';
+    btn.style.color       = active ? '#065f46' : '#374151';
   });
 }
 
@@ -8022,18 +8100,14 @@ function _suppOnboardNext() {
   var step = _suppOnboard.step;
   var id   = _suppOnboardSteps[step].id;
 
-  // Save current step data
+  // Save data for current step
   if (id === 'rate') {
-    var rateEl = document.getElementById('so-rate');
-    if (rateEl) _suppOnboard.rate = rateEl.value.trim();
+    var rEl = document.getElementById('so-rate'); if (rEl) _suppOnboard.rate = rEl.value.trim();
   }
   if (id === 'bio') {
-    var bioEl = document.getElementById('so-bio');
-    if (bioEl) _suppOnboard.bio = bioEl.value.trim();
+    var bEl = document.getElementById('so-bio'); if (bEl) _suppOnboard.bio = bEl.value.trim();
   }
-  if (id === 'compliance') {
-    _suppSaveCompliance();
-  }
+  if (id === 'compliance') { _suppSaveCompliance(); }
 
   if (step >= _suppOnboardSteps.length - 1) {
     _suppOnboardFinish();
@@ -8050,35 +8124,26 @@ function _suppOnboardBack() {
   }
 }
 
-function _suppSkipStep() {
-  if (_suppOnboard.step >= _suppOnboardSteps.length - 1) {
-    _suppOnboardFinish();
-  } else {
-    _suppOnboard.step++;
-    _renderSuppOnboard();
-  }
-}
-
 function _suppOnboardFinish() {
-  // Save onboarding data to user
   if (_user) {
-    _user._suppOperationType  = _suppOnboard.operationType;
-    _user._suppTrades         = _suppOnboard.trades;
-    _user._suppCoverage       = _suppOnboard.coverage;
-    _user._suppRate           = _suppOnboard.rate;
-    _user._suppAvailability   = _suppOnboard.availability;
-    _user._suppInsurance      = _suppOnboard.insurance;
-    _user._suppDbs            = _suppOnboard.dbs;
-    _user._suppBio            = _suppOnboard.bio;
-    _user.profileComplete     = true;
+    _user._suppOperationType = _suppOnboard.operationType;
+    _user._suppSector        = _suppOnboard.sector;
+    _user._suppSectorSubRes  = _suppOnboard.sectorSubRes;
+    _user._suppSectorSubCom  = _suppOnboard.sectorSubCom;
+    _user._suppTrades        = _suppOnboard.trades;
+    _user._suppCoverage      = _suppOnboard.coverage;
+    _user._suppRate          = _suppOnboard.rate;
+    _user._suppAvailability  = _suppOnboard.availability;
+    _user._suppInsurance     = _suppOnboard.insurance;
+    _user._suppDbs           = _suppOnboard.dbs;
+    _user._suppBio           = _suppOnboard.bio;
+    _user.profileComplete    = true;
     if (typeof _updateUser === 'function') _updateUser({});
   }
 
-  // Remove onboarding screen
   var screen = document.getElementById('supplierOnboardingScreen');
   if (screen) screen.remove();
 
-  // Go to dashboard as supplier
   if (typeof goToDashboard === 'function') {
     goToDashboard('', false);
   } else {
@@ -8088,7 +8153,6 @@ function _suppOnboardFinish() {
     if (lp) lp.style.display = 'none';
   }
 
-  // Show welcome toast
   setTimeout(function() {
     if (typeof showToast === 'function') {
       showToast('Welcome to Keylr! Your supplier profile is being reviewed.', 'success');
