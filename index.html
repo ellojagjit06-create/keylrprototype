@@ -7839,8 +7839,10 @@ var _suppOnboard = {
   sector: '',
   sectorSubRes: [],
   sectorSubCom: [],
-  // Identity
+  // Identity (sole trader)
   fullLegalName: '', dob: '', niNumber: '', homeAddress: '',
+  // Company identity
+  tradingName: '', regCompanyName: '', companyRegNum: '', regOfficeAddr: '', pscDob: '', tinNum: '', pscFullName: '', pscConfirmed: false, companyAddr: '',
   // Payment
   vatRegistered: false, vatNumber: '',
   accountHolder: '', sortCode: '', accountNumber: '', bankName: '', businessAccount: false,
@@ -7865,7 +7867,8 @@ var _suppPhases = ['Verification','Verification','Verification','Verification','
 var _suppOnboardSteps = [
   { id:'operate',    phase:'Setup',        title:'How do you operate?',                sub:'This determines your verification path and compliance requirements.' },
   { id:'sector',     phase:'Setup',        title:'What sectors do you serve?',         sub:'This determines which service categories, insurance thresholds, and job types you\'ll be shown.' },
-  { id:'identity',   phase:'Verification', title:'Your identity',                      sub:'As a sole trader, you are the business. We verify your personal identity to comply with UK marketplace regulations and HMRC DAC7 reporting.' },
+  { id:'identity',         phase:'Verification', title:'Your identity',                      sub:'As a sole trader, you are the business. We verify your personal identity to comply with UK marketplace regulations and HMRC DAC7 reporting.' },
+  { id:'company_identity',  phase:'Verification', title:'Company & director identity',         sub:'We verify the registered company and each person of significant control (PSC). Company identity details are validated against Companies House records.' },
   { id:'payment',    phase:'Verification', title:'Payment & banking details',          sub:'How you\'ll get paid. All financial details are encrypted and reported to HMRC under DAC7 annually.' },
   { id:'insurance',  phase:'Verification', title:'Insurance & compliance',             sub:'Your insurance and certifications are displayed on your marketplace profile as trust badges. Verified credentials increase your visibility and booking rate.' },
   { id:'background', phase:'Verification', title:'Background checks & right to work', sub:'Background checks build trust with property managers and their tenants. Requirements differ for sole traders and companies.' },
@@ -8067,6 +8070,14 @@ function _buildSuppOnboardStep(step) {
       + '</div>';
   }
 
+
+  // ── company_identity ──
+  if (id === 'company_identity') {
+    var isOn = _suppOnboard.pscConfirmed || false;
+    return '<div style="display:flex;flex-direction:column;gap:0;">'      + _suppInfoBox('Photo ID and selfie verification must be completed by a Person of Significant Control (PSC) — someone holding 25% or more of the company shares. This is a legal requirement under anti-money-laundering regulations.')      + '<div style="margin-bottom:14px;">'        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><label style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Trading name</label><span style="font-size:11px;background:#f0fdf4;color:#166534;border:1px solid #86efac;border-radius:4px;padding:1px 7px;font-weight:700;font-family:Inter,sans-serif;">Displayed to clients</span></div>'        + '<input id="ci-trading-name" type="text" value="'+(_suppOnboard.tradingName||'')+'" placeholder="The name clients will see (e.g. Smith Plumbing)" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/>'        + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:4px;">This is the name displayed on your marketplace profile, invoices to clients, and booking confirmations. It can differ from your registered company name.</div>'      + '</div>'      + '<div style="margin-bottom:14px;">'        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><label style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Registered company name</label><span style="font-size:11px;background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:1px 7px;font-weight:700;font-family:Inter,sans-serif;">DAC7 Required</span></div>'        + '<input id="ci-reg-name" type="text" value="'+(_suppOnboard.regCompanyName||'')+'" placeholder="Exactly as registered at Companies House (e.g. Smith Electrical Services Ltd)" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/>'        + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:4px;">The full registered company name including Ltd/Limited. Must match Companies House exactly.</div>'      + '</div>'      + '<div style="margin-bottom:14px;">'        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><label style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Company registration number</label><span style="font-size:11px;background:#fef2f2;color:#dc2626;border-radius:4px;padding:1px 7px;font-weight:700;font-family:Inter,sans-serif;">Required</span></div>'        + '<input id="ci-reg-num" type="text" value="'+(_suppOnboard.companyRegNum||'')+'" placeholder="e.g. 12345678" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/>'        + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:4px;">Your 8-digit Companies House registration number. We\'ll automatically verify company status, directors, and PSCs.</div>'      + '</div>'      + '<div style="margin-bottom:14px;">'        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><label style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Registered office address</label><span style="font-size:11px;background:#f0fdf4;color:#166534;border:1px solid #86efac;border-radius:4px;padding:1px 7px;font-weight:700;font-family:Inter,sans-serif;">Auto-verified</span></div>'        + '<input id="ci-reg-addr" type="text" value="'+(_suppOnboard.regOfficeAddr||'')+'" placeholder="Auto-populated from Companies House" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/>'        + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:4px;">The registered office address from Companies House. This is the DAC7 requirement for the legal entity.</div>'      + '</div>'      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">'        + '<div>'          + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><label style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">PSC date of birth</label><span style="font-size:11px;background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:1px 7px;font-weight:700;font-family:Inter,sans-serif;">DAC7</span></div>'          + '<input id="ci-psc-dob" type="date" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#374151;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/>'          + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:4px;">Date of birth of the Person of Significant Control (25%+ shareholder) completing verification.</div>'        + '</div>'        + '<div>'          + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><label style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">TIN (Tax Identification Number)</label><span style="font-size:11px;background:#f1f5f9;color:#64748b;border-radius:4px;padding:1px 7px;font-weight:700;font-family:Inter,sans-serif;">Optional</span></div>'          + '<input id="ci-tin" type="text" value="'+(_suppOnboard.tinNum||'')+'" placeholder="e.g. UTR or company TIN" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/>'          + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:4px;">If the company has a separate Tax Identification Number (e.g. Corporation Tax UTR), enter it here. Not required if you\'ve provided your Companies House number.</div>'        + '</div>'      + '</div>'      // PSC box
+      + '<div style="border:1.5px solid #bfdbfe;background:#eff6ff;border-radius:12px;padding:16px 18px;margin-bottom:16px;">'        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><circle cx="7.5" cy="7.5" r="6"/><path d="M5 7.5h5M7.5 5v5"/></svg>'          + '<span style="font-size:13.5px;font-weight:700;color:#1e3a5f;font-family:Inter,sans-serif;">PSC — Person of Significant Control</span>'        + '</div>'        + '<div style="font-size:13px;color:#374151;font-family:Inter,sans-serif;line-height:1.5;margin-bottom:12px;">A <strong>Person of Significant Control (PSC)</strong> is an individual who owns or controls <strong>25% or more</strong> of the company\'s shares or voting rights. UK anti-money-laundering regulations require identity verification of at least one PSC. The photo ID and selfie below must belong to this individual.</div>'        + '<div style="margin-bottom:10px;"><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">Full name of PSC</label>'          + '<input id="ci-psc-name" type="text" value="'+(_suppOnboard.pscFullName||'')+'" placeholder="Full legal name of the person completing verification" style="width:100%;border:1.5px solid #bfdbfe;border-radius:8px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fff;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#bfdbfe\'"/>'          + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:4px;">The full legal name of the shareholder providing ID — as it appears on their passport or driving licence.</div>'        + '</div>'        + _suppExpandCheck('comp-psc-confirm','I confirm the ID provided belongs to a person holding 25%+ shares','This person is a registered PSC at Companies House for this company.',isOn,'psc')      + '</div>'      // Photo ID + Selfie
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">'        + _suppUploadField('Photo ID','PSC\'s passport or driving licence','ci-photo-id')        + _suppUploadField('Selfie verification','PSC biometric liveness check','ci-selfie')      + '</div>'      + _suppField('Company address','DAC7','ci-comp-addr','text','Main business or trading address','','<div style="font-size:11.5px;color:#64748b;margin-top:4px;font-family:Inter,sans-serif;">The primary address where the company operates from. Required for DAC7 compliance and marketplace verification.</div>')      + '<div style="margin-bottom:8px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Proof of address — company</span><span style="font-size:11px;background:#fef2f2;color:#dc2626;border-radius:4px;padding:1px 7px;font-weight:700;font-family:Inter,sans-serif;">Required</span></div>'        + _suppUploadField('Upload company proof of address','Must be in the company\'s name. We accept utility bills, bank statements, business rates bills, or HMRC correspondence dated within the last 3 months.','ci-poa')        + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:6px;">Must be in the company\'s name. We accept utility bills, bank statements, business rates bills, or HMRC correspondence dated within the last 3 months.</div>'      + '</div>'    + '</div>';  }
+
   // ── payment ──
   if (id === 'payment') {
     var vatOn = _suppOnboard.vatRegistered;
@@ -8122,6 +8133,7 @@ function _buildSuppOnboardStep(step) {
 
   // ── insurance ──
   if (id === 'insurance') {
+    var isCompany = _suppOnboard.operationType === 'company';
     var certs = ['Gas Safe','NICEIC / NAPIT','CSCS','F-Gas','Part P','OFTEC','CIPHE','MCS','NAPIT Fire','TrustMark','Which? Trusted Traders','Checkatrade'];
     var certDescs = {
       'Gas Safe':'Required for any gas work — boilers, cookers, pipework.',
@@ -8167,16 +8179,17 @@ function _buildSuppOnboardStep(step) {
           + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#64748b" stroke-width="1.6"><path d="M7.5 1l5 2v5c0 3-5 6-5 6S2.5 11 2.5 8V3z"/></svg>'
           + '<span style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Insurance</span>'
         + '</div>'
-        + _suppInfoBox('Minimum coverage\n\u2022 Public liability: minimum \u00a31,000,000\n\u2022 Professional indemnity: required for advisory or design services\nWe send automated reminders at 60, 30, and 7 days before expiry.', true)
+        + _suppInfoBox('Minimum coverage\n\u2022 Public liability: minimum ' + (isCompany ? '\u00a32,000,000' : '\u00a31,000,000') + '\n' + (isCompany ? '\u2022 Employers\' liability: minimum \u00a35,000,000 (legally required with employees)\n' : '') + '\u2022 Professional indemnity: required for advisory or design services\nWe send automated reminders at 60, 30, and 7 days before expiry.', true)
         + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">'
           + '<div>' + _suppField('Insurance provider','','ins-provider','text','e.g. Hiscox, Simply Business') + '</div>'
           + '<div>' + _suppField('Policy number','','ins-policy','text','e.g. POL-12345') + '</div>'
         + '</div>'
         + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">'
-          + '<div>' + _suppField('Public liability coverage','','ins-coverage','text','Min \u00a31,000,000') + '</div>'
+          + '<div>' + _suppField('Public liability coverage','','ins-coverage','text',(isCompany?'Min \u00a32,000,000':'Min \u00a31,000,000')) + '</div>'
           + '<div>' + _suppField('Expiry date','','ins-expiry','date','') + '</div>'
         + '</div>'
         + _suppUploadField('Upload insurance certificate','PDF or image — details extracted automatically via OCR','main-ins-upload')
+        + _suppExpandCheck('comp-el','Employers\' liability insurance','Legally required if your company has employees. Minimum £5,000,000 coverage.',_suppOnboard.employersLiability||false,'el')
         + _suppExpandCheck('comp-pi','Professional indemnity insurance','Required for design, advisory, or consultancy work (architects, surveyors, etc.).',_suppOnboard.profIndemnity||false,'pi')
       + '</div>'
       // ── Trade certifications ──
@@ -8693,6 +8706,7 @@ function _suppRemoveCustomCert(idx) {
 function _suppToggleCheck(id) {
   // Toggle state
   if (id === 'comp-pi')  { _suppOnboard.profIndemnity       = !(_suppOnboard.profIndemnity||false);       _renderSuppOnboard(); return; }
+  if (id === 'comp-psc-confirm') { _suppOnboard.pscConfirmed = !(_suppOnboard.pscConfirmed||false); _renderSuppOnboard(); return; }
   if (id === 'comp-el')  { _suppOnboard.employersLiability  = !(_suppOnboard.employersLiability||false);  _renderSuppOnboard(); return; }
   if (id === 'comp-insurance') _suppOnboard.insurance = !_suppOnboard.insurance;
   if (id === 'comp-dbs')       _suppOnboard.dbs       = !_suppOnboard.dbs;
@@ -8849,6 +8863,15 @@ function _suppSaveCurrentStep(){
   var sc=document.getElementById('pm-sort');         if(sc) _suppOnboard.sortCode=sc.value;
   var an=document.getElementById('pm-acc-num');     if(an) _suppOnboard.accountNumber=an.value;
   var bn=document.getElementById('pm-bank');         if(bn) _suppOnboard.bankName=bn.value;
+  // Company identity
+  var ct=document.getElementById('ci-trading-name'); if(ct) _suppOnboard.tradingName=ct.value;
+  var crn=document.getElementById('ci-reg-name');   if(crn) _suppOnboard.regCompanyName=crn.value;
+  var cnum=document.getElementById('ci-reg-num');   if(cnum) _suppOnboard.companyRegNum=cnum.value;
+  var cra=document.getElementById('ci-reg-addr');   if(cra) _suppOnboard.regOfficeAddr=cra.value;
+  var cpd=document.getElementById('ci-psc-dob');    if(cpd) _suppOnboard.pscDob=cpd.value;
+  var ctin=document.getElementById('ci-tin');        if(ctin) _suppOnboard.tinNum=ctin.value;
+  var cpn=document.getElementById('ci-psc-name');   if(cpn) _suppOnboard.pscFullName=cpn.value;
+  var cca=document.getElementById('ci-comp-addr');  if(cca) _suppOnboard.companyAddr=cca.value;
   // Insurance
   var ip=document.getElementById('ins-provider');   if(ip) _suppOnboard.insProvider=ip.value;
   var ipo=document.getElementById('ins-policy');    if(ipo) _suppOnboard.insPolicy=ipo.value;
@@ -8867,9 +8890,32 @@ function _suppOnboardNext(){
   _suppSaveCurrentStep();
   var step=_suppOnboard.step;
   if(step>=_suppOnboardSteps.length-1){_suppOnboardFinish();}
-  else{_suppOnboard.step=step+1;_renderSuppOnboard();}
+  else{
+    var next=step+1;
+    // Skip company_identity for sole traders; skip identity for companies
+    var isCompany = _suppOnboard.operationType === 'company';
+    while(next < _suppOnboardSteps.length){
+      var sid = _suppOnboardSteps[next].id;
+      if(isCompany && sid === 'identity') { next++; continue; }
+      if(!isCompany && sid === 'company_identity') { next++; continue; }
+      break;
+    }
+    _suppOnboard.step=next;_renderSuppOnboard();
+  }
 }
-function _suppOnboardBack(){_suppSaveCurrentStep();if(_suppOnboard.step>0){_suppOnboard.step--;_renderSuppOnboard();}}
+function _suppOnboardBack(){
+  _suppSaveCurrentStep();
+  if(_suppOnboard.step<=0){_suppCancelToLanding();return;}
+  var prev=_suppOnboard.step-1;
+  var isCompany=_suppOnboard.operationType==='company';
+  while(prev>0){
+    var sid=_suppOnboardSteps[prev].id;
+    if(isCompany && sid==='identity'){prev--;continue;}
+    if(!isCompany && sid==='company_identity'){prev--;continue;}
+    break;
+  }
+  _suppOnboard.step=prev;_renderSuppOnboard();
+}
 function _suppSkipStep(){_suppSaveCurrentStep();if(_suppOnboard.step<_suppOnboardSteps.length-1){_suppOnboard.step++;_renderSuppOnboard();}else _suppOnboardFinish();}
 
 function _suppOnboardFinish(){
