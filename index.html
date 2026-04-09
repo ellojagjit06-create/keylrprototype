@@ -7812,6 +7812,14 @@ var _suppTradeList = [
   'Loft Conversion Specialist','Demolition Contractor','Structural Engineer'
 ];
 
+
+function _suppCancelToLanding() {
+  var screen = document.getElementById('supplierOnboardingScreen');
+  if (screen) screen.remove();
+  var pg = document.getElementById('pg-landing');
+  if (pg) pg.style.display = '';
+}
+
 function showSupplierOnboarding() {
   ['pg-landing','pg-dashboard'].forEach(function(id){
     var el = document.getElementById(id);
@@ -7881,7 +7889,7 @@ function _renderSuppOnboard() {
 
   // ── Back / Skip / Continue buttons ──
   var backRow = isFirst
-    ? '<div></div>'
+    ? '<button onclick="_suppCancelToLanding()" style="background:none;border:none;color:#374151;font-size:14px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;padding:0;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 4L6 8l4 4"/></svg>Back</button>'
     : '<div style="display:flex;align-items:center;gap:20px;">'
         + '<button onclick="_suppOnboardBack()" style="background:none;border:none;color:#374151;font-size:14px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;padding:0;">'
           + '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 4L6 8l4 4"/></svg>Back'
@@ -7899,7 +7907,7 @@ function _renderSuppOnboard() {
   + '</div>';
 
   // ── Scrollable page body — all center-aligned ──
-  var body = '<div style="flex:1;overflow-y:auto;display:flex;justify-content:center;">'
+  var body = '<div data-scroll style="flex:1;overflow-y:auto;display:flex;justify-content:center;">'
     + '<div style="width:100%;max-width:700px;padding:48px 24px 0;box-sizing:border-box;">'
       + dotsHtml
       + iconHtml
@@ -7918,7 +7926,15 @@ function _renderSuppOnboard() {
     + '</div>'
   + '</div>';
 
+  // Save scroll position before re-render
+  var scrollEl = screen.querySelector('[data-scroll]');
+  var savedScroll = scrollEl ? scrollEl.scrollTop : 0;
+
   screen.innerHTML = nav + body;
+
+  // Restore scroll position
+  var newScrollEl = screen.querySelector('[data-scroll]');
+  if (newScrollEl && savedScroll > 0) newScrollEl.scrollTop = savedScroll;
 }
 
 
@@ -7964,29 +7980,16 @@ function _buildSuppOnboardStep(step) {
         + '<div>'+_suppField('Date of birth','DAC7','so-dob','date','','','<div style="font-size:11.5px;color:#64748b;margin-top:4px;font-family:Inter,sans-serif;">Your date of birth for identity verification.</div>')+'</div>'
         + '<div>'+_suppField('NI number','DAC7','so-ni','text','QQ 12 34 56 C','','<div style="font-size:11.5px;color:#64748b;margin-top:4px;font-family:Inter,sans-serif;">National Insurance number satisfies the HMRC TIN requirement. Encrypted at rest and never shared.</div>')+'</div>'
       + '</div>'
-      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">'
-        + '<div style="border:1.5px dashed #d1d5db;border-radius:10px;padding:16px;text-align:center;cursor:pointer;background:#fafafa;" onclick="alert(\'Upload coming soon\')">'
-          + '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#94a3b8" stroke-width="1.6" style="margin:0 auto 6px;display:block;"><path d="M9 12V5M6 8l3-3 3 3"/><rect x="2" y="12" width="14" height="4" rx="1"/></svg>'
-          + '<div style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Photo ID</div>'
-          + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;">Passport or driving licence</div>'
-        + '</div>'
-        + '<div style="border:1.5px dashed #d1d5db;border-radius:10px;padding:16px;text-align:center;cursor:pointer;background:#fafafa;" onclick="alert(\'Selfie verification coming soon\')">'
-          + '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#94a3b8" stroke-width="1.6" style="margin:0 auto 6px;display:block;"><path d="M9 12V5M6 8l3-3 3 3"/><rect x="2" y="12" width="14" height="4" rx="1"/></svg>'
-          + '<div style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Selfie verification</div>'
-          + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;">Biometric liveness check</div>'
-        + '</div>'
-      + '</div>'
+       + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">'
+         + _suppUploadField('Photo ID','Passport or driving licence','id-photo-upload')
+         + _suppUploadField('Selfie verification','Biometric liveness check','id-selfie-upload')
+       + '</div>'
       + _suppField('Home address','DAC7','so-home-addr','text','Start typing your address...','','<div style="font-size:11.5px;color:#64748b;margin-top:4px;font-family:Inter,sans-serif;">Your residential address as registered with HMRC. Required for DAC7 annual reporting.</div>')
       + '<div style="margin-top:16px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
         + '<span style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Proof of address</span>'
         + '<span style="font-size:11px;font-weight:600;color:#dc2626;background:#fef2f2;border-radius:4px;padding:1px 7px;font-family:Inter,sans-serif;">Required</span>'
       + '</div>'
-      + '<div style="border:1.5px dashed #d1d5db;border-radius:10px;padding:18px;cursor:pointer;background:#fafafa;display:flex;align-items:center;gap:12px;" onclick="alert(\'Upload coming soon\')">'
-        + '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#94a3b8" stroke-width="1.6"><path d="M9 12V5M6 8l3-3 3 3"/><rect x="2" y="12" width="14" height="4" rx="1"/></svg>'
-        + '<div><div style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Upload proof of address</div>'
-          + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;">Utility bill, bank statement, or council tax bill (dated within 3 months)</div></div>'
-      + '</div>'
-      + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:6px;">We accept utility bills, bank statements, council tax bills, or HMRC letters dated within the last 3 months. The name and address must match your details above.</div>'
+      + _suppUploadField('Upload proof of address','Utility bill, bank statement, or council tax bill (dated within 3 months)','poa-upload')
       + '</div>';
   }
 
@@ -8076,11 +8079,7 @@ function _buildSuppOnboardStep(step) {
                     + '<label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">Expiry date</label>'
                     + '<input type="date" id="' + sid + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fff;color:#374151;">'
                   + '</div>'
-                  + '<div style="cursor:pointer;border:1.5px dashed #d1d5db;border-radius:10px;padding:14px;background:#fafafa;display:flex;align-items:center;gap:8px;" onclick="alert(\'Upload coming soon\')">'
-                    + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#94a3b8" stroke-width="1.6"><path d="M7.5 11V4M4.5 7l3-3 3 3"/><rect x="1.5" y="11" width="12" height="2.5" rx="0.8"/></svg>'
-                    + '<div><div style="font-size:12.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Upload certificate</div><div style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;">Photo or PDF</div></div>'
-                  + '</div>'
-                + '</div>'
+                  + _suppUploadField('Upload certificate','Photo or PDF','cert-upload-'+sid)
               + '</div>';
             }).join('')
         + '</div>'
@@ -8099,11 +8098,7 @@ function _buildSuppOnboardStep(step) {
           + '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:4px;font-family:Inter,sans-serif;">Expiry date</label>'
             + '<input type="date" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#374151;"></div>'
         + '</div>'
-        + '<div style="cursor:pointer;border:1.5px dashed #d1d5db;border-radius:10px;padding:12px 14px;background:#fafafa;display:flex;align-items:center;gap:8px;" onclick="alert(\'Upload coming soon\')">'
-          + '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.6"><path d="M7 10V4M4 7l3-3 3 3"/><rect x="1" y="10" width="12" height="2.5" rx="0.8"/></svg>'
-          + '<div style="font-size:12.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Upload <span style="color:#94a3b8;font-weight:400;font-size:12px;">Photo or PDF</span></div>'
-        + '</div>'
-      + '</div>';
+        + _suppUploadField('Upload certificate','Photo or PDF','custom-cert-upload-'+ci)
     }).join('');
 
     return '<div style="display:flex;flex-direction:column;gap:20px;">'
@@ -8122,12 +8117,8 @@ function _buildSuppOnboardStep(step) {
           + '<div>' + _suppField('Public liability coverage','','ins-coverage','text','Min \u00a31,000,000') + '</div>'
           + '<div>' + _suppField('Expiry date','','ins-expiry','date','') + '</div>'
         + '</div>'
-        + '<div onclick="alert(\'Upload coming soon\')" style="border:1.5px dashed #d1d5db;border-radius:10px;padding:14px;cursor:pointer;background:#fafafa;display:flex;align-items:center;gap:10px;margin-bottom:12px;">'
-          + '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#94a3b8" stroke-width="1.6"><path d="M8 11V4M5 7l3-3 3 3"/><rect x="1.5" y="11" width="13" height="3" rx="1"/></svg>'
-          + '<div><div style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Upload insurance certificate</div>'
-            + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;">PDF or image \u2014 details extracted automatically via OCR</div></div>'
-        + '</div>'
-        + _suppCompCheck('comp-pi','Professional indemnity insurance','Required for design, advisory, or consultancy work (architects, surveyors, etc.).','', _suppOnboard.profIndemnity||false)
+        + _suppUploadField('Upload insurance certificate','PDF or image — details extracted automatically via OCR','main-ins-upload')
+        + _suppExpandCheck('comp-pi','Professional indemnity insurance','Required for design, advisory, or consultancy work (architects, surveyors, etc.).',_suppOnboard.profIndemnity||false,'pi')
       + '</div>'
       // ── Trade certifications ──
       + '<div>'
@@ -8195,12 +8186,7 @@ function _buildSuppOnboardStep(step) {
           + '<span style="font-size:11px;background:#fef2f2;color:#dc2626;border-radius:4px;padding:1px 7px;font-weight:700;font-family:Inter,sans-serif;">Required</span>'
         + '</div>'
         + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;margin-bottom:14px;">A Basic DBS certificate confirms you have no unspent criminal convictions. This is a mandatory requirement for all sole traders listing on the marketplace. An Enhanced DBS is <strong>not</strong> required at sign-up — it\'s only triggered when a client flags a sensitive environment (schools, care homes, hospitals).</div>'
-        + '<div style="border:1.5px dashed #d1d5db;border-radius:10px;padding:14px;cursor:pointer;background:#fafafa;display:flex;align-items:center;gap:10px;margin-bottom:12px;" onclick="alert(\'Upload coming soon\')">'
-          + '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#94a3b8" stroke-width="1.6"><path d="M8 11V4M5 7l3-3 3 3"/><rect x="1.5" y="11" width="13" height="3" rx="1"/></svg>'
-          + '<div><div style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Upload Basic DBS certificate</div>'
-            + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;">PDF or image of your certificate</div></div>'
-        + '</div>'
-        + '<div style="background:#f8fafc;border-radius:10px;padding:14px;margin-bottom:14px;">'
+        + _suppUploadField('Upload Basic DBS certificate','PDF or image of your certificate','dbs-upload')
           + '<div style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:6px;">Don\'t have a DBS certificate?</div>'
           + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:8px;">You can apply for a Basic DBS check online through the official DBS website. It costs £18 and typically arrives within 14 days. You can continue onboarding and upload it later.</div>'
           + '<a href="#" style="font-size:13px;color:#1d4ed8;font-weight:600;font-family:Inter,sans-serif;text-decoration:none;">Apply for a Basic DBS check on GOV.UK ↗</a>'
@@ -8457,10 +8443,11 @@ function _suppToggle(id, onchange, checked) {
 
 function _suppOpCard(type, iconSvg, title, desc) {
   var sel = _suppOnboard.operationType === type;
-  return '<div onclick="_suppSelectOpType(\''+type+'\')" data-optype="'+type+'" style="border:2px solid '+(sel?'#1A5FC8':'#e8eaed')+';border-radius:20px;padding:32px 24px;cursor:pointer;background:#fff;position:relative;transition:all 0.2s;box-shadow:'+(sel?'0 0 0 1px #1A5FC8':'0 1px 4px rgba(0,0,0,0.06)')+';text-align:left;">'
-    + '<div style="width:52px;height:52px;background:#f1f5f9;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:20px;color:#64748b;">'+iconSvg+'</div>'
-    + '<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">'+title+'</div>'
-    + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;">'+desc+'</div>'
+  return '<div onclick="_suppSelectOpType(\''+type+'\')" data-optype="'+type+'" style="border:2px solid '+(sel?'#1A5FC8':'#e8eaed')+';border-radius:20px;padding:32px 24px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';position:relative;transition:all 0.2s;box-shadow:'+(sel?'0 0 0 1px #1A5FC8':'0 1px 4px rgba(0,0,0,0.06)')+';text-align:left;">'
+    + (sel?'<div style="position:absolute;top:14px;right:14px;width:22px;height:22px;background:#1A5FC8;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 5.5l2.5 2.5 4-4"/></svg></div>':'')
+    + '<div style="width:52px;height:52px;background:'+(sel?'#dbeafe':'#f1f5f9')+';border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:20px;color:'+(sel?'#1A5FC8':'#64748b')+';">'+iconSvg+'</div>'
+    + '<div style="font-size:16px;font-weight:700;color:'+(sel?'#1e3a5f':'#0f172a')+';font-family:Inter,sans-serif;margin-bottom:10px;">'+title+'</div>'
+    + '<div style="font-size:13px;color:'+(sel?'#374151':'#64748b')+';font-family:Inter,sans-serif;line-height:1.5;">'+desc+'</div>'
   + '</div>';
 }
 
@@ -8476,12 +8463,8 @@ function _suppSectorCard(type, iconSvg, title) {
 // ── Interaction handlers ──
 function _suppSelectOpType(type) {
   _suppOnboard.operationType = type;
-  document.querySelectorAll('[data-optype]').forEach(function(c){
-    var a = c.getAttribute('data-optype') === type;
-    c.style.borderColor  = a ? '#1A5FC8' : '#e8eaed';
-    c.style.boxShadow    = a ? '0 0 0 1px #1A5FC8' : '0 1px 4px rgba(0,0,0,0.06)';
-    c.style.background   = '#fff';
-  });
+  // Re-render so tick + blue bg appear correctly
+  _renderSuppOnboard();
 }
 function _suppSelectSector(type) { _suppOnboard.sector=type; _renderSuppOnboard(); }
 function _suppToggleSectorSub(group,sub,el){
@@ -8593,20 +8576,20 @@ function _suppToggleCheck(id) {
     _suppOnboard.insurance = !_suppOnboard.insurance;
   } else if (id === 'comp-dbs') {
     _suppOnboard.dbs = !_suppOnboard.dbs;
+  } else if (id === 'comp-pi') {
+    _suppOnboard.profIndemnity = !(_suppOnboard.profIndemnity||false);
+    // Re-render to show/hide PI fields
+    _renderSuppOnboard(); return;
+  } else if (id === 'comp-el') {
+    _suppOnboard.employersLiability = !(_suppOnboard.employersLiability||false);
+    // Re-render to show/hide EL fields
+    _renderSuppOnboard(); return;
   }
-  var val = (id === 'comp-insurance') ? _suppOnboard.insurance : _suppOnboard.dbs;
-  // Update visual
+  var val = id === 'comp-insurance' ? _suppOnboard.insurance : _suppOnboard.dbs;
   var wrap = document.getElementById('wrap-' + id);
   var vis  = document.getElementById('vis-' + id);
-  if (wrap) {
-    wrap.style.borderColor = val ? '#1A5FC8' : '#e2e8f0';
-    wrap.style.background  = val ? '#eff6ff' : '#fff';
-  }
-  if (vis) {
-    vis.style.borderColor = val ? '#1A5FC8' : '#d1d5db';
-    vis.style.background  = val ? '#1A5FC8' : '#fff';
-    vis.innerHTML = val ? '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 5l2.5 2.5 4-4"/></svg>' : '';
-  }
+  if (wrap) { wrap.style.borderColor = val?'#1A5FC8':'#e2e8f0'; wrap.style.background = val?'#eff6ff':'#fff'; }
+  if (vis)  { vis.style.borderColor = val?'#1A5FC8':'#d1d5db'; vis.style.background = val?'#1A5FC8':'#fff'; vis.innerHTML = val?'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 5l2.5 2.5 4-4"/></svg>':''; }
 }
 
 function _suppSaveCompliance() {
@@ -8615,6 +8598,56 @@ function _suppSaveCompliance() {
   var dbs = document.getElementById('comp-dbs');
   if (ins) _suppOnboard.insurance = ins.checked;
   if (dbs) _suppOnboard.dbs = dbs.checked;
+}
+
+// Expandable insurance toggle card — when ON shows input fields
+function _suppExpandCheck(id, label, sub, checked, prefix) {
+  var uploadId = 'upload-' + id;
+  var fields = checked
+    ? '<div style="margin-top:14px;border-top:1px solid #e2e8f0;padding-top:14px;display:flex;flex-direction:column;gap:12px;">'      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'        + '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">' + prefix.toUpperCase() + ' insurance provider</label>'          + '<input type="text" placeholder="e.g. ' + (prefix==='el'?'Zurich, Aviva':'Hiscox, AXA') + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"></div>'        + '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">' + prefix.toUpperCase() + ' policy number</label>'          + '<input type="text" placeholder="e.g. ' + (prefix==='el'?'EL-12345':'PI-12345') + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"></div>'      + '</div>'      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'        + '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">' + prefix.toUpperCase() + ' coverage amount</label>'          + '<input type="text" placeholder="' + (prefix==='el'?'Min £5,000,000':'e.g. £500,000') + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"></div>'        + '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">' + prefix.toUpperCase() + ' expiry date</label>'          + '<input type="date" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#374151;"></div>'      + '</div>'      + _suppUploadField('Upload ' + prefix.toUpperCase() + ' insurance certificate','PDF or image — details extracted automatically')    + '</div>'    : '';
+  return '<div id="wrap-' + id + '" style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:10px;">'    + '<div style="display:flex;align-items:center;justify-content:space-between;">'      + '<div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:2px;">' + label + '</div>'        + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">' + sub + '</div></div>'      + _suppToggle(id, "_suppToggleCheck(\'" + id + "\')", checked)    + '</div>'    + fields  + '</div>';
+}
+
+// Upload field with functional file picker + remove
+function _suppUploadField(label, hint, fieldId) {
+  var id = fieldId || ('upload-' + Math.random().toString(36).substr(2,6));
+  return '<div id="' + id + '-wrap" onclick="_suppTriggerUpload(\'' + id + '\')" style="border:1.5px dashed #d1d5db;border-radius:10px;padding:14px;cursor:pointer;background:#fafafa;display:flex;align-items:center;gap:10px;transition:border-color 0.15s;" onmouseover="this.style.borderColor=\'#1A5FC8\'" onmouseout="this.style.borderColor=\'#d1d5db\'">'    + '<input type="file" id="' + id + '" accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="_suppHandleUpload(this,\'' + id + '\')">'
+    + '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#94a3b8" stroke-width="1.6"><path d="M8 11V4M5 7l3-3 3 3"/><rect x="1.5" y="11" width="13" height="3" rx="1"/></svg>'    + '<div id="' + id + '-lbl"><div style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">' + label + '</div>'      + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;">' + hint + '</div></div>'  + '</div>';
+}
+
+function _suppTriggerUpload(id) {
+  var inp = document.getElementById(id);
+  if (inp) inp.click();
+}
+
+function _suppHandleUpload(input, id) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  var wrap = document.getElementById(id + '-wrap');
+  var lbl  = document.getElementById(id + '-lbl');
+  if (lbl) {
+    lbl.innerHTML = '<div style="font-size:13px;font-weight:600;color:#1A5FC8;font-family:Inter,sans-serif;">' + file.name + '</div>'      + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;">' + (file.size > 1024*1024 ? (file.size/1024/1024).toFixed(1)+'MB' : (file.size/1024).toFixed(0)+'KB') + '</div>';
+  }
+  if (wrap) {
+    wrap.style.borderColor = '#1A5FC8';
+    wrap.style.background  = '#eff6ff';
+    wrap.onclick = null;
+    // Add remove button
+    var removeBtn = document.createElement('button');
+    removeBtn.style.cssText = 'margin-left:auto;background:none;border:none;cursor:pointer;color:#94a3b8;padding:2px;display:flex;align-items:center;flex-shrink:0;';
+    removeBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 1l11 11M12 1L1 12"/></svg>';
+    removeBtn.onclick = function(e) {
+      e.stopPropagation();
+      input.value = '';
+      wrap.style.borderColor = '#d1d5db';
+      wrap.style.background  = '#fafafa';
+      if (lbl) lbl.innerHTML = '<div style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Click to upload</div><div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;">' + (lbl.getAttribute('data-hint')||'PDF or image') + '</div>';
+      removeBtn.remove();
+      wrap.onclick = function(){ _suppTriggerUpload(id); };
+    };
+    lbl.setAttribute('data-hint', input.getAttribute('data-hint') || 'PDF or image');
+    wrap.appendChild(removeBtn);
+  }
 }
 
 function _suppCompCheck(id, label, sub, icon, checked) {
@@ -8675,8 +8708,23 @@ function _suppToggleSecTrade(t,el){
 function _suppTogglePricing(m,el){
   var idx=_suppOnboard.pricingModels.indexOf(m);
   if(idx>=0)_suppOnboard.pricingModels.splice(idx,1);else _suppOnboard.pricingModels.push(m);
-  var sel=_suppOnboard.pricingModels.indexOf(m)>=0;
-  el.style.borderColor=sel?'#1A5FC8':'#e2e8f0'; el.style.background=sel?'#eff6ff':'#fff';
+  // DOM update without re-render
+  var card = el;
+  // Walk up to find the card div if inner element was clicked
+  while(card && !card.getAttribute('data-model')) card = card.parentElement;
+  var sel = _suppOnboard.pricingModels.indexOf(m) >= 0;
+  if(card){
+    card.style.borderColor = sel?'#1A5FC8':'#e2e8f0';
+    card.style.background  = sel?'#eff6ff':'#fff';
+    var chkEl = card.querySelector('div');
+    if(chkEl){
+      chkEl.style.borderColor = sel?'#1A5FC8':'#d1d5db';
+      chkEl.style.background  = sel?'#1A5FC8':'#fff';
+      chkEl.innerHTML = sel?'<svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="#fff" stroke-width="2"><path d="M1 4l2 2 4-3"/></svg>':'';
+    }
+    var spanEl = card.querySelector('span');
+    if(spanEl) spanEl.style.color = sel?'#1e3a5f':'#374151';
+  }
 }
 function _suppSetExperience(val){_suppOnboard.experience=val;_renderSuppOnboard();}
 function _suppSetJobs(val){_suppOnboard.jobsCompleted=val;_renderSuppOnboard();}
@@ -9053,6 +9101,25 @@ function _suppGenericToggle(id) {
 
 <style>
 @keyframes modalPop{from{opacity:0;transform:scale(0.95)translateY(10px);}to{opacity:1;transform:scale(1)translateY(0);}}
+
+/* ── Smooth global transitions ── */
+* { box-sizing: border-box; }
+.db-sidebar, .db-sidebar *,
+#suppSidebar, #suppSidebar *,
+#suppMain { transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease; }
+.db-sidebar { transition: width 0.25s ease; }
+#suppSidebar { transition: width 0.25s ease, min-width 0.25s ease; }
+/* Page fade-in on tab switch */
+@keyframes pageIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+.db-page.visible { animation: pageIn 0.22s ease forwards; }
+/* Card hover lift */
+.esi-card, .spr-card, .booking-card { transition: box-shadow 0.18s ease, transform 0.18s ease; }
+.esi-card:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.10); }
+/* Button press */
+button:active { transform: scale(0.98); }
+/* Sidebar nav items */
+.db-sidebar nav div, #suppSidebar nav div { transition: background 0.12s ease, color 0.12s ease; }
+
 </style>
 
 </body>
