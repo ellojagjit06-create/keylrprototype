@@ -7849,7 +7849,7 @@ var _suppOnboard = {
   insProvider: '', insPolicy: '', insCoverage: '', insExpiry: '',
   profIndemnity: false, tradeCerts: [], customCerts: [],
   // Background
-  dbsDeclared: '', rightToWork: '', jobRefs: '',
+  teamSize: '', companyDbsDecl: '', dbsDeclared: '', rightToWork: '', jobRefs: '',
   // Availability
   workDays: ['Mon','Tue','Wed','Thu','Fri'],
   startTime: '08:00', endTime: '17:00', emergencyCallouts: '',
@@ -8142,22 +8142,7 @@ function _buildSuppOnboardStep(step) {
     var customCerts = _suppOnboard.customCerts || [];
 
     // Detail cards for selected standard certs
-    var certDetailCards = selCerts.length > 0
-      ? '<div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">'
-          + selCerts.map(function(c){
-              var sid = 'ci_' + c.replace(/[^a-z0-9]/gi,'_');
-              return '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;">'
-                + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;">' + c + '</div>'
-                + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;">'
-                  + '<div>'
-                    + '<label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">Expiry date</label>'
-                    + '<input type="date" id="' + sid + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fff;color:#374151;">'
-                  + '</div>'
-                  + _suppUploadField('Upload certificate','Photo or PDF','cert-upload-'+sid)
-              + '</div>';
-            }).join('')
-        + '</div>'
-      : '';
+    // certDetailCards rendered inline below
 
     // Custom cert cards
     var customCertCards = customCerts.map(function(cc, ci){
@@ -8219,7 +8204,20 @@ function _buildSuppOnboardStep(step) {
               + '</div>';
             }).join('')
         + '</div>'
-        + certDetailCards
+        // ── Cert detail cards (one per selected cert, outside the grid) ──
+        + (selCerts.length > 0 ? '<div style="display:flex;flex-direction:column;gap:10px;margin-top:14px;">' + selCerts.map(function(c){
+              var sid = 'ci_' + c.replace(/[^a-z0-9]/gi,'_');
+              return '<div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;">' +
+                '<div style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e2e8f0;">' + c + '</div>' +
+                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
+                  '<div>' +
+                    '<label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">Expiry date</label>' +
+                    '<input type="date" id="' + sid + '" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fff;color:#374151;">' +
+                  '</div>' +
+                  _suppUploadField('Upload certificate','Photo or PDF','cert-upload-'+sid) +
+                '</div>' +
+              '</div>';
+            }).join('') + '</div>' : '')
         // Other certifications row
         + '<div style="margin-top:16px;padding-top:16px;border-top:1px solid #f1f5f9;">'
           + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">'
@@ -8251,8 +8249,55 @@ function _buildSuppOnboardStep(step) {
 
   // ── background ──
   if (id === 'background') {
+    var isCompany = _suppOnboard.operationType === 'company';
+    var teamSizes = ['Just me|I work alone','2–5|Small team','6–10|Growing team','11–25|Medium team','26–50|Large team','50+|Enterprise'];
     return '<div style="display:flex;flex-direction:column;gap:20px;">'
-      // DBS
+      // ── How many people ──
+      + '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;">'
+        + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
+          + '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1A5FC8" stroke-width="1.5"><rect x="1" y="5" width="16" height="11" rx="2"/><path d="M5 5V4a4 4 0 018 0v1"/><path d="M1 10h16"/></svg>'
+          + '<div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">How many people work in your company?</div>'
+        + '</div>'
+        + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;margin-bottom:16px;">This helps us understand your team size and capacity. It also determines which compliance checks apply — for example, employers\' liability insurance is legally required if you have employees.</div>'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">'
+          + teamSizes.map(function(opt){
+              var parts = opt.split('|');
+              var sel = _suppOnboard.teamSize === parts[0];
+              return '<div onclick="_suppSetTeamSize(\''+parts[0]+'\')" style="border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;padding:14px;text-align:center;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all 0.15s;">'
+                + '<div style="font-size:14px;font-weight:700;color:'+(sel?'#1e3a5f':'#0f172a')+';font-family:Inter,sans-serif;margin-bottom:3px;">'+parts[0]+'</div>'
+                + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">'+parts[1]+'</div>'
+              + '</div>';
+            }).join('')
+        + '</div>'
+      + '</div>'
+      // ── Company DBS (company only) ──
+      + (isCompany ? '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;">'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M7.5 1l5 2v5c0 3-5 6-5 6S2.5 11 2.5 8V3z"/></svg>'
+          + '<span style="font-size:14.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Company DBS & background checks</span>'
+        + '</div>'
+        + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;margin-bottom:16px;">As a company, you must confirm whether all operatives dispatched through the platform have undergone DBS (Disclosure and Barring Service) checks. This declaration is displayed on your marketplace profile as a trust indicator.</div>'
+        + '<div style="font-size:13.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:10px;">DBS self-declaration</div>'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">'
+          + [['Yes','All operatives are DBS checked'],['No','Not all operatives have DBS checks']].map(function(o){
+              var sel = _suppOnboard.companyDbsDecl === o[0];
+              return '<div onclick="_suppOnboard.companyDbsDecl=\''+o[0]+'\';_renderSuppOnboard();" style="border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;padding:14px;text-align:center;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all 0.15s;">'
+                + '<div style="font-size:14px;font-weight:700;color:'+(sel?'#1e3a5f':'#0f172a')+';margin-bottom:3px;font-family:Inter,sans-serif;">'+o[0]+'</div>'
+                + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">'+o[1]+'</div>'
+              + '</div>';
+            }).join('')
+        + '</div>'
+        + '<div style="font-size:13.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:4px;">DBS policy statement <span style="font-size:11.5px;color:#94a3b8;font-weight:400;">(recommended)</span></div>'
+        + '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:8px;line-height:1.5;">Companies with a compliant DBS policy do not need individual certificates for each employee. Your policy should cover: check frequency, escalation process, named compliance owner, and record retention.</div>'
+        + '<textarea rows="4" placeholder="Describe your company\'s DBS checking procedures, frequency of checks, escalation process, and compliance ownership." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 13px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;resize:vertical;margin-bottom:10px;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"></textarea>'
+        + '<button style="background:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;margin-bottom:10px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M6.5 1l1 2.7h2.8l-2.3 1.7.9 2.8L6.5 6.7l-2.4 1.5.9-2.8L2.7 3.7h2.8z"/></svg> Draft with AI <span style="font-size:11.5px;color:#94a3b8;font-weight:400;">AI generates a compliant policy template you can customise.</span></button>'
+        + _suppUploadField('Upload DBS policy document','PDF of your formal DBS procedures','company-dbs-upload')
+        + '<div style="font-size:13.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-top:14px;margin-bottom:4px;">Worker vetting policy</div>'
+        + '<textarea rows="4" placeholder="Describe how you vet operatives before dispatching them: ID checks, trade verification, reference checks, ongoing monitoring." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 13px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;resize:vertical;margin-bottom:10px;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"></textarea>'
+        + '<button style="background:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;margin-bottom:10px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M6.5 1l1 2.7h2.8l-2.3 1.7.9 2.8L6.5 6.7l-2.4 1.5.9-2.8L2.7 3.7h2.8z"/></svg> Draft with AI <span style="font-size:11.5px;color:#94a3b8;font-weight:400;">AI generates a comprehensive vetting policy you can adapt.</span></button>'
+        + _suppUploadField('Upload vetting policy document','PDF — reviewed by our compliance team within 2–3 days','vetting-upload')
+      + '</div>' : '')
+      // ── DBS Check ──
       + '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;">'
         + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
           + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#64748b" stroke-width="1.6"><path d="M7.5 1l5 2v5c0 3-5 6-5 6S2.5 11 2.5 8V3z"/></svg>'
@@ -8407,7 +8452,7 @@ function _buildSuppOnboardStep(step) {
     return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:540px;margin:0 auto;">'
       + models.map(function(m){
           var sel = _suppOnboard.pricingModels.indexOf(m) >= 0;
-          return '<div onclick="_suppTogglePricing(\''+m+'\',this)" style="border:1px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;padding:14px 16px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';display:flex;align-items:center;gap:10px;transition:all 0.15s;">'
+          return '<div onclick="_suppTogglePricing(\''+m+'\')" style="border:1px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;padding:14px 16px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';display:flex;align-items:center;gap:10px;transition:all 0.15s;">'
             + '<div style="width:16px;height:16px;border-radius:4px;border:2px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';flex-shrink:0;display:flex;align-items:center;justify-content:center;">'
               + (sel?'<svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="#fff" stroke-width="2"><path d="M1 4l2 2 4-3"/></svg>':'')
             + '</div>'
@@ -8738,6 +8783,7 @@ function _suppCompCheck(id, label, sub, icon, checked) {
 
 function _suppSetDbsDecl(val){_suppOnboard.dbsDeclared=val;_renderSuppOnboard();}
 function _suppSetRightToWork(val){_suppOnboard.rightToWork=val;_renderSuppOnboard();}
+function _suppSetTeamSize(val){_suppOnboard.teamSize=val;_renderSuppOnboard();}
 function _suppToggleDay(day,el){
   var idx=_suppOnboard.workDays.indexOf(day);
   if(idx>=0)_suppOnboard.workDays.splice(idx,1);else _suppOnboard.workDays.push(day);
@@ -8778,26 +8824,10 @@ function _suppToggleSecTrade(t,el){
     if(lbl) lbl.style.color=sel?'#1e3a5f':'#374151';
   }
 }
-function _suppTogglePricing(m,el){
+function _suppTogglePricing(m){
   var idx=_suppOnboard.pricingModels.indexOf(m);
   if(idx>=0)_suppOnboard.pricingModels.splice(idx,1);else _suppOnboard.pricingModels.push(m);
-  // DOM update without re-render
-  var card = el;
-  // Walk up to find the card div if inner element was clicked
-  while(card && !card.getAttribute('data-model')) card = card.parentElement;
-  var sel = _suppOnboard.pricingModels.indexOf(m) >= 0;
-  if(card){
-    card.style.borderColor = sel?'#1A5FC8':'#e2e8f0';
-    card.style.background  = sel?'#eff6ff':'#fff';
-    var chkEl = card.querySelector('div');
-    if(chkEl){
-      chkEl.style.borderColor = sel?'#1A5FC8':'#d1d5db';
-      chkEl.style.background  = sel?'#1A5FC8':'#fff';
-      chkEl.innerHTML = sel?'<svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="#fff" stroke-width="2"><path d="M1 4l2 2 4-3"/></svg>':'';
-    }
-    var spanEl = card.querySelector('span');
-    if(spanEl) spanEl.style.color = sel?'#1e3a5f':'#374151';
-  }
+  _renderSuppOnboard();
 }
 function _suppSetExperience(val){_suppOnboard.experience=val;_renderSuppOnboard();}
 function _suppSetJobs(val){_suppOnboard.jobsCompleted=val;_renderSuppOnboard();}
@@ -8860,6 +8890,42 @@ function _suppOnboardFinish(){
   if(screen)screen.remove();
   // Show supplier dashboard
   _showSupplierDashboard();
+}
+
+
+// Calculate supplier onboarding progress %
+function _suppCalcProgress() {
+  var ob = _suppOnboard;
+  var checks = [
+    ob.operationType !== '',         // operate
+    ob.sector !== '',                // sector
+    ob.fullLegalName !== '',         // identity
+    (ob.accountHolder !== '' || ob.vatRegistered), // payment
+    (ob.insProvider !== '' || ob.tradeCerts.length > 0), // insurance
+    (ob.dbsDeclared !== '' && ob.rightToWork !== ''), // background
+    (ob.workDays.length > 0),        // availability
+    ob.primaryTrade !== '',          // primary trade
+    true,                            // secondary trades (optional)
+    ob.pricingModels.length > 0,     // pricing
+    ob.experience !== '',            // experience
+    ob.jobsCompleted !== '',         // jobs
+    ob.bio !== '',                   // bio
+  ];
+  var done = checks.filter(Boolean).length;
+  return Math.round((done / checks.length) * 100);
+}
+
+
+function _suppResumeOnboarding() {
+  // Find the first incomplete step (starting from identity, step 2)
+  var firstIncomplete = 2; // identity
+  if (_suppOnboard.fullLegalName) firstIncomplete = 3; // payment
+  if (_suppOnboard.fullLegalName && _suppOnboard.accountHolder) firstIncomplete = 4; // insurance
+  // Jump to that step and show onboarding
+  _suppOnboard.step = firstIncomplete;
+  var dashScreen = document.getElementById('suppDashScreen');
+  if (dashScreen) dashScreen.style.display = 'none';
+  showSupplierOnboarding();
 }
 
 function _showSupplierDashboard(){
@@ -9026,8 +9092,8 @@ function _showSupplierDashboard(){
   mainEl.id  = 'suppMain';
   mainEl.style.cssText = 'flex:1;overflow-y:auto;min-width:0;';
 
-  mainEl.innerHTML = '<div style="padding:32px clamp(24px,4vw,60px);">'
-    +'<div style="max-width:920px;">'
+  mainEl.innerHTML = '<div style="padding:24px clamp(32px,8vw,120px) 48px;width:100%;box-sizing:border-box;">'
+    +'<div style="width:100%;">'
       +'<h1 style="font-size:28px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin:0 0 4px;">Welcome, '+name+' 👋</h1>'
       +'<p style="font-size:14px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 24px;">Manage your jobs, schedule, and business from here.</p>'
       // Onboarding card
@@ -9040,10 +9106,10 @@ function _showSupplierDashboard(){
             +'<div style="font-size:14.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">Complete your onboarding details</div>'
             +'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:12px;line-height:1.5;">Your account can\'t be reviewed until all verification details are submitted.</div>'
             +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">'
-              +'<div style="flex:1;height:4px;background:#e2e8f0;border-radius:2px;overflow:hidden;"><div style="width:15%;height:100%;background:linear-gradient(90deg,#f59e0b,#fbbf24);border-radius:2px;"></div></div>'
-              +'<span style="font-size:12px;font-weight:600;color:#92400e;font-family:Inter,sans-serif;">15% verified</span>'
+              +'<div style="flex:1;height:4px;background:#e2e8f0;border-radius:2px;overflow:hidden;"><div style="width:'+_suppCalcProgress()+'%;height:100%;background:linear-gradient(90deg,#f59e0b,#fbbf24);border-radius:2px;"></div></div>'
+              +'<span style="font-size:12px;font-weight:600;color:#92400e;font-family:Inter,sans-serif;">'+_suppCalcProgress()+'% verified</span>'
             +'</div>'
-            +'<button style="background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;">Complete onboarding <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6h8M7 3l3 3-3 3"/></svg></button>'
+            +'<button onclick="_suppResumeOnboarding()" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;">Complete onboarding <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6h8M7 3l3 3-3 3"/></svg></button>'
           +'</div>'
         +'</div>'
       +'</div>'
@@ -9051,7 +9117,7 @@ function _showSupplierDashboard(){
       +'<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;">'
         +'<div style="display:flex;align-items:center;gap:10px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M8 1l5 2v5c0 3.5-5 7-5 7S3 11.5 3 8V3z"/></svg>'
           +'<span style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;padding-bottom:2px;border-bottom:2px solid #1A5FC8;">Verification details</span></div>'
-        +'<span style="font-size:12.5px;font-weight:600;color:#64748b;font-family:Inter,sans-serif;">15%</span>'
+        +'<span style="font-size:12.5px;font-weight:600;color:#64748b;font-family:Inter,sans-serif;">'+_suppCalcProgress()+'%</span>'
       +'</div>'
       // Stats grid
       +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;">'
