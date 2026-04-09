@@ -6358,20 +6358,10 @@ function showSupplierAuth() {
 
     // Body
     var body = document.createElement('div');
-    body.style.cssText = 'padding:20px 26px 16px;';
+    body.style.cssText = 'padding:20px 26px 24px;';
 
     if (window._suppAuth.step === 'contact') {
-      // Name field
-      var nameLabel = document.createElement('label');
-      nameLabel.style.cssText = 'display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;';
-      nameLabel.innerHTML = 'Full name <span style="color:#ef4444;">*</span>';
-      var nameWrap = document.createElement('div');
-      nameWrap.style.marginBottom = '16px';
-      nameWrap.appendChild(nameLabel);
-      nameWrap.appendChild(makeInput('suppName', 'text', 'Your full name', window._suppAuth.name));
-      body.appendChild(nameWrap);
-
-      // Contact field
+            // Contact field
       var ctLabel = document.createElement('label');
       ctLabel.style.cssText = 'display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;';
       ctLabel.textContent = 'Email or mobile number';
@@ -6394,14 +6384,14 @@ function showSupplierAuth() {
 
       // Switch link
       var sw = document.createElement('p');
-      sw.style.cssText = 'font-size:12px;color:#94a3b8;text-align:center;margin-top:14px;font-family:Inter,sans-serif;';
+      sw.style.cssText = 'font-size:12px;color:#94a3b8;text-align:center;margin-top:10px;margin-bottom:0;font-family:Inter,sans-serif;';
       sw.innerHTML = 'Already have an account? <a style="color:#1A5FC8;cursor:pointer;font-weight:600;" id="suppLoginLink">Log in</a>';
       body.appendChild(sw);
       setTimeout(function() {
         var lnk = document.getElementById('suppLoginLink');
         if (lnk) lnk.onclick = function() { modal.remove(); delete window._suppAuth; showAuthPage('login','supplier'); };
-        var nm = document.getElementById('suppName');
-        if (nm) nm.focus();
+        var ct = document.getElementById('suppContact');
+        if (ct) ct.focus();
       }, 50);
 
     } else {
@@ -9025,6 +9015,80 @@ function _suppCalcProgress() {
 }
 
 
+// ── Supplier dashboard dark mode ──
+function _suppApplyDarkMode(dark) {
+  var screen = document.getElementById('suppDashScreen');
+  if (!screen) return;
+  var mainEl = document.getElementById('suppMain');
+  var sidebar = document.getElementById('suppSidebar');
+
+  if (dark) {
+    screen.style.background = '#0f172a';
+    if (mainEl) {
+      mainEl.style.background = '#0f172a';
+      // Update all white cards
+      mainEl.querySelectorAll('[style*="background:#fff"]').forEach(function(el) {
+        el.style.background = '#1e293b';
+        el.style.borderColor = '#334155';
+        el.style.color = '#e2e8f0';
+      });
+      mainEl.querySelectorAll('[style*="color:#0f172a"]').forEach(function(el) {
+        el.style.color = '#f1f5f9';
+      });
+      mainEl.querySelectorAll('[style*="color:#64748b"]').forEach(function(el) {
+        el.style.color = '#94a3b8';
+      });
+    }
+    if (sidebar) {
+      sidebar.style.background = '#1e293b';
+      sidebar.style.borderRightColor = '#334155';
+      sidebar.querySelectorAll('[style*="color:#64748b"]').forEach(function(el) {
+        el.style.color = '#94a3b8';
+      });
+      sidebar.querySelectorAll('[style*="background:#fff"]').forEach(function(el) {
+        el.style.background = '#1e293b';
+      });
+      sidebar.querySelectorAll('[style*="border-top:1px solid #f1f5f9"]').forEach(function(el) {
+        el.style.borderTopColor = '#334155';
+      });
+    }
+  } else {
+    screen.style.background = '#f5f7fa';
+    if (mainEl) {
+      mainEl.style.background = '';
+      mainEl.querySelectorAll('[style*="background:#1e293b"]').forEach(function(el) {
+        el.style.background = '#fff';
+        el.style.borderColor = '#e2e8f0';
+      });
+      mainEl.querySelectorAll('[style*="color:#f1f5f9"]').forEach(function(el) {
+        el.style.color = '#0f172a';
+      });
+      mainEl.querySelectorAll('[style*="color:#94a3b8"]').forEach(function(el) {
+        el.style.color = '#64748b';
+      });
+    }
+    if (sidebar) {
+      sidebar.style.background = '#fff';
+      sidebar.style.borderRightColor = '#e2e8f0';
+    }
+  }
+}
+
+function _suppGoToVerification() {
+  // Jump to identity step (step 2 for sole trader, step 3 for company — after sector)
+  var isCompany = _suppOnboard.operationType === 'company';
+  // Find the identity or company_identity step index
+  var targetId = isCompany ? 'company_identity' : 'identity';
+  var targetStep = 2; // default
+  for (var i = 0; i < _suppOnboardSteps.length; i++) {
+    if (_suppOnboardSteps[i].id === targetId) { targetStep = i; break; }
+  }
+  _suppOnboard.step = targetStep;
+  var dashScreen = document.getElementById('suppDashScreen');
+  if (dashScreen) dashScreen.style.display = 'none';
+  showSupplierOnboarding();
+}
+
 function _suppResumeOnboarding() {
   // Find the first incomplete step (starting from identity, step 2)
   var firstIncomplete = 2; // identity
@@ -9051,6 +9115,7 @@ function _showSupplierDashboard(){
   var screen = document.createElement('div');
   screen.id  = 'suppDashScreen';
   screen.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;flex-direction:row;font-family:Inter,sans-serif;overflow:hidden;background:#f5f7fa;';
+  var _mobileOpen = false; // track mobile sidebar open state
   document.body.appendChild(screen);
 
   var KEYLR_LOGO = '<svg width="82" height="15" viewBox="0 0 852 151" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.16 144.91C0.04 141.58 0 107.67 0 69.53L0.08 0.21L18.62 0.09L37.12 0.01V75.47V150.93H18.74H0.36L0.16 144.91Z" fill="#0f172a"/><path d="M111 148.19C108.62 145.58 63.58 96.97 50.75 83.19C46.99 79.15 43.54 75.35 43.07 74.75C42.2 73.64 42.2 73.64 42.95 72.77C43.39 72.29 47.55 67.78 52.22 62.79C56.89 57.76 62.48 51.7 64.66 49.32C66.84 46.94 75.24 37.83 83.28 29.12C91.36 20.37 100.67 10.26 104.04 6.62L110.14 0H134.11H158.12L156.54 1.7C155.67 2.61 151.03 7.64 146.24 12.87C135.7 24.4 122.2 39.09 110.98 51.29C90.9 73.12 86.66 77.83 86.74 78.11C86.82 78.27 90.7 82.39 95.38 87.22C104.02 96.21 146.92 140.58 153.37 147.27L156.94 150.91L135.15 150.87L113.4 150.83L111.02 148.18L111 148.19Z" fill="#0f172a"/><path d="M190.03 133.89V116.86H257.17H324.31V133.89V150.92H257.17H190.03V133.89Z" fill="#0f172a"/><path d="M415.03 121.65V92.38L413.52 90.44C412.69 89.41 405.44 79.82 397.4 69.13C389.36 58.47 374.46 38.63 364.24 25.08C354.06 11.53 345.7 0.36 345.7 0.24C345.7 0.12 354.14 0 364.48 0H383.26L407.54 32.48C420.93 50.31 432.06 64.88 432.26 64.8C432.7 64.68 438.24 57.08 466.88 17.03C473.06 8.43 478.41 1.07 478.76 0.67C479.39 0.04 480.7 0 497.73 0.08L516.03 0.2L512.5 4.95C510.6 7.56 501.37 20.08 492.02 32.72C482.67 45.4 472.45 59.3 469.28 63.58C466.11 67.9 459.85 76.37 455.34 82.48L447.1 93.53V122.21V150.93H431.06H415.02V121.66L415.03 121.65Z" fill="#0f172a"/><path d="M566.75 150.17C556.77 148.03 548.49 141.61 544.53 132.86C541.84 126.92 541.99 131.67 541.99 62.59V0.2L558.94 0.08L575.85 0V50.39C575.85 80.22 576.05 102.01 576.25 103.75C577.08 110.05 580.29 114.01 586.35 116.23C587.18 116.51 600.77 116.71 630.91 116.86L674.29 117.06L674.41 134.01L674.49 150.92L622.32 150.88C573.6 150.88 569.87 150.8 566.74 150.17H566.75Z" fill="#0f172a"/><path d="M699.65 150.45C699.53 150.17 699.49 132.31 699.53 110.72L699.65 71.5L748.18 71.3C787.04 71.14 797.02 70.98 798.29 70.55C801.3 69.56 804.63 67.54 806.81 65.36C817.7 54.43 811.56 35.81 796.11 33.04C793.73 32.6 783.75 32.53 746.28 32.49H699.46L699.54 16.37L699.66 0.21L741.45 0.09C794.17 -0.03 799.96 0.21 809.11 3.22C813.35 4.57 820.16 8.09 824.24 10.98C828.91 14.31 835.69 21 838.38 24.96C846.9 37.52 849.63 53.32 845.87 68.3C843.73 76.58 840.05 82.88 833.39 89.57C827.65 95.27 821.39 99.28 814.53 101.65C812.79 102.24 811.2 102.84 811.04 103C810.68 103.32 814.21 107.52 832.15 128.15C837.06 133.81 843.2 140.94 845.78 144C848.39 147.05 850.77 149.86 851.09 150.26C851.64 150.89 850.65 150.93 830.85 150.93H809.97L807.63 148.08C806.36 146.5 798.12 136.35 789.37 125.58C780.58 114.81 772.97 105.5 772.42 104.86L771.39 103.79L753.96 103.87L736.49 103.99V127.48V150.93H718.15C703.85 150.93 699.77 150.81 699.65 150.45Z" fill="#0f172a"/><path d="M190.03 74.87V57.84H248.66H307.29V74.87V91.9H248.66H190.03V74.87Z" fill="#0f172a"/><path d="M190.03 17.04V0.01L257.09 0.09L324.11 0.21L324.23 17.16L324.31 34.07H257.17H190.03V17.04Z" fill="#0f172a"/></svg>';
@@ -9072,10 +9137,12 @@ function _showSupplierDashboard(){
   ];
 
   function buildSidebar(collapsed) {
-    var w = collapsed ? '64px' : '240px';
+    var isMobile = window.innerWidth < 768;
+    if (isMobile) collapsed = false; // always full on mobile (overlay)
+    var w = (isMobile && !_mobileOpen) ? '0px' : (collapsed ? '64px' : '240px');
     var sb = document.createElement('div');
     sb.id = 'suppSidebar';
-    sb.style.cssText = 'width:'+w+';min-width:'+w+';background:#fff;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;flex-shrink:0;transition:width 0.25s ease,min-width 0.25s ease;overflow:hidden;height:100%;';
+    sb.style.cssText = 'width:'+w+';min-width:'+w+';background:'+(window._suppDark?'#1e293b':'#fff')+';border-right:1px solid '+(window._suppDark?'#334155':'#e2e8f0')+';display:flex;flex-direction:column;flex-shrink:0;transition:width 0.25s ease,min-width 0.25s ease;overflow:hidden;height:100%;'+(isMobile?'position:fixed;top:0;left:0;z-index:100;box-shadow:4px 0 24px rgba(0,0,0,0.12);':'');
 
     // Logo row
     var logoRow = document.createElement('div');
@@ -9122,13 +9189,26 @@ function _showSupplierDashboard(){
       bot.appendChild(badge);
     }
 
-    // Dark mode
+    // Dark mode toggle
     var dm = document.createElement('div');
     dm.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 6px;border-radius:8px;cursor:pointer;color:#64748b;margin-bottom:4px;';
-    dm.innerHTML = '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6" style="flex-shrink:0;"><path d="M12 8a5 5 0 11-6.5-6.5A6 6 0 1012 8z"/></svg>'
-      +(!collapsed?'<span style="font-size:13px;">Dark mode</span>':'');
-    dm.onmouseover = function(){ this.style.background='#f8fafc'; };
-    dm.onmouseout  = function(){ this.style.background=''; };
+    var isDark = window._suppDark || false;
+    dm.innerHTML = (isDark
+      ? '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6" style="flex-shrink:0;"><circle cx="7.5" cy="7.5" r="4"/><path d="M7.5 1v1.5M7.5 12.5V14M14 7.5h-1.5M3 7.5H1.5M11.8 3.2l-1.1 1.1M4.3 10.7l-1.1 1.1M11.8 11.8l-1.1-1.1M4.3 4.3L3.2 3.2"/></svg>'
+      : '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6" style="flex-shrink:0;"><path d="M12 8a5 5 0 11-6.5-6.5A6 6 0 1012 8z"/></svg>')
+      + (!collapsed ? '<span style="font-size:13px;flex:1;">' + (isDark ? 'Light mode' : 'Dark mode') + '</span>' : '')
+      + (!collapsed ? ('<div style="width:32px;height:18px;background:' + (isDark ? '#1A5FC8' : '#d1d5db') + ';border-radius:9px;position:relative;transition:background 0.2s;flex-shrink:0;">'
+        + '<div style="width:14px;height:14px;background:#fff;border-radius:50%;position:absolute;top:2px;' + (isDark ? 'right:2px;' : 'left:2px;') + 'transition:all 0.2s;"></div>'
+        + '</div>') : '');
+    dm.onmouseover = function(){ this.style.background = window._suppDark ? 'rgba(255,255,255,0.06)' : '#f8fafc'; };
+    dm.onmouseout  = function(){ this.style.background = ''; };
+    dm.onclick = function() {
+      window._suppDark = !window._suppDark;
+      _suppApplyDarkMode(window._suppDark);
+      // Rebuild sidebar to update icon/toggle
+      var old = document.getElementById('suppSidebar');
+      if (old) { var p=old.parentNode,n=old.nextSibling; old.remove(); var ns=buildSidebar(_sbCollapsed); if(n)p.insertBefore(ns,n);else p.appendChild(ns); }
+    };
     bot.appendChild(dm);
 
     // User row — triggers popover
@@ -9150,7 +9230,25 @@ function _showSupplierDashboard(){
   }
 
   function toggleSidebar() {
-    _sbCollapsed = !_sbCollapsed;
+    var isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      _mobileOpen = !_mobileOpen;
+      // Handle overlay backdrop
+      var overlay = document.getElementById('suppSbOverlay');
+      if (_mobileOpen) {
+        if (!overlay) {
+          overlay = document.createElement('div');
+          overlay.id = 'suppSbOverlay';
+          overlay.style.cssText = 'position:fixed;inset:0;z-index:99;background:rgba(0,0,0,0.4);';
+          overlay.onclick = toggleSidebar;
+          document.getElementById('suppDashScreen').appendChild(overlay);
+        }
+      } else {
+        if (overlay) overlay.remove();
+      }
+    } else {
+      _sbCollapsed = !_sbCollapsed;
+    }
     var old = document.getElementById('suppSidebar');
     if (!old) return;
     var parent = old.parentNode;
@@ -9160,6 +9258,18 @@ function _showSupplierDashboard(){
     if (next) parent.insertBefore(newSb, next);
     else      parent.appendChild(newSb);
   }
+
+  // Responsive: auto-collapse on resize
+  window.addEventListener('resize', function() {
+    var sb = document.getElementById('suppSidebar');
+    if (!sb) return;
+    var parent = sb.parentNode;
+    var next   = sb.nextSibling;
+    sb.remove();
+    var newSb = buildSidebar(_sbCollapsed);
+    if (next) parent.insertBefore(newSb, next);
+    else parent.appendChild(newSb);
+  });
 
   function showSuppUserPopover() {
     var existing = document.getElementById('suppUserPopover');
@@ -9203,6 +9313,7 @@ function _showSupplierDashboard(){
 
   mainEl.innerHTML = '<div style="padding:24px clamp(32px,8vw,120px) 48px;width:100%;box-sizing:border-box;">'
     +'<div style="width:100%;">'
+      +(window.innerWidth<768?'<button onclick="toggleSidebar()" style="position:fixed;top:12px;left:12px;z-index:98;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:6px 8px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#374151" stroke-width="2"><path d="M2 4h12M2 8h12M2 12h12"/></svg></button>':'')
       +'<h1 style="font-size:28px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin:0 0 4px;">Welcome, '+name+' 👋</h1>'
       +'<p style="font-size:14px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 24px;">Manage your jobs, schedule, and business from here.</p>'
       // Onboarding card
@@ -9222,11 +9333,14 @@ function _showSupplierDashboard(){
           +'</div>'
         +'</div>'
       +'</div>'
-      // Verification details bar
-      +'<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;">'
+      // Verification details bar — clickable → goes to identity step
+      +'<div onclick="_suppGoToVerification()" style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow=\'0 2px 8px rgba(26,95,200,0.12)\';this.style.borderColor=\'#bfdbfe\'" onmouseout="this.style.boxShadow=\'\';this.style.borderColor=\'#e2e8f0\'">'
         +'<div style="display:flex;align-items:center;gap:10px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M8 1l5 2v5c0 3.5-5 7-5 7S3 11.5 3 8V3z"/></svg>'
           +'<span style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;padding-bottom:2px;border-bottom:2px solid #1A5FC8;">Verification details</span></div>'
-        +'<span style="font-size:12.5px;font-weight:600;color:#64748b;font-family:Inter,sans-serif;">'+_suppCalcProgress()+'%</span>'
+        +'<div style="display:flex;align-items:center;gap:8px;">'
+          +'<span style="font-size:12.5px;font-weight:600;color:#64748b;font-family:Inter,sans-serif;">'+_suppCalcProgress()+'%</span>'
+          +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M5 3l4 4-4 4"/></svg>'
+        +'</div>'
       +'</div>'
       // Stats grid
       +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;">'
