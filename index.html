@@ -8247,7 +8247,7 @@ function _buildSuppOnboardStep(step) {
           + '<span style="font-size:11px;background:#fef9c3;color:#854d0e;border-radius:4px;padding:1px 7px;font-weight:700;font-family:Inter,sans-serif;">Recommended</span>'
         + '</div>'
         + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:12px;">References and portfolio photos are displayed on your marketplace profile. They help build trust and improve your search ranking significantly.</div>'
-        + '<textarea id="bg-refs" placeholder="Describe 2–3 recent jobs with client name, type of work, and outcome." rows="4" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:11px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;resize:vertical;color:#0f172a;margin-bottom:14px;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"></textarea>'
+        + '<textarea id="bg-refs" placeholder="Describe 2–3 recent jobs with client name, type of work, and outcome." rows="4" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:11px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;resize:vertical;color:#0f172a;margin-bottom:14px;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'">'+(_suppOnboard.jobRefs||'')+'</textarea>'
         + '<div style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:10px;">Portfolio photos</div>'
         + '<div style="display:flex;gap:10px;">'
           + '<div onclick="alert(\'Photo upload coming soon\')" style="width:100px;height:100px;border:1.5px dashed #d1d5db;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;background:#fafafa;">'
@@ -8424,11 +8424,16 @@ function _buildSuppOnboardStep(step) {
 // ── Helper builders ──
 function _suppField(label, badge, id, type, placeholder, badgeClass, extraHtml) {
   var badgeHtml = badge ? '<span style="font-size:10px;font-weight:700;background:'+(badge==='DAC7'||badge==='DAC7 Required'?'#eff6ff':'#f1f5f9')+';color:'+(badge==='DAC7'||badge==='DAC7 Required'?'#1d4ed8':'#64748b')+';border-radius:4px;padding:1px 6px;margin-left:6px;font-family:Inter,sans-serif;">'+badge+'</span>' : '';
-  return '<div style="margin-bottom:14px;">'
-    + '<label style="display:flex;align-items:center;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">'+label+badgeHtml+'</label>'
-    + '<input id="'+id+'" type="'+type+'" placeholder="'+placeholder+'" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;background:#fff;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/>'
-    + (extraHtml||'')
-  + '</div>';
+  // Restore saved value
+  var fieldMap = {'so-legal-name':'_suppOnboard.fullLegalName','so-dob':'_suppOnboard.dob','so-ni':'_suppOnboard.niNumber','so-home-addr':'_suppOnboard.homeAddress','pm-vat-num':'_suppOnboard.vatNumber','pm-acc-holder':'_suppOnboard.accountHolder','pm-sort':'_suppOnboard.sortCode','pm-acc-num':'_suppOnboard.accountNumber','pm-bank':'_suppOnboard.bankName','ins-provider':'_suppOnboard.insProvider','ins-policy':'_suppOnboard.insPolicy','ins-coverage':'_suppOnboard.insCoverage','ins-expiry':'_suppOnboard.insExpiry','bg-refs':'_suppOnboard.jobRefs'};
+  var savedExpr = fieldMap[id];
+  var savedVal  = '';
+  try { if(savedExpr) savedVal = eval(savedExpr) || ''; } catch(e){}
+  var valAttr = savedVal ? ' value="' + String(savedVal).replace(/"/g,'&quot;') + '"' : '';
+  if (id === 'bg-refs') {
+    return '<div style="margin-bottom:14px;">'      + '<label style="display:flex;align-items:center;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">'+label+badgeHtml+'</label>'      + '<textarea id="'+id+'" rows="4" placeholder="'+placeholder+'" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;background:#fff;resize:vertical;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'">'+(savedVal||'')+'</textarea>'      + (extraHtml||'')    + '</div>';
+  }
+  return '<div style="margin-bottom:14px;">'    + '<label style="display:flex;align-items:center;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">'+label+badgeHtml+'</label>'    + '<input id="'+id+'" type="'+type+'"'+valAttr+' placeholder="'+placeholder+'" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;background:#fff;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'" />'    + (extraHtml||'')  + '</div>';
 }
 
 function _suppInfoBox(text, isList) {
@@ -8713,8 +8718,8 @@ function _suppOnboardNext(){
   if(step>=_suppOnboardSteps.length-1){_suppOnboardFinish();}
   else{_suppOnboard.step=step+1;_renderSuppOnboard();}
 }
-function _suppOnboardBack(){if(_suppOnboard.step>0){_suppOnboard.step--;_renderSuppOnboard();}}
-function _suppSkipStep(){if(_suppOnboard.step<_suppOnboardSteps.length-1){_suppOnboard.step++;_renderSuppOnboard();}else _suppOnboardFinish();}
+function _suppOnboardBack(){_suppSaveCurrentStep();if(_suppOnboard.step>0){_suppOnboard.step--;_renderSuppOnboard();}}
+function _suppSkipStep(){_suppSaveCurrentStep();if(_suppOnboard.step<_suppOnboardSteps.length-1){_suppOnboard.step++;_renderSuppOnboard();}else _suppOnboardFinish();}
 
 function _suppOnboardFinish(){
   if(_user){
