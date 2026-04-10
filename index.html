@@ -7531,13 +7531,14 @@ function setSidebarProgress(pct){
 
 function saveProfileTab(){
   if(!_user)return;
-  var errors=[];
+
+  // ── Validate name ──
   var nameEl=document.getElementById('profileName');
   if(!nameEl||!nameEl.value.trim()){
-    errors.push('Full name is required');
     if(nameEl)nameEl.style.borderColor='#ef4444';
+    showToast('Full name is required','error');
+    return;
   }
-  if(errors.length>0){showToast(errors[0],'error');return;}
 
   var nameVal=nameEl.value.trim();
   var emailEl=document.getElementById('profileEmail');
@@ -7546,12 +7547,26 @@ function saveProfileTab(){
   var emailVal=(emailEl&&emailEl.value.trim())||'';
   var phoneVal=(phoneEl&&phoneEl.value.trim())||'';
   var pwdVal=(pwdEl&&pwdEl.value)||'';
+  var isPhoneUser=_user&&_user._authMethod==='phone';
 
-  var patch={name:nameVal};
-  if(emailVal&&emailVal!==_user.email){
-    patch.email=emailVal;
-    patch._emailVerified=false;
+  // ── Gate 1: Email entered but not verified → open email verification modal ──
+  var emailChanged=emailVal&&emailVal!==(_user.email||'');
+  if(emailVal&&(!_user._emailVerified||emailChanged)){
+    showToast('Please verify your email address first','warning');
+    setTimeout(function(){sendVerifyEmail();},200);
+    return;
   }
+
+  // ── Gate 2: Phone entered but not verified → open OTP modal directly ──
+  if(phoneVal&&!isPhoneUser&&!(_user&&_user._phoneVerified)){
+    showToast('Please verify your mobile number first','warning');
+    setTimeout(function(){_showPhoneOtpModal(phoneVal);},200);
+    return;
+  }
+
+  // ── All verified — commit the save ──
+  var patch={name:nameVal};
+  if(emailVal)patch.email=emailVal;
   if(phoneVal)patch.phone=phoneVal;
   if(pwdVal)patch._pwd=pwdVal;
 
@@ -7559,25 +7574,9 @@ function saveProfileTab(){
   if(typeof _syncUserUI==='function')_syncUserUI();
   _syncSettingsPage();
   recalcProgress();
-
-  // After saving, prompt phone verification if not yet verified
-  if(patch.email){
-    showToast('Profile saved! Sending verification email...','success');
-    setTimeout(function(){sendVerifyEmail();},600);
-  } else {
-    showToast('Profile saved!','success');
-  }
-
-  // Check phone verification (non-blocking prompt)
-  setTimeout(function(){
-    var phoneEl=document.getElementById('profilePhone');
-    var phone=(phoneEl&&phoneEl.value.trim())||'';
-    var isPhoneUser=_user&&_user._authMethod==='phone';
-    if(phone&&!(_user&&_user._phoneVerified)&&!isPhoneUser){
-      _showVerifyPhonePromptOnSave(phone,function(){});
-    }
-  },400);
+  showToast('Profile saved!','success');
 }
+
 
 function validateBizField(input, id){
   var required=['bizTradingName','bizLegalName','bizRegAddr'];
