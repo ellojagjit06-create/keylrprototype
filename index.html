@@ -5161,15 +5161,16 @@ function addJobFromBooking(data) {
 function renderJobs(filter) {
   var list = document.getElementById('bkJobList');
   if (!list) return;
+  var isDk = document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark');
   ['bkTabActive','bkTabDone','bkTabAll'].forEach(function(id){
     var el=document.getElementById(id);
     if(!el) return;
     el.style.background='transparent'; el.style.fontWeight='500';
-    el.style.color='#64748b'; el.style.boxShadow='none';
+    el.style.color=isDk?'#8b949e':'#64748b'; el.style.boxShadow='none';
   });
   var activeId = filter==='active'?'bkTabActive':filter==='completed'?'bkTabDone':'bkTabAll';
   var tab=document.getElementById(activeId);
-  if(tab){tab.style.background='#fff';tab.style.fontWeight='600';tab.style.color='#0f172a';tab.style.boxShadow='0 1px 3px rgba(0,0,0,0.08)';}
+  if(tab){tab.style.background=isDk?'#2d3748':'#fff';tab.style.fontWeight='600';tab.style.color=isDk?'#e6edf3':'#0f172a';tab.style.boxShadow='0 1px 3px rgba(0,0,0,0.08)';}
   var jobs = _confirmedJobs.filter(function(j){
     if(filter==='active') return j.status!=='completed';
     if(filter==='completed') return j.status==='completed';
@@ -10003,6 +10004,112 @@ button:active { transform: scale(0.98); }
 .dash-dark .ai-chip-btn { background:#1c2433 !important; border-color:#30363d !important; color:#c9d1d9 !important; }
 .dash-dark .ai-chip-btn:hover { background:#243046 !important; border-color:#58a6ff !important; }
 
+
+/* ── Dark mode additions ── */
+
+/* Bookings — stat cards */
+.dash-dark .bk-stat-card{background:#1c2433 !important;border-color:#2d3748 !important;}
+.dash-dark .bk-stat-card div[style*="color:#94a3b8"]{color:#8b949e !important;}
+.dash-dark #bkStatSpend{color:#e6edf3 !important;}
+
+/* Bookings — filter tabs */
+.dash-dark #bkTabWrap{background:#1c2433 !important;}
+.dash-dark #bkTabActive,
+.dash-dark #bkTabDone,
+.dash-dark #bkTabAll{color:#8b949e !important;}
+.dash-dark #bkTabActive[style*="background:#fff"]{background:#2d3748 !important;color:#e6edf3 !important;}
+
+/* Bookings — bottom chat bar */
+.dash-dark .bk-chat-bar{background:#161b22 !important;border-top-color:#2d3748 !important;}
+.dash-dark .bk-chat-bar>div>div{background:#1c2433 !important;border-color:#2d3748 !important;}
+.dash-dark #bkChatInput{color:#e6edf3 !important;background:transparent !important;}
+.dash-dark #bkChatInput::placeholder{color:#484f58 !important;}
+
+/* Bookings — job empty state */
+.dash-dark #bkJobList [style*="background:#fff"]{background:#1c2433 !important;border-color:#2d3748 !important;}
+.dash-dark #bkJobList [style*="color:#0f172a"]{color:#e6edf3 !important;}
+.dash-dark #bkJobList [style*="color:#64748b"]{color:#8b949e !important;}
+.dash-dark #page-bookings h2{color:#e6edf3 !important;}
+.dash-dark #bkSubtitle{color:#8b949e !important;}
+
+/* Properties — empty card border + bg */
+.dash-dark .prop-empty-card{background:#161b22 !important;border-color:#2d3748 !important;}
+.dash-dark .prop-empty-card [style*="color:#0f172a"]{color:#e6edf3 !important;}
+.dash-dark .prop-empty-card [style*="color:#64748b"]{color:#8b949e !important;}
+.dash-dark .prop-eyebrow{color:#58a6ff !important;}
+.dash-dark .prop-title{color:#e6edf3 !important;}
+.dash-dark .prop-sub{color:#8b949e !important;}
+.dash-dark .prop-add-btn{background:#1c2433 !important;border-color:#2d3748 !important;color:#e6edf3 !important;}
+
+/* Explore — compliance icon bg in dark */
+.dash-dark .esi-icon-compliance{background:#1e3a5f !important;color:#60a5fa !important;}
+
+/* Home — "How Keylr works" section */
+.dash-dark [style*="background:#fff;border-radius:20px;padding:40px"]{background:#161b22 !important;border-color:#2d3748 !important;}
+.dash-dark [style*="background:#fff;border-radius:20px;padding:40px"] h2{color:#e6edf3 !important;}
+.dash-dark [style*="background:#fff;border-radius:20px;padding:40px"] p{color:#8b949e !important;}
+.dash-dark [style*="background:#fff;border-radius:20px;padding:40px"] [style*="color:#0f172a"]{color:#e6edf3 !important;}
+.dash-dark [style*="background:#fff;border-radius:20px;padding:40px"] [style*="color:#64748b"]{color:#8b949e !important;}
+
+/* Home — "Your active jobs" section */
+.dash-dark [style*="No active jobs"]{color:#e6edf3 !important;}
+.dash-dark [style*="background:#fff;border:1px solid #e2e8f0;border-radius:16px"]{background:#161b22 !important;border-color:#2d3748 !important;}
+.dash-dark [style*="background:#fff;border:1px solid #e2e8f0;border-radius:14px"]{background:#161b22 !important;border-color:#2d3748 !important;}
+
+/* Home — inline white cards (trending services section, quick links etc) */
+.dash-dark #page-home [style*="background:#fff;border:1px solid #e2e8f0"]{background:#161b22 !important;border-color:#2d3748 !important;}
+.dash-dark #page-home [style*="color:#0f172a;font-family"]{color:#e6edf3 !important;}
+.dash-dark #page-home [style*="font-size:18px;font-weight:700;color:#0f172a"]{color:#e6edf3 !important;}
+.dash-dark #page-home [style*="font-size:14px;color:#64748b"]{color:#8b949e !important;}
+.dash-dark #page-home [style*="color:#94a3b8;font-family:Inter"]{color:#8b949e !important;}
+
+/* Chat welcome screen */
+.dash-dark .chat-welcome h2{color:#e6edf3 !important;}
+.dash-dark .chat-welcome p{color:#8b949e !important;}
+.dash-dark .chat-welcome-icon-k{background:linear-gradient(135deg,#1A5FC8,#0FA3D0) !important;}
+.dash-dark .suggestion-chip{background:#1c2433 !important;border-color:#2d3748 !important;color:#c9d1d9 !important;}
+.dash-dark .suggestion-chip:hover{border-color:#58a6ff !important;color:#e6edf3 !important;background:#243046 !important;}
+.dash-dark .sc-icon{color:#58a6ff !important;}
+
+/* Chat message bubbles */
+.dash-dark .ai-bubble,.dash-dark .msg-bubble.ai-bubble{background:#1c2433 !important;color:#c9d1d9 !important;border-color:#2d3748 !important;}
+.dash-dark .user-bubble{background:#1A5FC8 !important;}
+.dash-dark .msg-bubble{color:#e6edf3 !important;}
+.dash-dark .ai-msg-wrap .msg-bubble{background:#1c2433 !important;border-color:#2d3748 !important;color:#c9d1d9 !important;}
+
+/* Chat — supplier slider card */
+.dash-dark #supplierSlider{background:#1c2433 !important;border-color:#2d3748 !important;}
+.dash-dark #supplierSlider [style*="color:#0f172a"]{color:#e6edf3 !important;}
+.dash-dark #supplierSlider [style*="color:#94a3b8"]{color:#8b949e !important;}
+
+/* ── Extra dark mode rules ── */
+
+/* Home — "Your active jobs" section title */
+.dash-dark #page-home [style*="color:#0f172a;"][style*="18px"]{color:#e6edf3 !important;}
+.dash-dark #page-home [style*="color:#94a3b8"][style*="12.5px"]{color:#8b949e !important;}
+
+/* Home — HOW IT WORKS white card */
+.dash-dark .how-grid-card{background:#161b22 !important;border-color:#2d3748 !important;}
+.dash-dark .how-grid-card h3,.dash-dark .how-grid-card p{color:#8b949e !important;}
+.dash-dark [class*="hiw"]{color:#8b949e !important;}
+.dash-dark .home-cta-block{background:#161b22 !important;}
+
+/* No active jobs empty state */
+.dash-dark [style*="No active jobs"]{color:#e6edf3 !important;}
+.dash-dark #page-home>div [style*="background:#fff;border:1px solid #e2e8f0;border-radius:16px"]{background:#161b22 !important;border-color:#2d3748 !important;}
+.dash-dark #page-home>div [style*="background:#fff;border:1px solid #e2e8f0;border-radius:14px"]{background:#161b22 !important;border-color:#2d3748 !important;}
+
+/* Bookings page headings */
+.dash-dark #page-bookings [style*="color:#0f172a"]{color:#e6edf3 !important;}
+.dash-dark #page-bookings [style*="color:#64748b"]{color:#8b949e !important;}
+.dash-dark #page-bookings [style*="color:#94a3b8"]{color:#8b949e !important;}
+.dash-dark #bkStatSpend{color:#e6edf3 !important;}
+
+/* Properties page */
+.dash-dark #page-properties [style*="color:#0f172a"]{color:#e6edf3 !important;}
+.dash-dark #page-properties [style*="color:#64748b"]{color:#8b949e !important;}
+.dash-dark #page-properties [style*="color:#94a3b8"]{color:#8b949e !important;}
+.dash-dark .prop-empty-card{background:#161b22 !important;border-color:#2d3748 !important;}
 </style>
 
 </body>
