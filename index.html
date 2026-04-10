@@ -599,8 +599,8 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .biz-ob-input:focus{border-color:#1A5FC8;background:#fff;}
 .biz-ob-hint{font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:4px;}
 .biz-ob-grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.biz-ob-logo-upload{border:1.5px dashed #d1d5db;border-radius:10px;padding:0 14px;text-align:center;cursor:pointer;color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;background:#fafafa;display:flex;align-items:center;justify-content:center;gap:7px;height:46px;overflow:hidden;position:relative;}
-.biz-ob-logo-upload img{max-height:36px;max-width:100%;object-fit:contain;border-radius:4px;}
+.biz-ob-logo-upload{border:1.5px dashed #d1d5db;border-radius:10px;padding:0 14px;text-align:center;cursor:pointer;color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;background:#fafafa;display:flex;align-items:center;justify-content:center;gap:7px;height:44px;overflow:hidden;position:relative;box-sizing:border-box;}
+.biz-ob-logo-upload img{max-height:32px;max-width:100%;object-fit:contain;border-radius:4px;}
 .biz-ob-footer{display:flex;align-items:center;gap:12px;margin-top:32px;}
 .biz-ob-skip-btn{display:flex;align-items:center;gap:6px;background:transparent;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:600;color:#64748b;cursor:pointer;font-family:Inter,sans-serif;transition:border-color 0.15s;}
 .biz-ob-skip-btn:hover{border-color:#94a3b8;}
@@ -1823,7 +1823,12 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .db-sidebar.collapsed .db-signup-btn{padding:8px 0;border-radius:7px;font-size:0;display:flex;align-items:center;justify-content:center;width:36px;height:36px;margin:0 auto;}
 .db-sidebar.collapsed .db-login-btn{padding:8px 0;border-radius:7px;font-size:0;display:flex;align-items:center;justify-content:center;width:36px;height:36px;margin:0 auto;}
 .db-sidebar-btn-icon{display:none;}
-.db-sidebar.collapsed .db-sidebar-btn-icon{display:block;}
+/* Collapsed sidebar: theme toggle becomes icon-only square, centered */
+.db-sidebar.collapsed #themeToggleBtn{
+  width:36px;height:36px;padding:0;border-radius:9px;
+  justify-content:center;margin:0 auto 8px;
+}
+.db-sidebar.collapsed #themeToggleBtn .db-nav-item-label{display:none;}
 .db-sidebar.collapsed .db-signup-btn::before{content:'';display:block;width:14px;height:14px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14' fill='none' stroke='white' stroke-width='2'%3E%3Ccircle cx='7' cy='5' r='2.5'/%3E%3Cpath d='M2 12c0-2.8 2.2-5 5-5s5 2.2 5 5'/%3E%3C/svg%3E") center/contain no-repeat;}
 .db-sidebar.collapsed .db-login-btn::before{content:'→';font-size:14px;color:var(--navy);}
 .db-sidebar.collapsed .db-nav{padding:8px 4px;gap:2px;}
@@ -3722,11 +3727,11 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:0;" class="settings-2col">
               <div>
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Trading Address <span style="font-weight:400;color:#94a3b8;">(optional)</span></label>
-                <input id="bizTradingAddr" type="text" placeholder="If different from registered address" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
+                <input id="bizTradingAddr" type="text" placeholder="If different from registered address" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
               </div>
               <div>
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">VAT Number <span style="font-weight:400;color:#94a3b8;">(optional)</span></label>
-                <input id="bizVat" type="text" placeholder="e.g. GB 123 456 789" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
+                <input id="bizVat" type="text" placeholder="e.g. GB 123 456 789" oninput="recalcProgress()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#f8fafc;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"/>
               </div>
             </div>
             <!-- Row 4: Company Logo (left col, under Trading Address) -->
@@ -4079,7 +4084,7 @@ function _syncUserUI() {
   if (_user && sbEmail) sbEmail.textContent = _user.email || _user.phone || _user.contact || '';
   // Show/hide sidebar cards based on login state
   if (_user) {
-    var alertCount = window._complianceAlertCount !== undefined ? window._complianceAlertCount : 0;
+    var alertCount = (typeof window._complianceAlertCount === "number" && window._complianceAlertCount > 0) ? window._complianceAlertCount : 0;
     updateSidebarCards(alertCount);
   } else {
     hideSidebarCards();
@@ -4120,7 +4125,7 @@ function _showProfileDropdown(anchorId) {
     '<div onclick="_goToSettings();document.getElementById(\'profileDropdown\').remove();" style="padding:11px 16px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;display:flex;align-items:center;gap:9px;transition:background 0.1s;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'transparent\'">' +
       '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="7" cy="4.5" r="2.5"/><path d="M2 12c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>My Profile' +
     '</div>' +
-    '<div onclick="_doLogout();document.getElementById(\'profileDropdown\').remove();" style="padding:11px 16px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#ef4444;display:flex;align-items:center;gap:9px;border-top:1px solid #f1f5f9;transition:background 0.1s;" onmouseover="this.style.background=\'#fff5f5\'" onmouseout="this.style.background=\'transparent\'">' +
+    '<div onclick="_doLogout();" style="padding:11px 16px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#ef4444;display:flex;align-items:center;gap:9px;border-top:1px solid #f1f5f9;transition:background 0.1s;" onmouseover="this.style.background=\'#fff5f5\'" onmouseout="this.style.background=\'transparent\'">' +
       '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5.5 7h6M9 4.5l2.5 2.5L9 9.5M8 2.5H3a1 1 0 00-1 1v7a1 1 0 001 1h5"/></svg>Log out' +
     '</div>';
 
@@ -6810,9 +6815,9 @@ function _renderPmActionChips() {
         +'<div style="flex:1;min-width:0;overflow:hidden;">'
           +'<div style="font-size:13px;font-weight:700;color:'+titleCol+';font-family:Inter,sans-serif;margin-bottom:'+(c.sub?'3':'8')+'px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+c.title+'</div>'
           +(c.sub ? '<div style="font-size:11.5px;color:'+subCol+';font-family:Inter,sans-serif;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+c.sub+'</div>' : '')
-          +'<div style="height:3px;background:'+barTrack+';border-radius:2px;overflow:hidden;"><div style="width:'+(c.badge||'0%')+';height:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:2px;"></div></div>'
+          +(c.badge!==null?'<div style="height:3px;background:'+barTrack+';border-radius:2px;overflow:hidden;"><div style="width:'+(c.badge||'0%')+';height:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:2px;"></div></div>':'')
         +'</div>'
-        +'<div style="font-size:12px;font-weight:700;color:'+pctCol+';font-family:Inter,sans-serif;flex-shrink:0;white-space:nowrap;">'+(c.badge||'0%')+'</div>';
+        +(c.badge!==null?'<div style="font-size:12px;font-weight:700;color:'+pctCol+';font-family:Inter,sans-serif;flex-shrink:0;white-space:nowrap;">'+c.badge+'</div>':'');
 
       topRow.appendChild(d);
     });
@@ -6859,7 +6864,7 @@ function _renderPmActionChips() {
       // CTA
       var ctaBtn = document.createElement('button');
       ctaBtn.setAttribute('data-cta','1');
-      ctaBtn.style.cssText = 'align-self:flex-start;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;transition:opacity 0.15s;white-space:nowrap;';
+      ctaBtn.style.cssText = 'align-self:flex-start;background:none;border:none;color:#1A5FC8;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;padding:0;display:inline-flex;align-items:center;gap:5px;transition:color 0.15s;white-space:nowrap;';
       ctaBtn.innerHTML = (c.actionLabel||'Get started');
       ctaBtn.onmouseover = function(){ this.style.opacity='0.88'; };
       ctaBtn.onmouseout  = function(){ this.style.opacity='1'; };
@@ -7749,16 +7754,21 @@ function recalcProgress(){
   if(_user&&_user._emailVerified)pct+=15;
   else if(hasEmail)pct+=5; // partial for unverified
 
-  // ── Business (max 35%) ──
+  // ── Business (max 35%) — all 6 fields contribute ──
   var tn=document.getElementById('bizTradingName');
   var ln=document.getElementById('bizLegalName');
   var ra=document.getElementById('bizRegAddr');
-  var hasTrading=tn&&tn.value.trim().length>0;
-  var hasLegal=ln&&ln.value.trim().length>0;
-  var hasRegAddr=ra&&ra.value.trim().length>0;
-  if(hasTrading)pct+=12;
-  if(hasLegal)pct+=12;
-  if(hasRegAddr)pct+=11;
+  var rn=document.getElementById('bizRegNum');
+  var ta=document.getElementById('bizTradingAddr');
+  var vt=document.getElementById('bizVat');
+  // Required fields: 10% each (30% total)
+  if(tn&&tn.value.trim().length>0)pct+=10;
+  if(ln&&ln.value.trim().length>0)pct+=10;
+  if(ra&&ra.value.trim().length>0)pct+=10;
+  // Optional fields: ~1.67% each rounding to whole numbers (5% total)
+  if(rn&&rn.value.trim().length>0)pct+=2;
+  if(ta&&ta.value.trim().length>0)pct+=2;
+  if(vt&&vt.value.trim().length>0)pct+=1;
 
   // ── Discovery (max 30%) ──
   var df=_discAnswers.filter(function(a){return a!==null&&!(Array.isArray(a)&&a.length===0);}).length;
@@ -8941,16 +8951,28 @@ function handleObLogoUpload(input) {
   var reader = new FileReader();
   reader.onload = function(e) {
     var preview = document.getElementById('ob-logo-preview');
-    var label   = document.getElementById('ob-logo-label');
     if (preview) {
-      // Clear existing content and show image
-      preview.innerHTML = '<img src="' + e.target.result + '" style="max-height:36px;max-width:100%;object-fit:contain;border-radius:4px;" />';
+      preview.innerHTML =
+        '<img src="' + e.target.result + '" style="max-height:32px;max-width:calc(100% - 32px);object-fit:contain;border-radius:4px;" />' +
+        '<button onclick="event.stopPropagation();removeObLogo()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:#fee2e2;border:none;border-radius:5px;width:22px;height:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" title="Remove logo">' +
+        '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#ef4444" stroke-width="2"><path d="M1 1l8 8M9 1L1 9"/></svg></button>';
     }
-    // Store on user
     if (_user) _user._companyLogo = e.target.result;
     if (typeof showToast === 'function') showToast('Logo uploaded ✓', 'success');
   };
   reader.readAsDataURL(file);
+}
+
+function removeObLogo() {
+  var preview = document.getElementById('ob-logo-preview');
+  var fileInput = document.getElementById('ob-logo-file');
+  if (preview) {
+    preview.innerHTML =
+      '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#94a3b8" stroke-width="1.7"><path d="M7.5 10V3M4 6l3.5-3.5L11 6"/><path d="M2 12h11"/></svg>' +
+      '<span id="ob-logo-label">Upload PNG or SVG</span>';
+  }
+  if (fileInput) fileInput.value = '';
+  if (_user) _user._companyLogo = null;
 }
 
 // ═══════════════════════════════════════════════
@@ -8992,12 +9014,21 @@ function selectObPlan(planKey) {
 // CHIP PROGRESS BADGES — live update from recalcProgress
 // ═══════════════════════════════════════════════
 function _updateChipBadges() {
-  // Company details badge — based on biz fields filled (3 required)
+  // Company details badge — all 6 fields, required weighted more
   var tn = document.getElementById('bizTradingName');
   var ln = document.getElementById('bizLegalName');
   var ra = document.getElementById('bizRegAddr');
-  var bizFilled = [tn,ln,ra].filter(function(el){ return el && el.value.trim().length > 0; }).length;
-  var bizPct = Math.round((bizFilled / 3) * 100);
+  var rn = document.getElementById('bizRegNum');
+  var ta = document.getElementById('bizTradingAddr');
+  var vt = document.getElementById('bizVat');
+  var bizScore = 0;
+  if (tn && tn.value.trim()) bizScore += 34; // required ~33%
+  if (ln && ln.value.trim()) bizScore += 33; // required
+  if (ra && ra.value.trim()) bizScore += 23; // required
+  if (rn && rn.value.trim()) bizScore += 4;  // optional
+  if (ta && ta.value.trim()) bizScore += 3;  // optional
+  if (vt && vt.value.trim()) bizScore += 3;  // optional
+  var bizPct = Math.min(bizScore, 100);
   var compChip = _pmActionChipDefs.find(function(c){ return c.id === 'company_details'; });
   if (compChip) compChip.badge = bizPct + '%';
 
