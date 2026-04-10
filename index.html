@@ -3550,9 +3550,18 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
                     </button>
                     <div id="profCcList" style="display:none;position:absolute;top:100%;left:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.1);z-index:50;min-width:180px;max-height:200px;overflow-y:auto;"></div>
                   </div>
-                  <input id="profilePhone" type="tel" placeholder="7700 000000" oninput="recalcProgress();validateProfPhone(this);validateProfPhoneLimit(this)" style="flex:1;border:1.5px solid #e2e8f0;border-radius:0 10px 10px 0;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s,background 0.15s;min-width:0;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+                  <div style="flex:1;position:relative;">
+                    <input id="profilePhone" type="tel" placeholder="7700 000000" oninput="recalcProgress();validateProfPhone(this);validateProfPhoneLimit(this);_onPhoneInput();" style="width:100%;border:1.5px solid #e2e8f0;border-radius:0 10px 10px 0;padding:11px 80px 11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+                    <span id="profilePhoneBadge" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;pointer-events:none;"></span>
+                  </div>
                 </div>
                 <div id="profPhoneErr" style="display:none;font-size:11px;color:#ef4444;margin-top:3px;font-family:Inter,sans-serif;">Enter a valid phone number</div>
+                <div id="phoneVerifyRow" style="display:none;margin-top:6px;">
+                  <button id="profileVerifyPhoneBtn" type="button" onclick="profileVerifyPhone()" style="background:none;border:none;color:#1A5FC8;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;display:inline-flex;align-items:center;gap:5px;">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6.5" cy="6.5" r="5.5"/><path d="M4 6.5l2 2 3-3"/></svg>
+                    Verify mobile number
+                  </button>
+                </div>
               </div>
               <div id="profilePwdSection">
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Password</label>
@@ -6777,6 +6786,236 @@ function _initPmChips() {
   _renderPmActionChips();
 }
 
+// ── Phone verification state ──
+// _user._phoneVerified: bool
+// _user.phone: string
+
+function _onPhoneInput() {
+  var inp = document.getElementById('profilePhone');
+  var badge = document.getElementById('profilePhoneBadge');
+  var verifyRow = document.getElementById('phoneVerifyRow');
+  if (!inp) return;
+  var val = inp.value.trim().replace(/[\s\-\(\)]/g,'');
+  var isPhoneUser = _user && _user._authMethod === 'phone';
+  var alreadyVerified = _user && _user._phoneVerified && val && (val === (_user.phone||'').replace(/[\s\-\(\)]/g,''));
+
+  if (!val) {
+    if (badge) badge.style.display = 'none';
+    if (verifyRow) verifyRow.style.display = 'none';
+    return;
+  }
+
+  if (alreadyVerified || isPhoneUser) {
+    // Show verified chip
+    _showPhoneBadge('verified');
+    if (verifyRow) verifyRow.style.display = 'none';
+  } else {
+    // Show unverified chip + verify button
+    _showPhoneBadge('unverified');
+    if (verifyRow) verifyRow.style.display = 'block';
+  }
+}
+
+function _showPhoneBadge(state) {
+  var badge = document.getElementById('profilePhoneBadge');
+  if (!badge) return;
+  if (state === 'verified') {
+    badge.style.display = 'inline-block';
+    badge.style.background = '#d1fae5';
+    badge.style.color = '#065f46';
+    badge.style.border = '1px solid #a7f3d0';
+    badge.innerHTML = '<svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#10b981" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:2px;"><path d="M1 4.5l2.5 2.5 4-4"/></svg>Verified';
+  } else {
+    badge.style.display = 'inline-block';
+    badge.style.background = '#fef3c7';
+    badge.style.color = '#92400e';
+    badge.style.border = '1px solid #fcd34d';
+    badge.innerHTML = '<svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#f59e0b" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:2px;"><circle cx="4.5" cy="4.5" r="4"/><path d="M4.5 2v3M4.5 6.5v.5"/></svg>Not verified';
+  }
+}
+
+function profileVerifyPhone() {
+  var inp = document.getElementById('profilePhone');
+  var phone = inp ? inp.value.trim() : '';
+  if (!phone || phone.length < 6) {
+    showToast('Please enter a valid mobile number first', 'warning');
+    return;
+  }
+  _showPhoneOtpModal(phone);
+}
+
+function _showPhoneOtpModal(phone) {
+  var ex = document.getElementById('phoneOtpModal');
+  if (ex) ex.remove();
+
+  var overlay = document.createElement('div');
+  overlay.id = 'phoneOtpModal';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(15,23,42,0.45);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;animation:modalPop 0.2s ease;';
+  overlay.onclick = function(e){ if(e.target===overlay) overlay.remove(); };
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;padding:32px 28px 28px;max-width:400px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.18);';
+
+  // Icon
+  var ico = document.createElement('div');
+  ico.style.cssText = 'width:52px;height:52px;background:#eff6ff;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;';
+  ico.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A5FC8" stroke-width="1.8"><rect x="5" y="2" width="14" height="20" rx="3"/><circle cx="12" cy="17" r="1.5" fill="#1A5FC8" stroke="none"/><path d="M9 6h6"/></svg>';
+
+  var h = document.createElement('div');
+  h.style.cssText = 'font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;text-align:center;margin-bottom:6px;';
+  h.textContent = 'Verify your mobile';
+
+  var sub = document.createElement('div');
+  sub.style.cssText = 'font-size:13px;color:#64748b;font-family:Inter,sans-serif;text-align:center;margin-bottom:6px;';
+  sub.textContent = 'We sent a 6-digit code to';
+
+  var num = document.createElement('div');
+  num.style.cssText = 'font-size:14px;font-weight:700;color:#1A5FC8;font-family:Inter,sans-serif;text-align:center;margin-bottom:24px;';
+  num.textContent = phone;
+
+  // OTP boxes
+  var otpWrap = document.createElement('div');
+  otpWrap.style.cssText = 'display:flex;gap:8px;justify-content:center;margin-bottom:16px;';
+  var otpInputs = [];
+  for (var i = 0; i < 6; i++) {
+    var oi = document.createElement('input');
+    oi.type = 'text'; oi.maxLength = 1; oi.inputMode = 'numeric';
+    oi.style.cssText = 'width:44px;height:50px;border:1.5px solid #e2e8f0;border-radius:10px;text-align:center;font-size:20px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;outline:none;transition:border-color 0.15s;';
+    oi.onfocus = function(){ this.style.borderColor='#1A5FC8'; };
+    oi.onblur  = function(){ this.style.borderColor='#e2e8f0'; };
+    oi.oninput = (function(idx){ return function(){
+      this.value = this.value.replace(/\D/g,'');
+      if (this.value && idx < otpInputs.length - 1) otpInputs[idx+1].focus();
+      if (_getOtpVal(otpInputs) === '123456') _handleOtpSuccess(otpInputs, overlay, phone);
+    }; })(i);
+    oi.onkeydown = (function(idx){ return function(e){
+      if (e.key==='Backspace' && !this.value && idx > 0) { otpInputs[idx-1].focus(); otpInputs[idx-1].value=''; }
+    }; })(i);
+    otpInputs.push(oi);
+    otpWrap.appendChild(oi);
+  }
+
+  var errMsg = document.createElement('div');
+  errMsg.id = 'otpPhoneErr';
+  errMsg.style.cssText = 'font-size:12px;color:#ef4444;text-align:center;font-family:Inter,sans-serif;min-height:18px;margin-bottom:8px;';
+
+  var hint = document.createElement('div');
+  hint.style.cssText = 'font-size:12px;color:#94a3b8;text-align:center;font-family:Inter,sans-serif;margin-bottom:20px;';
+  hint.textContent = 'Use demo code: 123456';
+
+  // Confirm btn
+  var btnConfirm = document.createElement('button');
+  btnConfirm.style.cssText = 'width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:10px;transition:opacity 0.15s;';
+  btnConfirm.textContent = 'Confirm code';
+  btnConfirm.onmouseover = function(){ this.style.opacity='0.88'; };
+  btnConfirm.onmouseout  = function(){ this.style.opacity='1'; };
+  btnConfirm.onclick = function(){
+    var code = _getOtpVal(otpInputs);
+    if (code !== '123456') {
+      otpInputs.forEach(function(o){ o.style.borderColor='#ef4444'; o.value=''; });
+      otpInputs[0].focus();
+      errMsg.textContent = 'Incorrect code. Use 123456 for demo.';
+    } else {
+      _handleOtpSuccess(otpInputs, overlay, phone);
+    }
+  };
+
+  var btnCancel = document.createElement('button');
+  btnCancel.style.cssText = 'width:100%;background:none;border:none;font-size:13px;color:#94a3b8;cursor:pointer;font-family:Inter,sans-serif;';
+  btnCancel.textContent = 'Cancel';
+  btnCancel.onclick = function(){ overlay.remove(); };
+
+  box.appendChild(ico); box.appendChild(h); box.appendChild(sub); box.appendChild(num);
+  box.appendChild(otpWrap); box.appendChild(errMsg); box.appendChild(hint);
+  box.appendChild(btnConfirm); box.appendChild(btnCancel);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  setTimeout(function(){ if(otpInputs[0]) otpInputs[0].focus(); }, 80);
+}
+
+function _getOtpVal(inputs) {
+  return inputs.map(function(i){ return i.value; }).join('');
+}
+
+function _handleOtpSuccess(otpInputs, overlay, phone) {
+  otpInputs.forEach(function(o){ o.style.borderColor='#10b981'; });
+  if (_user) { _user._phoneVerified = true; _user.phone = phone; }
+  overlay.remove();
+  _showPhoneBadge('verified');
+  var verifyRow = document.getElementById('phoneVerifyRow');
+  if (verifyRow) verifyRow.style.display = 'none';
+  // Lock the phone field (already verified)
+  var inp = document.getElementById('profilePhone');
+  if (inp) {
+    inp.setAttribute('readonly','');
+    inp.style.background = '#fafafa';
+    inp.style.cursor = 'default';
+    inp.style.color = '#94a3b8';
+  }
+  showToast('Mobile number verified!', 'success');
+}
+
+// Called on save to prompt verification if mobile not verified
+function _checkPhoneVerificationOnSave(onContinue) {
+  var inp = document.getElementById('profilePhone');
+  var phone = inp ? inp.value.trim() : '';
+  var isPhoneUser = _user && _user._authMethod === 'phone';
+  var isVerified  = _user && _user._phoneVerified;
+  // If phone user (already verified at OTP signup), skip
+  // If no phone entered, skip
+  // If phone entered but not verified, show prompt
+  if (phone && !isVerified && !isPhoneUser) {
+    _showVerifyPhonePromptOnSave(phone, onContinue);
+    return false;
+  }
+  onContinue();
+  return true;
+}
+
+function _showVerifyPhonePromptOnSave(phone, onContinue) {
+  var ex = document.getElementById('phoneSavePrompt');
+  if (ex) ex.remove();
+
+  var overlay = document.createElement('div');
+  overlay.id = 'phoneSavePrompt';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(15,23,42,0.4);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;animation:modalPop 0.2s ease;';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;padding:28px 26px 24px;max-width:380px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.18);';
+
+  var ico = document.createElement('div');
+  ico.style.cssText = 'width:48px;height:48px;background:#fef3c7;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;';
+  ico.innerHTML = '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#f59e0b" stroke-width="1.8"><path d="M11 2l9 18H2z"/><path d="M11 9v5M11 16v.5"/></svg>';
+
+  var h = document.createElement('div');
+  h.style.cssText = 'font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;';
+  h.textContent = 'Mobile not verified';
+
+  var sub = document.createElement('div');
+  sub.style.cssText = 'font-size:13px;color:#64748b;font-family:Inter,sans-serif;line-height:1.6;margin-bottom:22px;';
+  sub.textContent = 'Your profile was saved. Verifying your mobile adds a trust badge and unlocks features — or you can skip for now.';
+
+  var row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:10px;';
+
+  var btnSkip = document.createElement('button');
+  btnSkip.style.cssText = 'flex:1;background:#f1f5f9;border:none;border-radius:10px;padding:11px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;';
+  btnSkip.textContent = 'Skip for now';
+  btnSkip.onmouseover = function(){ this.style.background='#e2e8f0'; };
+  btnSkip.onmouseout  = function(){ this.style.background='#f1f5f9'; };
+  btnSkip.onclick = function(){ overlay.remove(); onContinue(); };
+
+  var btnVerify = document.createElement('button');
+  btnVerify.style.cssText = 'flex:2;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;';
+  btnVerify.textContent = 'Verify now';
+  btnVerify.onclick = function(){ overlay.remove(); _showPhoneOtpModal(phone); };
+
+  row.appendChild(btnSkip); row.appendChild(btnVerify);
+  box.appendChild(ico); box.appendChild(h); box.appendChild(sub); box.appendChild(row);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+
 function _installSettingsGuard(){
   if(_sgInstalled)return;_sgInstalled=true;
   var orig=showPage;
@@ -6833,7 +7072,18 @@ function _syncSettingsPage(){
       if(/^\d{6,}$/.test(cleanContact))phoneVal=_user.contact;
     }
     pi.value=phoneVal;
+    // Phone-user (OTP signup): disable field and show verified chip
+    var isPhoneUser=_user._authMethod==='phone';
+    if(isPhoneUser){
+      pi.setAttribute('readonly','');
+      pi.style.background='#fafafa';
+      pi.style.color='#94a3b8';
+      pi.style.cursor='default';
+      _user._phoneVerified=true;
+    }
   }
+  // Update phone badge/verify row
+  setTimeout(_onPhoneInput, 60);
 
   // Password — let _updateProfilePwdSection handle display/state
   var pwd=document.getElementById('profilePwd');
@@ -7281,13 +7531,23 @@ function saveProfileTab(){
   _syncSettingsPage();
   recalcProgress();
 
-  // Auto-send verification if new email entered
+  // After saving, prompt phone verification if not yet verified
   if(patch.email){
     showToast('Profile saved! Sending verification email...','success');
     setTimeout(function(){sendVerifyEmail();},600);
   } else {
     showToast('Profile saved!','success');
   }
+
+  // Check phone verification (non-blocking prompt)
+  setTimeout(function(){
+    var phoneEl=document.getElementById('profilePhone');
+    var phone=(phoneEl&&phoneEl.value.trim())||'';
+    var isPhoneUser=_user&&_user._authMethod==='phone';
+    if(phone&&!(_user&&_user._phoneVerified)&&!isPhoneUser){
+      _showVerifyPhonePromptOnSave(phone,function(){});
+    }
+  },400);
 }
 
 function validateBizField(input, id){
