@@ -2837,6 +2837,9 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
       <div style="flex:1;overflow-y:auto;min-height:0;">
         <div style="width:100%;margin:0 auto;padding:24px clamp(32px,8vw,120px) 48px;">
 
+          <!-- ACTION CHIPS — setup cards above hero -->
+          <div id="pmActionChips" style="margin-bottom:20px;"></div>
+
           <!-- HERO CONNECT CARD -->
           <div class="home-animate" style="background:var(--hero-bg);border-radius:20px;padding:36px 36px 28px;margin-bottom:20px;position:relative;overflow:hidden;">
             <!-- BG gradient layers matching landing page -->
@@ -2894,10 +2897,6 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#f59e0b" stroke-width="1.8"><path d="M4 14V9l5-3 5 3v5M1 14h16"/></svg>
               <div><div style="font-size:22px;font-weight:700;color:#0f172a;line-height:1;">£0</div><div style="font-size:12px;color:#94a3b8;margin-top:2px;">Total spend</div></div>
             </div>
-          </div>
-
-          <!-- ACTION CHIPS — dismissable cards above gradient hero -->
-          <div id="pmActionChips" style="margin-bottom:20px;">
           </div>
 
           <!-- COMPLIANCE ALERT — hidden by default, shown when alerts exist -->
@@ -6543,111 +6542,172 @@ var _pmActionChipDefs = [
 function _renderPmActionChips() {
   var container = document.getElementById('pmActionChips');
   if (!container) return;
-
-  // Filter out dismissed chips
-  var visible = _pmActionChipDefs.filter(function(c){ return !_pmChipsDismissed[c.id]; });
-  if (!visible.length) {
-    container.style.display = 'none';
-    return;
-  }
+  var defs = _pmActionChipDefs;
+  var topDefs = defs.slice(0, 3);
+  var botDefs = defs.slice(3, 6);
+  var topVisible = topDefs.filter(function(c){ return !_pmChipsDismissed[c.id]; });
+  var botVisible = botDefs.filter(function(c){ return !_pmChipsDismissed[c.id]; });
+  if (!topVisible.length && !botVisible.length) { container.style.display='none'; return; }
   container.style.display = '';
-
-  // Split into 2 rows: top 3 (progress chips), bottom 3 (action chips)
-  var topChips = visible.slice(0, 3);
-  var botChips = visible.slice(3, 6);
-
-  function makeChip(c, showClose) {
-    var hasBadge = c.badge !== null && c.badge !== undefined;
-    var d = document.createElement('div');
-    d.style.cssText = 'background:'+c.bg+';border:1px solid '+c.border+';border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;position:relative;transition:box-shadow 0.15s;flex:1;min-width:0;';
-    d.onmouseover = function(){ this.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)'; };
-    d.onmouseout  = function(){ this.style.boxShadow=''; };
-    d.onclick = function(e){ if(e.target.closest('.chip-close')) return; c.action(); };
-
-    var iconDiv = document.createElement('div');
-    iconDiv.style.cssText = 'width:36px;height:36px;border-radius:10px;background:'+c.iconBg+';display:flex;align-items:center;justify-content:center;flex-shrink:0;';
-    iconDiv.innerHTML = c.icon;
-
-    var textDiv = document.createElement('div');
-    textDiv.style.cssText = 'flex:1;min-width:0;';
-    textDiv.innerHTML = '<div style="font-size:13px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+c.title+'</div>'
-      + (c.sub ? '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">'+c.sub+'</div>' : '')
-      + (hasBadge ? '<div style="margin-top:5px;height:3px;width:100%;background:#e2e8f0;border-radius:2px;overflow:hidden;"><div style="width:'+c.badge+';height:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:2px;"></div></div>' : '');
-
-    var rightDiv = document.createElement('div');
-    rightDiv.style.cssText = 'flex-shrink:0;display:flex;align-items:center;gap:8px;';
-    if (hasBadge) {
-      rightDiv.innerHTML = '<span style="font-size:11.5px;font-weight:700;color:#64748b;font-family:Inter,sans-serif;">'+c.badge+'</span>';
-    } else if (c.actionLabel) {
-      rightDiv.innerHTML = '<span style="font-size:12.5px;font-weight:700;color:#1A5FC8;font-family:Inter,sans-serif;white-space:nowrap;">'+c.actionLabel+'</span>';
-    }
-
-    if (showClose) {
-      var closeBtn = document.createElement('button');
-      closeBtn.className = 'chip-close';
-      closeBtn.style.cssText = 'position:absolute;top:8px;right:8px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:2px;display:flex;align-items:center;';
-      closeBtn.title = 'Dismiss';
-      closeBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 1l10 10M11 1L1 11"/></svg>';
-      closeBtn.onclick = function(e) {
-        e.stopPropagation();
-        _dismissPmChip(c.id, d);
-      };
-      d.appendChild(closeBtn);
-    }
-
-    d.appendChild(iconDiv);
-    d.appendChild(textDiv);
-    d.appendChild(rightDiv);
-    return d;
-  }
-
   container.innerHTML = '';
-  if (topChips.length) {
+
+  // ── TOP ROW: horizontal chip — icon | title + progress bar | % badge ──
+  if (topVisible.length) {
     var topRow = document.createElement('div');
-    topRow.style.cssText = 'display:grid;grid-template-columns:repeat('+topChips.length+',1fr);gap:12px;margin-bottom:12px;';
-    topChips.forEach(function(c){ topRow.appendChild(makeChip(c, false)); });
+    topRow.style.cssText = 'display:grid;grid-template-columns:repeat('+topVisible.length+',1fr);gap:12px;margin-bottom:12px;';
+    topVisible.forEach(function(c) {
+      var d = document.createElement('div');
+      d.style.cssText = 'background:'+c.bg+';border:1.5px solid '+c.border+';border-radius:14px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:box-shadow 0.15s,border-color 0.15s;';
+      d.onmouseover = function(){ this.style.boxShadow='0 4px 14px rgba(26,95,200,0.1)'; this.style.borderColor='#93c5fd'; };
+      d.onmouseout  = function(){ this.style.boxShadow=''; this.style.borderColor=c.border; };
+      d.onclick = function(){ c.action(); };
+      d.innerHTML =
+        '<div style="width:38px;height:38px;border-radius:10px;background:'+c.iconBg+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+c.icon+'</div>'
+        +'<div style="flex:1;min-width:0;">'
+          +'<div style="font-size:13px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:'+(c.sub?'3':'8')+'px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+c.title+'</div>'
+          +(c.sub ? '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:8px;">'+c.sub+'</div>' : '')
+          +'<div style="height:3px;background:#e2e8f0;border-radius:2px;overflow:hidden;"><div style="width:'+(c.badge||'0%')+';height:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:2px;"></div></div>'
+        +'</div>'
+        +'<div style="font-size:12px;font-weight:700;color:#64748b;font-family:Inter,sans-serif;flex-shrink:0;">'+(c.badge||'0%')+'</div>';
+      topRow.appendChild(d);
+    });
     container.appendChild(topRow);
   }
-  if (botChips.length) {
+
+  // ── BOTTOM ROW: vertical card — close btn | icon+title row | sub | CTA button ──
+  if (botVisible.length) {
     var botRow = document.createElement('div');
-    botRow.style.cssText = 'display:grid;grid-template-columns:repeat('+botChips.length+',1fr);gap:12px;margin-bottom:8px;';
-    botChips.forEach(function(c){ botRow.appendChild(makeChip(c, true)); });
+    botRow.style.cssText = 'display:grid;grid-template-columns:repeat('+botVisible.length+',1fr);gap:12px;margin-bottom:20px;';
+    botVisible.forEach(function(c) {
+      var d = document.createElement('div');
+      d.style.cssText = 'background:'+c.bg+';border:1.5px solid '+c.border+';border-radius:14px;padding:16px;cursor:pointer;position:relative;display:flex;flex-direction:column;gap:0;transition:box-shadow 0.15s,border-color 0.15s;';
+      d.onmouseover = function(){ this.style.boxShadow='0 4px 14px rgba(0,0,0,0.08)'; this.style.borderColor='#bfdbfe'; };
+      d.onmouseout  = function(){ this.style.boxShadow=''; this.style.borderColor=c.border; };
+      d.onclick = function(e){ if(e.target.closest && e.target.closest('[data-close]')) return; c.action(); };
+
+      // Close btn
+      var xBtn = document.createElement('button');
+      xBtn.setAttribute('data-close','1');
+      xBtn.style.cssText = 'position:absolute;top:10px;right:10px;background:#f1f5f9;border:none;width:22px;height:22px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#94a3b8;transition:background 0.12s,color 0.12s;';
+      xBtn.innerHTML = '<svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l7 7M8 1L1 8"/></svg>';
+      xBtn.onmouseover = function(){ this.style.background='#fee2e2'; this.style.color='#ef4444'; };
+      xBtn.onmouseout  = function(){ this.style.background='#f1f5f9'; this.style.color='#94a3b8'; };
+      xBtn.onclick = function(e){ e.stopPropagation(); _dismissPmChip(c.id, d); };
+
+      // Icon + title row
+      var topPart = document.createElement('div');
+      topPart.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:8px;padding-right:24px;';
+      topPart.innerHTML =
+        '<div style="width:36px;height:36px;border-radius:10px;background:'+c.iconBg+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+c.icon+'</div>'
+        +'<div style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;line-height:1.3;">'+c.title+'</div>';
+
+      // Sub text
+      var subEl = document.createElement('div');
+      subEl.style.cssText = 'font-size:12px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;margin-bottom:12px;padding-left:0;';
+      subEl.textContent = c.sub || '';
+
+      // CTA button
+      var ctaBtn = document.createElement('button');
+      ctaBtn.setAttribute('data-cta','1');
+      ctaBtn.style.cssText = 'align-self:flex-start;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;transition:opacity 0.15s;';
+      ctaBtn.innerHTML = (c.actionLabel||'Get started') + '<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#fff" stroke-width="2"><path d="M2 5.5h7M6 2.5l3 3-3 3"/></svg>';
+      ctaBtn.onmouseover = function(){ this.style.opacity='0.88'; };
+      ctaBtn.onmouseout  = function(){ this.style.opacity='1'; };
+      ctaBtn.onclick = function(e){ e.stopPropagation(); c.action(); };
+
+      d.appendChild(xBtn);
+      d.appendChild(topPart);
+      if (c.sub) d.appendChild(subEl);
+      d.appendChild(ctaBtn);
+      botRow.appendChild(d);
+    });
     container.appendChild(botRow);
   }
 }
 
 function _dismissPmChip(id, cardEl) {
-  _pmChipsDismissed[id] = true;
-
-  // Animate out
-  cardEl.style.transition = 'opacity 0.25s, transform 0.25s';
+  // Animate card out first
+  cardEl.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
   cardEl.style.opacity = '0';
-  cardEl.style.transform = 'scale(0.97)';
+  cardEl.style.transform = 'scale(0.95) translateY(-4px)';
 
   setTimeout(function(){
+    _pmChipsDismissed[id] = true;
     _renderPmActionChips();
-
-    // Count remaining
-    var remaining = _pmActionChipDefs.filter(function(c){ return !_pmChipsDismissed[c.id]; }).length;
-    if (remaining === 0) {
-      _showDontShowAgainToast();
-    } else {
-      showToast('Card dismissed', 'success');
-    }
-  }, 250);
+    // Show per-card dismiss popup
+    var chipDef = _pmActionChipDefs.find(function(c){ return c.id === id; });
+    _showChipDismissPopup(chipDef || { title: 'Card' });
+  }, 200);
 }
 
-function _showDontShowAgainToast() {
-  var t = document.createElement('div');
-  t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:14px 20px;border-radius:14px;font-family:Inter,sans-serif;font-size:13.5px;font-weight:500;z-index:99999;box-shadow:0 8px 32px rgba(0,0,0,0.22);display:flex;align-items:center;gap:14px;animation:toastIn 0.25s ease;white-space:nowrap;';
-  t.innerHTML = '<span>All setup cards hidden</span>'
-    + '<button onclick="_restoreAllPmChips();this.parentNode.parentNode.remove();" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Restore</button>'
-    + '<button onclick="this.parentNode.parentNode.remove();" style="background:rgba(255,255,255,0.1);color:#94a3b8;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:Inter,sans-serif;">Don&#39;t show again</button>';
-  document.body.appendChild(t);
-  // Auto-remove after 6 seconds (unless user interacts)
-  setTimeout(function(){ if (t.parentNode) { t.style.animation='toastOut 0.25s ease forwards'; setTimeout(function(){ if(t.parentNode)t.remove(); },250); } }, 6000);
-}
+function _showChipDismissPopup(chipDef) {
+  // Remove any existing popup
+  var ex = document.getElementById('chipDismissPopup');
+  if (ex) ex.remove();
 
+  var overlay = document.createElement('div');
+  overlay.id = 'chipDismissPopup';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(15,23,42,0.35);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:20px;animation:modalPop 0.18s ease;';
+  overlay.onclick = function(e){ if(e.target===overlay) overlay.remove(); };
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;padding:32px 28px 26px;max-width:360px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.18);text-align:center;';
+
+  // Emoji / icon
+  var emo = document.createElement('div');
+  emo.style.cssText = 'font-size:36px;margin-bottom:14px;';
+  emo.textContent = '🙈';
+
+  var h = document.createElement('div');
+  h.style.cssText = 'font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;';
+  h.textContent = 'Hide "' + chipDef.title + '"?';
+
+  var sub = document.createElement('div');
+  sub.style.cssText = 'font-size:13px;color:#64748b;font-family:Inter,sans-serif;line-height:1.6;margin-bottom:24px;';
+  sub.textContent = 'You can always restore this card from your dashboard settings.';
+
+  // Buttons
+  var btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;flex-direction:column;gap:10px;';
+
+  var btnHide = document.createElement('button');
+  btnHide.style.cssText = 'width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;transition:opacity 0.15s;';
+  btnHide.textContent = 'Yes, hide this card';
+  btnHide.onmouseover = function(){ this.style.opacity='0.88'; };
+  btnHide.onmouseout  = function(){ this.style.opacity='1'; };
+  btnHide.onclick = function(){
+    overlay.remove();
+    showToast('"'+chipDef.title+'" hidden', 'success');
+  };
+
+  var btnRestore = document.createElement('button');
+  btnRestore.style.cssText = 'width:100%;background:#f1f5f9;border:none;border-radius:12px;padding:12px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;transition:background 0.15s;';
+  btnRestore.textContent = 'Undo — bring it back';
+  btnRestore.onmouseover = function(){ this.style.background='#e2e8f0'; };
+  btnRestore.onmouseout  = function(){ this.style.background='#f1f5f9'; };
+  btnRestore.onclick = function(){
+    _pmChipsDismissed[chipDef.id] = false;
+    _renderPmActionChips();
+    overlay.remove();
+  };
+
+  var btnNever = document.createElement('button');
+  btnNever.style.cssText = 'width:100%;background:none;border:none;font-size:12px;color:#94a3b8;cursor:pointer;font-family:Inter,sans-serif;padding:4px;';
+  btnNever.textContent = 'Don\'t ask me again for any card';
+  btnNever.onclick = function(){
+    _pmActionChipDefs.forEach(function(c){ _pmChipsDismissed[c.id] = true; });
+    _renderPmActionChips();
+    overlay.remove();
+    showToast('All setup cards hidden', 'success');
+  };
+
+  btnRow.appendChild(btnHide);
+  btnRow.appendChild(btnRestore);
+  btnRow.appendChild(btnNever);
+  box.appendChild(emo); box.appendChild(h); box.appendChild(sub); box.appendChild(btnRow);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
 function _restoreAllPmChips() {
   _pmChipsDismissed = {};
   _renderPmActionChips();
