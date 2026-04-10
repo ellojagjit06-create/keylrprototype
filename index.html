@@ -3544,14 +3544,14 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Mobile number</label>
                 <div style="display:flex;align-items:stretch;">
                   <div id="profCcWrap" style="flex-shrink:0;position:relative;">
-                    <button id="profCcBtn" onclick="toggleProfCc()" style="height:100%;padding:0 10px;background:#f8fafc;border:1.5px solid #e2e8f0;border-right:none;border-radius:10px 0 0 10px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;display:flex;align-items:center;gap:4px;white-space:nowrap;">
+                    <button id="profCcBtn" onclick="toggleProfCc()" style="height:100%;padding:0 10px;background:#f8fafc;border:1.5px solid #e2e8f0;border-right:none;border-radius:10px 0 0 10px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;color:#374151;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;transition:background 0.15s;">
                       <span id="profCcDisplay">&#x1F1EC;&#x1F1E7; +44</span>
                       <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4l3 3 3-3"/></svg>
                     </button>
                     <div id="profCcList" style="display:none;position:absolute;top:100%;left:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.1);z-index:50;min-width:180px;max-height:200px;overflow-y:auto;"></div>
                   </div>
                   <div style="flex:1;position:relative;">
-                    <input id="profilePhone" type="tel" placeholder="7700 000000" oninput="recalcProgress();validateProfPhone(this);validateProfPhoneLimit(this);_onPhoneInput();" style="width:100%;border:1.5px solid #e2e8f0;border-radius:0 10px 10px 0;padding:11px 80px 11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff'" onblur="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'"/>
+                    <input id="profilePhone" type="tel" placeholder="7700 000000" oninput="recalcProgress();validateProfPhone(this);validateProfPhoneLimit(this);_onPhoneInput();" style="width:100%;border:1.5px solid #e2e8f0;border-radius:0 10px 10px 0;padding:11px 84px 11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fff;transition:border-color 0.15s,background 0.15s;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'"/>
                     <span id="profilePhoneBadge" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;pointer-events:none;"></span>
                   </div>
                 </div>
@@ -6795,22 +6795,26 @@ function _onPhoneInput() {
   var badge = document.getElementById('profilePhoneBadge');
   var verifyRow = document.getElementById('phoneVerifyRow');
   if (!inp) return;
+
   var val = inp.value.trim().replace(/[\s\-\(\)]/g,'');
-  var isPhoneUser = _user && _user._authMethod === 'phone';
-  var alreadyVerified = _user && _user._phoneVerified && val && (val === (_user.phone||'').replace(/[\s\-\(\)]/g,''));
+  var isPhoneUser    = _user && _user._authMethod === 'phone';
+  var isVerified     = _user && _user._phoneVerified;
+  var storedPhone    = (_user && _user.phone || '').replace(/[\s\-\(\)]/g,'');
+  var matchesStored  = val && storedPhone && val === storedPhone;
 
   if (!val) {
+    // No number entered — hide badge and verify row
     if (badge) badge.style.display = 'none';
     if (verifyRow) verifyRow.style.display = 'none';
     return;
   }
 
-  if (alreadyVerified || isPhoneUser) {
-    // Show verified chip
+  if (isPhoneUser || (isVerified && matchesStored)) {
+    // OTP signup user OR already verified this number → green chip, no verify btn
     _showPhoneBadge('verified');
     if (verifyRow) verifyRow.style.display = 'none';
   } else {
-    // Show unverified chip + verify button
+    // Email user or new/changed number → amber chip + verify button
     _showPhoneBadge('unverified');
     if (verifyRow) verifyRow.style.display = 'block';
   }
@@ -6944,15 +6948,17 @@ function _handleOtpSuccess(otpInputs, overlay, phone) {
   _showPhoneBadge('verified');
   var verifyRow = document.getElementById('phoneVerifyRow');
   if (verifyRow) verifyRow.style.display = 'none';
-  // Lock the phone field (already verified)
+  // Only lock the phone field for phone-method users (OTP signup)
+  // Email users keep it editable after verification
+  var isPhoneUser = _user && _user._authMethod === 'phone';
   var inp = document.getElementById('profilePhone');
-  if (inp) {
+  if (inp && isPhoneUser) {
     inp.setAttribute('readonly','');
     inp.style.background = '#fafafa';
     inp.style.cursor = 'default';
     inp.style.color = '#94a3b8';
   }
-  showToast('Mobile number verified!', 'success');
+  showToast('Mobile number verified! ✔', 'success');
 }
 
 // Called on save to prompt verification if mobile not verified
@@ -7072,14 +7078,37 @@ function _syncSettingsPage(){
       if(/^\d{6,}$/.test(cleanContact))phoneVal=_user.contact;
     }
     pi.value=phoneVal;
-    // Phone-user (OTP signup): disable field and show verified chip
+    // Phone-user (OTP signup): disable field + mark verified
     var isPhoneUser=_user._authMethod==='phone';
     if(isPhoneUser){
       pi.setAttribute('readonly','');
       pi.style.background='#fafafa';
       pi.style.color='#94a3b8';
       pi.style.cursor='default';
+      pi.style.border='1.5px solid #e2e8f0';
       _user._phoneVerified=true;
+    } else {
+      // Email user — phone field must be fully editable
+      pi.removeAttribute('readonly');
+      pi.style.background='#fff';
+      pi.style.color='#0f172a';
+      pi.style.cursor='text';
+      pi.style.border='1.5px solid #e2e8f0';
+    }
+    // Disable/enable CC button to match field state
+    var ccBtn=document.getElementById('profCcBtn');
+    if(ccBtn){
+      if(isPhoneUser){
+        ccBtn.disabled=true;
+        ccBtn.style.opacity='0.6';
+        ccBtn.style.cursor='default';
+        ccBtn.style.pointerEvents='none';
+      } else {
+        ccBtn.disabled=false;
+        ccBtn.style.opacity='1';
+        ccBtn.style.cursor='pointer';
+        ccBtn.style.pointerEvents='auto';
+      }
     }
   }
   // Update phone badge/verify row
