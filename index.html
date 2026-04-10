@@ -2506,7 +2506,24 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .dash-dark #settings-profile [style*="background:#fafafa"]{background:#1c2433 !important;}
 
 /* ── Discovery ── */
-/* Discovery rows – label left, pencil fixed right */
+/* Discovery Flow Individual Page */
+#pg-discovery-flow{display:none;position:fixed;inset:0;z-index:8000;background:#f5f7fa;flex-direction:column;overflow:hidden;}
+#pg-discovery-flow.visible{display:flex;}
+.disc-page-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:40px 20px 20px;}
+.disc-page-inner{width:100%;max-width:680px;}
+.disc-page-footer{background:#fff;border-top:1px solid #e8edf3;padding:14px 32px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.disc-page-back-btn{display:flex;align-items:center;gap:6px;background:#f1f5f9;border:none;border-radius:9px;padding:10px 18px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;transition:background 0.15s;}
+.disc-page-back-btn:hover{background:#e2e8f0;}
+.disc-page-skip-btn{margin-left:auto;background:none;border:none;color:#94a3b8;font-size:13px;font-weight:500;cursor:pointer;font-family:Inter,sans-serif;padding:8px 12px;}
+.disc-page-skip-btn:hover{color:#64748b;}
+.disc-page-cont-btn{background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:11px 28px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;transition:opacity 0.15s;}
+.disc-page-cont-btn:hover{opacity:0.88;}
+.disc-opt-page{display:flex;align-items:center;gap:10px;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 14px;cursor:pointer;background:#fff;transition:border-color 0.12s,background 0.12s;font-size:13.5px;color:#0f172a;font-family:Inter,sans-serif;}
+.disc-opt-page:hover{border-color:#93c5fd;background:#f8fbff;}
+.disc-opt-page.selected{border-color:#1A5FC8;background:#eff6ff;}
+.disc-opt-page .disc-check-pg{width:18px;height:18px;border-radius:50%;border:1.5px solid #d1d5db;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.12s;}
+.disc-opt-page.selected .disc-check-pg{border-color:#1A5FC8;background:#1A5FC8;}
+@media(max-width:600px){.disc-page-footer{padding:12px 16px;}.disc-page-inner{padding:0 4px;}}
 .disc-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f1f5f9;}
 .disc-row>div:first-child{flex:1;min-width:0;}
 .disc-row>button{margin-left:12px;flex-shrink:0;}
@@ -2867,14 +2884,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             Upgrade now
           </button>
         </div>
-        <!-- Compliance alerts card (shown only when alerts > 0) -->
-        <div class="sb-compliance-card" id="sbComplianceCard" style="display:none;" onclick="showPage('properties',null)">
-          <div class="sb-compliance-card-head">
-            <span class="sb-compliance-card-icon">🔔</span>
-            <span class="sb-compliance-card-title" id="sbComplianceTitle">7 compliance alerts</span>
-          </div>
-          <div class="sb-compliance-card-link">View details →</div>
-        </div>
+
       </div>
       <!-- Logged out -->
       <!-- Dark/Light toggle -->
@@ -3628,7 +3638,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid #f1f5f9;flex-wrap:wrap;">
               <div style="position:relative;flex-shrink:0;">
                 <input type="file" id="profileAvatarInput" accept="image/*" style="display:none;" onchange="profileAvatarSelected(this)"/>
-                <div id="settingsIni" onclick="document.getElementById('profileAvatarInput').click()" title="Click to change photo" style="cursor:pointer;" style="width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;font-family:Inter,sans-serif;">?</div>
+                <div id="settingsIni" onclick="document.getElementById('profileAvatarInput').click()" title="Click to change photo" style="cursor:pointer;width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;font-family:Inter,sans-serif;flex-shrink:0;">JS</div>
                 <button title="Change photo" style="position:absolute;bottom:0;right:0;width:22px;height:22px;background:#1d4ed8;border:2px solid #fff;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;">
                   <svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#fff" stroke-width="2"><path d="M1 6.5l1.5-1.5 3.5-3.5 1.5 1.5-3.5 3.5-1.5.5z"/></svg>
                 </button>
@@ -3774,7 +3784,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
                   <div style="font-size:12px;color:#3b82f6;font-family:Inter,sans-serif;">Answer 7 quick questions to unlock personalised recommendations</div>
                 </div>
               </div>
-              <button onclick="startDiscoveryFlow()" style="background:#1d4ed8;color:#fff;border:none;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;">Start <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6h8M7 3l3 3-3 3"/></svg></button>
+              <button onclick="editDiscoveryQ(0)" style="background:#1d4ed8;color:#fff;border:none;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;">Start <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6h8M7 3l3 3-3 3"/></svg></button>
             </div>
             <!-- Discovery answers — flat list, no card wrapper -->
             <div id="discAnswersList">
@@ -3808,7 +3818,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
                 <div style="border-top:1px solid #f1f5f9;padding-top:14px;margin-bottom:16px;">
                   <p style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin:0;">Up to 5 properties, basic compliance alerts, on-demand booking.</p>
                 </div>
-                <button onclick="showPlanPicker()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
+                <button onclick="showPlanChoosePage()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2l2 4h4l-3.5 2.5 1.5 4.5L8 11l-4 2 1.5-4.5L2 6h4z"/></svg>Change plan
                 </button>
               </div>
@@ -4010,6 +4020,37 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
         <button class="plan-ob-btn" onclick="selectObPlan('copilot')">Get Copilot</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- PM DISCOVERY FLOW PAGE -->
+<div id="pg-discovery-flow">
+  <div class="ob-topbar">
+    <div class="ob-topbar-logo">Keylr</div>
+    <div class="ob-topbar-prog"><div id="disc-page-prog-fill" class="ob-topbar-prog-fill" style="width:14%;transition:width 0.4s ease;"></div></div>
+    <div class="ob-topbar-step" id="disc-page-step">Discovery · Q 1 of 7</div>
+  </div>
+  <div class="disc-page-body">
+    <div class="disc-page-inner">
+      <!-- Progress dots -->
+      <div id="disc-page-dots" style="display:flex;gap:6px;align-items:center;justify-content:center;margin-bottom:28px;"></div>
+      <!-- Question -->
+      <div style="text-align:center;margin-bottom:28px;">
+        <div id="disc-page-q" style="font-family:Fraunces,serif;font-size:24px;font-weight:800;color:#0f172a;margin-bottom:8px;line-height:1.3;"></div>
+        <div id="disc-page-hint" style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;"></div>
+      </div>
+      <!-- Options -->
+      <div id="disc-page-opts"></div>
+    </div>
+  </div>
+  <!-- Sticky footer -->
+  <div class="disc-page-footer">
+    <button id="disc-page-back" class="disc-page-back-btn" onclick="discPageBack()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2L5 7l4 5"/></svg>
+      Back
+    </button>
+    <button id="disc-page-skip" class="disc-page-skip-btn" onclick="discPageSkip()">Skip</button>
+    <button id="disc-page-cont" class="disc-page-cont-btn" onclick="discPageContinue()">Continue →</button>
   </div>
 </div>
 
@@ -4385,6 +4426,8 @@ function handleHeroSearch() {
 // PAGE TRANSITION
 // =============================================
 function goToDashboard(query, autoSend = false) {
+  var _discPg = document.getElementById('pg-discovery-flow');
+  if (_discPg) _discPg.classList.remove('visible');
   currentQuery = query;
   const ol = document.getElementById('overlay');
   ol.classList.add('on');
@@ -6835,7 +6878,7 @@ function _renderPmActionChips() {
       var icoB   = iconBgDark || c.iconBg;
 
       var d = document.createElement('div');
-      d.style.cssText = 'background:'+bg+';border:1.5px solid '+border+';border-radius:14px;padding:16px;cursor:pointer;position:relative;display:flex;flex-direction:column;gap:0;box-sizing:border-box;transition:box-shadow 0.15s,border-color 0.15s;';
+      d.style.cssText = 'background:'+bg+';border:1.5px solid '+border+';border-radius:14px;padding:18px 16px 16px;cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:0;box-sizing:border-box;transition:box-shadow 0.15s,border-color 0.15s;';
       d.onmouseover = function(){ this.style.boxShadow='0 4px 14px rgba(0,0,0,'+(isDark?'0.3':'0.08')+')'; this.style.borderColor=isDark?'#4f81c7':'#bfdbfe'; };
       d.onmouseout  = function(){ this.style.boxShadow=''; this.style.borderColor=border; };
       d.onclick = function(e){ if(e.target.closest && e.target.closest('[data-close]')) return; c.action(); };
@@ -6849,29 +6892,33 @@ function _renderPmActionChips() {
       xBtn.onmouseout  = function(){ this.style.background=closeBg; this.style.color=closeCol; };
       xBtn.onclick = function(e){ e.stopPropagation(); _dismissPmChip(c.id, d); };
 
-      // Icon + Title
-      var topPart = document.createElement('div');
-      topPart.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:8px;padding-right:28px;';
-      topPart.innerHTML =
-        '<div style="width:36px;height:36px;border-radius:10px;background:'+icoB+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+c.icon+'</div>'
-        +'<div style="font-size:13.5px;font-weight:700;color:'+titleCol+';font-family:Inter,sans-serif;line-height:1.3;">'+c.title+'</div>';
+      // Icon block (top)
+      var icoEl = document.createElement('div');
+      icoEl.style.cssText = 'width:40px;height:40px;border-radius:11px;background:'+icoB+';display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-bottom:12px;';
+      icoEl.innerHTML = c.icon;
+
+      // Title (below icon)
+      var titleEl = document.createElement('div');
+      titleEl.style.cssText = 'font-size:14px;font-weight:700;color:'+titleCol+';font-family:Inter,sans-serif;line-height:1.3;margin-bottom:6px;padding-right:28px;';
+      titleEl.textContent = c.title;
 
       // Sub
       var subEl = document.createElement('div');
-      subEl.style.cssText = 'font-size:12px;color:'+subCol+';font-family:Inter,sans-serif;line-height:1.5;margin-bottom:12px;';
+      subEl.style.cssText = 'font-size:12.5px;color:'+subCol+';font-family:Inter,sans-serif;line-height:1.5;margin-bottom:14px;flex:1;';
       subEl.textContent = c.sub || '';
 
       // CTA
       var ctaBtn = document.createElement('button');
       ctaBtn.setAttribute('data-cta','1');
       ctaBtn.style.cssText = 'align-self:flex-start;background:none;border:none;color:#1A5FC8;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;padding:0;display:inline-flex;align-items:center;gap:5px;transition:color 0.15s;white-space:nowrap;';
-      ctaBtn.innerHTML = (c.actionLabel||'Get started');
-      ctaBtn.onmouseover = function(){ this.style.opacity='0.88'; };
-      ctaBtn.onmouseout  = function(){ this.style.opacity='1'; };
+      ctaBtn.innerHTML = (c.actionLabel||'Get started') + ' <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#1A5FC8" stroke-width="2"><path d="M2 6h8M7 3l3 3-3 3"/></svg>';
+      ctaBtn.onmouseover = function(){ this.style.color='#0FA3D0'; };
+      ctaBtn.onmouseout  = function(){ this.style.color='#1A5FC8'; };
       ctaBtn.onclick = function(e){ e.stopPropagation(); c.action(); };
 
       d.appendChild(xBtn);
-      d.appendChild(topPart);
+      d.appendChild(icoEl);
+      d.appendChild(titleEl);
       if (c.sub) d.appendChild(subEl);
       d.appendChild(ctaBtn);
       botRow.appendChild(d);
@@ -7934,8 +7981,187 @@ function selectPlan(planName){
 }
 
 
-function startDiscoveryFlow(){_discTempAnswers=_discAnswers.slice();showDiscoveryModal(0);}
-function editDiscoveryQ(q){_discTempAnswers=_discAnswers.slice();showDiscoveryModal(q);}
+// ── Discovery individual page ──
+var _discPageFrom = 'home'; // track where user came from for back navigation
+
+function startDiscoveryFlow() {
+  _discTempAnswers = _discAnswers.slice();
+  _discPageFrom = 'home';
+  showDiscoveryPage(0);
+}
+
+function editDiscoveryQ(q) {
+  _discTempAnswers = _discAnswers.slice();
+  _discPageFrom = 'settings';
+  showDiscoveryPage(q);
+}
+
+function showDiscoveryPage(qIdx) {
+  // Show page, hide others
+  var pg = document.getElementById('pg-discovery-flow');
+  var dash = document.getElementById('pg-dashboard');
+  var biz  = document.getElementById('pg-biz-onboard');
+  var plan = document.getElementById('pg-plan-choose');
+  if (dash)  { dash.style.display='none'; dash.classList.remove('visible'); }
+  if (biz)   biz.classList.remove('visible');
+  if (plan)  plan.classList.remove('visible');
+  if (pg)    pg.classList.add('visible');
+
+  var total = _discQuestions.length;
+  var qDef  = _discQuestions[qIdx];
+  var cur   = _discTempAnswers[qIdx];
+
+  // Topbar progress
+  var fill = document.getElementById('disc-page-prog-fill');
+  if (fill) fill.style.width = Math.round(((qIdx+1)/total)*100) + '%';
+  var stepEl = document.getElementById('disc-page-step');
+  if (stepEl) stepEl.textContent = 'Discovery · Q ' + (qIdx+1) + ' of ' + total;
+
+  // Dots
+  var dotsEl = document.getElementById('disc-page-dots');
+  if (dotsEl) {
+    var dotsHtml = '';
+    for (var i=0;i<total;i++) {
+      dotsHtml += '<div style="width:'+(i===qIdx?'28':'8')+'px;height:8px;border-radius:4px;background:'+(i===qIdx?'#1A5FC8':i<qIdx?'#10b981':'#e2e8f0')+';transition:all 0.25s;"></div>';
+    }
+    dotsEl.innerHTML = dotsHtml;
+  }
+
+  // Question + hint
+  var qEl = document.getElementById('disc-page-q');
+  var hintEl = document.getElementById('disc-page-hint');
+  if (qEl) qEl.textContent = qDef.q;
+  if (hintEl) hintEl.innerHTML = (qDef.type==='multi' ? 'Select all that apply' : 'Select one')
+    + ' &nbsp;&middot;&nbsp; <a onclick="discPageSkip()" style="color:#1A5FC8;cursor:pointer;font-weight:600;">Skip this question</a>';
+
+  // Options
+  var optsEl = document.getElementById('disc-page-opts');
+  if (!optsEl) return;
+  optsEl.innerHTML = '';
+
+  function renderOpts(opts, isSingle) {
+    var colCount = opts.length > 8 ? 3 : opts.length > 4 ? 2 : 1;
+    var grid = document.createElement('div');
+    grid.style.cssText = 'display:grid;grid-template-columns:repeat('+colCount+',1fr);gap:8px;';
+    opts.forEach(function(opt) {
+      var sel = isSingle ? cur === opt : (Array.isArray(cur) && cur.indexOf(opt) >= 0);
+      var item = document.createElement('div');
+      item.className = 'disc-opt-page' + (sel ? ' selected' : '');
+      item.dataset.opt = opt;
+      item.dataset.single = isSingle ? '1' : '0';
+      item.innerHTML =
+        '<div class="disc-check-pg">'+(sel?'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M2 5l2.5 2.5 4-4"/></svg>':'')+'</div>'
+        + opt;
+      item.onclick = function() { discPageSelectOpt(this, qIdx); };
+      grid.appendChild(item);
+    });
+    return grid;
+  }
+
+  if (qDef.groups) {
+    qDef.groups.forEach(function(g) {
+      var label = document.createElement('div');
+      label.style.cssText = 'font-size:10.5px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;letter-spacing:0.1em;margin:16px 0 8px;text-transform:uppercase;';
+      label.textContent = g.label;
+      optsEl.appendChild(label);
+      optsEl.appendChild(renderOpts(g.opts, false));
+    });
+  } else {
+    optsEl.appendChild(renderOpts(qDef.opts, qDef.type === 'single'));
+  }
+
+  // Back button
+  var backBtn = document.getElementById('disc-page-back');
+  if (backBtn) {
+    backBtn.style.display = qIdx > 0 ? 'flex' : 'none';
+    backBtn.dataset.q = qIdx;
+  }
+
+  // Continue label
+  var contBtn = document.getElementById('disc-page-cont');
+  if (contBtn) {
+    contBtn.textContent = (qIdx === total-1) ? 'Finish ✓' : 'Continue →';
+    contBtn.dataset.q = qIdx;
+  }
+
+  var skipBtn = document.getElementById('disc-page-skip');
+  if (skipBtn) skipBtn.dataset.q = qIdx;
+
+  // Scroll to top
+  var body = pg ? pg.querySelector('.disc-page-body') : null;
+  if (body) body.scrollTop = 0;
+}
+
+function discPageSelectOpt(el, qIdx) {
+  var opt = el.dataset.opt;
+  var isSingle = el.dataset.single === '1';
+  var optsEl = document.getElementById('disc-page-opts');
+  if (isSingle) {
+    if (optsEl) optsEl.querySelectorAll('.disc-opt-page').forEach(function(item) {
+      var s = item.dataset.opt === opt;
+      item.className = 'disc-opt-page' + (s ? ' selected' : '');
+      var cb = item.querySelector('.disc-check-pg');
+      if (cb) cb.innerHTML = s ? '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M2 5l2.5 2.5 4-4"/></svg>' : '';
+    });
+    _discTempAnswers[qIdx] = opt;
+  } else {
+    var cur = (Array.isArray(_discTempAnswers[qIdx]) ? _discTempAnswers[qIdx] : []).slice();
+    var idx = cur.indexOf(opt);
+    var sel = idx < 0;
+    if (sel) cur.push(opt); else cur.splice(idx,1);
+    _discTempAnswers[qIdx] = cur;
+    el.className = 'disc-opt-page' + (sel ? ' selected' : '');
+    var cb = el.querySelector('.disc-check-pg');
+    if (cb) cb.innerHTML = sel ? '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M2 5l2.5 2.5 4-4"/></svg>' : '';
+  }
+}
+
+function discPageSkip() {
+  var skipBtn = document.getElementById('disc-page-skip');
+  var qIdx = skipBtn ? parseInt(skipBtn.dataset.q) : 0;
+  _discTempAnswers[qIdx] = null;
+  discPageContinue();
+}
+
+function discPageBack() {
+  var backBtn = document.getElementById('disc-page-back');
+  var qIdx = backBtn ? parseInt(backBtn.dataset.q) : 1;
+  if (qIdx > 0) showDiscoveryPage(qIdx - 1);
+  else discPageClose();
+}
+
+function discPageContinue() {
+  var contBtn = document.getElementById('disc-page-cont');
+  var qIdx = contBtn ? parseInt(contBtn.dataset.q) : 0;
+  _discAnswers[qIdx] = _discTempAnswers[qIdx];
+  updateDiscAnswerRow(qIdx);
+  if (qIdx < _discQuestions.length - 1) {
+    showDiscoveryPage(qIdx + 1);
+  } else {
+    discPageClose();
+    recalcProgress();
+    var answered = _discAnswers.filter(function(a){ return a!==null&&!(Array.isArray(a)&&a.length===0); }).length;
+    if (typeof showToast === 'function') {
+      showToast(answered===7 ? 'Discovery complete! Progress updated.' : 'Discovery profile updated.', 'success');
+    }
+  }
+}
+
+function discPageClose() {
+  var pg = document.getElementById('pg-discovery-flow');
+  if (pg) pg.classList.remove('visible');
+  // Return to where user came from
+  if (_discPageFrom === 'settings') {
+    goToDashboard('', false);
+    window._pendingSettingsTab = 'discovery';
+    setTimeout(function(){
+      showPage('settings', null);
+    }, 100);
+  } else {
+    goToDashboard('', false);
+  }
+  if (typeof _updateChipBadges === 'function') _updateChipBadges();
+}
 
 function showDiscoveryModal(qIdx){
   var qDef=_discQuestions[qIdx];
@@ -8986,6 +9212,8 @@ function showPlanChoosePage() {
   if (landing) landing.style.display = 'none';
   if (dash)  { dash.style.display = 'none'; dash.classList.remove('visible'); }
   if (biz)    biz.classList.remove('visible');
+  var _dPg = document.getElementById('pg-discovery-flow');
+  if (_dPg) _dPg.classList.remove('visible');
   if (plan)   plan.classList.add('visible');
 }
 
