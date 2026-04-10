@@ -919,6 +919,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   box-sizing:border-box;
 }
 @media(min-width:1441px){ .db-main-inner{ padding-left:120px;padding-right:120px; } }
+@media(min-width:1600px){ .db-main-inner{ padding-left:240px;padding-right:240px; } }
 @media(max-width:768px){ .db-main-inner{ padding-left:32px;padding-right:32px; } }
 /* Responsive PM page padding */
 .pm-page-inner{
@@ -927,6 +928,9 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   box-sizing:border-box;
 }
 @media(min-width:1441px){ .pm-page-inner{ padding-left:120px;padding-right:120px; } }
+@media(min-width:1600px){ .pm-page-inner{ padding-left:240px;padding-right:240px; } }
+/* Wide-screen inline padding override */
+@media(min-width:1600px){ [style*='clamp(32px']{padding-left:240px !important;padding-right:240px !important;} }
 @media(max-width:768px){ .pm-page-inner{ padding-left:32px;padding-right:32px; } }
 
 /* Stats bar at top */
@@ -3849,7 +3853,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
                     <span style="font-size:12px;color:#374151;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5l3 3 4-4"/></svg>Rate card management</span>
                     <span style="font-size:12px;color:#374151;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5l3 3 4-4"/></svg>Compliance dashboard</span>
                   </div>
-                  <button onclick="selectPlan('Connect Premium')" style="width:100%;background:#1d4ed8;color:#fff;border:none;border-radius:9px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Upgrade now →</button>
+                  <button onclick="showPlanChoosePage()" style="width:100%;background:#1d4ed8;color:#fff;border:none;border-radius:9px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Upgrade now →</button>
                 </div>
                 <!-- Copilot -->
                 <div style="border:1.5px solid #e2e8f0;border-radius:14px;padding:20px 18px;background:#fff;">
@@ -3861,7 +3865,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
                     <span style="font-size:12px;color:#374151;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5l3 3 4-4"/></svg>API access</span>
                     <span style="font-size:12px;color:#374151;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5l3 3 4-4"/></svg>Dedicated manager</span>
                   </div>
-                  <button onclick="selectPlan('Copilot')" style="width:100%;background:#0f172a;color:#fff;border:none;border-radius:9px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Upgrade now →</button>
+                  <button onclick="showPlanChoosePage()" style="width:100%;background:#0f172a;color:#fff;border:none;border-radius:9px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Upgrade now →</button>
                 </div>
               </div>
               <p style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;text-align:center;margin-top:12px;">Cancel anytime. No hidden fees.</p>
@@ -3880,7 +3884,11 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 <!-- PM BUSINESS ONBOARDING PAGE -->
 <div id="pg-biz-onboard">
   <div class="ob-topbar">
-    <div class="ob-topbar-logo">Keylr</div>
+    <div class="ob-topbar-logo"><svg width="80" height="24" viewBox="0 0 80 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="24" height="24" rx="5" fill="#0f172a"/>
+  <text x="12" y="17" text-anchor="middle" font-family="Inter,sans-serif" font-weight="800" font-size="13" fill="white">K</text>
+  <text x="32" y="17" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="16" fill="#0f172a">Keylr</text>
+</svg></div>
     <div class="ob-topbar-prog"><div class="ob-topbar-prog-fill" style="width:60%;"></div></div>
     <div class="ob-topbar-step">Business Information &middot; 1 of 1</div>
   </div>
@@ -3942,12 +3950,16 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 <!-- PM PLAN CHOOSE PAGE -->
 <div id="pg-plan-choose">
   <div class="ob-topbar">
-    <div class="ob-topbar-logo">Keylr</div>
+    <div class="ob-topbar-logo"><svg width="80" height="24" viewBox="0 0 80 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="24" height="24" rx="5" fill="#0f172a"/>
+  <text x="12" y="17" text-anchor="middle" font-family="Inter,sans-serif" font-weight="800" font-size="13" fill="white">K</text>
+  <text x="32" y="17" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="16" fill="#0f172a">Keylr</text>
+</svg></div>
     <div class="ob-topbar-prog"><div class="ob-topbar-prog-fill" style="width:100%;"></div></div>
     <div class="ob-topbar-step">Choose Plan &middot; 1 of 1</div>
   </div>
   <div class="plan-ob-body">
-    <div class="plan-ob-crown">&#x1F451;</div>
+    <div class="plan-ob-crown"><svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#1A5FC8" stroke-width="2" stroke-linejoin="round"><rect x="8" y="28" width="32" height="8" rx="2" fill="#dbeafe" stroke="#1A5FC8"/><path d="M8 28l6-16 10 10 10-10 6 16" fill="#eff6ff" stroke="#1A5FC8"/><circle cx="8" cy="12" r="3" fill="#1A5FC8"/><circle cx="24" cy="8" r="3" fill="#1A5FC8"/><circle cx="40" cy="12" r="3" fill="#1A5FC8"/></svg></div>
     <h1 class="plan-ob-title">Choose your plan</h1>
     <p class="plan-ob-rec">Based on your profile, we recommend <a href="javascript:void(0)" onclick="selectObPlan('premium')">Connect Premium</a></p>
     <div class="plan-ob-cards">
@@ -4067,7 +4079,7 @@ function _syncUserUI() {
   if (_user && sbEmail) sbEmail.textContent = _user.email || _user.phone || _user.contact || '';
   // Show/hide sidebar cards based on login state
   if (_user) {
-    var alertCount = window._complianceAlertCount !== undefined ? window._complianceAlertCount : 7;
+    var alertCount = window._complianceAlertCount !== undefined ? window._complianceAlertCount : 0;
     updateSidebarCards(alertCount);
   } else {
     hideSidebarCards();
@@ -5848,8 +5860,8 @@ function showAuthPage(mode, forcedRole) {
           var el = document.getElementById(id);
           if(el && val) el.value = val;
         });
-        // Set compliance alert count (demo: 7 if company done, 0 if not)
-        window._complianceAlertCount = _user._companyDone ? 7 : 0;
+        // Set compliance alert count: 7 if company done & has properties, 0 otherwise
+        window._complianceAlertCount = (_user._companyDone && _user._hasProperties) ? 7 : 0;
         _syncUserUI();
       } else {
         // No stored user — basic login, detect phone vs email, preserve name from auth
@@ -6707,7 +6719,7 @@ var _pmActionChipDefs = [
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1A5FC8" stroke-width="1.6"><rect x="2" y="6" width="14" height="10" rx="2"/><path d="M5 6V5a4 4 0 018 0v1"/><path d="M2 10h14"/></svg>',
     bg: '#eff6ff', border: '#bfdbfe', iconBg: '#dbeafe',
     title: 'Company details', sub: '', badge: '0%',
-    action: function(){ showPage('settings',null); switchSettingsTab('business'); },
+    action: function(){ window._pendingSettingsTab='business'; showPage('settings',null); },
     actionLabel: null
   },
   {
@@ -6715,7 +6727,7 @@ var _pmActionChipDefs = [
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1A5FC8" stroke-width="1.6"><rect x="2" y="2" width="14" height="14" rx="2"/><path d="M6 6h6M6 9h6M6 12h4"/></svg>',
     bg: '#eff6ff', border: '#bfdbfe', iconBg: '#dbeafe',
     title: 'Discovery questions', sub: '', badge: '0%',
-    action: function(){ showPage('settings',null); switchSettingsTab('discovery'); },
+    action: function(){ if(typeof startDiscoveryFlow==='function') startDiscoveryFlow(); },
     actionLabel: null
   },
   {
@@ -6732,7 +6744,7 @@ var _pmActionChipDefs = [
     bg: '#f8fafc', border: '#e2e8f0', iconBg: '#e0f2fe',
     title: 'Create your first booking', sub: '🎉 10% off first booking',
     action: function(){ startNewChat(); showPage('chat',null); },
-    actionLabel: 'Book now →'
+    actionLabel: 'Book now'
   },
   {
     id: 'compliance_tracking',
@@ -6848,7 +6860,7 @@ function _renderPmActionChips() {
       var ctaBtn = document.createElement('button');
       ctaBtn.setAttribute('data-cta','1');
       ctaBtn.style.cssText = 'align-self:flex-start;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;transition:opacity 0.15s;white-space:nowrap;';
-      ctaBtn.innerHTML = (c.actionLabel||'Get started')+'<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#fff" stroke-width="2"><path d="M2 5.5h7M6 2.5l3 3-3 3"/></svg>';
+      ctaBtn.innerHTML = (c.actionLabel||'Get started');
       ctaBtn.onmouseover = function(){ this.style.opacity='0.88'; };
       ctaBtn.onmouseout  = function(){ this.style.opacity='1'; };
       ctaBtn.onclick = function(e){ e.stopPropagation(); c.action(); };
@@ -6926,11 +6938,7 @@ function _showChipDismissPopup(chipDef) {
   var boxBg    = isDark ? '#1c2433' : '#fff';
   var titleCol = isDark ? '#e6edf3' : '#0f172a';
   var subCol   = isDark ? '#8b949e' : '#64748b';
-  var strongCol= isDark ? '#c9d1d9' : '#0f172a';
   var icoWrapBg= isDark ? '#1a2d4a' : '#eff6ff';
-  var undoBg   = isDark ? '#2d3748' : '#f1f5f9';
-  var undoCol  = isDark ? '#c9d1d9' : '#374151';
-  var undoHov  = isDark ? '#374151' : '#e2e8f0';
 
   var overlay = document.createElement('div');
   overlay.id = 'chipDismissPopup';
@@ -6938,46 +6946,44 @@ function _showChipDismissPopup(chipDef) {
   overlay.onclick = function(e){ if(e.target===overlay) overlay.remove(); };
 
   var box = document.createElement('div');
-  box.style.cssText = 'background:'+boxBg+';border-radius:20px;padding:28px 26px 24px;max-width:380px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,'+(isDark?'0.5':'0.18')+');'+(isDark?'border:1px solid #30363d;':'');
+  box.style.cssText = 'background:'+boxBg+';border-radius:20px;padding:32px 28px 28px;max-width:360px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,'+(isDark?'0.5':'0.18')+');text-align:center;'+(isDark?'border:1px solid #30363d;':'');
 
   var iconWrap = document.createElement('div');
-  iconWrap.style.cssText = 'width:48px;height:48px;background:'+icoWrapBg+';border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;';
-  iconWrap.innerHTML = '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1A5FC8" stroke-width="1.8" stroke-linecap="round"><path d="M11 4v8M11 16v.5"/><circle cx="11" cy="11" r="9"/></svg>';
+  iconWrap.style.cssText = 'width:52px;height:52px;background:'+icoWrapBg+';border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;';
+  iconWrap.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A5FC8" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h12"/><path d="M17 14l2 2 4-4" stroke="#1A5FC8"/></svg>';
 
   var h = document.createElement('div');
-  h.style.cssText = 'font-size:16px;font-weight:800;color:'+titleCol+';font-family:Fraunces,serif;margin-bottom:6px;';
+  h.style.cssText = 'font-size:17px;font-weight:800;color:'+titleCol+';font-family:Fraunces,serif;margin-bottom:8px;';
   h.textContent = 'Hide this card?';
 
   var sub = document.createElement('div');
-  sub.style.cssText = 'font-size:13px;color:'+subCol+';font-family:Inter,sans-serif;line-height:1.6;margin-bottom:22px;';
-  sub.innerHTML = '<strong style="color:'+strongCol+';">"'+chipDef.title+'"</strong> will be hidden from your dashboard. You can restore it anytime.';
+  sub.style.cssText = 'font-size:13px;color:'+subCol+';font-family:Inter,sans-serif;line-height:1.6;margin-bottom:24px;';
+  sub.textContent = 'This card will be removed from your dashboard and will not be shown again.';
 
-  var btnRow = document.createElement('div');
-  btnRow.style.cssText = 'display:flex;gap:10px;';
+  var btnDontShow = document.createElement('button');
+  btnDontShow.style.cssText = 'width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:12px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;transition:opacity 0.15s;margin-bottom:10px;display:block;';
+  btnDontShow.textContent = "Don't show this again";
+  btnDontShow.onmouseover = function(){ this.style.opacity='0.88'; };
+  btnDontShow.onmouseout  = function(){ this.style.opacity='1'; };
+  btnDontShow.onclick = function(){
+    overlay.remove();
+    if (typeof showToast === 'function') showToast('"'+ chipDef.title +'" hidden from dashboard','success');
+  };
 
-  var btnUndo = document.createElement('button');
-  btnUndo.style.cssText = 'flex:1;background:'+undoBg+';border:none;border-radius:10px;padding:11px;font-size:13.5px;font-weight:600;color:'+undoCol+';cursor:pointer;font-family:Inter,sans-serif;transition:background 0.15s;';
-  btnUndo.textContent = 'Undo';
-  btnUndo.onmouseover = function(){ this.style.background=undoHov; };
-  btnUndo.onmouseout  = function(){ this.style.background=undoBg; };
-  btnUndo.onclick = function(){
+  var btnCancel = document.createElement('button');
+  btnCancel.style.cssText = 'background:none;border:none;color:'+subCol+';font-size:12.5px;cursor:pointer;font-family:Inter,sans-serif;padding:4px 8px;display:block;margin:0 auto;';
+  btnCancel.textContent = 'Cancel';
+  btnCancel.onclick = function(){
     _pmChipsDismissed[chipDef.id] = false;
     _renderPmActionChips();
     overlay.remove();
   };
 
-  var btnHide = document.createElement('button');
-  btnHide.style.cssText = 'flex:2;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;transition:opacity 0.15s;';
-  btnHide.textContent = 'Hide card';
-  btnHide.onmouseover = function(){ this.style.opacity='0.88'; };
-  btnHide.onmouseout  = function(){ this.style.opacity='1'; };
-  btnHide.onclick = function(){
-    overlay.remove();
-    showToast('"'+chipDef.title+'" hidden from dashboard','success');
-  };
-
-  btnRow.appendChild(btnUndo); btnRow.appendChild(btnHide);
-  box.appendChild(iconWrap); box.appendChild(h); box.appendChild(sub); box.appendChild(btnRow);
+  box.appendChild(iconWrap);
+  box.appendChild(h);
+  box.appendChild(sub);
+  box.appendChild(btnDontShow);
+  box.appendChild(btnCancel);
   overlay.appendChild(box);
   document.body.appendChild(overlay);
 }
@@ -7281,7 +7287,7 @@ function _installSettingsGuard(){
   showPage=function(id,e){
     if(id==='settings'&&!_user){showAuthPage('signup');return;}
     orig(id,e);
-    if(id==='settings'){setTimeout(function(){_syncSettingsPage();switchSettingsTab('profile');},30);}
+    if(id==='settings'){setTimeout(function(){_syncSettingsPage();switchSettingsTab(window._pendingSettingsTab||'profile');window._pendingSettingsTab=null;},30);}
     if(id==='home'){setTimeout(_initPmChips,50);}
   };
 }
