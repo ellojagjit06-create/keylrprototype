@@ -1813,11 +1813,11 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   opacity:0;width:0;overflow:hidden;white-space:nowrap;
 }
 .db-sidebar.collapsed .db-nav-item{
-  padding:10px;justify-content:center;
+  padding:10px 6px;justify-content:center;
 }
 .db-sidebar.collapsed .db-nav-badge{display:none;}
 .db-sidebar.collapsed .db-nav-section-label{display:none;}
-.db-sidebar.collapsed .db-sidebar-bottom{display:flex;flex-direction:column;align-items:center;padding:12px 4px;}
+.db-sidebar.collapsed .db-sidebar-bottom{display:flex;flex-direction:column;align-items:center;padding:12px 6px;}
 .db-sidebar.collapsed .db-auth-hint{display:none;}
 .db-sidebar.collapsed .db-auth-btns{flex-direction:column;gap:6px;width:100%;}
 .db-sidebar.collapsed .db-signup-btn{padding:8px 0;border-radius:7px;font-size:0;display:flex;align-items:center;justify-content:center;width:36px;height:36px;margin:0 auto;}
@@ -2287,9 +2287,9 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
 /* Sidebar collapsed — hug content, no extra width */
 .db-sidebar.collapsed{width:48px !important;min-width:48px !important;}
-.db-sidebar.collapsed .db-sidebar-top{padding:12px 6px;}
+.db-sidebar.collapsed .db-sidebar-top{padding:12px 8px;}
 .db-sidebar.collapsed .db-nav{padding:8px 6px;gap:2px;}
-.db-sidebar.collapsed .db-nav-item{padding:10px 0;justify-content:center;width:100%;}
+.db-sidebar.collapsed .db-nav-item{padding:10px 6px;justify-content:center;width:100%;box-sizing:border-box;}
 
 /* Mobile drawer — logo as SVG, btns horizontal */
 .mob-drawer-logo{display:flex;align-items:center;}
@@ -2900,7 +2900,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             <span class="sb-platform-card-title">Keylr Platform</span>
           </div>
           <div class="sb-platform-card-desc">Unlock full operations: team management, invoicing &amp; workflows</div>
-          <button class="sb-platform-upgrade-btn" onclick="showPage('pricing',null)">
+          <button class="sb-platform-upgrade-btn" onclick="showPlanChoosePage()">
             <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 5.5h7M6 2.5l3 3-3 3"/></svg>
             Upgrade now
           </button>
