@@ -2922,7 +2922,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             <div style="font-size:18px;font-weight:700;color:#0f172a;">Browse by category</div>
             <div style="font-size:12.5px;color:#94a3b8;margin-top:2px;">Find the right service for your property</div>
           </div>
-          <div class="home-animate home-animate-d3" style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:16px;margin-bottom:28px;">
+          <div class="home-animate home-animate-d3" class="browse-cat-card" style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:16px;margin-bottom:28px;">
             <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px;">
               <div class="cat-item" onclick="showPage('explore',null);" style="width:120px;">
                 <div class="cat-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#3b82f6" stroke-width="1.6"><path d="M3 8.5V18M7 4V18M10 9.5V18M15 6.5V18M18 2.5V18"/></svg></div>
@@ -2972,7 +2972,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             </div>
           </div>
                     <!-- HOW KEYLR WORKS — with connecting line -->
-          <div class="home-animate home-animate-d4" style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:28px 24px;margin-bottom:28px;text-align:center;">
+          <div class="home-animate home-animate-d4" class="hiw-card" style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:28px 24px;margin-bottom:28px;text-align:center;">
             <div style="font-size:18px;font-weight:700;color:#0f172a;margin-bottom:4px;">How Keylr Connect works</div>
             <div style="font-size:13px;color:#94a3b8;margin-bottom:32px;">Book any service in under 2 minutes</div>
             <div class="hiw-steps-container" style="position:relative;">
@@ -3026,7 +3026,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             <div><div style="font-size:18px;font-weight:700;color:#0f172a;">Your active jobs</div><div style="font-size:12.5px;color:#94a3b8;margin-top:2px;">0 in progress</div></div>
             <button onclick="showPage('bookings',null);" style="background:transparent;border:none;color:#3b82f6;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;">View all <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2l4 4-4 4"/></svg></button>
           </div>
-          <div class="home-animate home-animate-d5" style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:40px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:20px;">
+          <div class="home-animate home-animate-d5 no-jobs-card" style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:40px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:20px;">
             <div style="width:56px;height:56px;background:#f8fafc;border-radius:16px;display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#cbd5e1" stroke-width="1.5"><rect x="3" y="7" width="20" height="14" rx="2.5"/><path d="M8 7V5a5 5 0 0110 0v2"/><path d="M3 12h20"/></svg></div>
             <div style="font-size:15px;font-weight:700;color:#0f172a;">No active jobs</div>
             <div style="font-size:13px;color:#94a3b8;max-width:280px;line-height:1.6;">Book a service to start tracking your jobs in real time</div>
@@ -6660,34 +6660,44 @@ function _showChipDismissPopup(chipDef) {
   var ex = document.getElementById('chipDismissPopup');
   if (ex) ex.remove();
 
+  var isDark = document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark');
+  var boxBg    = isDark ? '#1c2433' : '#fff';
+  var titleCol = isDark ? '#e6edf3' : '#0f172a';
+  var subCol   = isDark ? '#8b949e' : '#64748b';
+  var strongCol= isDark ? '#c9d1d9' : '#0f172a';
+  var icoWrapBg= isDark ? '#1a2d4a' : '#eff6ff';
+  var undoBg   = isDark ? '#2d3748' : '#f1f5f9';
+  var undoCol  = isDark ? '#c9d1d9' : '#374151';
+  var undoHov  = isDark ? '#374151' : '#e2e8f0';
+
   var overlay = document.createElement('div');
   overlay.id = 'chipDismissPopup';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(15,23,42,0.4);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;animation:modalPop 0.18s ease;';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,'+(isDark?'0.6':'0.4')+');backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;animation:modalPop 0.18s ease;';
   overlay.onclick = function(e){ if(e.target===overlay) overlay.remove(); };
 
   var box = document.createElement('div');
-  box.style.cssText = 'background:#fff;border-radius:20px;padding:28px 26px 24px;max-width:360px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.18);';
+  box.style.cssText = 'background:'+boxBg+';border-radius:20px;padding:28px 26px 24px;max-width:380px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,'+(isDark?'0.5':'0.18')+');'+(isDark?'border:1px solid #30363d;':'');
 
   var iconWrap = document.createElement('div');
-  iconWrap.style.cssText = 'width:48px;height:48px;background:#eff6ff;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;';
+  iconWrap.style.cssText = 'width:48px;height:48px;background:'+icoWrapBg+';border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;';
   iconWrap.innerHTML = '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1A5FC8" stroke-width="1.8" stroke-linecap="round"><path d="M11 4v8M11 16v.5"/><circle cx="11" cy="11" r="9"/></svg>';
 
   var h = document.createElement('div');
-  h.style.cssText = 'font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:6px;';
+  h.style.cssText = 'font-size:16px;font-weight:800;color:'+titleCol+';font-family:Fraunces,serif;margin-bottom:6px;';
   h.textContent = 'Hide this card?';
 
   var sub = document.createElement('div');
-  sub.style.cssText = 'font-size:13px;color:#64748b;font-family:Inter,sans-serif;line-height:1.6;margin-bottom:22px;';
-  sub.innerHTML = '<strong style="color:#0f172a;">"'+chipDef.title+'"</strong> will be hidden from your dashboard. You can restore it anytime.';
+  sub.style.cssText = 'font-size:13px;color:'+subCol+';font-family:Inter,sans-serif;line-height:1.6;margin-bottom:22px;';
+  sub.innerHTML = '<strong style="color:'+strongCol+';">"'+chipDef.title+'"</strong> will be hidden from your dashboard. You can restore it anytime.';
 
   var btnRow = document.createElement('div');
   btnRow.style.cssText = 'display:flex;gap:10px;';
 
   var btnUndo = document.createElement('button');
-  btnUndo.style.cssText = 'flex:1;background:#f1f5f9;border:none;border-radius:10px;padding:11px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;transition:background 0.15s;';
+  btnUndo.style.cssText = 'flex:1;background:'+undoBg+';border:none;border-radius:10px;padding:11px;font-size:13.5px;font-weight:600;color:'+undoCol+';cursor:pointer;font-family:Inter,sans-serif;transition:background 0.15s;';
   btnUndo.textContent = 'Undo';
-  btnUndo.onmouseover = function(){ this.style.background='#e2e8f0'; };
-  btnUndo.onmouseout  = function(){ this.style.background='#f1f5f9'; };
+  btnUndo.onmouseover = function(){ this.style.background=undoHov; };
+  btnUndo.onmouseout  = function(){ this.style.background=undoBg; };
   btnUndo.onclick = function(){
     _pmChipsDismissed[chipDef.id] = false;
     _renderPmActionChips();
@@ -10110,6 +10120,114 @@ button:active { transform: scale(0.98); }
 .dash-dark #page-properties [style*="color:#64748b"]{color:#8b949e !important;}
 .dash-dark #page-properties [style*="color:#94a3b8"]{color:#8b949e !important;}
 .dash-dark .prop-empty-card{background:#161b22 !important;border-color:#2d3748 !important;}
+
+/* ═══════════════════════════════════════════════
+   HOME PAGE — Dark mode colour overrides
+═══════════════════════════════════════════════ */
+
+/* ── Browse by category card ── */
+.dash-dark .browse-cat-card {
+  background:#161b22 !important;
+  border-color:#30363d !important;
+}
+/* Icon wrappers inside browse cards */
+.dash-dark .browse-cat-card .cat-icon {
+  background:#1a2d4a !important;
+}
+.dash-dark .browse-cat-card .cat-icon svg {
+  stroke:#58a6ff !important;
+}
+/* Category name text → white */
+.dash-dark .browse-cat-card .cat-item div[style*="color:#0f172a"] {
+  color:#e6edf3 !important;
+}
+/* Hover state for cat-item in dark */
+.dash-dark .cat-item:hover { background:#1c2433 !important; }
+.dash-dark .cat-item:hover .cat-icon { background:#243046 !important; }
+
+/* ── How Keylr Connect works card ── */
+.dash-dark .hiw-card {
+  background:#161b22 !important;
+  border-color:#30363d !important;
+}
+/* HIW heading "How Keylr Connect works" */
+.dash-dark .hiw-card > div[style*="font-size:18px"] { color:#e6edf3 !important; }
+/* HIW subtitle */
+.dash-dark .hiw-card > div[style*="font-size:13px"] { color:#8b949e !important; }
+/* Step labels */
+.dash-dark .hiw-card [style*="font-size:13px;font-weight:600;color:#0f172a"] { color:#c9d1d9 !important; }
+.dash-dark .hiw-card [style*="font-size:12px;color:#94a3b8"] { color:#8b949e !important; }
+/* Step icon boxes → dark */
+.dash-dark .hiw-card [style*="background:#fff;"] { background:#1c2433 !important; border-color:#30363d !important; }
+.dash-dark .hiw-card [style*="background:#eff6ff"] { background:#1a2d4a !important; }
+
+/* ── Home stats (Jobs completed, Avg rating, etc.) ── */
+.dash-dark .home-stat-card [style*="color:#0f172a"] { color:#e6edf3 !important; }
+.dash-dark .home-stat-card [style*="font-size:22px"] { color:#e6edf3 !important; }
+
+/* ── Browse/Trending section headings ── */
+.dash-dark #page-home [style*="font-size:18px;font-weight:700;color:#0f172a"] { color:#e6edf3 !important; }
+.dash-dark #page-home [style*="font-size:20px;font-weight:800;color:#0f172a"] { color:#e6edf3 !important; }
+
+/* ── No active jobs empty state ── */
+.dash-dark .no-jobs-card { background:#161b22 !important; border-color:#30363d !important; }
+.dash-dark .no-jobs-card [style*="font-size:15px;font-weight:700;color:#0f172a"] { color:#e6edf3 !important; }
+.dash-dark .no-jobs-card [style*="background:#f8fafc"] { background:#243046 !important; }
+
+/* ── Portfolio stat cards (Properties, Active jobs, Completed, Total spent) ── */
+.dash-dark .portfolio-stat-card [style*="font-size:24px;font-weight:700;color:#0f172a"] { color:#e6edf3 !important; }
+.dash-dark .portfolio-stat-card [style*="font-size:12px;color:#94a3b8"] { color:#8b949e !important; }
+
+/* ── Start a chat CTA → keep gradient, just fix text/bg ── */
+.dash-dark .home-cta-block { background:#0f172a !important; border:1px solid #30363d; }
+/* "Not sure what you need?" is already white — keep */
+.dash-dark .home-cta-btn {
+  background:rgba(255,255,255,0.08) !important;
+  border-color:rgba(255,255,255,0.15) !important;
+}
+/* Start a chat gradient button — keep as is (it's already styled correctly) */
+
+/* ── "Your active jobs" section header ── */
+.dash-dark #page-home [style*="font-size:18px;font-weight:700;color:#0f172a;"] { color:#e6edf3 !important; }
+
+/* ── Trending card names ── */
+.dash-dark .trending-card [style*="font-size:14.5px;font-weight:600;color:#0f172a"] { color:#e6edf3 !important; }
+
+/* ── "Trending services" heading ── */
+.dash-dark #page-home div[style*="font-size:18px;font-weight:700"] { color:#e6edf3 !important; }
+
+/* ═══════════════════════════════════════════════
+   CHAT — Dark mode
+═══════════════════════════════════════════════ */
+/* Chat area background */
+.dash-dark .chat-area { background:#0d1117 !important; }
+/* AI message bubbles */
+.dash-dark .ai-bubble, .dash-dark .msg-bubble.ai-bubble { background:#161b22 !important; color:#c9d1d9 !important; border-color:#30363d !important; }
+/* User message bubbles */
+.dash-dark .user-bubble { background:#1A5FC8 !important; color:#fff !important; }
+/* Welcome screen */
+.dash-dark .chat-welcome { background:transparent !important; }
+.dash-dark .chat-welcome h2 { color:#e6edf3 !important; }
+.dash-dark .chat-welcome p { color:#8b949e !important; }
+/* Suggestion chips */
+.dash-dark .suggestion-chip { background:#161b22 !important; border-color:#30363d !important; color:#c9d1d9 !important; }
+.dash-dark .suggestion-chip:hover { background:#1c2433 !important; border-color:#1A5FC8 !important; color:#e6edf3 !important; }
+.dash-dark .sc-icon { color:#58a6ff !important; }
+/* AI chat footer bar */
+.dash-dark .page-ai-footer { background:#161b22 !important; border-top-color:#30363d !important; }
+.dash-dark .paf-input-row { background:#1c2433 !important; border-color:#30363d !important; }
+.dash-dark .paf-input { color:#e6edf3 !important; }
+.dash-dark .paf-input::placeholder { color:#484f58 !important; }
+/* AI chip buttons */
+.dash-dark .ai-chip-btn { background:#1c2433 !important; border-color:#30363d !important; color:#c9d1d9 !important; }
+.dash-dark .ai-chip-btn:hover { background:#243046 !important; border-color:#1A5FC8 !important; }
+/* Chat topbar */
+.dash-dark .db-topbar { background:#161b22 !important; border-bottom-color:#30363d !important; }
+.dash-dark .db-topbar-title { color:#e6edf3 !important; }
+.dash-dark .db-topbar-sub { color:#8b949e !important; }
+/* Chat typing indicator */
+.dash-dark .typing-dot { background:#8b949e !important; }
+
 </style>
 
 </body>
