@@ -2294,180 +2294,151 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
    DARK MODE — .dash-dark on #pg-dashboard
 ============================================= */
 .dash-dark{color-scheme:dark;}
-/* Sidebar */
-.dash-dark .db-sidebar{background:#0f172a;border-right:1px solid #1e293b;}
-.dash-dark .db-sidebar-top{background:#0f172a;}
-.dash-dark .sidebar-logo-row svg path{fill:#f1f5f9;}
-.dash-dark .start-chat-btn{background:#1e293b;color:#cbd5e1;border-color:#334155;}
-.dash-dark .start-chat-btn:hover{background:#334155;}
-.dash-dark .db-nav-item{color:#94a3b8;}
-.dash-dark .db-nav-item:hover{background:#1e293b;color:#e2e8f0;}
-.dash-dark .db-nav-item.active{background:rgba(30,92,200,0.18);color:#60a5fa;}
-.dash-dark .db-nav-item.active svg{color:#60a5fa;}
-.dash-dark .db-sidebar-bottom{border-top:1px solid #1e293b;}
-.dash-dark .db-auth-hint{color:#475569;}
-.dash-dark .db-signup-btn{background:#1d4ed8;color:#fff;}
-.dash-dark .db-login-btn{background:#1e293b;color:#94a3b8;border-color:#334155;}
-.dash-dark #themeToggleBtn{border-color:rgba(255,255,255,0.1);color:#94a3b8;}
-.dash-dark #themeToggleBtn:hover{background:#1e293b !important;}
-.dash-dark #sbProfileName{color:#f1f5f9;}
-.dash-dark #sbProfileEmail{color:#64748b;}
-/* Main */
+
+/* ── Base backgrounds ── */
 .dash-dark .db-main{background:#0d1117;}
 .dash-dark #page-home,.dash-dark #page-explore,.dash-dark #page-bookings,
-.dash-dark #page-properties,.dash-dark #page-pricing,.dash-dark #page-settings{background:#0d1117;}
-.dash-dark #page-chat{background:#0f172a;}
-/* Topbar */
-.dash-dark .db-topbar{background:#0f172a;border-bottom:1px solid #1e293b;}
-.dash-dark .db-topbar-title{color:#f1f5f9;}
-.dash-dark .db-topbar-sub{color:#64748b;}
-.dash-dark .db-topbar-action{background:#1e293b;border-color:#334155;color:#94a3b8;}
-/* Home page general text */
-.dash-dark h1,.dash-dark h2,.dash-dark h3{color:#f1f5f9;}
-.dash-dark p{color:#94a3b8;}
-/* Portfolio stats */
-.dash-dark .portfolio-stat-card{background:#1e293b;border-color:#334155;}
-.dash-dark .quick-link-card{background:#1e293b;border-color:#334155;}
-/* Job bookings */
-.dash-dark .job-card{background:#1e293b;border-color:#334155;}
-.dash-dark .job-title{color:#f1f5f9;}
-.dash-dark .job-meta,.dash-dark .job-date,.dash-dark .job-progress-label,.dash-dark .job-progress-pct{color:#64748b;}
-.dash-dark .job-progress-bar{background:#334155;}
-.dash-dark #page-bookings>div:last-child{background:#0f172a;border-top:1px solid #1e293b;}
-.dash-dark #bkChatInput{color:#f1f5f9 !important;}
-/* Bookings stats */
-.dash-dark #page-bookings [style*="background:#fff;border:1px solid #e2e8f0"]{background:#1e293b !important;border-color:#334155 !important;}
-/* Properties */
-.dash-dark .prop-stat-card{background:#1e293b;border-color:#334155;}
-.dash-dark .prop-stat-num{color:#f1f5f9;}
-.dash-dark .prop-stat-label{color:#64748b;}
-.dash-dark .prop-search-wrap{background:#1e293b;border-color:#334155;}
-.dash-dark .prop-search-input{background:transparent;color:#f1f5f9;}
-.dash-dark .prop-search-input::placeholder{color:#475569;}
-.dash-dark .prop-empty-placeholder{background:#1e293b;border-color:#334155;}
-.dash-dark .pep-name{color:#f1f5f9;}
-.dash-dark .pep-addr,.dash-dark .pep-ghost{color:#64748b;}
-.dash-dark #page-properties [style*="background:#fff"]{background:#1e293b !important;}
-/* Properties bottom bar */
-.dash-dark #page-properties>div:last-child{background:#0f172a;border-top:1px solid #1e293b;}
-.dash-dark #prChatInput{color:#f1f5f9 !important;}
-/* Explore */
-.dash-dark .esi-card{background:#1e293b;border-color:#334155;}
-.dash-dark .esi-label{color:#e2e8f0;}
-.dash-dark .esi-icon-wrap{background:#1a2d4a;}
-.dash-dark .explore-section-title{color:#f1f5f9;}
-/* Pricing */
-.dash-dark .spr-card{background:#1e293b;border-color:#334155;}
-.dash-dark .spr-card-title{color:#f1f5f9;}
-.dash-dark .spr-card-sub{color:#64748b;}
-.dash-dark .spr-row{background:#0f172a;border-color:#334155;}
-.dash-dark .spr-row-name{color:#f1f5f9;}
-.dash-dark .spr-row-market{color:#64748b;}
-.dash-dark .spr-input{color:#f1f5f9;background:transparent;}
-.dash-dark .spr-price-wrap{background:#1e293b;}
-.dash-dark .spr-select{background:#1e293b;color:#f1f5f9;border-color:#334155;}
-.dash-dark .spr-upgrade-card{background:#1e293b;border-color:#334155;}
-.dash-dark .spr-upgrade-title{color:#f1f5f9;}
-.dash-dark .spr-upgrade-desc{color:#94a3b8;}
-.dash-dark .suf-title{color:#e2e8f0;}
-.dash-dark .suf-desc{color:#64748b;}
-.dash-dark .spr-upgrade-feat{background:#0f172a;border-color:#334155;}
-/* Settings page */
+.dash-dark #page-properties,.dash-dark #page-pricing{background:#0d1117;}
+.dash-dark #page-settings{background:#0d1117;}
+.dash-dark #page-settings>div>div{background:#0d1117;}
+.dash-dark #page-chat{background:#0d1117;}
+
+/* ── Sidebar ── */
+.dash-dark .db-sidebar{background:#161b22;border-right:1px solid #30363d;}
+.dash-dark .db-sidebar-top{background:#161b22;border-bottom:1px solid #30363d;}
+.dash-dark .sidebar-logo-row svg path{fill:#e6edf3;}
+.dash-dark .start-chat-btn{background:#1c2433;color:#c9d1d9;border-color:#30363d;}
+.dash-dark .start-chat-btn:hover{background:#243046;}
+.dash-dark .db-nav{background:#161b22;}
+.dash-dark .db-nav-item{color:#8b949e;}
+.dash-dark .db-nav-item:hover{background:#1c2433;color:#e6edf3;}
+.dash-dark .db-nav-item.active{background:rgba(26,95,200,0.18);color:#58a6ff;}
+.dash-dark .db-nav-item.active svg{stroke:#58a6ff;}
+.dash-dark .db-sidebar-bottom{border-top:1px solid #30363d;background:#161b22;}
+.dash-dark .db-auth-hint{color:#484f58;}
+.dash-dark .db-signup-btn{background:#1A5FC8;color:#fff;border:none;}
+.dash-dark .db-login-btn{background:#1c2433;color:#8b949e;border-color:#30363d;}
+.dash-dark #themeToggleBtn{border-color:#30363d;color:#8b949e;background:#1c2433;}
+.dash-dark #themeToggleBtn:hover{background:#243046 !important;}
+.dash-dark #sbProfileName{color:#e6edf3;}
+.dash-dark #sbProfileEmail{color:#8b949e;}
+.dash-dark #sbComplianceAlert{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);}
+
+/* ── Topbar ── */
+.dash-dark .db-topbar{background:#161b22;border-bottom:1px solid #30363d;}
+.dash-dark .db-topbar-title{color:#e6edf3;}
+.dash-dark .db-topbar-sub{color:#8b949e;}
+.dash-dark .db-topbar-action{background:#1c2433;border-color:#30363d;color:#8b949e;}
+.dash-dark .db-topbar-action:hover{background:#243046;color:#e6edf3;}
+
+/* ── Home stat cards ── */
+.dash-dark .home-stat-card{background:#161b22;border-color:#30363d;}
+
+/* ── PM Action chips ── */
+.dash-dark #pmActionChips [style*="background:#eff6ff"]{background:#1a2d4a !important;border-color:#1e40af !important;}
+.dash-dark #pmActionChips [style*="background:#f0fdf4"]{background:#052e16 !important;border-color:#166534 !important;}
+.dash-dark #pmActionChips [style*="background:#f8fafc"]{background:#161b22 !important;border-color:#30363d !important;}
+.dash-dark #pmActionChips [style*="background:#dbeafe"]{background:#1e3a5f !important;}
+.dash-dark #pmActionChips [style*="background:#d1fae5"]{background:#052e16 !important;}
+.dash-dark #pmActionChips [style*="background:#e0f2fe"]{background:#1e3a5f !important;}
+.dash-dark #pmActionChips [style*="background:#f1f5f9"]{background:#1c2433 !important;color:#8b949e !important;}
+.dash-dark #pmActionChips [style*="color:#0f172a"]{color:#e6edf3 !important;}
+.dash-dark #pmActionChips [style*="color:#64748b"]{color:#8b949e !important;}
+
+/* ── Trending cards ── */
+.dash-dark .trending-card{background:#161b22;border-color:#30363d;}
+.dash-dark .trending-card:hover{border-color:#1A5FC8;box-shadow:0 6px 20px rgba(26,95,200,0.18);}
+
+/* ── Portfolio stats ── */
+.dash-dark .portfolio-stat-card{background:#161b22;border-color:#30363d;}
+.dash-dark .quick-link-card{background:#161b22;border-color:#30363d;}
+
+/* ── Explore ── */
+.dash-dark .ef-pill{background:#1c2433;border-color:#30363d;color:#c9d1d9;}
+.dash-dark .ef-active{background:#1A5FC8 !important;border-color:#1A5FC8 !important;color:#fff !important;}
+.dash-dark .esi-card{background:#161b22;border-color:#30363d;}
+.dash-dark .esi-card:hover{border-color:#1A5FC8;}
+.dash-dark .esi-label{color:#c9d1d9;}
+.dash-dark .esi-icon-wrap{background:#1a2d4a;color:#58a6ff;}
+.dash-dark .explore-section-title{color:#e6edf3;}
+
+/* ── Job bookings ── */
+.dash-dark .job-card{background:#161b22;border-color:#30363d;}
+.dash-dark .job-title{color:#e6edf3;}
+.dash-dark .job-meta,.dash-dark .job-date,.dash-dark .job-progress-label,.dash-dark .job-progress-pct{color:#8b949e;}
+.dash-dark .job-progress-bar{background:#1c2433;}
+.dash-dark #page-bookings>div:last-child{background:#161b22;border-top:1px solid #30363d;}
+.dash-dark #bkChatInput{color:#e6edf3 !important;}
+.dash-dark #page-bookings [style*="background:#fff;border:1px solid #e2e8f0"]{background:#161b22 !important;border-color:#30363d !important;}
+
+/* ── Properties ── */
+.dash-dark .prop-stat-card{background:#161b22;border-color:#30363d;}
+.dash-dark .prop-stat-num{color:#e6edf3;}
+.dash-dark .prop-stat-label{color:#8b949e;}
+.dash-dark .prop-search-wrap{background:#1c2433;border-color:#30363d;}
+.dash-dark .prop-search-input{background:transparent;color:#e6edf3;}
+.dash-dark .prop-search-input::placeholder{color:#484f58;}
+.dash-dark .prop-empty-placeholder{background:#161b22;border-color:#30363d;}
+.dash-dark .pep-name{color:#e6edf3;}
+.dash-dark .pep-addr,.dash-dark .pep-ghost{color:#8b949e;}
+.dash-dark #page-properties [style*="background:#fff"]{background:#161b22 !important;}
+.dash-dark #page-properties>div:last-child{background:#161b22;border-top:1px solid #30363d;}
+.dash-dark #prChatInput{color:#e6edf3 !important;}
+
+/* ── Pricing ── */
+.dash-dark .spr-card{background:#161b22;border-color:#30363d;}
+.dash-dark .spr-card-title{color:#e6edf3;}
+.dash-dark .spr-card-sub{color:#8b949e;}
+.dash-dark .spr-row{background:#0d1117;border-color:#30363d;}
+.dash-dark .spr-row-name{color:#e6edf3;}
+.dash-dark .spr-row-market{color:#8b949e;}
+.dash-dark .spr-input{color:#e6edf3;background:transparent;}
+.dash-dark .spr-price-wrap{background:#1c2433;}
+.dash-dark .spr-select{background:#1c2433;color:#e6edf3;border-color:#30363d;}
+.dash-dark .spr-upgrade-card{background:#161b22;border-color:#30363d;}
+.dash-dark .spr-upgrade-title{color:#e6edf3;}
+.dash-dark .spr-upgrade-desc{color:#8b949e;}
+.dash-dark .suf-title{color:#c9d1d9;}
+.dash-dark .suf-desc{color:#8b949e;}
+.dash-dark .spr-upgrade-feat{background:#0d1117;border-color:#30363d;}
+
+/* ── Settings ── */
 .dash-dark #page-settings>div{background:#0d1117;}
-.dash-dark #page-settings label{color:#94a3b8 !important;}
-/* Settings header text */
-.dash-dark #settingsName{color:#f1f5f9 !important;}
-.dash-dark #settingsContact{color:#64748b !important;}
-/* Settings ring */
-.dash-dark #settingsRingFill{stroke:#60a5fa;}
-.dash-dark #settingsRingPct{color:#60a5fa !important;}
-/* Settings tabs */
-.dash-dark #stab-profile,.dash-dark #stab-business,.dash-dark #stab-discovery,.dash-dark #stab-subscription{color:#64748b !important;background:none !important;}
-/* All settings inputs */
-.dash-dark #settings-profile input,
-.dash-dark #settings-business input,
-.dash-dark #settings-business select,
-.dash-dark #settings-discovery input{background:#1e293b !important;border-color:#334155 !important;color:#f1f5f9 !important;}
-.dash-dark #settings-profile input::placeholder,
-.dash-dark #settings-business input::placeholder{color:#475569 !important;}
-/* Settings subscription cards */
-.dash-dark #subCurrentView>div{background:#1e293b !important;border-color:#334155 !important;}
-.dash-dark #subPlanView>div:first-child>div{background:#1e293b !important;border-color:#334155 !important;}
-/* Discovery */
-.dash-dark .disc-row{border-bottom-color:#1e293b;}
+.dash-dark #page-settings label{color:#8b949e !important;}
+.dash-dark #settingsName{color:#e6edf3 !important;}
+.dash-dark #settingsContact{color:#8b949e !important;}
+.dash-dark #settingsRingFill{stroke:#58a6ff;}
+.dash-dark #settingsRingPct{color:#58a6ff !important;}
+.dash-dark #stab-profile,.dash-dark #stab-business,.dash-dark #stab-discovery,.dash-dark #stab-subscription{color:#8b949e !important;background:none !important;}
+.dash-dark #settings-profile input,.dash-dark #settings-business input,
+.dash-dark #settings-business select,.dash-dark #settings-discovery input,
+.dash-dark #settings-profile textarea{background:#1c2433 !important;border-color:#30363d !important;color:#e6edf3 !important;}
+.dash-dark #settings-profile input::placeholder,.dash-dark #settings-business input::placeholder{color:#484f58 !important;}
+.dash-dark #subCurrentView>div{background:#161b22 !important;border-color:#30363d !important;}
+.dash-dark #subPlanView>div:first-child>div{background:#161b22 !important;border-color:#30363d !important;}
+.dash-dark .settings-eyebrow{color:#58a6ff;}
+.dash-dark .settings-title{color:#e6edf3;}
+.dash-dark #settings-profile [style*="border-bottom:1px solid #f1f5f9"]{border-bottom-color:#30363d !important;}
+.dash-dark #settings-profile [style*="background:#fafafa"]{background:#1c2433 !important;}
+
+/* ── Discovery ── */
+.dash-dark .disc-row{border-bottom-color:#30363d;}
 .dash-dark #discStartPrompt{background:#1a2d4a;border-color:#1d4ed8;}
-.dash-dark #discStartPrompt div div:first-child{color:#f1f5f9 !important;}
-.dash-dark #discAnswersList div[style*="font-size:13.5px"]{color:#f1f5f9 !important;}
-/* Chat */
-.dash-dark .chat-area{background:#0f172a;}
-.dash-dark .ai-msg-bubble{background:#1e293b;color:#e2e8f0;}
-.dash-dark .user-msg-bubble{background:#1d4ed8;}
-/* Chat bars */
-.dash-dark .page-ai-footer{background:#0f172a;border-top:1px solid #1e293b;}
-.dash-dark .paf-input-row{background:#1e293b;border-color:#334155;}
-.dash-dark .paf-input{color:#f1f5f9;}
-.dash-dark .paf-input::placeholder{color:#475569;}
-/* Settings eyebrow */
-.dash-dark .settings-eyebrow{color:#60a5fa;}
-.dash-dark .settings-title{color:#f1f5f9;}
-/* Disc row titles */
-.dash-dark .disc-row>div>div:first-child{color:#f1f5f9;}
-.dash-dark .disc-row>div>div:last-child{color:#64748b;}
+.dash-dark #discStartPrompt div div:first-child{color:#e6edf3 !important;}
+.dash-dark #discAnswersList div[style*="font-size:13.5px"]{color:#e6edf3 !important;}
+.dash-dark .disc-row>div>div:first-child{color:#e6edf3;}
+.dash-dark .disc-row>div>div:last-child{color:#8b949e;}
 
-
-/* ── Dark mode: Home page trending/service cards ── */
-.dash-dark [style*="background:#fff;border:1px solid #e2e8f0;border-radius:14px"],
-.dash-dark [style*="background:#fff;border:1px solid #e8ecf3;border-radius:14px"],
-.dash-dark [style*="background:#fff;border:1px solid #e2e8f0;border-radius:16px"],
-.dash-dark [style*="background:#fff;border:1px solid #e8ecf3;border-radius:16px"] {
-  background:#1e293b !important;
-  border-color:#334155 !important;
-}
-.dash-dark [style*="background:#fff;border:1px solid #e2e8f0;border-radius:18px"] {
-  background:#1e293b !important;
-  border-color:#334155 !important;
-}
-/* Most booked / service cards */
-.dash-dark [style*="background:#fff;border:1px solid #e2e8f0;border-radius:14px"] h3,
-.dash-dark [style*="background:#fff;border:1px solid #e2e8f0;border-radius:14px"] p { color:#f1f5f9 !important; }
-/* Category badge colours in dark */
-.dash-dark [style*="background:#f0f4ff"],
-.dash-dark [style*="background:#ecfdf5"],
-.dash-dark [style*="background:#fef9c3"],
-.dash-dark [style*="background:#fee2e2"],
-.dash-dark [style*="background:#fdf4ff"] { filter: brightness(0.3); }
-/* Browse-by-category card */
-.dash-dark [style*="background:#fff;border-radius:16px"],
-.dash-dark [style*="background:#fff;border-radius:20px"] {
-  background:#1e293b !important;
-  border-color:#334155 !important;
-}
-/* General white card catchall */
-.dash-dark [style*="background:#fff;"] { color:#f1f5f9; }
-/* Start a chat button — always keep gradient */
-.dash-dark .start-chat-btn {
-  background: linear-gradient(90deg,#1A5FC8,#0FA3D0) !important;
-  color:#fff !important;
-  border-color:transparent !important;
-}
-.dash-dark .start-chat-btn:hover { opacity:0.88; }
-/* Service price text */
-.dash-dark [style*="color:#64748b"] { color:#94a3b8 !important; }
-/* Trending heading */
-.dash-dark [style*="color:#0f172a;font-family:'Fraunces'"] { color:#f1f5f9 !important; }
-/* Fix settings subscription cards in dark */
-.dash-dark #subCurrentView { color:#f1f5f9; }
-.dash-dark #subPlanView { color:#f1f5f9; }
-
-/* Discovery answer rows */
-.disc-row {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:14px 0;
-  border-bottom:1px solid #f1f5f9;
-}
-.disc-row > div:first-child { flex:1; }
+/* ── Chat ── */
+.dash-dark .chat-area{background:#0d1117;}
+.dash-dark .ai-bubble{background:#161b22;color:#c9d1d9;border-color:#30363d;}
+.dash-dark .user-bubble{background:#1A5FC8;}
+.dash-dark .page-ai-footer{background:#161b22;border-top:1px solid #30363d;}
+.dash-dark .paf-input-row{background:#1c2433;border-color:#30363d;}
+.dash-dark .paf-input{color:#e6edf3;}
+.dash-dark .paf-input::placeholder{color:#484f58;}
+.dash-dark .ai-chip-btn{background:#1c2433;border-color:#30363d;color:#c9d1d9;}
+.dash-dark .ai-chip-btn:hover{border-color:#58a6ff;background:#1a2d4a;}
 </style>
 </head>
 </head>
@@ -6641,70 +6612,55 @@ function _dismissPmChip(id, cardEl) {
 }
 
 function _showChipDismissPopup(chipDef) {
-  // Remove any existing popup
   var ex = document.getElementById('chipDismissPopup');
   if (ex) ex.remove();
 
   var overlay = document.createElement('div');
   overlay.id = 'chipDismissPopup';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(15,23,42,0.35);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:20px;animation:modalPop 0.18s ease;';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(15,23,42,0.4);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;animation:modalPop 0.18s ease;';
   overlay.onclick = function(e){ if(e.target===overlay) overlay.remove(); };
 
   var box = document.createElement('div');
-  box.style.cssText = 'background:#fff;border-radius:20px;padding:32px 28px 26px;max-width:360px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.18);text-align:center;';
+  box.style.cssText = 'background:#fff;border-radius:20px;padding:28px 26px 24px;max-width:360px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.18);';
 
-  // Emoji / icon
-  var emo = document.createElement('div');
-  emo.style.cssText = 'font-size:36px;margin-bottom:14px;';
-  emo.textContent = '🙈';
+  var iconWrap = document.createElement('div');
+  iconWrap.style.cssText = 'width:48px;height:48px;background:#eff6ff;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;';
+  iconWrap.innerHTML = '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1A5FC8" stroke-width="1.8" stroke-linecap="round"><path d="M11 4v8M11 16v.5"/><circle cx="11" cy="11" r="9"/></svg>';
 
   var h = document.createElement('div');
-  h.style.cssText = 'font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;';
-  h.textContent = 'Hide "' + chipDef.title + '"?';
+  h.style.cssText = 'font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:6px;';
+  h.textContent = 'Hide this card?';
 
   var sub = document.createElement('div');
-  sub.style.cssText = 'font-size:13px;color:#64748b;font-family:Inter,sans-serif;line-height:1.6;margin-bottom:24px;';
-  sub.textContent = 'You can always restore this card from your dashboard settings.';
+  sub.style.cssText = 'font-size:13px;color:#64748b;font-family:Inter,sans-serif;line-height:1.6;margin-bottom:22px;';
+  sub.innerHTML = '<strong style="color:#0f172a;">"'+chipDef.title+'"</strong> will be hidden from your dashboard. You can restore it anytime.';
 
-  // Buttons
   var btnRow = document.createElement('div');
-  btnRow.style.cssText = 'display:flex;flex-direction:column;gap:10px;';
+  btnRow.style.cssText = 'display:flex;gap:10px;';
 
-  var btnHide = document.createElement('button');
-  btnHide.style.cssText = 'width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;transition:opacity 0.15s;';
-  btnHide.textContent = 'Yes, hide this card';
-  btnHide.onmouseover = function(){ this.style.opacity='0.88'; };
-  btnHide.onmouseout  = function(){ this.style.opacity='1'; };
-  btnHide.onclick = function(){
-    overlay.remove();
-    showToast('"'+chipDef.title+'" hidden', 'success');
-  };
-
-  var btnRestore = document.createElement('button');
-  btnRestore.style.cssText = 'width:100%;background:#f1f5f9;border:none;border-radius:12px;padding:12px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;transition:background 0.15s;';
-  btnRestore.textContent = 'Undo — bring it back';
-  btnRestore.onmouseover = function(){ this.style.background='#e2e8f0'; };
-  btnRestore.onmouseout  = function(){ this.style.background='#f1f5f9'; };
-  btnRestore.onclick = function(){
+  var btnUndo = document.createElement('button');
+  btnUndo.style.cssText = 'flex:1;background:#f1f5f9;border:none;border-radius:10px;padding:11px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;transition:background 0.15s;';
+  btnUndo.textContent = 'Undo';
+  btnUndo.onmouseover = function(){ this.style.background='#e2e8f0'; };
+  btnUndo.onmouseout  = function(){ this.style.background='#f1f5f9'; };
+  btnUndo.onclick = function(){
     _pmChipsDismissed[chipDef.id] = false;
     _renderPmActionChips();
     overlay.remove();
   };
 
-  var btnNever = document.createElement('button');
-  btnNever.style.cssText = 'width:100%;background:none;border:none;font-size:12px;color:#94a3b8;cursor:pointer;font-family:Inter,sans-serif;padding:4px;';
-  btnNever.textContent = 'Don\'t ask me again for any card';
-  btnNever.onclick = function(){
-    _pmActionChipDefs.forEach(function(c){ _pmChipsDismissed[c.id] = true; });
-    _renderPmActionChips();
+  var btnHide = document.createElement('button');
+  btnHide.style.cssText = 'flex:2;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;transition:opacity 0.15s;';
+  btnHide.textContent = 'Hide card';
+  btnHide.onmouseover = function(){ this.style.opacity='0.88'; };
+  btnHide.onmouseout  = function(){ this.style.opacity='1'; };
+  btnHide.onclick = function(){
     overlay.remove();
-    showToast('All setup cards hidden', 'success');
+    showToast('"'+chipDef.title+'" hidden from dashboard','success');
   };
 
-  btnRow.appendChild(btnHide);
-  btnRow.appendChild(btnRestore);
-  btnRow.appendChild(btnNever);
-  box.appendChild(emo); box.appendChild(h); box.appendChild(sub); box.appendChild(btnRow);
+  btnRow.appendChild(btnUndo); btnRow.appendChild(btnHide);
+  box.appendChild(iconWrap); box.appendChild(h); box.appendChild(sub); box.appendChild(btnRow);
   overlay.appendChild(box);
   document.body.appendChild(overlay);
 }
