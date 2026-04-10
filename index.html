@@ -582,7 +582,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 #pg-plan-choose.visible{display:flex;}
 /* Shared onboarding topbar */
 .ob-topbar{background:#fff;border-bottom:1px solid #e8edf3;padding:0 40px;height:60px;display:flex;align-items:center;gap:24px;flex-shrink:0;position:sticky;top:0;z-index:10;}
-.ob-topbar-logo{font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;letter-spacing:-0.3px;flex-shrink:0;}
+.ob-topbar-logo{flex-shrink:0;display:flex;align-items:center;line-height:1;}
 .ob-topbar-prog{width:180px;height:5px;background:#e2e8f0;border-radius:3px;overflow:hidden;flex-shrink:0;}
 .ob-topbar-prog-fill{height:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:3px;}
 .ob-topbar-step{font-size:13px;color:#64748b;font-family:Inter,sans-serif;white-space:nowrap;font-weight:500;margin-left:auto;}
@@ -1829,6 +1829,27 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   justify-content:center;margin:0 auto 8px;
 }
 .db-sidebar.collapsed #themeToggleBtn .db-nav-item-label{display:none;}
+/* Collapsed: profile area shows only centered avatar */
+.db-sidebar.collapsed #sbProfileArea{
+  justify-content:center;padding:8px 0;gap:0;width:100%;
+}
+.db-sidebar.collapsed #sbProfileArea .db-nav-item-label{display:none;}
+.db-sidebar.collapsed #sbProfileArea svg.db-nav-item-label{display:none;}
+/* Collapsed: nav items fully centered */
+.db-sidebar.collapsed .db-nav-item{
+  display:flex;justify-content:center;align-items:center;
+  padding:10px 0;width:100%;
+}
+/* Collapsed: start-chat button icon only */
+.db-sidebar.collapsed .start-chat-btn{
+  width:36px;height:36px;padding:0;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;margin:0 auto;
+}
+/* Collapsed: auth area centered */
+.db-sidebar.collapsed #sbAuthArea{display:none;}
+.db-sidebar.collapsed .db-sidebar-bottom{
+  display:flex;flex-direction:column;align-items:center;padding:8px 0;gap:0;
+}
 .db-sidebar.collapsed .db-signup-btn::before{content:'';display:block;width:14px;height:14px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14' fill='none' stroke='white' stroke-width='2'%3E%3Ccircle cx='7' cy='5' r='2.5'/%3E%3Cpath d='M2 12c0-2.8 2.2-5 5-5s5 2.2 5 5'/%3E%3C/svg%3E") center/contain no-repeat;}
 .db-sidebar.collapsed .db-login-btn::before{content:'→';font-size:14px;color:var(--navy);}
 .db-sidebar.collapsed .db-nav{padding:8px 4px;gap:2px;}
@@ -3899,9 +3920,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 <!-- PM BUSINESS ONBOARDING PAGE -->
 <div id="pg-biz-onboard">
   <div class="ob-topbar">
-    <div class="ob-topbar-logo"><svg width="72" height="26" viewBox="0 0 72 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <text x="0" y="20" font-family="Georgia,Fraunces,serif" font-weight="800" font-size="22" fill="#0f172a" letter-spacing="-0.5">Keylr</text>
-</svg></div>
+    <div class="ob-topbar-logo"><svg width="68" height="28" viewBox="0 0 68 28" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="0" y="22" font-family='Georgia,"Times New Roman",serif' font-weight="900" font-size="24" fill="#0f172a">Keylr</text></svg></div>
     <div class="ob-topbar-prog"><div class="ob-topbar-prog-fill" style="width:60%;"></div></div>
     <div class="ob-topbar-step">Business Information &middot; 1 of 1</div>
   </div>
@@ -3963,9 +3982,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 <!-- PM PLAN CHOOSE PAGE -->
 <div id="pg-plan-choose">
   <div class="ob-topbar">
-    <div class="ob-topbar-logo"><svg width="72" height="26" viewBox="0 0 72 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <text x="0" y="20" font-family="Georgia,Fraunces,serif" font-weight="800" font-size="22" fill="#0f172a" letter-spacing="-0.5">Keylr</text>
-</svg></div>
+    <div class="ob-topbar-logo"><svg width="68" height="28" viewBox="0 0 68 28" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="0" y="22" font-family='Georgia,"Times New Roman",serif' font-weight="900" font-size="24" fill="#0f172a">Keylr</text></svg></div>
     <div class="ob-topbar-prog"><div class="ob-topbar-prog-fill" style="width:100%;"></div></div>
     <div class="ob-topbar-step">Choose Plan &middot; 1 of 1</div>
   </div>
@@ -4022,7 +4039,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 <!-- PM DISCOVERY FLOW PAGE -->
 <div id="pg-discovery-flow">
   <div class="ob-topbar">
-    <div class="ob-topbar-logo"><svg width="72" height="26" viewBox="0 0 72 26" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="0" y="20" font-family="Georgia,Fraunces,serif" font-weight="800" font-size="22" fill="#0f172a" letter-spacing="-0.5">Keylr</text></svg></div>
+    <div class="ob-topbar-logo"><svg width="68" height="28" viewBox="0 0 68 28" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="0" y="22" font-family='Georgia,"Times New Roman",serif' font-weight="900" font-size="24" fill="#0f172a">Keylr</text></svg></div>
     <div class="ob-topbar-prog"><div id="disc-page-prog-fill" class="ob-topbar-prog-fill" style="width:14%;transition:width 0.4s ease;"></div></div>
     <div class="ob-topbar-step" id="disc-page-step">Discovery &middot; Q 1 of 7</div>
   </div>
@@ -9111,23 +9128,31 @@ function saveBizOnboarding() {
     _user._bizTradingAddr = tradaddr;
     _user._bizVat         = vat;
     _user._companyDone    = true;
-    // Sync to Settings → Business tab inputs
+    // Persist logo if uploaded
+    var _logoPreview = document.getElementById('ob-logo-preview');
+    if (_logoPreview) {
+      var _logoImg = _logoPreview.querySelector('img');
+      if (_logoImg && _logoImg.src) _user._companyLogo = _logoImg.src;
+    }
+    // Sync to Settings > Business tab inputs
     var fieldMap = {
-      'bizTradingName': trading,
-      'bizLegalName':   legal,
-      'bizRegAddr':     regaddr,
-      'bizRegNum':      regno,
-      'bizTradingAddr': tradaddr,
-      'bizVat':         vat
+      'bizTradingName': trading, 'bizLegalName': legal,
+      'bizRegAddr': regaddr, 'bizRegNum': regno,
+      'bizTradingAddr': tradaddr, 'bizVat': vat
     };
     Object.keys(fieldMap).forEach(function(fid){
       var el = document.getElementById(fid);
       if (el) el.value = fieldMap[fid];
     });
-    // Persist to store
+    // Persist to store + localStorage
     if (typeof _userKey === 'function' && typeof _userStore !== 'undefined') {
       var key = _userKey(_user.email || _user.phone || _user.contact || '');
-      if (key) _userStore[key] = JSON.parse(JSON.stringify(_user));
+      if (key) {
+        _userStore[key] = JSON.parse(JSON.stringify(_user));
+        if (typeof _saveUserStore === 'function') _saveUserStore();
+      }
+    }
+  }
     }
   }
 
