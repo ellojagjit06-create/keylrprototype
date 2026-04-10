@@ -2896,6 +2896,10 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             </div>
           </div>
 
+          <!-- ACTION CHIPS — dismissable cards above gradient hero -->
+          <div id="pmActionChips" style="margin-bottom:20px;">
+          </div>
+
           <!-- COMPLIANCE ALERT — hidden by default, shown when alerts exist -->
           <div class="compliance-alert-bar" id="complianceAlert" style="background:#fef9f9;border:1px solid #fecaca;border-radius:14px;padding:14px 18px;display:none;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;">
             <div style="display:flex;align-items:flex-start;gap:12px;">
@@ -3542,7 +3546,8 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             <!-- Avatar row -->
             <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid #f1f5f9;flex-wrap:wrap;">
               <div style="position:relative;flex-shrink:0;">
-                <div id="settingsIni" style="width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;font-family:Inter,sans-serif;">?</div>
+                <input type="file" id="profileAvatarInput" accept="image/*" style="display:none;" onchange="profileAvatarSelected(this)"/>
+                <div id="settingsIni" onclick="document.getElementById('profileAvatarInput').click()" title="Click to change photo" style="cursor:pointer;" style="width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;font-family:Inter,sans-serif;">?</div>
                 <button title="Change photo" style="position:absolute;bottom:0;right:0;width:22px;height:22px;background:#1d4ed8;border:2px solid #fff;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;">
                   <svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#fff" stroke-width="2"><path d="M1 6.5l1.5-1.5 3.5-3.5 1.5 1.5-3.5 3.5-1.5.5z"/></svg>
                 </button>
@@ -3596,7 +3601,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
                 </div>
                 <div id="profilePwdActions" style="margin-top:6px;display:flex;align-items:center;gap:12px;">
                   <button id="profileChangePwdBtn" onclick="profileChangePwd()" type="button" style="display:none;background:none;border:none;color:#1A5FC8;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Change password</button>
-                  <span id="profileVerifyEmailBtn" style="display:none;"><button onclick="profileVerifyEmail()" type="button" style="background:none;border:none;color:#10b981;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Verify email</button></span>
+
                 </div>
               </div>
             </div>
@@ -6481,6 +6486,226 @@ var _discQuestions=[
 ];
 var _discTempAnswers=[null,null,null,null,null,null,null];
 var _sgInstalled=false;
+// ── PM Home Action Chips ──
+var _pmChipsDismissed = {};  // persisted per chip id
+
+var _pmActionChipDefs = [
+  {
+    id: 'company_details',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1A5FC8" stroke-width="1.6"><rect x="2" y="6" width="14" height="10" rx="2"/><path d="M5 6V5a4 4 0 018 0v1"/><path d="M2 10h14"/></svg>',
+    bg: '#eff6ff', border: '#bfdbfe', iconBg: '#dbeafe',
+    title: 'Company details', sub: '', badge: '0%',
+    action: function(){ showPage('settings',null); switchSettingsTab('business'); },
+    actionLabel: null
+  },
+  {
+    id: 'discovery_questions',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1A5FC8" stroke-width="1.6"><rect x="2" y="2" width="14" height="14" rx="2"/><path d="M6 6h6M6 9h6M6 12h4"/></svg>',
+    bg: '#eff6ff', border: '#bfdbfe', iconBg: '#dbeafe',
+    title: 'Discovery questions', sub: '', badge: '0%',
+    action: function(){ showPage('settings',null); switchSettingsTab('discovery'); },
+    actionLabel: null
+  },
+  {
+    id: 'choose_plan',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#10b981" stroke-width="1.6"><path d="M9 1l2 5h5l-4 3.3 1.5 5.2L9 11.5 4.5 14.5 6 9.3 2 6h5z"/></svg>',
+    bg: '#f0fdf4', border: '#86efac', iconBg: '#d1fae5',
+    title: 'Choose a plan', sub: 'Free plan active', badge: null,
+    action: function(){ showPage('settings',null); switchSettingsTab('subscription'); },
+    actionLabel: null
+  },
+  {
+    id: 'first_booking',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M9 1l1.5 3H15l-3.5 2.5 1.3 4L9 8.8 5.2 11 6.5 7 3 4.5h4.5z"/></svg>',
+    bg: '#f8fafc', border: '#e2e8f0', iconBg: '#e0f2fe',
+    title: 'Create your first booking', sub: '🎉 10% off first booking',
+    action: function(){ startNewChat(); showPage('chat',null); },
+    actionLabel: 'Book now →'
+  },
+  {
+    id: 'compliance_tracking',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1A5FC8" stroke-width="1.6"><rect x="2" y="4" width="14" height="12" rx="2"/><path d="M2 8h14"/><path d="M6 2v4M12 2v4"/></svg>',
+    bg: '#f8fafc', border: '#e2e8f0', iconBg: '#e0f2fe',
+    title: 'Set up compliance tracking', sub: '🔵 Never miss an expiry',
+    action: function(){ showPage('properties',null); },
+    actionLabel: 'Set up →'
+  },
+  {
+    id: 'pricing_prefs',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#374151" stroke-width="1.6"><rect x="1" y="5" width="16" height="10" rx="2"/><path d="M1 9h16"/><path d="M5 2v3M13 2v3"/></svg>',
+    bg: '#f8fafc', border: '#e2e8f0', iconBg: '#f1f5f9',
+    title: 'Configure pricing preferences', sub: '⚡ Auto-approve under budget',
+    action: function(){ showPage('settings',null); switchSettingsTab('subscription'); },
+    actionLabel: 'Configure →'
+  },
+];
+
+function _renderPmActionChips() {
+  var container = document.getElementById('pmActionChips');
+  if (!container) return;
+
+  // Filter out dismissed chips
+  var visible = _pmActionChipDefs.filter(function(c){ return !_pmChipsDismissed[c.id]; });
+  if (!visible.length) {
+    container.style.display = 'none';
+    return;
+  }
+  container.style.display = '';
+
+  // Split into 2 rows: top 3 (progress chips), bottom 3 (action chips)
+  var topChips = visible.slice(0, 3);
+  var botChips = visible.slice(3, 6);
+
+  function makeChip(c, showClose) {
+    var hasBadge = c.badge !== null && c.badge !== undefined;
+    var d = document.createElement('div');
+    d.style.cssText = 'background:'+c.bg+';border:1px solid '+c.border+';border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;position:relative;transition:box-shadow 0.15s;flex:1;min-width:0;';
+    d.onmouseover = function(){ this.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)'; };
+    d.onmouseout  = function(){ this.style.boxShadow=''; };
+    d.onclick = function(e){ if(e.target.closest('.chip-close')) return; c.action(); };
+
+    var iconDiv = document.createElement('div');
+    iconDiv.style.cssText = 'width:36px;height:36px;border-radius:10px;background:'+c.iconBg+';display:flex;align-items:center;justify-content:center;flex-shrink:0;';
+    iconDiv.innerHTML = c.icon;
+
+    var textDiv = document.createElement('div');
+    textDiv.style.cssText = 'flex:1;min-width:0;';
+    textDiv.innerHTML = '<div style="font-size:13px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+c.title+'</div>'
+      + (c.sub ? '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">'+c.sub+'</div>' : '')
+      + (hasBadge ? '<div style="margin-top:5px;height:3px;width:100%;background:#e2e8f0;border-radius:2px;overflow:hidden;"><div style="width:'+c.badge+';height:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:2px;"></div></div>' : '');
+
+    var rightDiv = document.createElement('div');
+    rightDiv.style.cssText = 'flex-shrink:0;display:flex;align-items:center;gap:8px;';
+    if (hasBadge) {
+      rightDiv.innerHTML = '<span style="font-size:11.5px;font-weight:700;color:#64748b;font-family:Inter,sans-serif;">'+c.badge+'</span>';
+    } else if (c.actionLabel) {
+      rightDiv.innerHTML = '<span style="font-size:12.5px;font-weight:700;color:#1A5FC8;font-family:Inter,sans-serif;white-space:nowrap;">'+c.actionLabel+'</span>';
+    }
+
+    if (showClose) {
+      var closeBtn = document.createElement('button');
+      closeBtn.className = 'chip-close';
+      closeBtn.style.cssText = 'position:absolute;top:8px;right:8px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:2px;display:flex;align-items:center;';
+      closeBtn.title = 'Dismiss';
+      closeBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 1l10 10M11 1L1 11"/></svg>';
+      closeBtn.onclick = function(e) {
+        e.stopPropagation();
+        _dismissPmChip(c.id, d);
+      };
+      d.appendChild(closeBtn);
+    }
+
+    d.appendChild(iconDiv);
+    d.appendChild(textDiv);
+    d.appendChild(rightDiv);
+    return d;
+  }
+
+  container.innerHTML = '';
+  if (topChips.length) {
+    var topRow = document.createElement('div');
+    topRow.style.cssText = 'display:grid;grid-template-columns:repeat('+topChips.length+',1fr);gap:12px;margin-bottom:12px;';
+    topChips.forEach(function(c){ topRow.appendChild(makeChip(c, false)); });
+    container.appendChild(topRow);
+  }
+  if (botChips.length) {
+    var botRow = document.createElement('div');
+    botRow.style.cssText = 'display:grid;grid-template-columns:repeat('+botChips.length+',1fr);gap:12px;margin-bottom:8px;';
+    botChips.forEach(function(c){ botRow.appendChild(makeChip(c, true)); });
+    container.appendChild(botRow);
+  }
+}
+
+function _dismissPmChip(id, cardEl) {
+  _pmChipsDismissed[id] = true;
+
+  // Animate out
+  cardEl.style.transition = 'opacity 0.25s, transform 0.25s';
+  cardEl.style.opacity = '0';
+  cardEl.style.transform = 'scale(0.97)';
+
+  setTimeout(function(){
+    _renderPmActionChips();
+
+    // Count remaining
+    var remaining = _pmActionChipDefs.filter(function(c){ return !_pmChipsDismissed[c.id]; }).length;
+    if (remaining === 0) {
+      _showDontShowAgainToast();
+    } else {
+      showToast('Card dismissed', 'success');
+    }
+  }, 250);
+}
+
+function _showDontShowAgainToast() {
+  var t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:14px 20px;border-radius:14px;font-family:Inter,sans-serif;font-size:13.5px;font-weight:500;z-index:99999;box-shadow:0 8px 32px rgba(0,0,0,0.22);display:flex;align-items:center;gap:14px;animation:toastIn 0.25s ease;white-space:nowrap;';
+  t.innerHTML = '<span>All setup cards hidden</span>'
+    + '<button onclick="_restoreAllPmChips();this.parentNode.parentNode.remove();" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Restore</button>'
+    + '<button onclick="this.parentNode.parentNode.remove();" style="background:rgba(255,255,255,0.1);color:#94a3b8;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:Inter,sans-serif;">Don&#39;t show again</button>';
+  document.body.appendChild(t);
+  // Auto-remove after 6 seconds (unless user interacts)
+  setTimeout(function(){ if (t.parentNode) { t.style.animation='toastOut 0.25s ease forwards'; setTimeout(function(){ if(t.parentNode)t.remove(); },250); } }, 6000);
+}
+
+function _restoreAllPmChips() {
+  _pmChipsDismissed = {};
+  _renderPmActionChips();
+}
+
+// Avatar upload
+function profileAvatarSelected(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  if (file.size > 5*1024*1024) { showToast('Image must be under 5MB','error'); return; }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var ini = document.getElementById('settingsIni');
+    if (ini) {
+      ini.style.background = 'none';
+      ini.style.overflow = 'hidden';
+      // Replace initials with image
+      ini.innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />';
+    }
+    if (_user) _user._avatar = e.target.result;
+    // Show remove option
+    _showAvatarRemoveOption();
+    showToast('Profile photo updated!','success');
+  };
+  reader.readAsDataURL(file);
+}
+
+function _showAvatarRemoveOption() {
+  var existing = document.getElementById('avatarRemoveBtn');
+  if (existing) return;
+  var ini = document.getElementById('settingsIni');
+  if (!ini) return;
+  var btn = document.createElement('button');
+  btn.id = 'avatarRemoveBtn';
+  btn.title = 'Remove photo';
+  btn.style.cssText = 'position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:#ef4444;border-radius:50%;border:2px solid #fff;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;';
+  btn.innerHTML = '<svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="#fff" stroke-width="2"><path d="M1 1l6 6M7 1L1 7"/></svg>';
+  btn.onclick = function(e) {
+    e.stopPropagation();
+    var ini2 = document.getElementById('settingsIni');
+    if (ini2) {
+      var initials = (_user && _user.name) ? _user.name.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase() : '?';
+      ini2.style.background = 'linear-gradient(135deg,#1A5FC8,#0FA3D0)';
+      ini2.innerHTML = '<span style="font-size:24px;font-weight:700;color:#fff;font-family:Inter,sans-serif;">'+initials+'</span>';
+    }
+    if (_user) _user._avatar = null;
+    btn.remove();
+    showToast('Profile photo removed','success');
+  };
+  var parentDiv = ini.parentNode;
+  parentDiv.style.position = 'relative';
+  parentDiv.appendChild(btn);
+}
+
+function _initPmChips() {
+  _renderPmActionChips();
+}
+
 function _installSettingsGuard(){
   if(_sgInstalled)return;_sgInstalled=true;
   var orig=showPage;
@@ -6488,6 +6713,7 @@ function _installSettingsGuard(){
     if(id==='settings'&&!_user){showAuthPage('signup');return;}
     orig(id,e);
     if(id==='settings'){setTimeout(function(){_syncSettingsPage();switchSettingsTab('profile');},30);}
+    if(id==='home'){setTimeout(_initPmChips,50);}
   };
 }
 setTimeout(_installSettingsGuard,150);
