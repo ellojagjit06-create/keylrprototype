@@ -2586,7 +2586,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
 /* ── Explore search + filter bar ── */
 .exp-search-wrap{display:flex;gap:10px;align-items:center;margin-bottom:20px;}
-.exp-search-input{flex:1;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 14px 10px 38px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;color:#0f172a;background:#fff;transition:border-color .15s;}
+.exp-search-input{flex:1;width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 14px 10px 38px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;color:#0f172a;background:#fff;transition:border-color .15s;box-sizing:border-box;}
 .exp-filter-btn{display:flex;align-items:center;gap:7px;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;transition:opacity .15s;}
 .exp-filter-btn:hover{opacity:.88;}
 .exp-filter-badge{background:rgba(255,255,255,.25);color:#fff;font-size:10px;font-weight:800;border-radius:999px;padding:1px 6px;}
@@ -3520,8 +3520,8 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     </div>
 
     <!-- PROVIDER PROFILE PAGE -->
-    <div id="page-provider-profile" style="display:none;">
-      <div style="flex:1;overflow-y:auto;">
+    <div id="page-provider-profile" style="display:none;flex-direction:column;">
+      <div style="flex:1;overflow-y:auto;min-height:0;">
         <div style="width:100%;margin:0 auto;padding:24px clamp(20px,5vw,80px) 40px;max-width:1200px;">
           <button onclick="showPage('explore',null)" style="background:none;border:none;cursor:pointer;font-size:13.5px;font-weight:600;color:#64748b;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;margin-bottom:20px;padding:0;" onmouseover="this.style.color='#0f172a'" onmouseout="this.style.color='#64748b'">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3L5 7l4 4"/></svg>
@@ -5789,7 +5789,6 @@ function renderExploreProviders(cat, minRating) {
       + '<div style="display:flex;gap:10px;align-items:center;padding:10px 16px 0;flex-wrap:wrap;">' + footer + '</div>'
       + '<div class="exp-pcard-footer">'
         + '<button class="exp-book-btn" onclick="openBookingFlow(_expProviders['+_pi+'].id)"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="11" height="9" rx="1.5"/><path d="M1 6h11M4 1v3M9 1v3"/></svg> Book now</button>'
-          + '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="11" height="9" rx="1.5"/><path d="M1 6h11M4 1v3M9 1v3"/></svg> Book now</button>'
         + '<button class="exp-profile-btn" onclick="showProviderProfile(_expProviders['+_pi+'].id)">Profile <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h6M7 3l3 3-3 3"/></svg></button>'
       + '</div>'
     + '</div>';
@@ -5895,97 +5894,150 @@ function showProviderProfile(pid) {
   if (!p) return;
   var el = document.getElementById('providerProfileContent');
   if (!el) return;
+
+  // Stars
   var stars = '';
-  for (var i=1;i<=5;i++) stars += '<svg width="16" height="16" viewBox="0 0 11 11" fill="'+(i<=Math.floor(p.rating)?'#f59e0b':'none')+'" stroke="#f59e0b" stroke-width="1.4"><path d="M5.5 1l1.1 3.4H10L7.3 6.6l1.1 3.4-2.9-2-2.9 2 1.1-3.4L1 4.4h3.4z"/></svg>';
-  var certsHTML = p.certs.map(function(c){ return '<span style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;font-family:Inter,sans-serif;">' + c + '</span>'; }).join('');
+  for (var i=1;i<=5;i++) {
+    var filled = i<=Math.floor(p.rating) ? '#f59e0b' : 'none';
+    stars += '<svg width="16" height="16" viewBox="0 0 11 11" fill="'+filled+'" stroke="#f59e0b" stroke-width="1.4"><path d="M5.5 1l1.1 3.4H10L7.3 6.6l1.1 3.4-2.9-2-2.9 2 1.1-3.4L1 4.4h3.4z"/></svg>';
+  }
+  // Cert badges
+  var certsHTML = p.certs.map(function(c){ return '<span style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;font-family:Inter,sans-serif;">'+c+'</span>'; }).join(' ');
   // Rating bars
   var dist = [65,25,8,2,2];
-  var ratingBars = [5,4,3,2,1].map(function(star,i){
-    return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;"><span style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;width:8px;">' + star + '</span><svg width="12" height="12" viewBox="0 0 11 11" fill="#f59e0b" stroke="none"><path d="M5.5 1l1.1 3.4H10L7.3 6.6l1.1 3.4-2.9-2-2.9 2 1.1-3.4L1 4.4h3.4z"/></svg><div style="flex:1;height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;background:#f59e0b;border-radius:3px;width:' + dist[i] + '%;"></div></div><span style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;width:28px;">' + dist[i] + '%</span></div>';
-  }).join('');
+  var ratingBars = '';
+  [5,4,3,2,1].forEach(function(star,i){
+    ratingBars += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">'
+      +'<span style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;width:8px;">'+star+'</span>'
+      +'<svg width="12" height="12" viewBox="0 0 11 11" fill="#f59e0b" stroke="none"><path d="M5.5 1l1.1 3.4H10L7.3 6.6l1.1 3.4-2.9-2-2.9 2 1.1-3.4L1 4.4h3.4z"/></svg>'
+      +'<div style="flex:1;height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;">'
+        +'<div style="height:100%;background:#f59e0b;border-radius:3px;width:'+dist[i]+'%;"></div>'
+      +'</div>'
+      +'<span style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;width:28px;">'+dist[i]+'%</span>'
+    +'</div>';
+  });
+  // Services
+  var fixedSvcs = '', quoteSvcs = '';
+  p.services.forEach(function(s){
+    if (!s.quote) {
+      fixedSvcs += '<div style="display:flex;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;">'
+        +'<div style="flex:1;font-size:14px;font-weight:500;color:#0f172a;font-family:Inter,sans-serif;">'+s.name+' <span style="font-size:11px;color:#94a3b8;font-weight:400;">flat rate</span></div>'
+        +'<span style="font-size:11px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:5px;padding:2px 8px;font-weight:600;font-family:Inter,sans-serif;margin-right:12px;">Within budget</span>'
+        +'<span style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+s.price+'</span>'
+      +'</div>';
+    } else {
+      quoteSvcs += '<div style="display:flex;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;">'
+        +'<div style="flex:1;font-size:14px;font-weight:500;color:#0f172a;font-family:Inter,sans-serif;">'+s.name+'</div>'
+        +'<button style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:6px 16px;font-size:13px;font-family:Inter,sans-serif;cursor:pointer;color:#374151;font-weight:600;">Get quote</button>'
+      +'</div>';
+    }
+  });
+  // Area tags
+  var areaTags = p.areas.split(/,\s*/).map(function(a){ return '<span style="background:#f1f5f9;color:#374151;border-radius:5px;padding:3px 9px;font-size:12px;font-family:Inter,sans-serif;">'+a.trim()+'</span>'; }).join(' ');
+
+  // Build HTML safely using DOM elements instead of string concatenation
+  el.innerHTML = '';
+
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start;';
+
+  // LEFT COLUMN
+  var left = document.createElement('div');
+
+  // Photo gallery
+  var gallery = document.createElement('div');
+  gallery.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;grid-template-rows:180px 100px;gap:8px;margin-bottom:24px;border-radius:14px;overflow:hidden;';
+  gallery.innerHTML = '<div style="grid-row:1/3;background:linear-gradient(135deg,#1a3356,#0f1c38);display:flex;align-items:center;justify-content:center;font-size:64px;font-weight:800;color:rgba(255,255,255,.15);font-family:Fraunces,serif;">'+p.initials+'</div>'
+    +'<div style="background:linear-gradient(135deg,#1e3a5f,#162845);display:flex;align-items:center;justify-content:center;"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5"><rect x="5" y="12" width="30" height="20" rx="3"/><path d="M5 20l7-7 7 7 7-7 9 7"/></svg></div>'
+    +'<div style="background:linear-gradient(135deg,#0d2a4a,#1a2d4a);display:flex;align-items:center;justify-content:center;"><svg width="32" height="32" viewBox="0 0 40 40" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5"><circle cx="20" cy="16" r="8"/><path d="M5 36c0-8 7-14 15-14s15 6 15 14"/></svg></div>';
+  left.appendChild(gallery);
+
+  // Profile header card
+  var headerCard = document.createElement('div');
+  headerCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:24px;margin-bottom:16px;';
+  headerCard.innerHTML = '<div style="display:flex;align-items:flex-start;gap:16px;">'
+    +'<div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:800;font-family:Inter,sans-serif;flex-shrink:0;">'+p.initials+'</div>'
+    +'<div style="flex:1;">'
+      +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">'
+        +'<span style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+p.name+'</span>'
+        +'<span style="background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:600;font-family:Inter,sans-serif;">'+p.role+'</span>'
+        +'<span style="background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:600;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:4px;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#15803d" stroke-width="1.8"><path d="M2 6l3 3 5-5"/></svg>Verified</span>'
+      +'</div>'
+      +'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:8px;">'+p.certs.join(' · ')+'</div>'
+      +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'+stars
+        +'<span style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">'+p.rating+'</span>'
+        +'<span style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">('+p.reviews+' reviews) · '+p.jobs+' jobs · Member since 2020</span>'
+      +'</div>'
+    +'</div>'
+  +'</div>'
+  +'<p style="margin:16px 0 0;padding-top:16px;border-top:1px solid #f1f5f9;font-size:13.5px;color:#374151;font-family:Inter,sans-serif;line-height:1.6;">Award-winning service provider with extensive experience in residential and commercial properties. '+(p.insured?'Fully insured. ':'')+' '+(p.dbs?'DBS checked.':'')+' Trusted by property managers across '+p.areas+'.</p>'
+  +'<div style="display:flex;gap:10px;margin-top:16px;">'
+    +'<button id="pp-book-btn" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="12" height="9" rx="1.5"/><path d="M1 6h12M4 1v3M10 1v3"/></svg>Book now</button>'
+    +'<button style="background:#fff;border:1.5px solid #e2e8f0;color:#374151;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Request quote</button>'
+  +'</div>';
+  left.appendChild(headerCard);
+  // Wire book button
+  (function(pid){ var btn=headerCard.querySelector('#pp-book-btn'); if(btn) btn.onclick=function(){openBookingFlow(pid);}; })(p.id);
+
   // Fixed services
-  var fixedSvcs = p.services.filter(function(s){ return !s.quote; }).map(function(s){
-    return '<div style="display:flex;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;"><div style="flex:1;"><div style="font-size:14px;font-weight:500;color:#0f172a;font-family:Inter,sans-serif;">' + s.name + ' <span style="font-size:11px;color:#94a3b8;font-weight:400;">flat rate</span></div></div><span style="font-size:11px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:5px;padding:2px 8px;font-weight:600;font-family:Inter,sans-serif;margin-right:12px;">Within budget</span><span style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">' + s.price + '</span></div>';
-  }).join('');
-  var quoteSvcs = p.services.filter(function(s){ return s.quote; }).map(function(s){
-    return '<div style="display:flex;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;"><div style="flex:1;font-size:14px;font-weight:500;color:#0f172a;font-family:Inter,sans-serif;">' + s.name + '</div><button style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:6px 16px;font-size:13px;font-family:Inter,sans-serif;cursor:pointer;color:#374151;font-weight:600;">Get quote</button></div>';
-  }).join('');
-  el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start;">'
-    + '<div>'
-      // Images
-      + '<div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:180px 100px;gap:8px;margin-bottom:24px;border-radius:14px;overflow:hidden;">'
-        + '<div style="grid-row:1/3;background:linear-gradient(135deg,#1a3356,#0f1c38);display:flex;align-items:center;justify-content:center;font-size:64px;font-weight:800;color:rgba(255,255,255,.2);font-family:Fraunces,serif;">' + p.initials + '</div>'
-        + '<div style="background:linear-gradient(135deg,#1e3a5f,#162845);display:flex;align-items:center;justify-content:center;"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5"><rect x="5" y="12" width="30" height="20" rx="3"/><path d="M5 20l7-7 7 7 7-7 9 7"/></svg></div>'
-        + '<div style="background:linear-gradient(135deg,#0d2a4a,#1a2d4a);display:flex;align-items:center;justify-content:center;"><svg width="32" height="32" viewBox="0 0 40 40" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5"><circle cx="20" cy="16" r="8"/><path d="M5 36c0-8 7-14 15-14s15 6 15 14"/></svg></div>'
-      + '</div>'
-      // Profile header
-      + '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:24px;margin-bottom:16px;">'
-        + '<div style="display:flex;align-items:flex-start;gap:16px;">'
-          + '<div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:800;font-family:Inter,sans-serif;flex-shrink:0;">' + p.initials + '</div>'
-          + '<div style="flex:1;">'
-            + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">'
-              + '<div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">' + p.name + '</div>'
-              + '<span style="background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:600;font-family:Inter,sans-serif;">' + p.role + '</span>'
-              + '<span style="background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:600;font-family:Inter,sans-serif;display:flex;align-items:center;gap:4px;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#15803d" stroke-width="1.8"><path d="M2 6l3 3 5-5"/></svg>Verified</span>'
-            + '</div>'
-            + '<div style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:8px;">' + p.certs.join(' · ') + '</div>'
-            + '<div style="display:flex;align-items:center;gap:8px;">' + stars + '<span style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">' + p.rating + '</span><span style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">(' + p.reviews + ' reviews)</span><span style="color:#94a3b8;">·</span><span style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">' + p.jobs + ' jobs completed</span><span style="color:#94a3b8;">·</span><span style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Member since 2020</span></div>'
-          + '</div>'
-        + '</div>'
-        + '<div style="margin-top:16px;padding-top:16px;border-top:1px solid #f1f5f9;font-size:13.5px;color:#374151;font-family:Inter,sans-serif;line-height:1.6;">Award-winning service provider with extensive experience in residential and commercial properties. ' + (p.insured?'Fully insured.':'' ) + ' ' + (p.dbs?'DBS checked.':'') + ' Trusted by property managers across ' + p.areas + '.</div>'
-        + '<div style="display:flex;gap:10px;margin-top:16px;">'
-          + '<button onclick="openBookingFlow(\"+p.id+\")" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="12" height="9" rx="1.5"/><path d="M1 6h12M4 1v3M10 1v3"/></svg>Book now</button>'
-          + '<button style="background:#fff;border:1.5px solid #e2e8f0;color:#374151;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Request quote</button>'
-        + '</div>'
-      + '</div>'
-      // Fixed services
-      + (fixedSvcs ? '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:22px 24px;margin-bottom:16px;"><div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;display:flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>Fixed-price services</div>' + fixedSvcs + '</div>' : '')
-      // Quote services
-      + (quoteSvcs ? '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:22px 24px;margin-bottom:16px;"><div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">Additional services</div>' + quoteSvcs + '</div>' : '')
-      // Reviews
-      + '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:22px 24px;">'
-        + '<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:16px;">Reviews</div>'
-        + '<div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">'
-          + '<div><div style="font-size:36px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">' + p.rating + '</div><div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;">/ 5</div></div>'
-          + '<div style="flex:1;"><div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:8px;">' + p.reviews + ' verified reviews</div>' + ratingBars + '</div>'
-        + '</div>'
-      + '</div>'
-    + '</div>'
-    // Right sidebar
-    + '<div>'
-      + '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;">'
-        + '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Verification status</div>'
-        + '<div style="font-size:13px;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:8px;">'
-          + '<div style="display:flex;align-items:center;gap:8px;color:#15803d;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Identity verified</div>'
-          + '<div style="display:flex;align-items:center;gap:8px;color:#15803d;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Insurance verified</div>'
-          + (p.dbs ? '<div style="display:flex;align-items:center;gap:8px;color:#15803d;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>DBS checked</div>' : '<div style="display:flex;align-items:center;gap:8px;color:#94a3b8;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.8"><circle cx="7" cy="7" r="6"/></svg>DBS checked</div>')
-          + '<div style="display:flex;align-items:center;gap:8px;color:#15803d;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Right to work</div>'
-        + '</div>'
-      + '</div>'
-      + '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;">'
-        + '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Certifications</div>'
-        + '<div style="display:flex;gap:6px;flex-wrap:wrap;">' + certsHTML + '</div>'
-        + '<div style="margin-top:12px;padding-top:12px;border-top:1px solid #f1f5f9;">'
-          + '<div style="font-size:13px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">Insurance</div>'
-          + '<div style="font-size:12.5px;color:#374151;font-family:Inter,sans-serif;">£1M public liability</div>'
-          + (p.emergency ? '<div style="font-size:12px;color:#f59e0b;font-family:Inter,sans-serif;margin-top:4px;display:flex;align-items:center;gap:4px;">⚡ Emergency callout available</div>' : '')
-        + '</div>'
-      + '</div>'
-      + '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;">'
-        + '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Coverage</div>'
-        + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">' + p.areas.split(/,\s*/).map(function(a){ return '<span style="background:#f1f5f9;color:#374151;border-radius:5px;padding:3px 9px;font-size:12px;font-family:Inter,sans-serif;">'+a+'</span>'; }).join('') + '</div>'
-        + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:6px;">Serves Residential &amp; Commercial Properties</div>'
-        + '<div style="font-size:12px;color:#1A5FC8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#1A5FC8" stroke-width="1.5"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l2 2"/></svg>SLA: ' + p.sla + ' response</div>'
-      + '</div>'
-      + '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;">'
-        + '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Contact</div>'
-        + '<div style="font-size:13px;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:8px;color:#374151;">'
-          + '<div style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.6"><path d="M2 3h10a1 1 0 011 1v7a1 1 0 01-1 1H2a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M1 4l6 4 6-4"/></svg>info@' + p.name.toLowerCase().replace(/\s+/g,'') + '.co.uk</div>'
-          + '<div style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.6"><path d="M2 2c0 8 2.5 10.5 10 10l1-3-3-1-1 1.5C7 9 5 7 4.5 5L6 4 5 1 2 2z"/></svg>+44 7700 900001</div>'
-        + '</div>'
-      + '</div>'
-    + '</div>'
-  + '</div>';
+  if (fixedSvcs) {
+    var fCard = document.createElement('div');
+    fCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:22px 24px;margin-bottom:16px;';
+    fCard.innerHTML = '<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;display:flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>Fixed-price services</div>'+fixedSvcs;
+    left.appendChild(fCard);
+  }
+  // Quote services
+  if (quoteSvcs) {
+    var qCard = document.createElement('div');
+    qCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:22px 24px;margin-bottom:16px;';
+    qCard.innerHTML = '<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">Additional services</div>'+quoteSvcs;
+    left.appendChild(qCard);
+  }
+  // Reviews
+  var revCard = document.createElement('div');
+  revCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:22px 24px;';
+  revCard.innerHTML = '<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:16px;">Reviews</div>'
+    +'<div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">'
+      +'<div><div style="font-size:36px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+p.rating+'</div><div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;">/ 5</div></div>'
+      +'<div style="flex:1;"><div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:8px;">'+p.reviews+' verified reviews</div>'+ratingBars+'</div>'
+    +'</div>';
+  left.appendChild(revCard);
+  wrap.appendChild(left);
+
+  // RIGHT SIDEBAR
+  var right = document.createElement('div');
+  right.innerHTML = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;">'
+    +'<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;">Verification status</div>'
+    +'<div style="font-size:13px;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:8px;">'
+      +'<div style="color:#15803d;">&#10003; Identity verified</div>'
+      +'<div style="color:#15803d;">&#10003; Insurance verified</div>'
+      +(p.dbs ? '<div style="color:#15803d;">&#10003; DBS checked</div>' : '<div style="color:#94a3b8;">&#9675; DBS checked</div>')
+      +'<div style="color:#15803d;">&#10003; Right to work</div>'
+    +'</div>'
+  +'</div>'
+  +'<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;">'
+    +'<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Certifications</div>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">'+certsHTML+'</div>'
+    +'<div style="font-size:13px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">Insurance</div>'
+    +'<div style="font-size:12.5px;color:#374151;font-family:Inter,sans-serif;">&#163;1M public liability</div>'
+    +(p.emergency ? '<div style="font-size:12px;color:#f59e0b;font-family:Inter,sans-serif;margin-top:6px;">&#9889; Emergency callout available</div>' : '')
+  +'</div>'
+  +'<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;">'
+    +'<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Coverage</div>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">'+areaTags+'</div>'
+    +'<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:6px;">Serves Residential &amp; Commercial</div>'
+    +'<div style="font-size:12px;color:#1A5FC8;font-family:Inter,sans-serif;">&#128336; SLA: '+p.sla+' response</div>'
+  +'</div>'
+  +'<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;">'
+    +'<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Contact</div>'
+    +'<div style="font-size:13px;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:8px;color:#374151;">'
+      +'<div>&#9993; info@'+p.name.toLowerCase().replace(/\s+/g,'')+'.co.uk</div>'
+      +'<div>&#9742; +44 7700 900001</div>'
+    +'</div>'
+  +'</div>';
+  wrap.appendChild(right);
+  el.appendChild(wrap);
+
   showPage('provider-profile', null);
 }
 
@@ -6016,7 +6068,7 @@ function _bfRenderPage() {
     // Create inline booking page overlay
     el = document.createElement('div');
     el.id = 'bookingFlowPage';
-    el.style.cssText = 'position:fixed;inset:0;z-index:5000;background:#f5f7fa;overflow-y:auto;display:flex;flex-direction:column;';
+    el.style.cssText = 'position:fixed;inset:0;z-index:8000;background:#f5f7fa;overflow-y:hidden;display:flex;flex-direction:column;';
     document.body.appendChild(el);
   }
   el.style.display = 'flex';
