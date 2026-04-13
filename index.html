@@ -9210,9 +9210,8 @@ function saveBizOnboarding() {
   goToDashboard('', false);
   if (typeof recalcProgress === 'function') setTimeout(recalcProgress, 300);
   if (typeof showToast === 'function') showToast('Company details saved! Welcome to Keylr 🎉', 'success');
-  // Dismiss company chip — required fields are done
-  _pmChipsDismissed['company_details'] = true;
-  if (typeof _renderPmActionChips === 'function') setTimeout(_renderPmActionChips, 150);
+  // Update chip badge — card will hide automatically only when all 7 fields = 100%
+  if (typeof _updateChipBadges === 'function') setTimeout(_updateChipBadges, 150);
   updateSidebarCards(7);
 }
 
