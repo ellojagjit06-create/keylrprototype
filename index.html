@@ -2950,7 +2950,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           </div>
         </div>
         <!-- Right: logout icon → confirmation modal -->
-        <button onclick="_doLogout()" class="db-nav-item-label" title="Log out" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.12s,color 0.12s;" onmouseover="this.style.background='#fee2e2';this.style.color='#ef4444'" onmouseout="this.style.background='transparent';this.style.color='#94a3b8'">
+        <button onclick="_doLogout()" id="sbLogoutBtn" title="Log out" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.12s,color 0.12s;" onmouseover="this.style.background='#fee2e2';this.style.color='#ef4444'" onmouseout="this.style.background='transparent';this.style.color='#94a3b8'">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 14H3a1 1 0 01-1-1V3a1 1 0 011-1h3"/><path d="M10 11l3-3-3-3M13 8H6"/></svg>
         </button>
       </div>
@@ -6828,7 +6828,7 @@ var _pmActionChipDefs = [
     bg: '#f8fafc', border: '#e2e8f0', iconBg: '#e0f2fe',
     title: 'Set up compliance tracking', sub: '🔵 Never miss an expiry',
     action: function(){ showPage('properties',null); },
-    actionLabel: 'Set up →'
+    actionLabel: 'Set up'
   },
   {
     id: 'pricing_prefs',
@@ -6836,7 +6836,7 @@ var _pmActionChipDefs = [
     bg: '#f8fafc', border: '#e2e8f0', iconBg: '#f1f5f9',
     title: 'Configure pricing preferences', sub: '⚡ Auto-approve under budget',
     action: function(){ showPage('pricing',null); },
-    actionLabel: 'Configure →'
+    actionLabel: 'Configure'
   },
 ];
 
@@ -11183,7 +11183,7 @@ button:active { transform: scale(0.98); }
 .dash-dark .prop-eyebrow{color:#58a6ff !important;}
 .dash-dark .prop-title{color:#e6edf3 !important;}
 .dash-dark .prop-sub{color:#8b949e !important;}
-.dash-dark .prop-add-btn{background:#1c2433 !important;border-color:#2d3748 !important;color:#e6edf3 !important;}
+.dash-dark .prop-add-btn{background:linear-gradient(90deg,#1A5FC8,#0FA3D0) !important;border-color:transparent !important;color:#fff !important;}
 
 /* Explore — compliance icon bg in dark */
 .dash-dark .esi-icon-compliance{background:#1e3a5f !important;color:#60a5fa !important;}
@@ -11441,10 +11441,26 @@ button:active { transform: scale(0.98); }
 .dash-dark #profCcList > div { color:#e6edf3 !important; }
 .dash-dark #profCcList > div:hover { background:#243046 !important; }
 
-/* ── Discovery "Complete your discovery profile" banner ── */
-.dash-dark #discStartPrompt { background:#1a2d4a !important; border-color:#2d4a7a !important; }
-.dash-dark #discStartPrompt [style*="color:#1e3a5f"] { color:#c9d1d9 !important; }
-.dash-dark #discStartPrompt [style*="color:#3b82f6"] { color:#60a5fa !important; }
+/* ── Properties search icon: white in dark mode ── */
+.dash-dark .prop-search-wrap svg { stroke:#e6edf3 !important; }
+
+/* ── Add Property button: keep blue gradient in dark mode ── */
+.dash-dark .prop-add-btn {
+  background:linear-gradient(90deg,#1A5FC8,#0FA3D0) !important;
+  color:#fff !important;
+  box-shadow:0 4px 14px rgba(26,95,200,0.35) !important;
+}
+
+/* ── Logout button: always visible (not hidden by db-nav-item-label) ── */
+#sbLogoutBtn { display:flex !important; }
+.db-sidebar.collapsed #sbLogoutBtn {
+  display:flex !important;
+  width:28px;height:28px;padding:0;border-radius:7px;
+  align-items:center;justify-content:center;
+  color:#94a3b8;
+}
+.dash-dark #sbLogoutBtn { color:#8b949e; }
+.dash-dark #sbLogoutBtn:hover { background:rgba(239,68,68,0.18) !important; color:#fca5a5 !important; }
 
 </style>
 
