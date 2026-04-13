@@ -5526,7 +5526,7 @@ var _jobStatusColors = {
 };
 var _jobPipeline = ['Pending','Quoted','Confirmed','Scheduled','In Progress','Completed'];
 
-var _allJobs = [
+var _allJobsDemo = [
   { id:'MKT-001', service:'Fire Risk Assessment', icon:'fire', property:'The Warehouse', provider:'SafetyFirst Ltd', providerInitials:'S', status:'Scheduled', progress:67, date:'2026-04-02', time:'morning', price:'£350', type:'Quote request', created:'2026-03-15', payment:'unpaid', timeline:[
     {date:'2026-03-15',label:'Job created',desc:'Quote request submitted'},
     {date:'2026-03-16',label:'Quoted',desc:'SafetyFirst Ltd sent a quote of £350'},
@@ -5546,14 +5546,14 @@ var _allJobs = [
   { id:'MKT-004', service:'Check-In Report', icon:'doc', property:'Cedar House', provider:'InvenCheck Ltd', providerInitials:'IC', status:'Pending', progress:17, date:null, time:null, price:'£145', type:'Direct booking', created:'2026-04-01', payment:'unpaid', timeline:[
     {date:'2026-04-01',label:'Job created',desc:'Direct booking placed'},
   ]},
-  { id:'MKT-005', service:'Boiler Service', icon:'gas', property:'Maple Court', provider:'PlumbRight Ltd', providerInitials:'PL', status:'Completed', progress:100, date:'2026-02-14', time:'morning', price:'£180', type:'Direct booking', created:'2026-02-08', payment:'paid', timeline:[
+  { id:'MKT-005', service:'Boiler Service', icon:'gas', property:'Maple Court', provider:'PlumbRight Ltd', providerInitials:'PL', status:'Completed', progress:100, date:'2026-02-14', time:'morning', price:'£180', type:'Direct booking', created:'2026-02-08', payment:'paid', rating:5, review:'Excellent service, very professional', documents:[{name:'Gas Safety Certificate',tag:'certificate'},{name:'Service Report',tag:'report'}], timeline:[
     {date:'2026-02-08',label:'Job created',desc:'Direct booking placed'},
     {date:'2026-02-09',label:'Confirmed',desc:'PlumbRight Ltd confirmed'},
     {date:'2026-02-12',label:'Scheduled',desc:'Boiler service scheduled'},
     {date:'2026-02-14',label:'In Progress',desc:'Engineer on site'},
     {date:'2026-02-14',label:'Completed',desc:'Job completed successfully'},
   ]},
-  { id:'MKT-006', service:'Gas Safety Certificate', icon:'gas', property:'The Warehouse', provider:'PlumbRight Ltd', providerInitials:'PL', status:'Completed', progress:100, date:'2026-01-20', time:'afternoon', price:'£90', type:'Direct booking', created:'2026-01-15', payment:'paid', timeline:[
+  { id:'MKT-006', service:'Gas Safety Certificate', icon:'gas', property:'The Warehouse', provider:'PlumbRight Ltd', providerInitials:'PL', status:'Completed', progress:100, date:'2026-01-20', time:'afternoon', price:'£90', type:'Direct booking', created:'2026-01-15', payment:'paid', rating:4, review:'Quick and thorough inspection, highly recommend.', documents:[{name:'Gas Safety Certificate',tag:'certificate'}], timeline:[
     {date:'2026-01-15',label:'Job created',desc:'Direct booking placed'},
     {date:'2026-01-16',label:'Confirmed',desc:'PlumbRight Ltd confirmed'},
     {date:'2026-01-18',label:'Scheduled',desc:'Certificate inspection scheduled'},
@@ -5561,6 +5561,9 @@ var _allJobs = [
     {date:'2026-01-20',label:'Completed',desc:'Certificate issued'},
   ]},
 ];
+var _allJobs = []; // starts empty — jobs added via booking flow
+// Load demo data for prototype preview (comment out in production)
+_allJobs = _allJobsDemo.slice();
 var _bkActiveFilter = 'active';
 
 function _jobIconSvg(icon) {
@@ -5628,7 +5631,13 @@ function renderBookingsPage() {
   var jobs = _bkActiveFilter==='active' ? active : _bkActiveFilter==='completed' ? completed : _allJobs;
 
   if (!jobs.length) {
-    list.innerHTML = '<div style="text-align:center;padding:60px 0;color:#94a3b8;font-family:Inter,sans-serif;font-size:14px;">No jobs found</div>';
+    var emptyDiv = document.createElement('div');
+    emptyDiv.style.cssText = 'text-align:center;padding:60px 24px;';
+    emptyDiv.innerHTML = '<svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="#e2e8f0" stroke-width="1.5" style="margin-bottom:16px;"><rect x="10" y="8" width="36" height="40" rx="4"/><path d="M18 20h20M18 28h20M18 36h12"/></svg>'
+      +'<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">No jobs yet</div>'
+      +'<div style="font-size:13.5px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:20px;">Book a service to get started</div>'
+      +'<button onclick="openBookingFlow(null,null)" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Book a service</button>';
+    list.appendChild(emptyDiv);
     return;
   }
 
@@ -5790,6 +5799,19 @@ function showJobModal(job) {
       });
       tabContent.appendChild(tbl);
 
+      // Rating card for completed jobs
+      if (job.status === 'Completed' && job.rating) {
+        var ratingCard = document.createElement('div');
+        ratingCard.style.cssText = 'background:#fffbeb;border:1.5px solid #fde68a;border-radius:14px;padding:16px;margin-top:14px;';
+        var stars = '';
+        for (var ri = 1; ri <= 5; ri++) {
+          stars += '<svg width="18" height="18" viewBox="0 0 18 18" fill="'+(ri<=job.rating?'#f59e0b':'#e2e8f0')+'" stroke="none"><path d="M9 1.5l2 5.5H17l-4.5 3.5 1.5 5.5L9 13l-5 3.5 1.5-5.5L1 7h5.5z"/></svg>';
+        }
+        ratingCard.innerHTML = '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">'+stars+'<span style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">'+job.rating+'/5</span></div>'
+          +'<div style="font-size:13px;color:#374151;font-family:Inter,sans-serif;font-style:italic;">'+job.review+'</div>';
+        tabContent.appendChild(ratingCard);
+      }
+
     } else if (activeTab === 'timeline') {
       job.timeline.forEach(function(ev, i) {
         var evRow = document.createElement('div');
@@ -5818,22 +5840,102 @@ function showJobModal(job) {
       });
 
     } else {
-      // Documents — empty state
-      var empty = document.createElement('div');
-      empty.style.cssText = 'text-align:center;padding:40px 20px;';
-      empty.innerHTML = '<svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#d1d5db" stroke-width="1.5" style="margin-bottom:12px;"><rect x="10" y="6" width="28" height="36" rx="3"/><path d="M18 16h12M18 22h12M18 28h8"/><path d="M30 6v8h8" stroke-linejoin="round"/></svg>'
-        +'<div style="font-size:15px;font-weight:700;color:#374151;font-family:Inter,sans-serif;margin-bottom:6px;">No documents yet</div>'
-        +'<div style="font-size:13px;color:#94a3b8;font-family:Inter,sans-serif;">Documents will appear here once the provider uploads them</div>';
-      tabContent.appendChild(empty);
+      // Documents tab
+      if (job.documents && job.documents.length) {
+        job.documents.forEach(function(doc) {
+          var docRow = document.createElement('div');
+          docRow.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #f1f5f9;';
+          var docIcon = document.createElement('div');
+          docIcon.style.cssText = 'width:36px;height:36px;background:#eff6ff;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;';
+          docIcon.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1A5FC8" stroke-width="1.5"><rect x="3" y="2" width="12" height="14" rx="1.5"/><path d="M6 6h6M6 9h6M6 12h3"/></svg>';
+          var docInfo = document.createElement('div');
+          docInfo.style.cssText = 'flex:1;min-width:0;';
+          var docName = document.createElement('div');
+          docName.style.cssText = 'font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;';
+          docName.textContent = doc.name;
+          var docTag = document.createElement('span');
+          docTag.style.cssText = 'display:inline-block;background:#f1f5f9;color:#64748b;border-radius:4px;padding:1px 8px;font-size:11px;font-family:Inter,sans-serif;margin-top:3px;';
+          docTag.textContent = doc.tag;
+          docInfo.appendChild(docName); docInfo.appendChild(docTag);
+          var docActions = document.createElement('div');
+          docActions.style.cssText = 'display:flex;gap:10px;flex-shrink:0;';
+          var viewBtn = document.createElement('button');
+          viewBtn.style.cssText = 'background:none;border:none;cursor:pointer;color:#64748b;padding:4px;';
+          viewBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="9" cy="9" rx="7" ry="4.5"/><circle cx="9" cy="9" r="2"/></svg>';
+          viewBtn.title = 'View';
+          var dlBtn = document.createElement('button');
+          dlBtn.style.cssText = 'background:none;border:none;cursor:pointer;color:#1A5FC8;padding:4px;';
+          dlBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 3v9M5 9l4 4 4-4"/><path d="M3 15h12"/></svg>';
+          dlBtn.title = 'Download';
+          docActions.appendChild(viewBtn); docActions.appendChild(dlBtn);
+          docRow.appendChild(docIcon); docRow.appendChild(docInfo); docRow.appendChild(docActions);
+          tabContent.appendChild(docRow);
+        });
+      } else {
+        var empty = document.createElement('div');
+        empty.style.cssText = 'text-align:center;padding:40px 20px;';
+        empty.innerHTML = '<svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#d1d5db" stroke-width="1.5" style="margin-bottom:12px;"><rect x="10" y="6" width="28" height="36" rx="3"/><path d="M18 16h12M18 22h12M18 28h8"/><path d="M30 6v8h8" stroke-linejoin="round"/></svg>'
+          +'<div style="font-size:15px;font-weight:700;color:#374151;font-family:Inter,sans-serif;margin-bottom:6px;">No documents yet</div>'
+          +'<div style="font-size:13px;color:#94a3b8;font-family:Inter,sans-serif;">Documents will appear here once the provider uploads them</div>';
+        tabContent.appendChild(empty);
+      }
     }
   }
   renderTab();
 
-  // ── Fixed footer: Call + Message ──
+  // ── Fixed footer: varies by job status ──
   var footer = document.createElement('div');
-  footer.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 22px;border-top:1px solid #f1f5f9;flex-shrink:0;background:#fff;';
-  footer.innerHTML = '<button style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:12px;font-size:14px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 2c0 8 2.5 10.5 10 10l1-3-3-1-1 1.5C7 9 5 7 4.5 5L6 4 5 1 2 2z"/></svg>Call</button>'
-    +'<button style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:600;color:#fff;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 2C4 2 2 3.8 2 6c0 1 .4 2 1.2 2.7L3 12l2.5-1C5.9 11 6.4 11 7 11c3 0 5-1.8 5-4s-2-5-5-5z"/></svg>Message</button>';
+  footer.style.cssText = 'padding:14px 22px;border-top:1px solid #f1f5f9;flex-shrink:0;background:#fff;';
+
+  var btnStyle = {
+    outline: 'background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:11px 10px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;',
+    blue: 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border:none;border-radius:12px;padding:11px 10px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;'
+  };
+
+  var callBtn = document.createElement('button');
+  callBtn.style.cssText = btnStyle.outline;
+  callBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 2c0 8 2.5 10.5 10 10l1-3-3-1-1 1.5C7 9 5 7 4.5 5L6 4 5 1 2 2z"/></svg>Call';
+
+  var msgBtn = document.createElement('button');
+  msgBtn.style.cssText = btnStyle.outline;
+  msgBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 2C4 2 2 3.8 2 6c0 1 .4 2 1.2 2.7L3 12l2.5-1C5.9 11 6.4 11 7 11c3 0 5-1.8 5-4s-2-5-5-5z"/></svg>Message';
+
+  if (job.status === 'Completed') {
+    footer.style.cssText += 'display:grid;grid-template-columns:1fr 1fr 1.4fr 1fr;gap:8px;';
+
+    var rebookBtn = document.createElement('button');
+    rebookBtn.style.cssText = btnStyle.blue;
+    rebookBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 8a6 6 0 1 0 1-3.3"/><path d="M2 2v4h4"/></svg>Rebook';
+    rebookBtn.onclick = function() {
+      overlay.remove();
+      // Rebook: go to step 1 (Select property) with service + provider pre-filled
+      var prvId = null;
+      _exploreProviders.forEach(function(p){ if(p.name===job.provider) prvId=p.id; });
+      _bfState = { step:1, service:job.service, bookingType:'direct', providerId:prvId, providerName:job.provider, property:'', propertyAddr:'', urgency:'Flexible', date:'', time:'Afternoon', details:'' };
+      _bfRenderPage();
+    };
+
+    var quoteBtn = document.createElement('button');
+    quoteBtn.style.cssText = btnStyle.outline;
+    quoteBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="2" width="10" height="12" rx="1.5"/><path d="M5 6h6M5 9h6M5 12h3"/></svg>New Quote';
+    quoteBtn.onclick = function() {
+      overlay.remove();
+      // New Quote → AI Chat
+      startNewChat && startNewChat();
+      showPage('chat', null);
+    };
+
+    footer.appendChild(callBtn);
+    footer.appendChild(msgBtn);
+    footer.appendChild(rebookBtn);
+    footer.appendChild(quoteBtn);
+  } else {
+    footer.style.cssText += 'display:grid;grid-template-columns:1fr 1fr;gap:10px;';
+    msgBtn.style.cssText = btnStyle.blue;
+    footer.appendChild(callBtn);
+    footer.appendChild(msgBtn);
+  }
+
   modal.appendChild(footer);
 
   overlay.appendChild(modal);
