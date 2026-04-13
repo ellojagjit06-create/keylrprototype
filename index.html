@@ -6260,7 +6260,10 @@ var _bfProperties = [
 ];
 
 function openBookingFlow(providerId, service) {
-  _bfState = { step:0, service:service||'', bookingType:'direct', providerId:providerId||null, providerName:'', property:'', propertyAddr:'', urgency:'Flexible', date:'', time:'Afternoon', details:'' };
+  // If called with a providerId (from card/profile), skip "Choose a service" (step 0)
+  // and go directly to step 1 (Select property)
+  var startStep = providerId ? 1 : 0;
+  _bfState = { step:startStep, service:service||'', bookingType:'direct', providerId:providerId||null, providerName:'', property:'', propertyAddr:'', urgency:'Flexible', date:'', time:'Afternoon', details:'' };
   if (providerId) {
     var p = _exploreProviders.find(function(x){ return x.id===providerId; });
     if (p) { _bfState.providerName = p.name; if (!service) _bfState.service = p.services[0].name; }
