@@ -6831,7 +6831,13 @@ function _renderPmActionChips() {
   var defs = _pmActionChipDefs;
   var topDefs = defs.slice(0, 3);
   var botDefs = defs.slice(3, 6);
-  var topVisible = topDefs.filter(function(c){ return !_pmChipsDismissed[c.id]; });
+  // Hide top chip if dismissed OR if its badge is 100% OR if it's marked done
+  var topVisible = topDefs.filter(function(c) {
+    if (_pmChipsDismissed[c.id]) return false;
+    if (c.done) return false;
+    if (c.badge !== null && c.badge === '100%') return false;
+    return true;
+  });
   var botVisible = botDefs.filter(function(c){ return !_pmChipsDismissed[c.id]; });
   if (!topVisible.length && !botVisible.length) { container.style.display='none'; return; }
   container.style.display = '';
@@ -8173,6 +8179,11 @@ function discPageContinue() {
     if (typeof showToast === 'function') {
       showToast(answered===7 ? 'Discovery complete! Progress updated.' : 'Discovery profile updated.', 'success');
     }
+    // Dismiss discovery chip if all 7 answered
+    if (answered === 7) {
+      _pmChipsDismissed['discovery_questions'] = true;
+      if (typeof _renderPmActionChips === 'function') setTimeout(_renderPmActionChips, 150);
+    }
   }
 }
 
@@ -9185,7 +9196,9 @@ function saveBizOnboarding() {
   goToDashboard('', false);
   if (typeof recalcProgress === 'function') setTimeout(recalcProgress, 300);
   if (typeof showToast === 'function') showToast('Company details saved! Welcome to Keylr 🎉', 'success');
-  // Show compliance card in sidebar (demo: 7 alerts)
+  // Dismiss company chip — required fields are done
+  _pmChipsDismissed['company_details'] = true;
+  if (typeof _renderPmActionChips === 'function') setTimeout(_renderPmActionChips, 150);
   updateSidebarCards(7);
 }
 
@@ -9279,13 +9292,25 @@ function showPlanChoosePage() {
 
 function selectObPlan(planKey) {
   var planNames = { free: 'Connect (Free)', premium: 'Connect Premium', copilot: 'Copilot' };
-  if (_user) _user._plan = planNames[planKey] || planKey;
+  if (_user) {
+    _user._plan = planNames[planKey] || planKey;
+    // Persist plan to store
+    if (typeof _userKey === 'function' && typeof _userStore !== 'undefined') {
+      var key = _userKey(_user.email || _user.phone || _user.contact || '');
+      if (key) {
+        _userStore[key] = JSON.parse(JSON.stringify(_user));
+        if (typeof _saveUserStore === 'function') _saveUserStore();
+      }
+    }
+  }
   var plan = document.getElementById('pg-plan-choose');
   if (plan) plan.classList.remove('visible');
-  // Update the choose plan chip as done
+  // Mark chip as done and dismiss it from top row
   var chip = _pmActionChipDefs.find(function(c){ return c.id === 'choose_plan'; });
-  if (chip) { chip.done = true; chip.sub = planNames[planKey] || planKey + ' active'; }
+  if (chip) { chip.done = true; chip.sub = planNames[planKey] + ' active'; }
+  _pmChipsDismissed['choose_plan'] = true;
   goToDashboard('', false);
+  if (typeof _renderPmActionChips === 'function') setTimeout(_renderPmActionChips, 100);
   if (typeof showToast === 'function') showToast('Plan selected: ' + (planNames[planKey] || planKey) + ' 🎉', 'success');
   if (typeof recalcProgress === 'function') setTimeout(recalcProgress, 300);
 }
