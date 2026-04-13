@@ -2421,8 +2421,8 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .dash-dark .db-sidebar{background:#161b22;border-right:1px solid #30363d;}
 .dash-dark .db-sidebar-top{background:#161b22;border-bottom:1px solid #30363d;}
 .dash-dark .sidebar-logo-row svg path{fill:#e6edf3;}
-.dash-dark .start-chat-btn{background:#1c2433;color:#c9d1d9;border-color:#30363d;}
-.dash-dark .start-chat-btn:hover{background:#243046;}
+.dash-dark .start-chat-btn{background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border-color:transparent;}
+.dash-dark .start-chat-btn:hover{opacity:0.9;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);}
 .dash-dark .db-nav{background:#161b22;}
 .dash-dark .db-nav-item{color:#8b949e;}
 .dash-dark .db-nav-item:hover{background:#1c2433;color:#e6edf3;}
@@ -11357,6 +11357,69 @@ button:active { transform: scale(0.98); }
 .dash-dark .db-topbar-sub { color:#8b949e !important; }
 /* Chat typing indicator */
 .dash-dark .typing-dot { background:#8b949e !important; }
+
+/* ── Browse by category heading ── */
+.dash-dark [style*="font-size:18px;font-weight:700;color:#0f172a"] { color:#e6edf3 !important; }
+
+/* ── How Keylr Connect works heading ── */
+.dash-dark [style*="font-weight:700;color:#0f172a;margin-bottom:4px"] { color:#e6edf3 !important; }
+.dash-dark [style*="font-size:18px;font-weight:700;color:#0f172a;margin-bottom:4px"] { color:#e6edf3 !important; }
+
+/* ── Property portfolio + Pricing & preferences card headings ── */
+.dash-dark [style*="font-size:13.5px;font-weight:600;color:#0f172a"] { color:#e6edf3 !important; }
+
+/* ── Settings page: "Settings" h1 heading ── */
+.dash-dark #page-settings h1 { color:#e6edf3 !important; }
+.dash-dark #page-settings [style*="color:#0f172a;font-family:'Fraunces'"] { color:#e6edf3 !important; }
+.dash-dark #page-settings [style*="font-size:28px"] { color:#e6edf3 !important; }
+.dash-dark #page-settings [style*="color:#1d4ed8"] { color:#60a5fa !important; }
+
+/* ── Settings page bottom white area ── */
+.dash-dark #page-settings { background:#0d1117 !important; }
+.dash-dark #page-settings > * { background:#0d1117 !important; }
+.dash-dark #page-settings [style*="background:#fff"] { background:#161b22 !important; }
+.dash-dark #page-settings [style*="background:#f8fafc"] { background:#0d1117 !important; }
+.dash-dark #page-settings [style*="background:#fafafa"] { background:#161b22 !important; }
+.dash-dark #page-settings [style*="border-bottom:1px solid #f1f5f9"] { border-color:#30363d !important; }
+.dash-dark #page-settings [style*="border-top:1px solid #f1f5f9"] { border-color:#30363d !important; }
+.dash-dark #page-settings [style*="border:1px solid #e2e8f0"] { border-color:#30363d !important; }
+.dash-dark #page-settings [style*="border:1.5px solid #e2e8f0"] { border-color:#30363d !important; background:#1c2433 !important; }
+
+/* ── Sidebar profile row hover — subtle dark ── */
+.dash-dark #sbProfileArea > div:first-child:hover { background:#1c2433 !important; }
+.dash-dark #sbProfileArea > div { transition: background 0.12s; }
+
+/* ── Start a chat button — keep gradient in dark mode ── */
+.dash-dark .start-chat-btn {
+  background: linear-gradient(90deg,#1A5FC8,#0FA3D0) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+}
+.dash-dark .start-chat-btn:hover {
+  opacity: 0.9 !important;
+  background: linear-gradient(90deg,#1A5FC8,#0FA3D0) !important;
+}
+
+/* ── Chat page bottom input bar — dark mode ── */
+.dash-dark .chat-input-area {
+  background: #161b22 !important;
+  border-top-color: #30363d !important;
+}
+.dash-dark .chat-input-box {
+  background: #1c2433 !important;
+  border-color: #30363d !important;
+}
+.dash-dark .chat-input-box:focus-within {
+  border-color: #1A5FC8 !important;
+}
+.dash-dark .chat-textarea {
+  color: #e6edf3 !important;
+}
+.dash-dark .chat-textarea::placeholder {
+  color: #484f58 !important;
+}
+.dash-dark .chat-hint { color: #484f58 !important; }
+.dash-dark .chat-send-btn:disabled { background:#30363d !important; color:#484f58 !important; }
 
 </style>
 
