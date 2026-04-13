@@ -5564,8 +5564,6 @@ var _allJobsDemo = [
   ]},
 ];
 var _allJobs = []; // starts empty — jobs added via booking flow
-// Load demo data for prototype preview (comment out in production)
-_allJobs = _allJobsDemo.slice();
 var _bkActiveFilter = 'active';
 
 function _jobIconSvg(icon) {
@@ -5588,91 +5586,112 @@ function _iconColor(icon) {
 }
 
 function renderBookingsPage() {
-  var list = document.getElementById('bkList');
-  var stats = document.getElementById('bkStats');
-  var tabs = document.getElementById('bkTabs');
+  var statEl  = document.getElementById('bkStats');
+  var tabEl   = document.getElementById('bkTabs');
+  var listEl  = document.getElementById('bkList');
+  if (!statEl || !tabEl || !listEl) return;
 
-  // ── Not logged in: show zero/login state ──
-  if (!_isLoggedIn) {
-    if (stats) stats.innerHTML = '';
-    if (tabs) tabs.innerHTML = '';
-    if (list) {
-      list.innerHTML = '';
-      var zeroDiv = document.createElement('div');
-      zeroDiv.style.cssText = 'text-align:center;padding:60px 24px;';
-      zeroDiv.innerHTML = '<svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="#e2e8f0" stroke-width="1.5" style="margin-bottom:18px;"><rect x="12" y="8" width="40" height="48" rx="4"/><path d="M22 22h20M22 32h20M22 42h12"/></svg>'
-        +'<div style="font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">No jobs yet</div>'
-        +'<div style="font-size:14px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:6px;">Sign in to view and manage your booked services</div>'
-        +'<div style="font-size:13px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:24px;">Your bookings will appear here once you\'re logged in</div>'
-        +'<div id="bkAuthBtns" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;"></div>';
-      list.appendChild(zeroDiv);
-      (function(){
-        var b1=document.createElement('button');
-        b1.style.cssText='background:#fff;border:1.5px solid #e2e8f0;color:#374151;border-radius:10px;padding:11px 24px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
-        b1.textContent='Log in'; b1.onclick=function(){showAuthPage('login');};
-        var b2=document.createElement('button');
-        b2.style.cssText='background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
-        b2.textContent='Sign up free'; b2.onclick=function(){showAuthPage('signup');};
-        var wrap=document.getElementById('bkAuthBtns');
-        if(wrap){wrap.appendChild(b1);wrap.appendChild(b2);}
-      })();
-      list.appendChild(zeroDiv);
+  // ── Not logged in OR no jobs → zero state ──
+  if (!_isLoggedIn || !_allJobs.length) {
+    statEl.innerHTML = '';
+    tabEl.innerHTML  = '';
+    listEl.innerHTML = '';
+
+    // Zero state card (matches Properties page style)
+    var zero = document.createElement('div');
+    zero.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;padding:70px 24px;text-align:center;';
+
+    // Icon circle
+    var iconCircle = document.createElement('div');
+    iconCircle.style.cssText = 'width:80px;height:80px;border-radius:50%;background:#eff6ff;display:flex;align-items:center;justify-content:center;margin-bottom:20px;';
+    iconCircle.innerHTML = '<svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="#1A5FC8" stroke-width="1.5"><rect x="6" y="4" width="24" height="28" rx="3"/><path d="M12 12h12M12 18h12M12 24h7"/></svg>';
+    zero.appendChild(iconCircle);
+
+    var title = document.createElement('div');
+    title.style.cssText = 'font-size:19px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;';
+    title.textContent = 'No jobs yet';
+    zero.appendChild(title);
+
+    var sub = document.createElement('div');
+    sub.style.cssText = 'font-size:13.5px;color:#64748b;max-width:290px;margin:0 auto 26px;line-height:1.65;font-family:Inter,sans-serif;';
+    sub.textContent = _isLoggedIn
+      ? 'Book a service to get started. Your confirmed jobs will appear here.'
+      : 'Sign in to view and manage your booked services.';
+    zero.appendChild(sub);
+
+    if (_isLoggedIn) {
+      // Logged in but no jobs: Book a service CTA
+      var bookBtn = document.createElement('button');
+      bookBtn.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;margin:0 auto;';
+      bookBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h10M7 2v10"/></svg>Book a service';
+      bookBtn.onclick = function(){ openBookingFlow(null, null); };
+      zero.appendChild(bookBtn);
+    } else {
+      // Not logged in: Log in + Sign up CTAs
+      var btnRow = document.createElement('div');
+      btnRow.style.cssText = 'display:flex;gap:10px;justify-content:center;flex-wrap:wrap;';
+
+      var loginBtn = document.createElement('button');
+      loginBtn.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;color:#374151;border-radius:10px;padding:11px 24px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
+      loginBtn.textContent = 'Log in';
+      loginBtn.onclick = function(){ showAuthPage('login'); };
+
+      var signupBtn = document.createElement('button');
+      signupBtn.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
+      signupBtn.textContent = 'Sign up free';
+      signupBtn.onclick = function(){ showAuthPage('signup'); };
+
+      btnRow.appendChild(loginBtn);
+      btnRow.appendChild(signupBtn);
+      zero.appendChild(btnRow);
     }
+
+    listEl.appendChild(zero);
     return;
   }
 
-  var active = _allJobs.filter(function(j){ return j.status!=='Completed'; });
-  var completed = _allJobs.filter(function(j){ return j.status==='Completed'; });
-  var totalSpent = completed.reduce(function(s,j){ return s+parseInt((j.price||'0').replace(/[^0-9]/g,'')); },0);
-  var avgRating = 4.5;
+  // ── Logged in + has jobs → full page ──
+  var active    = _allJobs.filter(function(j){ return j.status !== 'Completed'; });
+  var completed = _allJobs.filter(function(j){ return j.status === 'Completed'; });
+  var totalSpent = completed.reduce(function(s,j){ return s + parseInt((j.price||'0').replace(/[^0-9]/g,'')||0); }, 0);
+  var avgRating  = 4.5;
 
   // Stats
-  var stats = document.getElementById('bkStats');
-  if (stats) {
-    stats.innerHTML = '';
-    [
-      {icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M4 11l4 4 10-10"/></svg>', val:active.length, label:'Active', color:'#1A5FC8'},
-      {icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#10b981" stroke-width="1.6"><circle cx="10" cy="10" r="8"/><path d="M6 10l3 3 5-5"/></svg>', val:completed.length, label:'Completed', color:'#10b981'},
-      {icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#0f172a" stroke-width="1.6"><rect x="2" y="5" width="16" height="12" rx="2"/><path d="M2 9h16"/></svg>', val:'£'+totalSpent, label:'Total Spent', color:'#0f172a'},
-      {icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#f59e0b" stroke-width="1.6"><path d="M10 2l2 5.5H18l-4.5 3.5 1.5 5.5L10 13l-5 3.5 1.5-5.5L2 7.5h6z"/></svg>', val:avgRating, label:'Avg Rating', color:'#f59e0b'},
-    ].forEach(function(s) {
-      var card = document.createElement('div');
-      card.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:18px 16px;';
-      card.innerHTML = '<div style="margin-bottom:10px;">'+s.icon+'</div>'
-        +'<div style="font-size:22px;font-weight:800;color:'+s.color+';font-family:Fraunces,serif;">'+s.val+'</div>'
-        +'<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:3px;">'+s.label+'</div>';
-      stats.appendChild(card);
-    });
-  }
+  statEl.innerHTML = '';
+  [
+    { icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M4 11l4 4 10-10"/></svg>',  val:active.length,    label:'Active',      color:'#1A5FC8' },
+    { icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#10b981" stroke-width="1.6"><circle cx="10" cy="10" r="8"/><path d="M6 10l3 3 5-5"/></svg>', val:completed.length, label:'Completed',   color:'#10b981' },
+    { icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#0f172a" stroke-width="1.6"><rect x="2" y="5" width="16" height="12" rx="2"/><path d="M2 9h16"/></svg>', val:'£'+totalSpent, label:'Total Spent', color:'#0f172a' },
+    { icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#f59e0b" stroke-width="1.6"><path d="M10 2l2 5.5H18l-4.5 3.5 1.5 5.5L10 13l-5 3.5 1.5-5.5L2 7.5h6z"/></svg>', val:avgRating, label:'Avg Rating', color:'#f59e0b' },
+  ].forEach(function(s) {
+    var card = document.createElement('div');
+    card.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:18px 16px;';
+    card.innerHTML = '<div style="margin-bottom:10px;">'+s.icon+'</div>'
+      +'<div style="font-size:22px;font-weight:800;color:'+s.color+';font-family:Fraunces,serif;">'+s.val+'</div>'
+      +'<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:3px;">'+s.label+'</div>';
+    statEl.appendChild(card);
+  });
 
   // Tabs
-  var tabs = document.getElementById('bkTabs');
-  if (tabs) {
-    tabs.innerHTML = '';
-    [['active','Active ('+active.length+')'],['completed','Completed ('+completed.length+')'],['all','All ('+_allJobs.length+')']].forEach(function(t) {
-      var btn = document.createElement('button');
-      var sel = _bkActiveFilter === t[0];
-      btn.style.cssText = 'background:'+(sel?'#0f172a':'#fff')+';color:'+(sel?'#fff':'#374151')+';border:1.5px solid '+(sel?'#0f172a':'#e2e8f0')+';border-radius:999px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;transition:all .15s;';
-      btn.textContent = t[1];
-      btn.onclick = (function(filter){ return function(){ _bkActiveFilter=filter; renderBookingsPage(); }; })(t[0]);
-      tabs.appendChild(btn);
-    });
-  }
+  tabEl.innerHTML = '';
+  [['active','Active ('+active.length+')'],['completed','Completed ('+completed.length+')'],['all','All ('+_allJobs.length+')']].forEach(function(t) {
+    var btn = document.createElement('button');
+    var sel = _bkActiveFilter === t[0];
+    btn.style.cssText = 'background:'+(sel?'#0f172a':'#fff')+';color:'+(sel?'#fff':'#374151')+';border:1.5px solid '+(sel?'#0f172a':'#e2e8f0')+';border-radius:999px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
+    btn.textContent = t[1];
+    btn.onclick = (function(f){ return function(){ _bkActiveFilter=f; renderBookingsPage(); }; })(t[0]);
+    tabEl.appendChild(btn);
+  });
 
   // Job list
-  var list = document.getElementById('bkList');
-  if (!list) return;
-  list.innerHTML = '';
+  listEl.innerHTML = '';
   var jobs = _bkActiveFilter==='active' ? active : _bkActiveFilter==='completed' ? completed : _allJobs;
 
   if (!jobs.length) {
     var emptyDiv = document.createElement('div');
-    emptyDiv.style.cssText = 'text-align:center;padding:60px 24px;';
-    emptyDiv.innerHTML = '<svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="#e2e8f0" stroke-width="1.5" style="margin-bottom:16px;"><rect x="10" y="8" width="36" height="40" rx="4"/><path d="M18 20h20M18 28h20M18 36h12"/></svg>'
-      +'<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">No jobs yet</div>'
-      +'<div style="font-size:13.5px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:20px;">Book a service to get started</div>'
-      +'<button onclick="openBookingFlow(null,null)" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Book a service</button>';
-    list.appendChild(emptyDiv);
+    emptyDiv.style.cssText = 'text-align:center;padding:50px 24px;color:#94a3b8;font-family:Inter,sans-serif;font-size:14px;';
+    emptyDiv.textContent = _bkActiveFilter==='active' ? 'No active jobs' : _bkActiveFilter==='completed' ? 'No completed jobs yet' : 'No jobs';
+    listEl.appendChild(emptyDiv);
     return;
   }
 
@@ -5681,10 +5700,9 @@ function renderBookingsPage() {
     var card = document.createElement('div');
     card.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px;margin-bottom:12px;cursor:pointer;transition:box-shadow .15s,border-color .15s;';
     card.onmouseover = function(){ this.style.boxShadow='0 4px 16px rgba(0,0,0,.07)'; this.style.borderColor='#cbd5e1'; };
-    card.onmouseout = function(){ this.style.boxShadow='none'; this.style.borderColor='#e2e8f0'; };
-    card.onclick = function(){ showJobModal(job); };
+    card.onmouseout  = function(){ this.style.boxShadow='none'; this.style.borderColor='#e2e8f0'; };
+    card.onclick     = function(){ showJobModal(job); };
 
-    // Row 1: icon + name + status + arrow
     var row1 = document.createElement('div');
     row1.style.cssText = 'display:flex;align-items:center;gap:12px;margin-bottom:10px;';
     var iconWrap = document.createElement('div');
@@ -5692,13 +5710,13 @@ function renderBookingsPage() {
     iconWrap.innerHTML = _jobIconSvg(job.icon);
     var nameWrap = document.createElement('div');
     nameWrap.style.cssText = 'flex:1;min-width:0;';
-    var name = document.createElement('div');
-    name.style.cssText = 'font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;';
-    name.textContent = job.service;
-    var meta = document.createElement('div');
-    meta.style.cssText = 'font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:2px;display:flex;align-items:center;gap:4px;';
-    meta.innerHTML = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#94a3b8" stroke-width="1.6"><circle cx="6" cy="5" r="3"/><path d="M2 11c0-2 2-4 4-4s4 2 4 4"/></svg> '+job.property+'<span style="margin:0 4px;color:#e2e8f0;">|</span>'+job.provider;
-    nameWrap.appendChild(name); nameWrap.appendChild(meta);
+    var nameEl = document.createElement('div');
+    nameEl.style.cssText = 'font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;';
+    nameEl.textContent = job.service;
+    var metaEl = document.createElement('div');
+    metaEl.style.cssText = 'font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:2px;display:flex;align-items:center;gap:4px;';
+    metaEl.innerHTML = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#94a3b8" stroke-width="1.6"><circle cx="6" cy="5" r="3"/><path d="M2 11c0-2 2-4 4-4s4 2 4 4"/></svg> '+job.property+'<span style="margin:0 4px;color:#e2e8f0;">|</span>'+job.provider;
+    nameWrap.appendChild(nameEl); nameWrap.appendChild(metaEl);
     var statusBadge = document.createElement('span');
     statusBadge.style.cssText = 'background:'+sc.bg+';color:'+sc.color+';border-radius:6px;padding:4px 10px;font-size:11.5px;font-weight:700;font-family:Inter,sans-serif;white-space:nowrap;';
     statusBadge.textContent = job.status;
@@ -5707,18 +5725,16 @@ function renderBookingsPage() {
     row1.appendChild(iconWrap); row1.appendChild(nameWrap); row1.appendChild(statusBadge); row1.appendChild(arrow);
     card.appendChild(row1);
 
-    // Row 2: Progress
     var progLabel = document.createElement('div');
     progLabel.style.cssText = 'display:flex;justify-content:space-between;font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:5px;';
     progLabel.innerHTML = '<span>Progress</span><span>'+job.progress+'%</span>';
     var progBar = document.createElement('div');
     progBar.style.cssText = 'height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:12px;';
     var progFill = document.createElement('div');
-    progFill.style.cssText = 'height:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:3px;width:'+job.progress+'%;transition:width .3s;';
+    progFill.style.cssText = 'height:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:3px;width:'+job.progress+'%;';
     progBar.appendChild(progFill);
     card.appendChild(progLabel); card.appendChild(progBar);
 
-    // Row 3: Date + price
     var row3 = document.createElement('div');
     row3.style.cssText = 'display:flex;align-items:center;gap:14px;';
     if (job.date) {
@@ -5733,7 +5749,7 @@ function renderBookingsPage() {
     row3.appendChild(priceEl);
     card.appendChild(row3);
 
-    list.appendChild(card);
+    listEl.appendChild(card);
   });
 }
 
@@ -6008,7 +6024,29 @@ function jobBadge(status) {
 }
 
 function addJobFromBooking(data) {
-  // _allJobs is now the source of truth; stub kept so legacy calls don't throw
+  var icons = {boiler:'gas',gas:'gas',eicr:'electric',electrical:'electric',electric:'electric',
+    clean:'clean',tenancy:'clean',inspection:'doc',report:'doc',certificate:'doc',
+    fire:'fire',lock:'lock',repair:'wrench',handyman:'wrench',plumb:'water',drain:'water',leak:'water'};
+  var iconKey = 'wrench';
+  var svcLow = (data.service||'').toLowerCase();
+  for (var k in icons) { if (svcLow.includes(k)) { iconKey = icons[k]; break; } }
+  _allJobs.unshift({
+    id: 'JOB-' + Math.floor(Math.random()*90000+10000),
+    service: data.service || 'Property Service',
+    icon: iconKey,
+    property: data.address || 'My Property',
+    provider: data.pro || 'Provider',
+    providerInitials: (data.pro||'P').split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase(),
+    status: 'Pending',
+    progress: 10,
+    date: data.eta ? data.eta.split(' ')[0] : null,
+    time: data.time || null,
+    price: data.price || 'TBC',
+    type: data.bookingType==='quote' ? 'Quote request' : 'Direct booking',
+    created: new Date().toISOString().split('T')[0],
+    payment: 'unpaid',
+    timeline: [{ date: new Date().toISOString().split('T')[0], label: 'Job created', desc: data.bookingType==='quote' ? 'Quote request submitted' : 'Direct booking placed' }]
+  });
 }
 var _confirmedJobs = []; // kept so legacy references don't throw
 
@@ -7389,7 +7427,7 @@ function _bfConfirm() {
   var s=_bfState;
   var ref='K'+Math.floor(Math.random()*90000+10000);
   var dateDisplay=s.date?new Date(s.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'';
-  if(typeof addJobFromBooking==='function') addJobFromBooking({ref:ref,service:s.service,pro:s.providerName,eta:dateDisplay+' '+s.time,price:'TBC',address:s.propertyAddr||s.property});
+  if(typeof addJobFromBooking==='function') addJobFromBooking({ref:ref,service:s.service,pro:s.providerName,eta:dateDisplay+' '+s.time,price:'TBC',address:s.propertyAddr||s.property,time:s.time,bookingType:s.bookingType});
   // Hide booking page
   showPage('bookings', null);
   // Confirmed toast
