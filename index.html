@@ -5711,7 +5711,8 @@ function toggleSidebar() {
     var sb = document.querySelector('.db-sidebar');
     var authIcons = document.getElementById('sbAuthIconsWrap');
     if (authIcons && sb) {
-      authIcons.style.display = sb.classList.contains('collapsed') ? 'flex' : 'none';
+      // Only show when collapsed AND user is not logged in (guest)
+      authIcons.style.display = (sb.classList.contains('collapsed') && !_isLoggedIn) ? 'flex' : 'none';
     }
   }, 50);
   var sb = document.getElementById('dbSidebar');
