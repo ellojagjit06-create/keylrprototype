@@ -2634,7 +2634,8 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .dash-dark .exp-profile-btn{background:transparent;border-color:#30363d;color:#c9d1d9;}
 .dash-dark .exp-filter-panel{background:#1c2433;border-color:#30363d;}
 .dash-dark .exp-search-input{background:#1c2433;border-color:#30363d;color:#e6edf3;}
-.pp-svc-row:hover .pp-svc-book-btn{display:inline-flex !important;}
+.pp-svc-row .pp-svc-book-btn{opacity:0;pointer-events:none;transition:opacity .15s;}
+.pp-svc-row:hover .pp-svc-book-btn{opacity:1 !important;pointer-events:auto !important;}
 .pp-svc-row .pp-svc-book-btn:hover{background:#1d4ed8;}
 .dash-dark #exploreCatCards > div:last-child > div > div { background:#1c2433 !important; border-color:#30363d !important; }
 .dash-dark #exploreCatCards > div:first-child { color:#e6edf3 !important; }
@@ -5711,7 +5712,7 @@ function refreshBkPage() {
 // ═══════════════════════════════════════════════════════════
 
 var _exploreProviders = [
-  { id:'p1', name:'PlumbRight Ltd', initials:'PL', role:'Gas Engineer · Plumber · HVAC', rating:4.8, reviews:142, jobs:4520, price:90, sla:'4 hours', hours:'06:00-22:00', days:'Mon-Sun', emergency:true, certs:['Gas Safe','CIPHE','WaterSafe'], services:[{name:'Boiler Service',tags:['RES','COM'],price:'£180',budget:true},{name:'Gas Safety Check',tags:['RES','COM'],price:'£90',budget:true},{name:'Leak Repair',tags:['RES','COM'],price:'£120',budget:true},{name:'Drain Unblocking',tags:['RES','COM'],price:'£95',budget:true},{name:'Shower Install',tags:['RES','COM'],quote:true}], areas:'E1, EC1', insured:true, dbs:true, cat:['plumbing','maintenance'] },
+  { id:'p1', name:'PlumbRight Ltd', initials:'PL', role:'Gas Engineer · Plumber · HVAC', rating:4.8, reviews:142, jobs:4520, price:90, sla:'4 hours', hours:'06:00-22:00', days:'Mon-Sun', emergency:true, certs:['Gas Safe','CIPHE','WaterSafe'], services:[{name:'Boiler Service',tags:['RES','COM'],price:'£180',budget:true},{name:'Gas Safety Check',tags:['RES','COM'],price:'£90',budget:true},{name:'Leak Repair',tags:['RES','COM'],price:'£120',budget:true},{name:'Drain Unblocking',tags:['RES','COM'],price:'£95',budget:true},{name:'Shower Install',tags:['RES','COM'],quote:true},{name:'Underfloor Heating',tags:['RES','COM'],quote:true}], areas:'E1, EC1', insured:true, dbs:true, cat:['plumbing','maintenance'] },
   { id:'p2', name:'AquaFlow Plumbing', initials:'AQ', role:'Plumber', rating:4.5, reviews:67, jobs:1580, price:75, sla:'Same day', hours:'07:00-20:00', days:'Mon-Sat', emergency:true, certs:['Gas Safe','CIPHE'], services:[{name:'Boiler Service',tags:['RES','COM'],price:'£160',budget:true},{name:'Leak Repair',tags:['RES','COM'],price:'£95',budget:true},{name:'Drain Unblocking',tags:['RES','COM'],price:'£80',budget:true},{name:'Pipe Repair',tags:['RES','COM'],price:'£110',budget:true}], areas:'E1, E2', insured:true, dbs:true, cat:['plumbing','maintenance'] },
   { id:'p3', name:'Sarah Chen', initials:'SC', role:'Sole Trader', rating:4.9, reviews:52, jobs:640, price:18, sla:'Same day', hours:'07:00-20:00', days:'Mon-Sun', emergency:false, certs:['DBS'], services:[{name:'Standard Clean',tags:['RES'],price:'£18',budget:true},{name:'Deep Clean',tags:['RES'],price:'£22',budget:true},{name:'End of Tenancy Clean',tags:['RES'],price:'£180'},{name:'Carpet Clean',tags:['RES','COM'],quote:true}], areas:'London, Manchester', insured:true, dbs:true, cat:['cleaning'] },
   { id:'p4', name:'CleanPro Services', initials:'CP', role:'Company', rating:4.4, reviews:67, jobs:480, price:20, sla:'Next day', hours:'08:00-17:00', days:'Mon-Fri', emergency:false, certs:['BICSc'], services:[{name:'Office Clean',tags:['COM'],price:'£20/hr'},{name:'Deep Clean',tags:['RES','COM'],price:'£250'},{name:'Carpet Clean',tags:['RES','COM'],price:'£80'},{name:'Window Clean',tags:['RES','COM'],price:'£45'}], areas:'Manchester, Leeds', insured:true, dbs:true, cat:['cleaning'] },
@@ -5987,6 +5988,25 @@ function _filterExpSearch(q) {
     card.style.display = (!q || card.textContent.toLowerCase().includes(q)) ? '' : 'none';
   });
 }
+function _ppGetQuote(pid, svcName) {
+  // From additional services "Get quote" → step 2 (Choose a provider), quote type
+  var p = _exploreProviders.find(function(x){ return x.id===pid; });
+  _bfState = {
+    step: 2,
+    service: svcName,
+    bookingType: 'quote',
+    providerId: pid || null,
+    providerName: p ? p.name : '',
+    property: '',
+    propertyAddr: '',
+    urgency: 'Flexible',
+    date: '',
+    time: 'Afternoon',
+    details: ''
+  };
+  _bfRenderPage();
+}
+
 function _serviceCardClick(catKey, serviceLabel) {
   // Map service labels to specific provider cat keys
   var labelCatMap = {
@@ -6060,12 +6080,13 @@ function showProviderProfile(pid) {
         +'<div style="flex:1;font-size:14px;font-weight:500;color:#0f172a;font-family:Inter,sans-serif;">'+svcName+' <span style="font-size:11px;color:#94a3b8;font-weight:400;">flat rate</span></div>'
         +'<span style="font-size:11px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:5px;padding:2px 8px;font-weight:600;font-family:Inter,sans-serif;margin-right:10px;">Within budget</span>'
         +'<span style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-right:10px;">'+s.price+'</span>'
-        +'<button class="pp-svc-book-btn" data-pid="'+p.id+'" data-svc="'+svcName+'" onclick="openBookingFlow(this.dataset.pid,this.dataset.svc)" style="display:none;background:#1A5FC8;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Book</button>'
+        +'<button class="pp-svc-book-btn" data-pid="'+p.id+'" data-svc="'+svcName+'" onclick="openBookingFlow(this.dataset.pid,this.dataset.svc)" style="background:#1A5FC8;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Book</button>'
       +'</div>';
     } else {
+      var qSvcName = s.name;
       quoteSvcs += '<div style="display:flex;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;">'
-        +'<div style="flex:1;font-size:14px;font-weight:500;color:#0f172a;font-family:Inter,sans-serif;">'+s.name+'</div>'
-        +'<button style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:6px 16px;font-size:13px;font-family:Inter,sans-serif;cursor:pointer;color:#374151;font-weight:600;">Get quote</button>'
+        +'<div style="flex:1;font-size:14px;font-weight:500;color:#0f172a;font-family:Inter,sans-serif;">'+qSvcName+'</div>'
+        +'<button data-pid="'+p.id+'" data-svc="'+qSvcName+'" onclick="_ppGetQuote(this.dataset.pid,this.dataset.svc)" style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:6px 16px;font-size:13px;font-family:Inter,sans-serif;cursor:pointer;color:#374151;font-weight:600;">Get quote</button>'
       +'</div>';
     }
   });
@@ -6158,13 +6179,42 @@ function showProviderProfile(pid) {
   bookBtn.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:8px;';
   bookBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="12" height="9" rx="1.5"/><path d="M1 6h12M4 1v3M10 1v3"/></svg> Book now';
   var quoteBtn = document.createElement('button');
+  quoteBtn.id = 'pp-quote-btn';
   quoteBtn.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;color:#374151;border-radius:10px;padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:6px;';
   quoteBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 2C4.5 2 2.5 3.8 2.5 6c0 1 .4 2 1.2 2.7L3 11l2.5-1c.4.1.97.2 1.5.2C9.5 10.2 11.5 8.3 11.5 6S9.5 2 7 2z"/></svg> Request quote';
   btnRow.appendChild(bookBtn); btnRow.appendChild(quoteBtn);
   headerCard.appendChild(btnRow);
   left.appendChild(headerCard);
-  // Wire book button
-  (function(pid){ var btn=headerCard.querySelector('#pp-book-btn'); if(btn) btn.onclick=function(){openBookingFlow(pid);}; })(p.id);
+  // Wire book button → step 1 (Select property), provider pre-filled
+  (function(pid){
+    var btn = headerCard.querySelector('#pp-book-btn');
+    if (btn) btn.onclick = function(){ openBookingFlow(pid); };
+    // Wire quote button → step 1 with quote type
+    var qBtn = headerCard.querySelector('#pp-quote-btn');
+    if (qBtn) qBtn.onclick = function(){
+      _bfState = { step:1, service:p.services[0]?p.services[0].name:'General Service', bookingType:'quote', providerId:pid, providerName:p.name, property:'', propertyAddr:'', urgency:'Flexible', date:'', time:'Afternoon', details:'' };
+      _bfRenderPage();
+    };
+  })(p.id);
+
+  // Stats card (Experience, Response rate, Completion, Repeat clients)
+  var statsCard = document.createElement('div');
+  statsCard.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;';
+  var stats = [
+    {icon:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1A5FC8" stroke-width="1.5"><rect x="5" y="3" width="12" height="16" rx="2"/><path d="M8 7h6M8 11h6M8 15h3"/></svg>', val:'18 years', label:'Experience'},
+    {icon:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1A5FC8" stroke-width="1.5"><path d="M4 11l4 4 10-10"/></svg>', val:'99%', label:'Response rate'},
+    {icon:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1A5FC8" stroke-width="1.5"><path d="M5 13l4-5 4 4 6-8"/></svg>', val:'98%', label:'Completion'},
+    {icon:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1A5FC8" stroke-width="1.5"><circle cx="11" cy="8" r="3.5"/><path d="M4 19c0-4 3-7 7-7s7 3 7 7"/><path d="M16 5l2 2-2 2"/></svg>', val:'88%', label:'Repeat clients'}
+  ];
+  stats.forEach(function(s) {
+    var sc = document.createElement('div');
+    sc.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:18px 14px;text-align:center;';
+    sc.innerHTML = '<div style="display:flex;justify-content:center;margin-bottom:8px;">'+s.icon+'</div>'
+      +'<div style="font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+s.val+'</div>'
+      +'<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:3px;">'+s.label+'</div>';
+    statsCard.appendChild(sc);
+  });
+  left.appendChild(statsCard);
 
   // Fixed services
   if (fixedSvcs) {
