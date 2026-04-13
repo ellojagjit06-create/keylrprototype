@@ -5709,14 +5709,14 @@ function refreshBkPage() {
 // ═══════════════════════════════════════════════════════════
 
 var _exploreProviders = [
-  { id:'p1', name:'Mike Reynolds', initials:'MR', role:'Handyman', rating:4.7, reviews:38, jobs:847, price:25, sla:'Same day', hours:'Mon–Sat 07:00–19:00', emergency:true, certs:['CSCS','City & Guilds'], services:[{name:'General Repairs',tags:['RES','COM'],price:'£25'},{name:'Lock Change',tags:['RES','COM'],price:'£65'},{name:'Shelf Install',tags:['RES','COM'],quote:true},{name:'Door Repair',tags:['RES','COM'],price:'£55'}], areas:'E1, E2', insured:true, dbs:true, cat:['repairs','maintenance'] },
-  { id:'p2', name:'Tom Baker', initials:'TB', role:'Handyman', rating:4.5, reviews:21, jobs:312, price:22, sla:'Same day', hours:'Mon–Fri 08:00–17:00', emergency:true, certs:['CSCS'], services:[{name:'General Repairs',tags:['RES','COM'],price:'£22'},{name:'Door Repair',tags:['RES','COM'],price:'£55'},{name:'Laminate Install',tags:['RES','COM'],quote:true},{name:'Shelf Install',tags:['RES','COM'],quote:true}], areas:'M1, M2', insured:true, dbs:true, cat:['repairs','maintenance'] },
-  { id:'p3', name:'Sarah Chen', initials:'SC', role:'Sole Trader', rating:4.9, reviews:52, jobs:640, price:18, sla:'Same day', hours:'Mon–Sun 07:00–20:00', emergency:false, certs:['DBS'], services:[{name:'Standard Clean',tags:['RES'],price:'£18'},{name:'Deep Clean',tags:['RES'],price:'£22'},{name:'End of Tenancy Clean',tags:['RES'],price:'£180'},{name:'Carpet Clean',tags:['RES','COM'],quote:true}], areas:'London, Manchester', insured:true, dbs:true, cat:['cleaning'] },
-  { id:'p4', name:'PlumbRight Ltd', initials:'PL', role:'Company', rating:4.8, reviews:142, jobs:1200, price:85, sla:'4 hours', hours:'Mon–Fri 08:00–18:00', emergency:true, certs:['Gas Safe','CIPHE'], services:[{name:'Leak Repair',tags:['RES','COM'],price:'£85'},{name:'Boiler Service',tags:['RES','COM'],price:'£120'},{name:'Gas Safety Check',tags:['RES','COM'],price:'£90'},{name:'Drain Unblocking',tags:['RES','COM'],price:'£95'}], areas:'Nationwide', insured:true, dbs:true, cat:['plumbing','maintenance'] },
-  { id:'p5', name:'ElecPro Ltd', initials:'EP', role:'Company', rating:4.6, reviews:88, jobs:920, price:95, sla:'Next day', hours:'Mon–Sat 08:00–18:00', emergency:true, certs:['NICEIC','Part P'], services:[{name:'EICR',tags:['RES','COM'],price:'£185'},{name:'Fault Finding',tags:['RES','COM'],price:'£95'},{name:'PAT Testing',tags:['COM'],price:'£150'},{name:'Consumer Unit Upgrade',tags:['RES'],price:'£850'}], areas:'London, Home Counties', insured:true, dbs:false, cat:['electrical'] },
-  { id:'p6', name:'CleanPro Services', initials:'CP', role:'Company', rating:4.4, reviews:67, jobs:480, price:20, sla:'Next day', hours:'Mon–Fri 08:00–17:00', emergency:false, certs:['BICSc'], services:[{name:'Office Clean',tags:['COM'],price:'£20/hr'},{name:'Deep Clean',tags:['RES','COM'],price:'£250'},{name:'Carpet Clean',tags:['RES','COM'],price:'£80'},{name:'Window Clean',tags:['RES','COM'],price:'£45'}], areas:'Manchester, Leeds', insured:true, dbs:true, cat:['cleaning'] },
-  { id:'p7', name:'FireSafe Ltd', initials:'FS', role:'Company', rating:4.7, reviews:94, jobs:560, price:150, sla:'48 hours', hours:'Mon–Fri 09:00–17:00', emergency:false, certs:['BAFE','IFE'], services:[{name:'Fire Risk Assessment',tags:['RES','COM'],price:'£150'},{name:'Fire Alarm Test',tags:['COM'],price:'£80'},{name:'Emergency Lighting Test',tags:['COM'],price:'£70'},{name:'Fire Extinguisher Service',tags:['COM'],quote:true}], areas:'UK Wide', insured:true, dbs:true, cat:['fire'] },
-  { id:'p8', name:'InvCheck Pro', initials:'IP', role:'Sole Trader', rating:4.8, reviews:211, jobs:1850, price:95, sla:'Same day', hours:'Mon–Sun 08:00–20:00', emergency:false, certs:['AIIC'], services:[{name:'Check-In Report',tags:['RES'],price:'£95'},{name:'Check-Out Report',tags:['RES'],price:'£95'},{name:'Mid-Term Inspection',tags:['RES'],price:'£75'},{name:'Full Inventory',tags:['RES'],price:'£180'}], areas:'London & South East', insured:true, dbs:true, cat:['inventory'] },
+  { id:'p1', name:'PlumbRight Ltd', initials:'PL', role:'Gas Engineer · Plumber · HVAC', rating:4.8, reviews:142, jobs:4520, price:90, sla:'4 hours', hours:'06:00-22:00', days:'Mon-Sun', emergency:true, certs:['Gas Safe','CIPHE','WaterSafe'], services:[{name:'Boiler Service',tags:['RES','COM'],price:'£180',budget:true},{name:'Gas Safety Check',tags:['RES','COM'],price:'£90',budget:true},{name:'Leak Repair',tags:['RES','COM'],price:'£120',budget:true},{name:'Drain Unblocking',tags:['RES','COM'],price:'£95',budget:true},{name:'Shower Install',tags:['RES','COM'],quote:true}], areas:'E1, EC1', insured:true, dbs:true, cat:['plumbing','maintenance'] },
+  { id:'p2', name:'AquaFlow Plumbing', initials:'AQ', role:'Plumber', rating:4.5, reviews:67, jobs:1580, price:75, sla:'Same day', hours:'07:00-20:00', days:'Mon-Sat', emergency:true, certs:['Gas Safe','CIPHE'], services:[{name:'Boiler Service',tags:['RES','COM'],price:'£160',budget:true},{name:'Leak Repair',tags:['RES','COM'],price:'£95',budget:true},{name:'Drain Unblocking',tags:['RES','COM'],price:'£80',budget:true},{name:'Pipe Repair',tags:['RES','COM'],price:'£110',budget:true}], areas:'E1, E2', insured:true, dbs:true, cat:['plumbing','maintenance'] },
+  { id:'p3', name:'Sarah Chen', initials:'SC', role:'Sole Trader', rating:4.9, reviews:52, jobs:640, price:18, sla:'Same day', hours:'07:00-20:00', days:'Mon-Sun', emergency:false, certs:['DBS'], services:[{name:'Standard Clean',tags:['RES'],price:'£18',budget:true},{name:'Deep Clean',tags:['RES'],price:'£22',budget:true},{name:'End of Tenancy Clean',tags:['RES'],price:'£180'},{name:'Carpet Clean',tags:['RES','COM'],quote:true}], areas:'London, Manchester', insured:true, dbs:true, cat:['cleaning'] },
+  { id:'p4', name:'CleanPro Services', initials:'CP', role:'Company', rating:4.4, reviews:67, jobs:480, price:20, sla:'Next day', hours:'08:00-17:00', days:'Mon-Fri', emergency:false, certs:['BICSc'], services:[{name:'Office Clean',tags:['COM'],price:'£20/hr'},{name:'Deep Clean',tags:['RES','COM'],price:'£250'},{name:'Carpet Clean',tags:['RES','COM'],price:'£80'},{name:'Window Clean',tags:['RES','COM'],price:'£45'}], areas:'Manchester, Leeds', insured:true, dbs:true, cat:['cleaning'] },
+  { id:'p5', name:'ElecPro Ltd', initials:'EP', role:'Company', rating:4.6, reviews:88, jobs:920, price:95, sla:'Next day', hours:'08:00-18:00', days:'Mon-Sat', emergency:true, certs:['NICEIC','Part P'], services:[{name:'EICR',tags:['RES','COM'],price:'£185',budget:true},{name:'Fault Finding',tags:['RES','COM'],price:'£95',budget:true},{name:'PAT Testing',tags:['COM'],price:'£150'},{name:'Consumer Unit Upgrade',tags:['RES'],price:'£850'}], areas:'London, Home Counties', insured:true, dbs:false, cat:['electrical'] },
+  { id:'p6', name:'FireSafe Ltd', initials:'FS', role:'Company', rating:4.7, reviews:94, jobs:560, price:150, sla:'48 hours', hours:'09:00-17:00', days:'Mon-Fri', emergency:false, certs:['BAFE','IFE'], services:[{name:'Fire Risk Assessment',tags:['RES','COM'],price:'£150'},{name:'Fire Alarm Test',tags:['COM'],price:'£80'},{name:'Emergency Lighting Test',tags:['COM'],price:'£70'},{name:'Fire Extinguisher Service',tags:['COM'],quote:true}], areas:'UK Wide', insured:true, dbs:true, cat:['fire'] },
+  { id:'p7', name:'InvCheck Pro', initials:'IP', role:'Sole Trader', rating:4.8, reviews:211, jobs:1850, price:95, sla:'Same day', hours:'08:00-20:00', days:'Mon-Sun', emergency:false, certs:['AIIC'], services:[{name:'Check-In Report',tags:['RES'],price:'£95'},{name:'Check-Out Report',tags:['RES'],price:'£95'},{name:'Mid-Term Inspection',tags:['RES'],price:'£75'},{name:'Full Inventory',tags:['RES'],price:'£180'}], areas:'London & South East', insured:true, dbs:true, cat:['inventory'] },
+  { id:'p8', name:'Mike Reynolds', initials:'MR', role:'Handyman', rating:4.7, reviews:38, jobs:847, price:25, sla:'Same day', hours:'07:00-19:00', days:'Mon-Sat', emergency:true, certs:['CSCS','City & Guilds'], services:[{name:'General Repairs',tags:['RES','COM'],price:'£25',budget:true},{name:'Lock Change',tags:['RES','COM'],price:'£65',budget:true},{name:'Shelf Install',tags:['RES','COM'],quote:true},{name:'Door Repair',tags:['RES','COM'],price:'£55',budget:true}], areas:'E1, E2', insured:true, dbs:true, cat:['repairs','maintenance'] },
 ];
 
 var _catDefs = [
@@ -5843,8 +5843,8 @@ function renderExploreProviders(cat, minRating) {
     for (var i=1;i<=5;i++) stars += '<svg width="11" height="11" viewBox="0 0 11 11" fill="'+(i<=Math.floor(p.rating)?'#f59e0b':'none')+'" stroke="#f59e0b" stroke-width="1.4"><path d="M5.5 1l1.1 3.4H10L7.3 6.6l1.1 3.4-2.9-2-2.9 2 1.1-3.4L1 4.4h3.4z"/></svg>';
     var certsHTML = p.certs.map(function(c){ return '<span class="exp-badge">' + c + '</span>'; }).join('');
     var avail = '<span class="exp-avail-item"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l2 2"/></svg>' + p.sla + ' SLA</span>';
-    avail += '<span class="exp-avail-item"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="2" width="10" height="9" rx="1.5"/><path d="M1 5h10M4 1v2M8 1v2"/></svg>' + p.hours + '</span>';
-    if (p.emergency) avail += '<span class="exp-avail-item emg">⚡ 24/7 Emergency</span>';
+    avail += '<span class="exp-avail-item"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="2" width="10" height="9" rx="1.5"/><path d="M1 5h10M4 1v2M8 1v2"/></svg>' + (p.days||'') + ' ' + p.hours + '</span>';
+    if (p.emergency) avail += '<span class="exp-avail-item emg"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#92400e" stroke-width="1.6"><path d="M6 1l1 3.5H10L7.5 7l1 3.5L6 8.5l-2.5 2 1-3.5L2 4.5h3z"/></svg> 24/7 Emergency</span>';
     // Services — collapsible (show 2 default)
     var svcsAll = p.services;
     var svcsDefault = svcsAll.slice(0,2);
@@ -5887,8 +5887,9 @@ function renderExploreProviders(cat, minRating) {
 
 function _svcRowHTML(s) {
   var tags = (s.tags||[]).map(function(t){ return '<span class="svc-tag">' + t + '</span>'; }).join('');
+  var budgetBadge = s.budget ? '<span style="font-size:10px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:4px;padding:1px 6px;font-weight:600;font-family:Inter,sans-serif;">Budget</span>' : '';
   var priceEl = s.quote ? '<span class="svc-quote">Quote</span>' : '<span class="svc-price">' + s.price + '</span>';
-  return '<div class="exp-svc-row"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg>' + s.name + ' ' + tags + priceEl + '</div>';
+  return '<div class="exp-svc-row"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg>' + s.name + ' ' + tags + budgetBadge + priceEl + '</div>';
 }
 
 function toggleSvcs(pid) { pid = String(pid);
@@ -6158,17 +6159,55 @@ function _bfRenderPage() {
   showPage('booking-flow', null);
   var inner = document.getElementById('bfPageInner');
   if (!inner) return;
-  inner.innerHTML = '<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">'
-      + '<button onclick="_bfBack()" style="background:none;border:none;cursor:pointer;color:#64748b;display:flex;align-items:center;gap:4px;font-size:13.5px;font-weight:600;font-family:Inter,sans-serif;padding:0;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg></button>'
-      + '<div style="font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">' + (titles[s.step]||'') + '</div>'
-      + '<div style="margin-left:auto;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;font-weight:500;">Step ' + s.step + '/5</div>'
-    + '</div>'
-    + '<div style="display:flex;gap:4px;margin-bottom:24px;">' + segs + '</div>'
-    + '<div id="bfPageBody"></div>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px;">'
-      + '<button onclick="_bfBack()" class="bfm-back-footer">Back</button>'
-      + '<button id="bfPageContinue" onclick="' + (s.step===5 ? '_bfConfirm()' : '_bfNext()') + '" class="bfm-continue-btn">' + (s.step===5 ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7l3.5 3.5L12 4"/></svg> Confirm booking' : 'Continue <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h8M8 4l3 3-3 3"/></svg>') + '</button>'
-    + '</div>';
+  // Build page via DOM to avoid quoting issues
+  inner.innerHTML = '';
+
+  // Header: back + title + step label
+  var hdr = document.createElement('div');
+  hdr.style.cssText = 'display:flex;align-items:center;gap:14px;margin-bottom:14px;';
+  var backBtn = document.createElement('button');
+  backBtn.style.cssText = 'background:none;border:none;cursor:pointer;color:#64748b;display:flex;align-items:center;gap:4px;font-size:13.5px;font-weight:600;font-family:Inter,sans-serif;padding:0;';
+  backBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg>';
+  backBtn.onclick = _bfBack;
+  var titleEl = document.createElement('div');
+  titleEl.style.cssText = 'font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;';
+  titleEl.textContent = titles[s.step] || '';
+  var stepLbl = document.createElement('div');
+  stepLbl.style.cssText = 'margin-left:auto;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;font-weight:500;';
+  stepLbl.textContent = 'Step ' + s.step + '/5';
+  hdr.appendChild(backBtn); hdr.appendChild(titleEl); hdr.appendChild(stepLbl);
+  inner.appendChild(hdr);
+
+  // Progress bar
+  var prog = document.createElement('div');
+  prog.style.cssText = 'display:flex;gap:4px;margin-bottom:24px;';
+  prog.innerHTML = segs;
+  inner.appendChild(prog);
+
+  // Body (scrollable content populated by _bfRenderStep)
+  var bodyDiv = document.createElement('div');
+  bodyDiv.id = 'bfPageBody';
+  inner.appendChild(bodyDiv);
+
+  // Footer buttons
+  var footer = document.createElement('div');
+  footer.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px;';
+  var backFooter = document.createElement('button');
+  backFooter.className = 'bfm-back-footer';
+  backFooter.textContent = 'Back';
+  backFooter.onclick = _bfBack;
+  var contBtn = document.createElement('button');
+  contBtn.id = 'bfPageContinue';
+  contBtn.className = 'bfm-continue-btn';
+  if (s.step === 5) {
+    contBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7l3.5 3.5L12 4"/></svg> Confirm booking';
+    contBtn.onclick = _bfConfirm;
+  } else {
+    contBtn.innerHTML = 'Continue <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h8M8 4l3 3-3 3"/></svg>';
+    contBtn.onclick = _bfNext;
+  }
+  footer.appendChild(backFooter); footer.appendChild(contBtn);
+  inner.appendChild(footer);
   _bfRenderStep(s.step);
 }
 
@@ -6187,92 +6226,291 @@ function _bfNext() {
 function _bfRenderStep(step) {
   var body = document.getElementById('bfPageBody');
   if (!body) return;
+  body.innerHTML = '';
   var s = _bfState;
+
   if (step === 1) {
-    var html = '<div style="font-size:14px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:16px;">Select a property</div>';
+    // ── Select property ──
+    var h = document.createElement('div');
+    h.style.cssText = 'font-size:14px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:16px;';
+    h.textContent = 'Select a property';
+    body.appendChild(h);
     _bfProperties.forEach(function(prop, idx) {
-      var sel = s.property === prop.name;
-      html += '<div class="bfm-prop-card '+(sel?'selected':'')+'" onclick="_bfSelectProp('+idx+')">'
-        + '<div class="bfm-prop-thumb"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5"><path d="M3 21V10l9-7 9 7v11"/><path d="M9 21v-6h6v6"/></svg></div>'
-        + '<div style="flex:1;">'
-          + '<div class="bfm-prop-name">'+prop.name+'</div>'
-          + '<div class="bfm-prop-addr">'+prop.addr+'</div>'
-          + '<div style="display:flex;gap:6px;margin-top:6px;align-items:center;">'
-            + '<span class="bfm-ptag">'+prop.type+'</span>'
-            + '<span style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;">'+prop.beds+'</span>'
-            + '<span style="font-size:11.5px;color:#1A5FC8;font-family:Inter,sans-serif;font-weight:600;">'+prop.suppliers+' suppliers assigned</span>'
-          + '</div>'
-        + '</div>'
-        + (sel?'<svg width="20" height="20" viewBox="0 0 20 20" fill="#1A5FC8" stroke="none"><circle cx="10" cy="10" r="10"/><path d="M6 10l3 3 5-5" stroke="#fff" stroke-width="1.8" fill="none"/></svg>':'')
-      + '</div>';
+      var card = document.createElement('div');
+      card.className = 'bfm-prop-card' + (s.property===prop.name?' selected':'');
+      card.onclick = function(){ _bfSelectProp(idx); };
+      var thumb = document.createElement('div');
+      thumb.className = 'bfm-prop-thumb';
+      thumb.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5"><path d="M3 21V10l9-7 9 7v11"/><path d="M9 21v-6h6v6"/></svg>';
+      var info = document.createElement('div');
+      info.style.cssText = 'flex:1;';
+      var name = document.createElement('div');
+      name.className = 'bfm-prop-name';
+      name.textContent = prop.name;
+      var addr = document.createElement('div');
+      addr.className = 'bfm-prop-addr';
+      addr.textContent = prop.addr;
+      var tags = document.createElement('div');
+      tags.style.cssText = 'display:flex;gap:6px;margin-top:6px;align-items:center;';
+      var typeTag = document.createElement('span');
+      typeTag.className = 'bfm-ptag';
+      typeTag.textContent = prop.type;
+      var bedsSpan = document.createElement('span');
+      bedsSpan.style.cssText = 'font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;';
+      bedsSpan.textContent = prop.beds;
+      var suppSpan = document.createElement('span');
+      suppSpan.style.cssText = 'font-size:11.5px;color:#1A5FC8;font-family:Inter,sans-serif;font-weight:600;';
+      suppSpan.textContent = prop.suppliers + ' suppliers assigned';
+      tags.appendChild(typeTag); tags.appendChild(bedsSpan); tags.appendChild(suppSpan);
+      info.appendChild(name); info.appendChild(addr); info.appendChild(tags);
+      card.appendChild(thumb); card.appendChild(info);
+      if (s.property===prop.name) {
+        var chk = document.createElement('div');
+        chk.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="#1A5FC8"><circle cx="10" cy="10" r="10"/><path d="M6 10l3 3 5-5" stroke="#fff" stroke-width="1.8" fill="none"/></svg>';
+        card.appendChild(chk);
+      }
+      body.appendChild(card);
     });
-    body.innerHTML = html;
+
   } else if (step === 2) {
-    var provHTML = '<input type="text" placeholder="Search providers or services..." oninput="_bfFilterProv(this.value)" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;margin-bottom:14px;box-sizing:border-box;">'
-      + '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:11px 16px;display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:13px;font-weight:600;color:#1d4ed8;font-family:Inter,sans-serif;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1d4ed8" stroke-width="1.8"><rect x="1" y="3" width="12" height="9" rx="1.5"/><path d="M1 6h12M4 1v3M10 1v3"/></svg> 3 suppliers are assigned to '+s.property+'</div>'
-      + '<div id="bfmProvList">';
+    // ── Choose a provider ──
+    // Search input
+    var searchWrap = document.createElement('div');
+    searchWrap.style.cssText = 'position:relative;margin-bottom:12px;';
+    var searchIcon = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.8" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="6" cy="6" r="4.5"/><path d="M10 10l2.5 2.5"/></svg>';
+    var searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.placeholder = 'Search providers or services...';
+    searchInput.style.cssText = 'width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 14px 10px 36px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;';
+    searchInput.oninput = function(){ _bfFilterProv(this.value); };
+    searchWrap.innerHTML = searchIcon;
+    searchWrap.appendChild(searchInput);
+    body.appendChild(searchWrap);
+
+    // Assignment badge
+    var badge = document.createElement('div');
+    badge.style.cssText = 'background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:11px 16px;display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:13px;font-weight:600;color:#1d4ed8;font-family:Inter,sans-serif;';
+    badge.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1d4ed8" stroke-width="1.8"><rect x="1" y="3" width="12" height="9" rx="1.5"/><path d="M1 6h12M4 1v3M10 1v3"/></svg>';
+    var badgeText = document.createElement('span');
+    badgeText.textContent = '3 suppliers are assigned to ' + s.property;
+    badge.appendChild(badgeText);
+    body.appendChild(badge);
+
+    // Provider list
+    var provList = document.createElement('div');
+    provList.id = 'bfmProvList';
     _exploreProviders.forEach(function(p) {
       var sel = s.providerName === p.name;
-      provHTML += '<div class="bfm-prov-card '+(sel?'selected':'')+'" onclick="_bfSelectProv(\"+p.id+\")" id="bfProv_'+p.id+'">'
-        + '<div class="bfm-prov-img" style="background:linear-gradient(135deg,#1a3356,#0f1c38);display:flex;align-items:center;justify-content:center;">'
-          + '<span style="font-size:28px;font-weight:800;color:rgba(255,255,255,.2);font-family:Fraunces,serif;">'+p.initials+'</span>'
-          + (sel?'<div style="position:absolute;top:8px;right:8px;background:#1A5FC8;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.5"><path d="M2 6l3 3 5-5"/></svg></div>':'')
-        + '</div>'
-        + '<div class="bfm-prov-body">'
-          + '<span class="bfm-prov-badge green"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#15803d" stroke-width="2"><path d="M2 5l2 2 4-4"/></svg>Assigned</span>'
-          + '<span class="bfm-prov-badge blue"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#1d4ed8" stroke-width="2"><path d="M2 5l2 2 4-4"/></svg>Verified</span>'
-          + '<div style="display:flex;align-items:center;gap:10px;margin:8px 0;">'
-            + '<div class="bfm-prov-avatar">'+p.initials+'</div>'
-            + '<div><div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">'+p.name+'</div>'
-            + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">'+p.role+' · ★'+p.rating+' ('+p.reviews+') · '+p.sla+'</div></div>'
-          + '</div>'
-          + '<div style="display:flex;gap:6px;flex-wrap:wrap;">' + p.services.slice(0,3).map(function(sv){ return '<span class="bfm-prov-badge blue">' + sv.name + ' ' + (sv.price||'Quote') + '</span>'; }).join('') + '</div>'
-        + '</div>'
-      + '</div>';
+      var card = document.createElement('div');
+      card.className = 'bfm-prov-card' + (sel?' selected':'');
+      card.id = 'bfProv_' + p.id;
+      card.style.position = 'relative';
+      card.onclick = function(){ _bfSelectProv(p.id); };
+
+      // Image area
+      var imgDiv = document.createElement('div');
+      imgDiv.className = 'bfm-prov-img';
+      imgDiv.style.cssText = 'background:linear-gradient(135deg,#1a3356,#0f1c38);display:flex;align-items:center;justify-content:center;height:80px;';
+      imgDiv.innerHTML = '<span style="font-size:24px;font-weight:800;color:rgba(255,255,255,.2);font-family:Fraunces,serif;">' + p.initials + '</span>';
+      if (sel) {
+        var chkBadge = document.createElement('div');
+        chkBadge.style.cssText = 'position:absolute;top:8px;right:8px;background:#1A5FC8;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;';
+        chkBadge.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.5"><path d="M2 6l3 3 5-5"/></svg>';
+        imgDiv.appendChild(chkBadge);
+      }
+
+      // Body
+      var cardBody = document.createElement('div');
+      cardBody.className = 'bfm-prov-body';
+
+      // Badges row
+      var badgesRow = document.createElement('div');
+      badgesRow.style.cssText = 'display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;';
+      var b1 = document.createElement('span');
+      b1.className = 'bfm-prov-badge green';
+      b1.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#15803d" stroke-width="2"><path d="M2 5l2 2 4-4"/></svg> Assigned to property';
+      var b2 = document.createElement('span');
+      b2.className = 'bfm-prov-badge blue';
+      b2.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#1d4ed8" stroke-width="2"><path d="M2 5l2 2 4-4"/></svg> Verified';
+      badgesRow.appendChild(b1); badgesRow.appendChild(b2);
+      cardBody.appendChild(badgesRow);
+
+      // Name row
+      var nameRow = document.createElement('div');
+      nameRow.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:8px;';
+      var avatar = document.createElement('div');
+      avatar.className = 'bfm-prov-avatar';
+      avatar.textContent = p.initials;
+      var nameInfo = document.createElement('div');
+      var nameEl = document.createElement('div');
+      nameEl.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;';
+      nameEl.textContent = p.name;
+      var subEl = document.createElement('div');
+      subEl.style.cssText = 'font-size:12px;color:#64748b;font-family:Inter,sans-serif;';
+      subEl.textContent = p.role + ' · ★' + p.rating + ' (' + p.reviews + ') · ' + p.sla;
+      nameInfo.appendChild(nameEl); nameInfo.appendChild(subEl);
+      nameRow.appendChild(avatar); nameRow.appendChild(nameInfo);
+      cardBody.appendChild(nameRow);
+
+      // Services chips
+      var svcsRow = document.createElement('div');
+      svcsRow.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;';
+      p.services.slice(0,3).forEach(function(sv) {
+        var chip = document.createElement('span');
+        chip.className = 'bfm-prov-badge blue';
+        chip.textContent = sv.name + ' ' + (sv.price || 'Quote');
+        svcsRow.appendChild(chip);
+      });
+      if (p.services.length > 3) {
+        var more = document.createElement('span');
+        more.style.cssText = 'font-size:12px;color:#1A5FC8;font-family:Inter,sans-serif;font-weight:600;';
+        more.textContent = '+' + (p.services.length - 3) + ' more';
+        svcsRow.appendChild(more);
+      }
+      cardBody.appendChild(svcsRow);
+
+      // Footer
+      var footer = document.createElement('div');
+      footer.style.cssText = 'display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;';
+      var areaEl = document.createElement('span');
+      areaEl.style.cssText = 'font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;';
+      areaEl.textContent = '\uD83D\uDCCD ' + p.areas;
+      var insEl = document.createElement('span');
+      insEl.style.cssText = 'font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;';
+      insEl.textContent = '\u00A3' + '1M public liability';
+      footer.appendChild(areaEl);
+      if (p.insured) footer.appendChild(insEl);
+      cardBody.appendChild(footer);
+
+      card.appendChild(imgDiv);
+      card.appendChild(cardBody);
+      provList.appendChild(card);
     });
-    provHTML += '</div>';
-    body.innerHTML = provHTML;
+    body.appendChild(provList);
+
   } else if (step === 3) {
-    body.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:6px;">Additional details <span style="font-size:12px;color:#94a3b8;font-weight:400;">(optional)</span></div>'
-      + '<textarea rows="4" placeholder="Any specific requirements, access instructions..." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;resize:vertical;box-sizing:border-box;margin-bottom:20px;color:#0f172a;" oninput="_bfState.details=this.value">'+s.details+'</textarea>'
-      + '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:6px;">Photos <span style="font-size:12px;color:#94a3b8;font-weight:400;">(optional)</span></div>'
-      + '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:10px;">Add photos to help providers understand the job</div>'
-      + '<div style="width:88px;height:88px;border:1.5px dashed #d1d5db;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;background:#fafafa;margin-bottom:22px;">'
-        + '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#94a3b8" stroke-width="1.7"><path d="M11 14V5M7 8l4-4 4 4"/><path d="M3 17h16"/></svg>'
-        + '<span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;">Upload</span>'
-      + '</div>'
-      + '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;">Urgency</div>'
-      + '<div class="bfm-urgency-grid">'
-        + _bfUrgCard('Flexible','Within the next 2 weeks')
-        + _bfUrgCard('Within a few days','3-5 working days')
-        + _bfUrgCard('Urgent','Within 24-48 hours')
-        + _bfUrgCard('Emergency','ASAP — same day if possible')
-      + '</div>';
+    // ── Job details ──
+    var h3 = document.createElement('div');
+    h3.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:6px;';
+    h3.innerHTML = 'Additional details <span style="font-size:12px;color:#94a3b8;font-weight:400;">(optional)</span>';
+    body.appendChild(h3);
+
+    var ta = document.createElement('textarea');
+    ta.rows = 4;
+    ta.placeholder = 'Any specific requirements, access instructions...';
+    ta.style.cssText = 'width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;resize:vertical;box-sizing:border-box;margin-bottom:20px;color:#0f172a;';
+    ta.value = s.details;
+    ta.oninput = function(){ _bfState.details = this.value; };
+    body.appendChild(ta);
+
+    var h3b = document.createElement('div');
+    h3b.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:6px;';
+    h3b.innerHTML = 'Photos <span style="font-size:12px;color:#94a3b8;font-weight:400;">(optional)</span>';
+    body.appendChild(h3b);
+
+    var photoSub = document.createElement('div');
+    photoSub.style.cssText = 'font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:10px;';
+    photoSub.textContent = 'Add photos to help providers understand the job';
+    body.appendChild(photoSub);
+
+    var uploadBox = document.createElement('div');
+    uploadBox.style.cssText = 'width:88px;height:88px;border:1.5px dashed #d1d5db;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;background:#fafafa;margin-bottom:22px;';
+    uploadBox.innerHTML = '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#94a3b8" stroke-width="1.7"><path d="M11 14V5M7 8l4-4 4 4"/><path d="M3 17h16"/></svg><span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;">Upload</span>';
+    body.appendChild(uploadBox);
+
+    var h3c = document.createElement('div');
+    h3c.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;';
+    h3c.textContent = 'Urgency';
+    body.appendChild(h3c);
+
+    var urgGrid = document.createElement('div');
+    urgGrid.className = 'bfm-urgency-grid';
+    [['Flexible','Within the next 2 weeks'],['Within a few days','3-5 working days'],['Urgent','Within 24-48 hours'],['Emergency','ASAP - same day if possible']].forEach(function(pair) {
+      var card = document.createElement('div');
+      card.className = 'bfm-urgency-card' + (s.urgency===pair[0]?' selected':'');
+      card.onclick = function(){ _bfSelUrgency(pair[0], this); };
+      var title = document.createElement('div');
+      title.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;';
+      title.textContent = pair[0];
+      var sub = document.createElement('div');
+      sub.style.cssText = 'font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:3px;';
+      sub.textContent = pair[1];
+      card.appendChild(title); card.appendChild(sub);
+      urgGrid.appendChild(card);
+    });
+    body.appendChild(urgGrid);
+
   } else if (step === 4) {
+    // ── Pick date & time ──
+    var h4 = document.createElement('div');
+    h4.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;';
+    h4.textContent = 'Preferred date';
+    body.appendChild(h4);
+
     var today = new Date(); today.setDate(today.getDate()+1);
     var defDate = s.date || today.toISOString().split('T')[0];
-    body.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Preferred date</div>'
-      + '<div style="display:flex;align-items:center;gap:12px;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 16px;margin-bottom:22px;background:#fff;">'
-        + '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1A5FC8" stroke-width="1.8"><rect x="1" y="2" width="14" height="13" rx="2"/><path d="M1 6h14M5 1v2M11 1v2"/></svg>'
-        + '<input type="date" style="border:none;outline:none;font-size:14px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;flex:1;cursor:pointer;" value="'+defDate+'" min="'+today.toISOString().split('T')[0]+'" onchange="_bfState.date=this.value"/>'
-      + '</div>'
-      + '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;">Preferred time</div>'
-      + '<div class="bfm-time-grid">'
-        + _bfTimeCard('Morning','🌅','8am – 12pm')
-        + _bfTimeCard('Afternoon','☀️','12pm – 5pm')
-        + _bfTimeCard('Evening','🌙','5pm – 8pm')
-      + '</div>';
+    var dateWrap = document.createElement('div');
+    dateWrap.style.cssText = 'display:flex;align-items:center;gap:12px;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 16px;margin-bottom:22px;background:#fff;';
+    dateWrap.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1A5FC8" stroke-width="1.8"><rect x="1" y="2" width="14" height="13" rx="2"/><path d="M1 6h14M5 1v2M11 1v2"/></svg>';
+    var dateInput = document.createElement('input');
+    dateInput.type = 'date';
+    dateInput.style.cssText = 'border:none;outline:none;font-size:14px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;flex:1;cursor:pointer;';
+    dateInput.value = defDate;
+    dateInput.min = today.toISOString().split('T')[0];
+    dateInput.onchange = function(){ _bfState.date = this.value; };
+    dateWrap.appendChild(dateInput);
+    body.appendChild(dateWrap);
     if (!s.date) _bfState.date = defDate;
+
+    var h4b = document.createElement('div');
+    h4b.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;';
+    h4b.textContent = 'Preferred time';
+    body.appendChild(h4b);
+
+    var timeGrid = document.createElement('div');
+    timeGrid.className = 'bfm-time-grid';
+    [['Morning','\uD83C\uDF05','8am - 12pm'],['Afternoon','\u2600\uFE0F','12pm - 5pm'],['Evening','\uD83C\uDF19','5pm - 8pm']].forEach(function(t) {
+      var card = document.createElement('div');
+      card.className = 'bfm-time-card' + (s.time===t[0]?' selected':'');
+      card.onclick = function(){ _bfSelTime(t[0], this); };
+      var icon = document.createElement('div');
+      icon.style.cssText = 'font-size:22px;margin-bottom:6px;';
+      icon.textContent = t[1];
+      var label = document.createElement('div');
+      label.style.cssText = 'font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;';
+      label.textContent = t[0];
+      var subT = document.createElement('div');
+      subT.style.cssText = 'font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;';
+      subT.textContent = t[2];
+      card.appendChild(icon); card.appendChild(label); card.appendChild(subT);
+      timeGrid.appendChild(card);
+    });
+    body.appendChild(timeGrid);
+
   } else if (step === 5) {
+    // ── Review & confirm ──
     var dateDisplay = s.date ? new Date(s.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}) : 'Not set';
-    body.innerHTML = '<div class="bfm-review-table">'
-      + '<div class="bfm-review-row"><span class="bfm-review-key">Service</span><span class="bfm-review-val">'+s.service+'</span></div>'
-      + '<div class="bfm-review-row"><span class="bfm-review-key">Property</span><span class="bfm-review-val">'+s.property+'</span></div>'
-      + '<div class="bfm-review-row"><span class="bfm-review-key">Provider</span><span class="bfm-review-val">'+s.providerName+'</span></div>'
-      + '<div class="bfm-review-row"><span class="bfm-review-key">Type</span><span class="bfm-review-val">Direct booking</span></div>'
-      + '<div class="bfm-review-row"><span class="bfm-review-key">Date &amp; Time</span><span class="bfm-review-val">'+dateDisplay+' · '+s.time+'</span></div>'
-      + '</div>'
-      + '<div class="bfm-payment-info"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#15803d" stroke-width="1.7"><rect x="1" y="5" width="16" height="10" rx="2"/><path d="M1 9h16"/></svg><div><div style="font-weight:600;font-size:13px;">Payment</div><div style="font-size:12px;margin-top:2px;">You\'ll only be charged after the job is completed and confirmed.</div></div></div>';
+    var table = document.createElement('div');
+    table.className = 'bfm-review-table';
+    var rows = [['Service',s.service],['Property',s.property],['Provider',s.providerName],['Type','Direct booking'],['Date & Time',dateDisplay + ' · ' + s.time]];
+    rows.forEach(function(row) {
+      var r = document.createElement('div');
+      r.className = 'bfm-review-row';
+      var key = document.createElement('span');
+      key.className = 'bfm-review-key';
+      key.textContent = row[0];
+      var val = document.createElement('span');
+      val.className = 'bfm-review-val';
+      val.textContent = row[1];
+      r.appendChild(key); r.appendChild(val);
+      table.appendChild(r);
+    });
+    body.appendChild(table);
+
+    var payInfo = document.createElement('div');
+    payInfo.className = 'bfm-payment-info';
+    payInfo.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#15803d" stroke-width="1.7"><rect x="1" y="5" width="16" height="10" rx="2"/><path d="M1 9h16"/></svg><div><div style="font-weight:600;font-size:13px;">Payment</div><div style="font-size:12px;margin-top:2px;">You will only be charged after the job is completed and confirmed.</div></div>';
+    body.appendChild(payInfo);
   }
 }
 
