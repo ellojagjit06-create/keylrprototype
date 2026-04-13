@@ -3930,31 +3930,31 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
       <p class="biz-ob-sub">Complete this so your invoices are correct. You can skip and come back later.</p>
       <div class="biz-ob-field">
         <label>Trading name / company name <span class="req">*</span></label>
-        <input class="biz-ob-input" id="ob-trading" type="text" placeholder="Your business name" />
+        <input class="biz-ob-input" id="ob-trading" type="text" oninput="if(typeof _updateChipBadges==='function')_updateChipBadges()" placeholder="Your business name" />
       </div>
       <div class="biz-ob-grid2">
         <div class="biz-ob-field">
           <label>Company registration number <span class="opt">(optional)</span></label>
-          <input class="biz-ob-input" id="ob-regno" type="text" placeholder="Optional — auto-fills address" />
+          <input class="biz-ob-input" id="ob-regno" type="text" oninput="if(typeof _updateChipBadges==='function')_updateChipBadges()" placeholder="Optional — auto-fills address" />
           <div class="biz-ob-hint">Enter to auto-populate from Companies House</div>
         </div>
         <div class="biz-ob-field">
           <label>Legal company name <span class="req">*</span></label>
-          <input class="biz-ob-input" id="ob-legal" type="text" placeholder="As registered" />
+          <input class="biz-ob-input" id="ob-legal" type="text" oninput="if(typeof _updateChipBadges==='function')_updateChipBadges()" placeholder="As registered" />
         </div>
       </div>
       <div class="biz-ob-field">
         <label>Registered address <span class="req">*</span></label>
-        <input class="biz-ob-input" id="ob-regaddr" type="text" placeholder="Official business address" />
+        <input class="biz-ob-input" id="ob-regaddr" type="text" oninput="if(typeof _updateChipBadges==='function')_updateChipBadges()" placeholder="Official business address" />
       </div>
       <div class="biz-ob-field">
         <label>Trading address <span class="opt">(optional)</span></label>
-        <input class="biz-ob-input" id="ob-tradaddr" type="text" placeholder="If different from registered" />
+        <input class="biz-ob-input" id="ob-tradaddr" type="text" oninput="if(typeof _updateChipBadges==='function')_updateChipBadges()" placeholder="If different from registered" />
       </div>
       <div class="biz-ob-grid2">
         <div class="biz-ob-field">
           <label>VAT registration number <span class="opt">(optional)</span></label>
-          <input class="biz-ob-input" id="ob-vat" type="text" placeholder="GB 123 456 789" />
+          <input class="biz-ob-input" id="ob-vat" type="text" oninput="if(typeof _updateChipBadges==='function')_updateChipBadges()" placeholder="GB 123 456 789" />
         </div>
         <div class="biz-ob-field">
           <label>Company logo <span class="opt">(optional)</span></label>
@@ -7827,14 +7827,17 @@ function recalcProgress(){
   var rn=document.getElementById('bizRegNum');
   var ta=document.getElementById('bizTradingAddr');
   var vt=document.getElementById('bizVat');
-  // Required fields: 10% each (30% total)
-  if(tn&&tn.value.trim().length>0)pct+=10;
-  if(ln&&ln.value.trim().length>0)pct+=10;
-  if(ra&&ra.value.trim().length>0)pct+=10;
-  // Optional fields: ~1.67% each rounding to whole numbers (5% total)
-  if(rn&&rn.value.trim().length>0)pct+=2;
-  if(ta&&ta.value.trim().length>0)pct+=2;
-  if(vt&&vt.value.trim().length>0)pct+=1;
+  // Logo: check ob-logo-preview img OR saved _user._companyLogo
+  var _logoPrev=document.getElementById('ob-logo-preview');
+  var hasLogo=(_logoPrev&&_logoPrev.querySelector('img'))||(_user&&_user._companyLogo);
+  // 7 fields × 5% each = 35% max
+  if(tn&&tn.value.trim().length>0)pct+=5;
+  if(ln&&ln.value.trim().length>0)pct+=5;
+  if(ra&&ra.value.trim().length>0)pct+=5;
+  if(rn&&rn.value.trim().length>0)pct+=5;
+  if(ta&&ta.value.trim().length>0)pct+=5;
+  if(vt&&vt.value.trim().length>0)pct+=5;
+  if(hasLogo)pct+=5;
 
   // ── Discovery (max 30%) ──
   var df=_discAnswers.filter(function(a){return a!==null&&!(Array.isArray(a)&&a.length===0);}).length;
@@ -9258,6 +9261,8 @@ function handleObLogoUpload(input) {
     }
     if (_user) _user._companyLogo = e.target.result;
     if (typeof showToast === 'function') showToast('Logo uploaded ✓', 'success');
+    // Update chip badge progress live
+    if (typeof _updateChipBadges === 'function') _updateChipBadges();
   };
   reader.readAsDataURL(file);
 }
@@ -9272,6 +9277,8 @@ function removeObLogo() {
   }
   if (fileInput) fileInput.value = '';
   if (_user) _user._companyLogo = null;
+  // Update chip badge progress live
+  if (typeof _updateChipBadges === 'function') _updateChipBadges();
 }
 
 // ═══════════════════════════════════════════════
@@ -9327,21 +9334,27 @@ function selectObPlan(planKey) {
 // CHIP PROGRESS BADGES — live update from recalcProgress
 // ═══════════════════════════════════════════════
 function _updateChipBadges() {
-  // Company details badge — all 6 fields, required weighted more
+  // Company details badge — 7 fields, each worth 1/7 (~14.3%)
+  // Fields: trading name, reg no, legal name, reg address, trading address, VAT, logo
   var tn = document.getElementById('bizTradingName');
   var ln = document.getElementById('bizLegalName');
   var ra = document.getElementById('bizRegAddr');
   var rn = document.getElementById('bizRegNum');
   var ta = document.getElementById('bizTradingAddr');
   var vt = document.getElementById('bizVat');
-  var bizScore = 0;
-  if (tn && tn.value.trim()) bizScore += 34; // required ~33%
-  if (ln && ln.value.trim()) bizScore += 33; // required
-  if (ra && ra.value.trim()) bizScore += 23; // required
-  if (rn && rn.value.trim()) bizScore += 4;  // optional
-  if (ta && ta.value.trim()) bizScore += 3;  // optional
-  if (vt && vt.value.trim()) bizScore += 3;  // optional
-  var bizPct = Math.min(bizScore, 100);
+  // Logo: check ob-logo-preview img OR _user._companyLogo
+  var logoPreview = document.getElementById('ob-logo-preview');
+  var hasLogo = (logoPreview && logoPreview.querySelector('img')) || (_user && _user._companyLogo);
+  var totalFields = 7;
+  var filled = 0;
+  if (tn && tn.value.trim()) filled++;
+  if (ln && ln.value.trim()) filled++;
+  if (ra && ra.value.trim()) filled++;
+  if (rn && rn.value.trim()) filled++;
+  if (ta && ta.value.trim()) filled++;
+  if (vt && vt.value.trim()) filled++;
+  if (hasLogo) filled++;
+  var bizPct = Math.round((filled / totalFields) * 100);
   var compChip = _pmActionChipDefs.find(function(c){ return c.id === 'company_details'; });
   if (compChip) compChip.badge = bizPct + '%';
 
