@@ -3554,7 +3554,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
           <!-- Header -->
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-            <h2 style="font-size:24px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin:0;">My Jobs</h2>
+            <div><h2 style="font-size:24px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin:0 0 4px;">My Jobs</h2><div id="bkSubtitle" style="font-size:13px;color:#94a3b8;font-family:Inter,sans-serif;">0 active · 0 completed</div></div>
             <button onclick="openBookingFlow(null,null)" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 1v11M1 6.5h11"/></svg>Book a service</button>
           </div>
 
@@ -5586,95 +5586,46 @@ function _iconColor(icon) {
 }
 
 function renderBookingsPage() {
-  var statEl  = document.getElementById('bkStats');
-  var tabEl   = document.getElementById('bkTabs');
-  var listEl  = document.getElementById('bkList');
+  var statEl = document.getElementById('bkStats');
+  var tabEl  = document.getElementById('bkTabs');
+  var listEl = document.getElementById('bkList');
+  var subtitleEl = document.getElementById('bkSubtitle');
   if (!statEl || !tabEl || !listEl) return;
 
-  // ── Not logged in OR no jobs → zero state ──
-  if (!_isLoggedIn || !_allJobs.length) {
-    statEl.innerHTML = '';
-    tabEl.innerHTML  = '';
-    listEl.innerHTML = '';
-
-    // Zero state card (matches Properties page style)
-    var zero = document.createElement('div');
-    zero.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;padding:70px 24px;text-align:center;';
-
-    // Icon circle
-    var iconCircle = document.createElement('div');
-    iconCircle.style.cssText = 'width:80px;height:80px;border-radius:50%;background:#eff6ff;display:flex;align-items:center;justify-content:center;margin-bottom:20px;';
-    iconCircle.innerHTML = '<svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="#1A5FC8" stroke-width="1.5"><rect x="6" y="4" width="24" height="28" rx="3"/><path d="M12 12h12M12 18h12M12 24h7"/></svg>';
-    zero.appendChild(iconCircle);
-
-    var title = document.createElement('div');
-    title.style.cssText = 'font-size:19px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;';
-    title.textContent = 'No jobs yet';
-    zero.appendChild(title);
-
-    var sub = document.createElement('div');
-    sub.style.cssText = 'font-size:13.5px;color:#64748b;max-width:290px;margin:0 auto 26px;line-height:1.65;font-family:Inter,sans-serif;';
-    sub.textContent = _isLoggedIn
-      ? 'Book a service to get started. Your confirmed jobs will appear here.'
-      : 'Sign in to view and manage your booked services.';
-    zero.appendChild(sub);
-
-    if (_isLoggedIn) {
-      // Logged in but no jobs: Book a service CTA
-      var bookBtn = document.createElement('button');
-      bookBtn.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;margin:0 auto;';
-      bookBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h10M7 2v10"/></svg>Book a service';
-      bookBtn.onclick = function(){ openBookingFlow(null, null); };
-      zero.appendChild(bookBtn);
-    } else {
-      // Not logged in: Log in + Sign up CTAs
-      var btnRow = document.createElement('div');
-      btnRow.style.cssText = 'display:flex;gap:10px;justify-content:center;flex-wrap:wrap;';
-
-      var loginBtn = document.createElement('button');
-      loginBtn.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;color:#374151;border-radius:10px;padding:11px 24px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
-      loginBtn.textContent = 'Log in';
-      loginBtn.onclick = function(){ showAuthPage('login'); };
-
-      var signupBtn = document.createElement('button');
-      signupBtn.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
-      signupBtn.textContent = 'Sign up free';
-      signupBtn.onclick = function(){ showAuthPage('signup'); };
-
-      btnRow.appendChild(loginBtn);
-      btnRow.appendChild(signupBtn);
-      zero.appendChild(btnRow);
-    }
-
-    listEl.appendChild(zero);
-    return;
-  }
-
-  // ── Logged in + has jobs → full page ──
-  var active    = _allJobs.filter(function(j){ return j.status !== 'Completed'; });
-  var completed = _allJobs.filter(function(j){ return j.status === 'Completed'; });
+  var active    = _isLoggedIn ? _allJobs.filter(function(j){ return j.status !== 'Completed'; }) : [];
+  var completed = _isLoggedIn ? _allJobs.filter(function(j){ return j.status === 'Completed'; }) : [];
   var totalSpent = completed.reduce(function(s,j){ return s + parseInt((j.price||'0').replace(/[^0-9]/g,'')||0); }, 0);
-  var avgRating  = 4.5;
+  var thisMonth  = _isLoggedIn ? _allJobs.filter(function(j){
+    return j.created && j.created.startsWith(new Date().toISOString().slice(0,7));
+  }).length : 0;
 
-  // Stats
+  // Update subtitle
+  if (subtitleEl) subtitleEl.textContent = active.length + ' active · ' + completed.length + ' completed';
+
+  // ── Stats row — always visible ──
   statEl.innerHTML = '';
+  statEl.style.display = 'grid';
   [
-    { icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M4 11l4 4 10-10"/></svg>',  val:active.length,    label:'Active',      color:'#1A5FC8' },
-    { icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#10b981" stroke-width="1.6"><circle cx="10" cy="10" r="8"/><path d="M6 10l3 3 5-5"/></svg>', val:completed.length, label:'Completed',   color:'#10b981' },
-    { icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#0f172a" stroke-width="1.6"><rect x="2" y="5" width="16" height="12" rx="2"/><path d="M2 9h16"/></svg>', val:'£'+totalSpent, label:'Total Spent', color:'#0f172a' },
-    { icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#f59e0b" stroke-width="1.6"><path d="M10 2l2 5.5H18l-4.5 3.5 1.5 5.5L10 13l-5 3.5 1.5-5.5L2 7.5h6z"/></svg>', val:avgRating, label:'Avg Rating', color:'#f59e0b' },
+    { label:'ACTIVE',      val: _isLoggedIn ? active.length    : 0,          color:'#1A5FC8' },
+    { label:'COMPLETED',   val: _isLoggedIn ? completed.length : 0,          color:'#10b981' },
+    { label:'TOTAL SPENT', val: '£' + (_isLoggedIn ? totalSpent : 0),        color:'#0f172a', bold:true },
+    { label:'THIS MONTH',  val: _isLoggedIn ? thisMonth        : 0,          color:'#f59e0b' },
   ].forEach(function(s) {
     var card = document.createElement('div');
-    card.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:18px 16px;';
-    card.innerHTML = '<div style="margin-bottom:10px;">'+s.icon+'</div>'
-      +'<div style="font-size:22px;font-weight:800;color:'+s.color+';font-family:Fraunces,serif;">'+s.val+'</div>'
-      +'<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:3px;">'+s.label+'</div>';
+    card.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:20px 18px;';
+    var lbl = document.createElement('div');
+    lbl.style.cssText = 'font-size:11px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;letter-spacing:.04em;margin-bottom:10px;';
+    lbl.textContent = s.label;
+    var val = document.createElement('div');
+    val.style.cssText = 'font-size:28px;font-weight:900;color:'+s.color+';font-family:Fraunces,serif;'+(s.bold?'font-weight:800;':'');
+    val.textContent = s.val;
+    card.appendChild(lbl); card.appendChild(val);
     statEl.appendChild(card);
   });
 
-  // Tabs
+  // ── Tabs — always visible ──
   tabEl.innerHTML = '';
-  [['active','Active ('+active.length+')'],['completed','Completed ('+completed.length+')'],['all','All ('+_allJobs.length+')']].forEach(function(t) {
+  [['active','Active ('+active.length+')'],['completed','Completed ('+completed.length+')'],['all','All ('+(active.length+completed.length)+')']].forEach(function(t) {
     var btn = document.createElement('button');
     var sel = _bkActiveFilter === t[0];
     btn.style.cssText = 'background:'+(sel?'#0f172a':'#fff')+';color:'+(sel?'#fff':'#374151')+';border:1.5px solid '+(sel?'#0f172a':'#e2e8f0')+';border-radius:999px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
@@ -5683,18 +5634,74 @@ function renderBookingsPage() {
     tabEl.appendChild(btn);
   });
 
-  // Job list
+  // ── Job list ──
   listEl.innerHTML = '';
-  var jobs = _bkActiveFilter==='active' ? active : _bkActiveFilter==='completed' ? completed : _allJobs;
+
+  // Zero state (not logged in OR no jobs for this filter)
+  var jobs = !_isLoggedIn ? [] :
+    _bkActiveFilter==='active' ? active :
+    _bkActiveFilter==='completed' ? completed : _allJobs;
 
   if (!jobs.length) {
-    var emptyDiv = document.createElement('div');
-    emptyDiv.style.cssText = 'text-align:center;padding:50px 24px;color:#94a3b8;font-family:Inter,sans-serif;font-size:14px;';
-    emptyDiv.textContent = _bkActiveFilter==='active' ? 'No active jobs' : _bkActiveFilter==='completed' ? 'No completed jobs yet' : 'No jobs';
-    listEl.appendChild(emptyDiv);
+    // Card-style zero state (white card with rounded border like the image)
+    var zeroCard = document.createElement('div');
+    zeroCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:18px;padding:60px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;';
+
+    // Icon circle
+    var iconCircle = document.createElement('div');
+    iconCircle.style.cssText = 'width:72px;height:72px;border-radius:20px;background:#eff6ff;display:flex;align-items:center;justify-content:center;margin-bottom:20px;';
+    iconCircle.innerHTML = '<svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#1A5FC8" stroke-width="1.5"><rect x="5" y="10" width="24" height="18" rx="3"/><path d="M5 16h24"/><path d="M11 7v5M23 7v5"/><circle cx="11" cy="22" r="1.5" fill="#1A5FC8" stroke="none"/></svg>';
+    zeroCard.appendChild(iconCircle);
+
+    var title = document.createElement('div');
+    title.style.cssText = 'font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:10px;';
+    title.textContent = 'No jobs yet';
+    zeroCard.appendChild(title);
+
+    var sub = document.createElement('div');
+    sub.style.cssText = 'font-size:13.5px;color:#64748b;max-width:300px;line-height:1.65;font-family:Inter,sans-serif;margin-bottom:26px;';
+    sub.textContent = _isLoggedIn
+      ? 'Book your first property service and track all your jobs, progress and reports here.'
+      : 'Sign in to view and manage your booked services.';
+    zeroCard.appendChild(sub);
+
+    if (_isLoggedIn) {
+      var bookBtn = document.createElement('button');
+      bookBtn.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px 32px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;margin-bottom:22px;';
+      bookBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h10M7 2v10"/></svg>Book your first service';
+      bookBtn.onclick = function(){ openBookingFlow(null, null); };
+      zeroCard.appendChild(bookBtn);
+
+      // Feature chips
+      var chips = document.createElement('div');
+      chips.style.cssText = 'display:flex;gap:16px;flex-wrap:wrap;justify-content:center;';
+      ['Real-time tracking','Vetted professionals','Job history & reports'].forEach(function(txt) {
+        var chip = document.createElement('span');
+        chip.style.cssText = 'font-size:12px;color:#64748b;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;';
+        chip.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 6.5l3 3 6-6"/></svg>'+txt;
+        chips.appendChild(chip);
+      });
+      zeroCard.appendChild(chips);
+    } else {
+      var btnRow = document.createElement('div');
+      btnRow.style.cssText = 'display:flex;gap:10px;justify-content:center;';
+      var loginBtn = document.createElement('button');
+      loginBtn.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;color:#374151;border-radius:10px;padding:11px 24px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
+      loginBtn.textContent = 'Log in';
+      loginBtn.onclick = function(){ showAuthPage('login'); };
+      var signupBtn = document.createElement('button');
+      signupBtn.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
+      signupBtn.textContent = 'Sign up free';
+      signupBtn.onclick = function(){ showAuthPage('signup'); };
+      btnRow.appendChild(loginBtn); btnRow.appendChild(signupBtn);
+      zeroCard.appendChild(btnRow);
+    }
+
+    listEl.appendChild(zeroCard);
     return;
   }
 
+  // ── Render job cards ──
   jobs.forEach(function(job) {
     var sc = _jobStatusColors[job.status] || {bg:'#f8fafc',color:'#475569'};
     var card = document.createElement('div');
@@ -5720,9 +5727,9 @@ function renderBookingsPage() {
     var statusBadge = document.createElement('span');
     statusBadge.style.cssText = 'background:'+sc.bg+';color:'+sc.color+';border-radius:6px;padding:4px 10px;font-size:11.5px;font-weight:700;font-family:Inter,sans-serif;white-space:nowrap;';
     statusBadge.textContent = job.status;
-    var arrow = document.createElement('div');
-    arrow.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#cbd5e1" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>';
-    row1.appendChild(iconWrap); row1.appendChild(nameWrap); row1.appendChild(statusBadge); row1.appendChild(arrow);
+    var arrowEl = document.createElement('div');
+    arrowEl.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#cbd5e1" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>';
+    row1.appendChild(iconWrap); row1.appendChild(nameWrap); row1.appendChild(statusBadge); row1.appendChild(arrowEl);
     card.appendChild(row1);
 
     var progLabel = document.createElement('div');
@@ -5748,7 +5755,6 @@ function renderBookingsPage() {
     priceEl.textContent = job.price;
     row3.appendChild(priceEl);
     card.appendChild(row3);
-
     listEl.appendChild(card);
   });
 }
