@@ -6780,7 +6780,7 @@ var _pmActionChipDefs = [
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1A5FC8" stroke-width="1.6"><rect x="2" y="6" width="14" height="10" rx="2"/><path d="M5 6V5a4 4 0 018 0v1"/><path d="M2 10h14"/></svg>',
     bg: '#eff6ff', border: '#bfdbfe', iconBg: '#dbeafe',
     title: 'Company details', sub: '', badge: '0%',
-    action: function(){ window._pendingSettingsTab='business'; showPage('settings',null); },
+    action: function(){ showPMBizOnboarding(); },
     actionLabel: null
   },
   {
@@ -9086,13 +9086,38 @@ function showPMBizOnboarding() {
   var landing = document.getElementById('pg-landing');
   var dash = document.getElementById('pg-dashboard');
   var ob = document.getElementById('pg-biz-onboard');
+  var discPg = document.getElementById('pg-discovery-flow');
   if (landing) landing.style.display = 'none';
   if (dash) { dash.style.display = 'none'; dash.classList.remove('visible'); }
+  if (discPg) discPg.classList.remove('visible');
   if (ob) ob.classList.add('visible');
-  // Clear fields for fresh signup
-  ['ob-trading','ob-regno','ob-legal','ob-regaddr','ob-tradaddr','ob-vat'].forEach(function(id){
-    var el = document.getElementById(id); if(el) el.value = '';
+
+  // Pre-fill from saved user data if available, otherwise clear
+  var fieldMap = {
+    'ob-trading':  _user && _user._bizTradingName ? _user._bizTradingName : '',
+    'ob-legal':    _user && _user._bizLegalName   ? _user._bizLegalName   : '',
+    'ob-regaddr':  _user && _user._bizRegAddr     ? _user._bizRegAddr     : '',
+    'ob-regno':    _user && _user._bizRegNum      ? _user._bizRegNum      : '',
+    'ob-tradaddr': _user && _user._bizTradingAddr ? _user._bizTradingAddr : '',
+    'ob-vat':      _user && _user._bizVat         ? _user._bizVat         : ''
+  };
+  Object.keys(fieldMap).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.value = fieldMap[id];
   });
+
+  // Restore logo preview if previously uploaded
+  var preview = document.getElementById('ob-logo-preview');
+  if (preview && _user && _user._companyLogo) {
+    preview.innerHTML =
+      '<img src="' + _user._companyLogo + '" style="max-height:32px;max-width:calc(100% - 32px);object-fit:contain;border-radius:4px;" />' +
+      '<button onclick="event.stopPropagation();removeObLogo()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:#fee2e2;border:none;border-radius:5px;width:22px;height:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" title="Remove logo">' +
+      '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#ef4444" stroke-width="2"><path d="M1 1l8 8M9 1L1 9"/></svg></button>';
+  } else if (preview) {
+    preview.innerHTML =
+      '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#94a3b8" stroke-width="1.7"><path d="M7.5 10V3M4 6l3.5-3.5L11 6"/><path d="M2 12h11"/></svg>' +
+      '<span id="ob-logo-label">Upload PNG or SVG</span>';
+  }
 }
 
 function saveBizOnboarding() {
