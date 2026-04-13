@@ -2756,6 +2756,13 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .dash-dark .bfm-payment-info { background:#052e16 !important; border-color:#14532d !important; color:#34d399 !important; }
 /* Back + Continue buttons */
 .dash-dark .bf-step-title { color:#e6edf3 !important; }
+/* Stats values white in dark mode */
+.dash-dark .bk-stat-val { color:#e6edf3 !important; }
+/* "No jobs yet" title white */
+.dash-dark #bkList div[style*="font-size:20px"][style*="font-weight:800"] { color:#e6edf3 !important; }
+.dash-dark #bkList div[style*="font-size:13.5px"][style*="line-height:1.65"] { color:#8b949e !important; }
+/* Bookings chat bar dark */
+.dash-dark .bk-chat-bar { background:#0d1117 !important; border-color:#30363d !important; }
 .dash-dark .bf-sub-heading { color:#e6edf3 !important; }
 .dash-dark .bf-card-heading { color:#e6edf3 !important; }
 .dash-dark .bf-muted-text { color:#8b949e !important; }
@@ -3866,7 +3873,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     </div>
 
         <!-- BOOKINGS PAGE -->
-    <div id="page-bookings">
+    <div id="page-bookings" style="flex-direction:column;">
       <div style="flex:1;overflow-y:auto;min-height:0;" id="bkScrollArea">
         <div style="width:100%;max-width:900px;margin:0 auto;padding:24px clamp(16px,4vw,40px) 40px;">
 
@@ -3883,7 +3890,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           <div id="bkTabs" style="display:flex;gap:6px;margin-bottom:16px;"></div>
 
           <!-- Job cards -->
-          <div id="bkList"></div>
+          <div id="bkList" style="margin-top:16px;"></div>
         </div>
       </div>
     </div>
@@ -5935,6 +5942,7 @@ function renderBookingsPage() {
     lbl.style.cssText = 'font-size:11px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;letter-spacing:.04em;margin-bottom:10px;';
     lbl.textContent = s.label;
     var val = document.createElement('div');
+    val.className = 'bk-stat-val';
     val.style.cssText = 'font-size:28px;font-weight:900;color:'+s.color+';font-family:Fraunces,serif;'+(s.bold?'font-weight:800;':'');
     val.textContent = s.val;
     card.appendChild(lbl); card.appendChild(val);
@@ -6586,8 +6594,9 @@ function _renderExploreCatCards() {
 
   groups.forEach(function(group) {
     // Heading
+    var isDkH = document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark');
     var h = document.createElement('div');
-    h.style.cssText = 'font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin:20px 0 10px;';
+    h.style.cssText = 'font-size:15px;font-weight:700;color:'+(isDkH?'#e6edf3':'#0f172a')+';font-family:Inter,sans-serif;margin:20px 0 10px;';
     h.textContent = group.heading;
     el.appendChild(h);
 
@@ -6597,16 +6606,18 @@ function _renderExploreCatCards() {
 
     group.items.forEach(function(item) {
       var card = document.createElement('div');
-      card.style.cssText = 'background:#fff;border:1.5px solid #e9edf2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:border-color .15s,box-shadow .15s;';
-      card.onmouseover = function(){ this.style.borderColor='#93c5fd'; this.style.boxShadow='0 2px 12px rgba(26,95,200,.08)'; };
-      card.onmouseout = function(){ this.style.borderColor='#e9edf2'; this.style.boxShadow='none'; };
+      var isDk = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
+      card.className = 'exp-svc-cat-card';
+      card.style.cssText = 'background:'+(isDk?'#161b22':'#fff')+';border:1.5px solid '+(isDk?'#30363d':'#e9edf2')+';border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:border-color .15s,box-shadow .15s;';
+      card.onmouseover = function(){ this.style.borderColor='#3b82f6'; this.style.boxShadow=isDk?'0 2px 12px rgba(59,130,246,.2)':'0 2px 12px rgba(26,95,200,.08)'; };
+      card.onmouseout = function(){ this.style.borderColor=isDk?'#30363d':'#e9edf2'; this.style.boxShadow='none'; };
       card.onclick = (function(catKey, lbl){ return function(){ _serviceCardClick(catKey, lbl); }; })(group.catKey, item.label);
-      card.innerHTML = '<div style="width:36px;height:36px;background:#eff6ff;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+      card.innerHTML = '<div style="width:36px;height:36px;background:'+(isDk?'#1c2433':'#eff6ff')+';border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
           + (icons[item.icon]||icons.wrench)
         + '</div>'
         + '<div>'
-          + '<div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">'+item.label+'</div>'
-          + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">'+item.count+' pro'+(item.count!==1?'s':'')+'</div>'
+          + '<div style="font-size:13.5px;font-weight:600;color:'+(isDk?'#e6edf3':'#0f172a')+';font-family:Inter,sans-serif;">'+item.label+'</div>'
+          + '<div style="font-size:12px;color:'+(isDk?'#8b949e':'#64748b')+';font-family:Inter,sans-serif;margin-top:2px;">'+item.count+' pro'+(item.count!==1?'s':'')+'</div>'
         + '</div>';
       grid.appendChild(card);
     });
@@ -6990,6 +7001,7 @@ function showProviderProfile(pid) {
   el.innerHTML = '';
 
   var wrap = document.createElement('div');
+  var isDkPP = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
   wrap.style.cssText = 'display:grid;grid-template-columns:1fr 280px;gap:20px;align-items:start;';
 
   // LEFT COLUMN
@@ -7039,7 +7051,7 @@ function showProviderProfile(pid) {
 
   // Profile header card
   var headerCard = document.createElement('div');
-  headerCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:24px;margin-bottom:16px;';
+  headerCard.style.cssText = 'background:'+(isDkPP?'#161b22':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:24px;margin-bottom:16px;';
   // Build header card with DOM (matching Image 3 layout)
   var hcWrap = document.createElement('div');
   hcWrap.style.cssText = 'display:flex;align-items:flex-start;gap:16px;';
@@ -7134,7 +7146,7 @@ function showProviderProfile(pid) {
   ];
   stats.forEach(function(s) {
     var sc = document.createElement('div');
-    sc.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:18px 14px;text-align:center;';
+    sc.style.cssText = 'background:'+(isDkPP?'#161b22':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';border-radius:14px;padding:18px 14px;text-align:center;';
     sc.innerHTML = '<div style="display:flex;justify-content:center;margin-bottom:8px;">'+s.icon+'</div>'
       +'<div style="font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+s.val+'</div>'
       +'<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:3px;">'+s.label+'</div>';
@@ -7145,14 +7157,14 @@ function showProviderProfile(pid) {
   // Fixed services
   if (fixedSvcs) {
     var fCard = document.createElement('div');
-    fCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:22px 24px;margin-bottom:16px;';
+    fCard.style.cssText = 'background:'+(isDkPP?'#161b22':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:22px 24px;margin-bottom:16px;';
     fCard.innerHTML = '<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;display:flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>Fixed-price services</div>'+fixedSvcs;
     left.appendChild(fCard);
   }
   // Quote services
   if (quoteSvcs) {
     var qCard = document.createElement('div');
-    qCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:22px 24px;margin-bottom:16px;';
+    qCard.style.cssText = 'background:'+(isDkPP?'#161b22':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:22px 24px;margin-bottom:16px;';
     qCard.innerHTML = '<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">Additional services</div>'+quoteSvcs;
     left.appendChild(qCard);
   }
@@ -7165,7 +7177,7 @@ function showProviderProfile(pid) {
 
   // Verification status card
   var vCard = document.createElement('div');
-  vCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;';
+  vCard.style.cssText = 'background:'+(isDkPP?'#161b22':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:18px;margin-bottom:12px;';
   vCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Verification status</div>'
     +'<div style="font-size:13px;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:8px;">'
       +'<div style="display:flex;align-items:center;gap:8px;color:#15803d;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Identity verified</div>'
@@ -7177,14 +7189,14 @@ function showProviderProfile(pid) {
 
   // Certifications card
   var certCard = document.createElement('div');
-  certCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;';
+  certCard.style.cssText = 'background:'+(isDkPP?'#161b22':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:18px;margin-bottom:12px;';
   certCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M7 1l2 4h4l-3 2.5 1 4L7 9l-4 2.5 1-4L1 5h4z"/></svg>Certifications</div>'
     +'<div style="display:flex;gap:6px;flex-wrap:wrap;">'+certsHTML+'</div>';
   right.appendChild(certCard);
 
   // Insurance card (separate)
   var insCard = document.createElement('div');
-  insCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;';
+  insCard.style.cssText = 'background:'+(isDkPP?'#161b22':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:18px;margin-bottom:12px;';
   insCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Insurance</div>'
     +'<div style="font-size:13px;color:#374151;font-family:Inter,sans-serif;margin-bottom:6px;">&#163;1M public liability</div>'
     +(p.emergency ? '<div style="font-size:12.5px;color:#f59e0b;font-family:Inter,sans-serif;display:flex;align-items:center;gap:4px;font-weight:600;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#f59e0b" stroke-width="1.6"><path d="M6 1l1.5 4H11L7.5 8l1.5 4L6 9.5 2 12l1.5-4L0 5h3.5z"/></svg>Emergency callout available</div>' : '');
@@ -7192,7 +7204,7 @@ function showProviderProfile(pid) {
 
   // Coverage card
   var covCard = document.createElement('div');
-  covCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;';
+  covCard.style.cssText = 'background:'+(isDkPP?'#161b22':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:18px;margin-bottom:12px;';
   covCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Coverage</div>'
     +'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">'+areaTags+'</div>'
     +'<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:6px;">Serves Residential &amp; Commercial</div>'
@@ -7201,7 +7213,7 @@ function showProviderProfile(pid) {
 
   // Contact card
   var contactCard = document.createElement('div');
-  contactCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;';
+  contactCard.style.cssText = 'background:'+(isDkPP?'#161b22':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:18px;margin-bottom:12px;';
   contactCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Contact</div>'
     +'<div style="font-size:13px;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:8px;color:#374151;">'
       +'<div style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.6"><path d="M2 3h10a1 1 0 011 1v7a1 1 0 01-1 1H2a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M1 4l6 4 6-4"/></svg>info@'+p.name.toLowerCase().split(' ').join('')+'.co.uk</div>'
@@ -7656,7 +7668,10 @@ function _bfRenderStep(step) {
     dateWrap.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1A5FC8" stroke-width="1.8"><rect x="1" y="2" width="14" height="13" rx="2"/><path d="M1 6h14M5 1v2M11 1v2"/></svg>';
     var dateInput = document.createElement('input');
     dateInput.type = 'date';
-    dateInput.style.cssText = 'border:none;outline:none;font-size:14px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;flex:1;cursor:pointer;';
+    var isDkDate = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
+    dateInput.style.cssText = 'border:none;outline:none;font-size:14px;font-weight:600;color:'+(isDkDate?'#e6edf3':'#0f172a')+';font-family:Inter,sans-serif;flex:1;cursor:pointer;background:transparent;color-scheme:'+(isDkDate?'dark':'light')+';';
+    if (isDkDate) dateWrap.style.background = '#161b22';
+    if (isDkDate) dateWrap.style.borderColor = '#30363d';
     dateInput.value = defDate;
     dateInput.min = today.toISOString().split('T')[0];
     dateInput.onchange = function(){ _bfState.date = this.value; };
