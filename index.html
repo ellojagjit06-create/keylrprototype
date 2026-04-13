@@ -7103,24 +7103,17 @@ function profileAvatarSelected(input) {
   if (file.size > 5*1024*1024) { showToast('Image must be under 5MB','error'); return; }
   var reader = new FileReader();
   reader.onload = function(e) {
+    // Update settings avatar preview only — sidebar updates on Save changes
     var ini = document.getElementById('settingsIni');
     if (ini) {
       ini.style.background = 'none';
       ini.style.overflow = 'hidden';
       ini.innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />';
     }
-    if (_user) {
-      _user._avatar = e.target.result;
-      // Persist to store
-      if (typeof _userKey === 'function' && typeof _userStore !== 'undefined') {
-        var key = _userKey(_user.email || _user.phone || _user.contact || '');
-        if (key) { _userStore[key] = JSON.parse(JSON.stringify(_user)); if (typeof _saveUserStore==='function') _saveUserStore(); }
-      }
-    }
-    // Sync sidebar avatar
-    _updateSidebarAvatar(e.target.result);
+    // Store temporarily on user (persisted to store on Save changes)
+    if (_user) _user._avatarPending = e.target.result;
     _showAvatarRemoveOption();
-    showToast('Profile photo updated!','success');
+    showToast('Photo selected — click Save changes to apply','success');
   };
   reader.readAsDataURL(file);
 }
@@ -7159,18 +7152,10 @@ function _showAvatarRemoveOption() {
       ini2.style.overflow = '';
       ini2.innerHTML = '<span style="font-size:24px;font-weight:700;color:#fff;font-family:Inter,sans-serif;">'+initials+'</span>';
     }
-    if (_user) {
-      _user._avatar = null;
-      // Persist removal
-      if (typeof _userKey === 'function' && typeof _userStore !== 'undefined') {
-        var key = _userKey(_user.email || _user.phone || _user.contact || '');
-        if (key) { _userStore[key] = JSON.parse(JSON.stringify(_user)); if (typeof _saveUserStore==='function') _saveUserStore(); }
-      }
-    }
-    // Sync sidebar back to initials
-    _updateSidebarAvatar(null);
+    // Mark avatar for removal on next Save changes
+    if (_user) { _user._avatarPending = null; _user._avatarRemove = true; }
     btn.remove();
-    showToast('Profile photo removed','success');
+    showToast('Photo removed — click Save changes to apply','success');
   };
   var parentDiv = ini.parentNode;
   parentDiv.style.position = 'relative';
@@ -7983,7 +7968,19 @@ function saveProfileTab(){
   if(phoneVal)patch.phone=phoneVal;
   if(pwdVal)patch._pwd=pwdVal;
 
+  // Commit pending avatar upload if any
+  if(_user._avatarPending){
+    patch._avatar = _user._avatarPending;
+    _user._avatarPending = null;
+    _user._avatarRemove = false;
+  } else if(_user._avatarRemove){
+    patch._avatar = null;
+    _user._avatarRemove = false;
+  }
+
   _updateUser(patch);
+  // Sync sidebar avatar after save
+  if(typeof _updateSidebarAvatar==='function') _updateSidebarAvatar(_user._avatar||null);
   if(typeof _syncUserUI==='function')_syncUserUI();
   _syncSettingsPage();
   recalcProgress();
