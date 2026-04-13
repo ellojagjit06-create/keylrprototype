@@ -3748,7 +3748,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     <!-- EXPLORE SERVICES PAGE -->
     <div id="page-explore">
       <div style="flex:1;overflow-y:auto;">
-        <div style="width:100%;margin:0 auto;padding:24px clamp(20px,5vw,80px) 40px;max-width:1600px;">
+        <div class="db-main-inner" style="max-width:1200px;">
 
           <!-- AI ASSISTANT CARD -->
           <div style="background:linear-gradient(135deg,#0f1c38 0%,#162845 50%,#1a3356 100%);border-radius:18px;padding:22px 24px 18px;margin-bottom:20px;position:relative;overflow:hidden;">
@@ -4871,6 +4871,36 @@ function handleHeroSearch() {
 // =============================================
 function goToDashboard(query, autoSend = false) {
   _isLoggedIn = true;
+  // Resume pending booking after login
+  if (window._pendingBookingState) {
+    var pbs = window._pendingBookingState;
+    window._pendingBookingState = null;
+    setTimeout(function() {
+      _bfState = pbs;
+      // Complete the booking
+      var ref = 'K' + Math.floor(Math.random()*90000+10000);
+      var dateDisplay = pbs.date ? new Date(pbs.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}) : '';
+      var priceVal = '';
+      if (pbs.providerId) {
+        var prov = (_exploreProviders||[]).find(function(x){ return x.id===pbs.providerId; });
+        if (prov && prov.services) {
+          var svc = prov.services.find(function(sv){ return sv.name===pbs.service; });
+          if (svc && svc.price) priceVal = svc.price;
+          else if (prov.price) priceVal = '£'+prov.price;
+        }
+      }
+      if (typeof addJobFromBooking==='function') addJobFromBooking({ref:ref,service:pbs.service,pro:pbs.providerName,eta:dateDisplay+' '+pbs.time,price:priceVal||'Quote',address:pbs.propertyAddr||pbs.property,time:pbs.time,bookingType:pbs.bookingType});
+      _bkActiveFilter = 'active';
+      showPage('bookings', null);
+      setTimeout(renderBookingsPage, 80);
+      // Show confirmation toast
+      var toast = document.createElement('div');
+      toast.style.cssText = 'position:fixed;top:24px;right:24px;z-index:99999;background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.18);padding:16px 44px 16px 16px;min-width:280px;max-width:360px;border:1.5px solid #e2e8f0;display:flex;gap:12px;align-items:flex-start;animation:bfmToastIn .3s ease;';
+      toast.innerHTML = '<div style="font-size:22px;">🎉</div><div><div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Booking confirmed!</div><div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">Your ' + pbs.service + ' has been booked. You can track progress in My Jobs.</div></div><button style="position:absolute;top:10px;right:12px;background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;" onclick="this.parentElement.remove()">&times;</button>';
+      document.body.appendChild(toast);
+      setTimeout(function(){ if(toast.parentNode) toast.remove(); }, 6000);
+    }, 400);
+  }
   var _discPg = document.getElementById('pg-discovery-flow');
   if (_discPg) _discPg.classList.remove('visible');
   currentQuery = query;
@@ -7804,9 +7834,10 @@ function _bfConfirm() {
     authOverlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(15,23,42,0.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;';
     var authCard = document.createElement('div');
     authCard.style.cssText = 'background:#fff;border-radius:20px;max-width:400px;width:100%;padding:32px 28px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.22);';
-    authCard.innerHTML = '<div style="font-size:36px;margin-bottom:12px;">🔐</div>'
+    authCard.innerHTML = '<div style="width:56px;height:56px;border-radius:16px;background:#eff6ff;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#1A5FC8" stroke-width="1.5"><rect x="4" y="12" width="20" height="14" rx="3"/><path d="M9 12V9a5 5 0 0110 0v3"/></svg></div>'
       +'<div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">Sign in to confirm your booking</div>'
-      +'<div style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:24px;">Create a free account or log in to book services and track your jobs</div>'
+      +'<div style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:6px;">Create a free account or log in to confirm your booking and track all your jobs in one place.</div>'
+      +'<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:20px;">Your booking details are saved and will be confirmed automatically after sign-in.</div>'
       +'<div style="display:flex;flex-direction:column;gap:10px;">'
         +'<button id="bfAuthSignup" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Create free account</button>'
         +'<button id="bfAuthLogin" style="background:#fff;border:1.5px solid #e2e8f0;color:#374151;border-radius:12px;padding:14px;font-size:14px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Log in</button>'
@@ -7815,8 +7846,17 @@ function _bfConfirm() {
     authOverlay.appendChild(authCard);
     document.body.appendChild(authOverlay);
     authOverlay.addEventListener('click', function(e){ if(e.target===authOverlay) authOverlay.remove(); });
-    document.getElementById('bfAuthSignup').onclick = function(){ authOverlay.remove(); showAuthPage('signup'); };
-    document.getElementById('bfAuthLogin').onclick = function(){ authOverlay.remove(); showAuthPage('login'); };
+    document.getElementById('bfAuthSignup').onclick = function(){
+      authOverlay.remove();
+      // Store pending booking so it can be confirmed after login
+      window._pendingBookingState = JSON.parse(JSON.stringify(_bfState));
+      showAuthPage('signup');
+    };
+    document.getElementById('bfAuthLogin').onclick = function(){
+      authOverlay.remove();
+      window._pendingBookingState = JSON.parse(JSON.stringify(_bfState));
+      showAuthPage('login');
+    };
     document.getElementById('bfAuthCancel').onclick = function(){ authOverlay.remove(); };
     return;
   }
@@ -7836,8 +7876,10 @@ function _bfConfirm() {
     }
     if(typeof addJobFromBooking==='function') addJobFromBooking({ref:ref,service:s.service,pro:s.providerName,eta:dateDisplay+' '+s.time,price:priceVal||'Quote',address:s.propertyAddr||s.property,time:s.time,bookingType:s.bookingType});
   })();
-  // Hide booking page
+  // Navigate to bookings Active tab
+  _bkActiveFilter = 'active';
   showPage('bookings', null);
+  setTimeout(renderBookingsPage, 60);
   // Confirmed toast
   var toast=document.createElement('div');
   toast.className='bfm-confirm-toast';
@@ -7859,6 +7901,7 @@ function _bfConfirm() {
   window.showPage=function(id,e){
     orig(id,e);
     if(id==='explore') setTimeout(function(){ _initExploreAll(); _currentExploreCat='all'; document.querySelectorAll('#exploreCategoryChips .ef-pill').forEach(function(b){b.classList.remove('ef-active');}); var allBtn=document.querySelector('#exploreCategoryChips .ef-pill'); if(allBtn) allBtn.classList.add('ef-active'); }, 80);
+    if(id==='bookings') setTimeout(renderBookingsPage, 60);
   };
 })();
 
@@ -9018,8 +9061,15 @@ function toggleDashTheme() {
     if (icon_d) icon_d.style.display = 'none';
     if (label)  label.textContent = 'Dark mode';
   }
-  // Re-render chips with updated dark mode colours
+  // Re-render all JS-generated content with correct dark/light colours
   if (typeof _renderPmActionChips === 'function') _renderPmActionChips();
+  // Re-render explore cat cards and bookings so inline styles update
+  setTimeout(function() {
+    if (typeof _currentExploreCat !== 'undefined' && _currentExploreCat === 'all') {
+      if (typeof _renderExploreCatCards === 'function') _renderExploreCatCards();
+    }
+    if (typeof renderBookingsPage === 'function') renderBookingsPage();
+  }, 20);
 }
 
 
