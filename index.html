@@ -2634,6 +2634,8 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .dash-dark .exp-profile-btn{background:transparent;border-color:#30363d;color:#c9d1d9;}
 .dash-dark .exp-filter-panel{background:#1c2433;border-color:#30363d;}
 .dash-dark .exp-search-input{background:#1c2433;border-color:#30363d;color:#e6edf3;}
+.pp-svc-row:hover .pp-svc-book-btn{display:inline-flex !important;}
+.pp-svc-row .pp-svc-book-btn:hover{background:#1d4ed8;}
 .dash-dark #exploreCatCards > div:last-child > div > div { background:#1c2433 !important; border-color:#30363d !important; }
 .dash-dark #exploreCatCards > div:first-child { color:#e6edf3 !important; }
 /* 6-Step Booking Modal */
@@ -6052,11 +6054,13 @@ function showProviderProfile(pid) {
   // Services
   var fixedSvcs = '', quoteSvcs = '';
   p.services.forEach(function(s){
+    var svcName = s.name;
     if (!s.quote) {
-      fixedSvcs += '<div style="display:flex;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;">'
-        +'<div style="flex:1;font-size:14px;font-weight:500;color:#0f172a;font-family:Inter,sans-serif;">'+s.name+' <span style="font-size:11px;color:#94a3b8;font-weight:400;">flat rate</span></div>'
-        +'<span style="font-size:11px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:5px;padding:2px 8px;font-weight:600;font-family:Inter,sans-serif;margin-right:12px;">Within budget</span>'
-        +'<span style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+s.price+'</span>'
+      fixedSvcs += '<div class="pp-svc-row" style="display:flex;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;position:relative;">'
+        +'<div style="flex:1;font-size:14px;font-weight:500;color:#0f172a;font-family:Inter,sans-serif;">'+svcName+' <span style="font-size:11px;color:#94a3b8;font-weight:400;">flat rate</span></div>'
+        +'<span style="font-size:11px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:5px;padding:2px 8px;font-weight:600;font-family:Inter,sans-serif;margin-right:10px;">Within budget</span>'
+        +'<span style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-right:10px;">'+s.price+'</span>'
+        +'<button class="pp-svc-book-btn" data-pid="'+p.id+'" data-svc="'+svcName+'" onclick="openBookingFlow(this.dataset.pid,this.dataset.svc)" style="display:none;background:#1A5FC8;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Book</button>'
       +'</div>';
     } else {
       quoteSvcs += '<div style="display:flex;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;">'
@@ -6176,48 +6180,69 @@ function showProviderProfile(pid) {
     qCard.innerHTML = '<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">Additional services</div>'+quoteSvcs;
     left.appendChild(qCard);
   }
-  // Reviews
-  var revCard = document.createElement('div');
-  revCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:22px 24px;';
-  revCard.innerHTML = '<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:16px;">Reviews</div>'
-    +'<div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">'
-      +'<div><div style="font-size:36px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+p.rating+'</div><div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;">/ 5</div></div>'
-      +'<div style="flex:1;"><div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:8px;">'+p.reviews+' verified reviews</div>'+ratingBars+'</div>'
-    +'</div>';
-  left.appendChild(revCard);
+  // Reviews moved to right sidebar
   wrap.appendChild(left);
 
   // RIGHT SIDEBAR
   var right = document.createElement('div');
-  right.innerHTML = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;">'
-    +'<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;">Verification status</div>'
+    right.innerHTML = '';
+
+  // Verification status card
+  var vCard = document.createElement('div');
+  vCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;';
+  vCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Verification status</div>'
     +'<div style="font-size:13px;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:8px;">'
-      +'<div style="color:#15803d;">&#10003; Identity verified</div>'
-      +'<div style="color:#15803d;">&#10003; Insurance verified</div>'
-      +(p.dbs ? '<div style="color:#15803d;">&#10003; DBS checked</div>' : '<div style="color:#94a3b8;">&#9675; DBS checked</div>')
-      +'<div style="color:#15803d;">&#10003; Right to work</div>'
-    +'</div>'
-  +'</div>'
-  +'<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;">'
-    +'<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Certifications</div>'
-    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">'+certsHTML+'</div>'
-    +'<div style="font-size:13px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">Insurance</div>'
-    +'<div style="font-size:12.5px;color:#374151;font-family:Inter,sans-serif;">&#163;1M public liability</div>'
-    +(p.emergency ? '<div style="font-size:12px;color:#f59e0b;font-family:Inter,sans-serif;margin-top:6px;">&#9889; Emergency callout available</div>' : '')
-  +'</div>'
-  +'<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;">'
-    +'<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Coverage</div>'
+      +'<div style="display:flex;align-items:center;gap:8px;color:#15803d;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Identity verified</div>'
+      +'<div style="display:flex;align-items:center;gap:8px;color:#15803d;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Insurance verified</div>'
+      +(p.dbs ? '<div style="display:flex;align-items:center;gap:8px;color:#15803d;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>DBS checked</div>' : '<div style="display:flex;align-items:center;gap:8px;color:#94a3b8;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#d1d5db" stroke-width="1.8"><circle cx="7" cy="7" r="6"/></svg>DBS checked</div>')
+      +'<div style="display:flex;align-items:center;gap:8px;color:#15803d;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Right to work</div>'
+    +'</div>';
+  right.appendChild(vCard);
+
+  // Certifications card
+  var certCard = document.createElement('div');
+  certCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;';
+  certCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M7 1l2 4h4l-3 2.5 1 4L7 9l-4 2.5 1-4L1 5h4z"/></svg>Certifications</div>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;">'+certsHTML+'</div>';
+  right.appendChild(certCard);
+
+  // Insurance card (separate)
+  var insCard = document.createElement('div');
+  insCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;';
+  insCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Insurance</div>'
+    +'<div style="font-size:13px;color:#374151;font-family:Inter,sans-serif;margin-bottom:6px;">&#163;1M public liability</div>'
+    +(p.emergency ? '<div style="font-size:12.5px;color:#f59e0b;font-family:Inter,sans-serif;display:flex;align-items:center;gap:4px;font-weight:600;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#f59e0b" stroke-width="1.6"><path d="M6 1l1.5 4H11L7.5 8l1.5 4L6 9.5 2 12l1.5-4L0 5h3.5z"/></svg>Emergency callout available</div>' : '');
+  right.appendChild(insCard);
+
+  // Coverage card
+  var covCard = document.createElement('div');
+  covCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;';
+  covCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Coverage</div>'
     +'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">'+areaTags+'</div>'
     +'<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:6px;">Serves Residential &amp; Commercial</div>'
-    +'<div style="font-size:12px;color:#1A5FC8;font-family:Inter,sans-serif;">&#128336; SLA: '+p.sla+' response</div>'
-  +'</div>'
-  +'<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;">'
-    +'<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Contact</div>'
+    +'<div style="font-size:12px;color:#1A5FC8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#1A5FC8" stroke-width="1.5"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l2 2"/></svg>SLA: '+p.sla+' response</div>';
+  right.appendChild(covCard);
+
+  // Contact card
+  var contactCard = document.createElement('div');
+  contactCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:12px;';
+  contactCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Contact</div>'
     +'<div style="font-size:13px;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:8px;color:#374151;">'
-      +'<div>&#9993; info@'+p.name.toLowerCase().replace(/\s+/g,'')+'.co.uk</div>'
-      +'<div>&#9742; +44 7700 900001</div>'
-    +'</div>'
-  +'</div>';
+      +'<div style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.6"><path d="M2 3h10a1 1 0 011 1v7a1 1 0 01-1 1H2a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M1 4l6 4 6-4"/></svg>info@'+p.name.toLowerCase().split(' ').join('')+'.co.uk</div>'
+      +'<div style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.6"><path d="M2 2c0 8 2.5 10.5 10 10l1-3-3-1-1 1.5C7 9 5 7 4.5 5L6 4 5 1 2 2z"/></svg>+44 7700 900001</div>'
+    +'</div>';
+  right.appendChild(contactCard);
+
+  // Reviews card (below contact)
+  var revCard = document.createElement('div');
+  revCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;';
+  revCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;">Reviews</div>'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">'
+      +'<div><div style="font-size:32px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+p.rating+'</div><div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;">/ 5</div></div>'
+      +'<div style="flex:1;"><div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:8px;">'+p.reviews+' verified reviews</div>'+ratingBars+'</div>'
+    +'</div>';
+  right.appendChild(revCard);
+
   wrap.appendChild(right);
   el.appendChild(wrap);
 
@@ -6225,7 +6250,7 @@ function showProviderProfile(pid) {
 }
 
 // ── Booking Flow (full-page, not modal) ──
-var _bfState = { step:1, service:'', providerId:null, providerName:'', property:'', propertyAddr:'', urgency:'Flexible', date:'', time:'Afternoon', details:'' };
+var _bfState = { step:0, service:'', bookingType:'direct', providerId:null, providerName:'', property:'', propertyAddr:'', urgency:'Flexible', date:'', time:'Afternoon', details:'' };
 var _bfProperties = [
   { name:'Maple Court', addr:'123 Oak Street, London', type:'flat', beds:'2 bed', suppliers:3 },
   { name:'The Warehouse', addr:'45 Industrial Way, Manchester', type:'hmo', beds:'5 bed', suppliers:3 },
@@ -6235,7 +6260,7 @@ var _bfProperties = [
 ];
 
 function openBookingFlow(providerId, service) {
-  _bfState = { step:1, service:service||'General Service', providerId:providerId||null, providerName:'', property:'', propertyAddr:'', urgency:'Flexible', date:'', time:'Afternoon', details:'' };
+  _bfState = { step:0, service:service||'', bookingType:'direct', providerId:providerId||null, providerName:'', property:'', propertyAddr:'', urgency:'Flexible', date:'', time:'Afternoon', details:'' };
   if (providerId) {
     var p = _exploreProviders.find(function(x){ return x.id===providerId; });
     if (p) { _bfState.providerName = p.name; if (!service) _bfState.service = p.services[0].name; }
@@ -6245,10 +6270,10 @@ function openBookingFlow(providerId, service) {
 
 function _bfRenderPage() {
   var s = _bfState;
-  var titles = {1:'Select property',2:'Choose a provider',3:'Job details',4:'Pick a date & time',5:'Review & confirm'};
+  var titles = {0:'Choose a service',1:'Select property',2:'Choose a provider',3:'Job details',4:'Pick a date & time',5:'Review & confirm'};
   // Progress segs
   var segs = '';
-  for (var i=1;i<=5;i++) segs += '<div style="flex:1;height:4px;border-radius:2px;background:'+(i<=s.step?'#1A5FC8':'#e2e8f0')+';transition:background .3s;"></div>';
+  for (var i=0;i<=5;i++) segs += '<div style="flex:1;height:4px;border-radius:2px;background:'+(i<=s.step?'#1A5FC8':'#e2e8f0')+';transition:background .3s;"></div>';
   // Use the page-booking-flow page
   showPage('booking-flow', null);
   var inner = document.getElementById('bfPageInner');
@@ -6268,7 +6293,7 @@ function _bfRenderPage() {
   titleEl.textContent = titles[s.step] || '';
   var stepLbl = document.createElement('div');
   stepLbl.style.cssText = 'margin-left:auto;font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;font-weight:500;';
-  stepLbl.textContent = 'Step ' + s.step + '/5';
+  stepLbl.textContent = 'Step ' + (s.step+1) + '/6';
   hdr.appendChild(backBtn); hdr.appendChild(titleEl); hdr.appendChild(stepLbl);
   inner.appendChild(hdr);
 
@@ -6294,7 +6319,11 @@ function _bfRenderPage() {
   contBtn.id = 'bfPageContinue';
   contBtn.className = 'bfm-continue-btn';
   if (s.step === 5) {
-    contBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7l3.5 3.5L12 4"/></svg> Confirm booking';
+    if (s.bookingType === 'quote') {
+      contBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h10M9 4l3 3-3 3"/></svg> Send quote request';
+    } else {
+      contBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7l3.5 3.5L12 4"/></svg> Confirm booking';
+    }
     contBtn.onclick = _bfConfirm;
   } else {
     contBtn.innerHTML = 'Continue <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h8M8 4l3 3-3 3"/></svg>';
@@ -6306,11 +6335,12 @@ function _bfRenderPage() {
 }
 
 function _bfBack() {
-  if (_bfState.step > 1) { _bfState.step--; _bfRenderPage(); }
+  if (_bfState.step > 0) { _bfState.step--; _bfRenderPage(); }
   else { showPage('explore', null); }
 }
 function _bfNext() {
   var s = _bfState;
+  if (s.step===0 && !s.service) { showToast('Please enter or select a service','warning'); return; }
   if (s.step===1 && !s.property) { showToast('Please select a property','warning'); return; }
   if (s.step===2 && !s.providerName) { showToast('Please choose a provider','warning'); return; }
   if (s.step===4 && !s.date) { showToast('Please pick a date','warning'); return; }
@@ -6323,7 +6353,78 @@ function _bfRenderStep(step) {
   body.innerHTML = '';
   var s = _bfState;
 
-  if (step === 1) {
+  if (step === 0) {
+    // ── Step 0: Choose a service ──
+    var h0 = document.createElement('div');
+    h0.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;';
+    h0.textContent = 'What service do you need?';
+    body.appendChild(h0);
+
+    var svcInput = document.createElement('input');
+    svcInput.type = 'text';
+    svcInput.placeholder = 'e.g. Boiler Service, Deep Clean, EICR...';
+    svcInput.style.cssText = 'width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 16px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;margin-bottom:14px;';
+    svcInput.value = s.service || '';
+    svcInput.oninput = function(){ _bfState.service = this.value; };
+    svcInput.onfocus = function(){ this.style.borderColor='#1A5FC8'; };
+    svcInput.onblur = function(){ this.style.borderColor='#e2e8f0'; };
+    body.appendChild(svcInput);
+
+    var popLabel = document.createElement('div');
+    popLabel.style.cssText = 'font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:8px;';
+    popLabel.textContent = 'Popular services';
+    body.appendChild(popLabel);
+
+    var chipsWrap = document.createElement('div');
+    chipsWrap.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;';
+    ['Boiler Service','Gas Safety Check','Deep Clean','EICR Inspection','General Repairs','Lock Change','Check-In Report','Fire Risk Assessment'].forEach(function(svc) {
+      var chip = document.createElement('button');
+      chip.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:500;color:#374151;cursor:pointer;font-family:Inter,sans-serif;transition:border-color .12s;';
+      chip.textContent = svc;
+      chip.onclick = function(){
+        _bfState.service = svc;
+        svcInput.value = svc;
+        chipsWrap.querySelectorAll('button').forEach(function(b){ b.style.background='#fff'; b.style.color='#374151'; b.style.borderColor='#e2e8f0'; });
+        chip.style.background='#eff6ff'; chip.style.color='#1d4ed8'; chip.style.borderColor='#bfdbfe';
+      };
+      chipsWrap.appendChild(chip);
+    });
+    body.appendChild(chipsWrap);
+
+    var btLabel = document.createElement('div');
+    btLabel.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;';
+    btLabel.textContent = 'Booking type';
+    body.appendChild(btLabel);
+
+    var btGrid = document.createElement('div');
+    btGrid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:10px;';
+    [
+      ['direct','<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 9l5 5 9-9"/></svg>','Book directly','Choose date & confirm instantly'],
+      ['quote','<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="2" width="12" height="14" rx="1.5"/><path d="M6 6h6M6 9h6M6 12h4"/></svg>','Get a quote','Receive pricing from providers']
+    ].forEach(function(t) {
+      var card = document.createElement('div');
+      var sel = s.bookingType === t[0];
+      card.style.cssText = 'border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:12px;padding:18px 16px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:border-color .15s;';
+      var iconDiv = document.createElement('div');
+      iconDiv.style.cssText = 'color:#1A5FC8;margin-bottom:8px;';
+      iconDiv.innerHTML = t[1];
+      var titleEl = document.createElement('div');
+      titleEl.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;';
+      titleEl.textContent = t[2];
+      var subEl = document.createElement('div');
+      subEl.style.cssText = 'font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:3px;';
+      subEl.textContent = t[3];
+      card.appendChild(iconDiv); card.appendChild(titleEl); card.appendChild(subEl);
+      (function(type, el){ card.onclick = function(){
+        _bfState.bookingType = type;
+        btGrid.querySelectorAll('div').forEach(function(c){ c.style.borderColor='#e2e8f0'; c.style.background='#fff'; });
+        el.style.borderColor='#1A5FC8'; el.style.background='#eff6ff';
+      }; })(t[0], card);
+      btGrid.appendChild(card);
+    });
+    body.appendChild(btGrid);
+
+  } else if (step === 1) {
     // ── Select property ──
     var h = document.createElement('div');
     h.style.cssText = 'font-size:14px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:16px;';
@@ -6401,14 +6502,29 @@ function _bfRenderStep(step) {
       card.style.position = 'relative';
       card.onclick = function(){ _bfSelectProv(p.id); };
 
-      // Image area
+      // Image area with multi-image grid + count badge
       var imgDiv = document.createElement('div');
-      imgDiv.className = 'bfm-prov-img';
-      imgDiv.style.cssText = 'background:linear-gradient(135deg,#1a3356,#0f1c38);display:flex;align-items:center;justify-content:center;height:80px;';
-      imgDiv.innerHTML = '<span style="font-size:24px;font-weight:800;color:rgba(255,255,255,.2);font-family:Fraunces,serif;">' + p.initials + '</span>';
+      imgDiv.style.cssText = 'display:grid;grid-template-columns:2fr 1fr;grid-template-rows:55px 45px;gap:2px;position:relative;border-radius:10px 10px 0 0;overflow:hidden;';
+      var colors = [['#1a3356','#162845'],['#1e3a5f','#0d2a4a'],['#243b55','#1a3356']];
+      var icons = [
+        '<svg width="26" height="26" viewBox="0 0 28 28" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.3"><rect x="2" y="2" width="24" height="20" rx="2"/><path d="M2 18l6-6 5 5 4-4 9 7"/><circle cx="8" cy="8" r="2.5"/></svg>',
+        '<svg width="20" height="20" viewBox="0 0 28 28" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.3"><path d="M3 24V12l11-8 11 8v12"/><path d="M10 24v-7h8v7"/></svg>',
+        '<svg width="16" height="16" viewBox="0 0 28 28" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.3"><circle cx="14" cy="11" r="5"/><path d="M4 26c0-6 4-10 10-10s10 4 10 10"/></svg>'
+      ];
+      [{cr:'1/2',rr:'1/3'},{cr:'2/3',rr:'1/2'},{cr:'2/3',rr:'2/3'}].forEach(function(g,i){
+        var cell = document.createElement('div');
+        cell.style.cssText = 'grid-column:'+g.cr+';grid-row:'+g.rr+';background:linear-gradient(135deg,'+colors[i][0]+','+colors[i][1]+');display:flex;align-items:center;justify-content:center;';
+        cell.innerHTML = icons[i];
+        imgDiv.appendChild(cell);
+      });
+      // Count badge bottom-left
+      var badge = document.createElement('div');
+      badge.style.cssText = 'position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.5);color:#fff;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:5px;font-family:Inter,sans-serif;display:flex;align-items:center;gap:3px;';
+      badge.innerHTML = '<svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="1.8"><rect x="1" y="1" width="10" height="10" rx="1.5"/><path d="M1 7.5l3-3 2 2 2-2 3 3"/></svg> 3';
+      imgDiv.appendChild(badge);
       if (sel) {
         var chkBadge = document.createElement('div');
-        chkBadge.style.cssText = 'position:absolute;top:8px;right:8px;background:#1A5FC8;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;';
+        chkBadge.style.cssText = 'position:absolute;top:8px;right:8px;background:#1A5FC8;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;z-index:1;';
         chkBadge.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.5"><path d="M2 6l3 3 5-5"/></svg>';
         imgDiv.appendChild(chkBadge);
       }
@@ -6586,16 +6702,31 @@ function _bfRenderStep(step) {
     var dateDisplay = s.date ? new Date(s.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}) : 'Not set';
     var table = document.createElement('div');
     table.className = 'bfm-review-table';
-    var rows = [['Service',s.service],['Property',s.property],['Provider',s.providerName],['Type','Direct booking'],['Date & Time',dateDisplay + ' · ' + s.time]];
+    var urgColors = {'Flexible':'#64748b','Within a few days':'#f59e0b','Urgent':'#f97316','Emergency':'#ef4444'};
+    var rows = [
+      ['Service', s.service],
+      ['Property', s.property],
+      ['Provider', s.providerName],
+      ['Type', s.bookingType==='quote' ? 'Quote request' : 'Direct booking'],
+      ['Date & Time', s.bookingType==='quote' ? 'To be arranged' : dateDisplay + ' · ' + s.time],
+      ['Urgency', s.urgency]
+    ];
     rows.forEach(function(row) {
       var r = document.createElement('div');
       r.className = 'bfm-review-row';
       var key = document.createElement('span');
       key.className = 'bfm-review-key';
       key.textContent = row[0];
-      var val = document.createElement('span');
-      val.className = 'bfm-review-val';
-      val.textContent = row[1];
+      var val;
+      if (row[0] === 'Urgency') {
+        val = document.createElement('span');
+        val.style.cssText = 'background:'+(urgColors[s.urgency]||'#64748b')+';color:#fff;border-radius:6px;padding:3px 12px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;';
+        val.textContent = s.urgency;
+      } else {
+        val = document.createElement('span');
+        val.className = 'bfm-review-val';
+        val.textContent = row[1];
+      }
       r.appendChild(key); r.appendChild(val);
       table.appendChild(r);
     });
@@ -6603,7 +6734,11 @@ function _bfRenderStep(step) {
 
     var payInfo = document.createElement('div');
     payInfo.className = 'bfm-payment-info';
-    payInfo.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#15803d" stroke-width="1.7"><rect x="1" y="5" width="16" height="10" rx="2"/><path d="M1 9h16"/></svg><div><div style="font-weight:600;font-size:13px;">Payment</div><div style="font-size:12px;margin-top:2px;">You will only be charged after the job is completed and confirmed.</div></div>';
+    if (s.bookingType === 'quote') {
+      payInfo.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#15803d" stroke-width="1.7"><rect x="3" y="2" width="12" height="14" rx="1.5"/><path d="M6 6h6M6 9h6M6 12h4"/></svg><div><div style="font-weight:600;font-size:13px;">Quote request</div><div style="font-size:12px;margin-top:2px;">Providers will respond with pricing within 24 hours.</div></div>';
+    } else {
+      payInfo.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#15803d" stroke-width="1.7"><rect x="1" y="5" width="16" height="10" rx="2"/><path d="M1 9h16"/></svg><div><div style="font-weight:600;font-size:13px;">Payment</div><div style="font-size:12px;margin-top:2px;">You will only be charged after the job is completed and confirmed.</div></div>';
+    }
     body.appendChild(payInfo);
   }
 }
@@ -6649,7 +6784,11 @@ function _bfConfirm() {
   var toast=document.createElement('div');
   toast.className='bfm-confirm-toast';
   toast.style.cssText='position:fixed;top:24px;right:24px;z-index:99999;background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.18);padding:16px 44px 16px 16px;min-width:280px;max-width:360px;border:1.5px solid #e2e8f0;display:flex;gap:12px;align-items:flex-start;animation:bfmToastIn .3s ease;';
-  toast.innerHTML='<div style="font-size:22px;">🎉</div><div><div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Booking confirmed!</div><div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">Your '+s.service+' has been booked for '+s.property+'.</div></div><button style="position:absolute;top:10px;right:12px;background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;line-height:1;" onclick="this.parentElement.remove()">&times;</button>';
+  if (s.bookingType === 'quote') {
+    toast.innerHTML = '<div style="font-size:22px;">📋</div><div><div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Quote request sent! 📝</div><div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">We\'ll get back to you with quotes for ' + s.service + '.</div></div><button style="position:absolute;top:10px;right:12px;background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;line-height:1;" onclick="this.parentElement.remove()">&times;</button>';
+  } else {
+    toast.innerHTML = '<div style="font-size:22px;">🎉</div><div><div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Booking confirmed!</div><div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">Your ' + s.service + ' has been booked for ' + s.property + '.</div></div><button style="position:absolute;top:10px;right:12px;background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;line-height:1;" onclick="this.parentElement.remove()">&times;</button>';
+  }
   document.body.appendChild(toast);
   setTimeout(function(){if(toast.parentNode)toast.remove();},5000);
   showToast('Booking confirmed! Ref: '+ref,'success');
