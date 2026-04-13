@@ -2762,7 +2762,10 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .dash-dark #bkList div[style*="font-size:20px"][style*="font-weight:800"] { color:#e6edf3 !important; }
 .dash-dark #bkList div[style*="font-size:13.5px"][style*="line-height:1.65"] { color:#8b949e !important; }
 /* Bookings chat bar dark */
-.dash-dark .bk-chat-bar { background:#0d1117 !important; border-color:#30363d !important; }
+.dash-dark .bk-chat-bar { background:#161b22 !important; border-color:#30363d !important; }
+.dash-dark .bk-chat-bar > div > div { background:#1c2433 !important; border-color:#30363d !important; }
+.dash-dark #bkChatInput { color:#e6edf3 !important; }
+.dash-dark #bkChatInput::placeholder { color:#4b5563 !important; }
 .dash-dark .bf-sub-heading { color:#e6edf3 !important; }
 .dash-dark .bf-card-heading { color:#e6edf3 !important; }
 .dash-dark .bf-muted-text { color:#8b949e !important; }
@@ -5936,26 +5939,34 @@ function renderBookingsPage() {
     { label:'TOTAL SPENT', val: '£' + (_isLoggedIn ? totalSpent : 0),        color:'#0f172a', bold:true },
     { label:'THIS MONTH',  val: _isLoggedIn ? thisMonth        : 0,          color:'#f59e0b' },
   ].forEach(function(s) {
+    var isDkSt = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
     var card = document.createElement('div');
-    card.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:20px 18px;';
+    card.style.cssText = 'background:'+(isDkSt?'#161b22':'#fff')+';border:1.5px solid '+(isDkSt?'#30363d':'#e2e8f0')+';border-radius:14px;padding:20px 18px;';
     var lbl = document.createElement('div');
-    lbl.style.cssText = 'font-size:11px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;letter-spacing:.04em;margin-bottom:10px;';
+    lbl.style.cssText = 'font-size:11px;font-weight:700;color:'+(isDkSt?'#8b949e':'#94a3b8')+';font-family:Inter,sans-serif;letter-spacing:.04em;margin-bottom:10px;';
     lbl.textContent = s.label;
     var val = document.createElement('div');
     val.className = 'bk-stat-val';
-    val.style.cssText = 'font-size:28px;font-weight:900;color:'+s.color+';font-family:Fraunces,serif;'+(s.bold?'font-weight:800;':'');
+    val.style.cssText = 'font-size:28px;font-weight:900;color:'+(isDkSt?'#e6edf3':s.color)+';font-family:Fraunces,serif;';
     val.textContent = s.val;
     card.appendChild(lbl); card.appendChild(val);
     statEl.appendChild(card);
   });
 
   // ── Tabs — always visible ──
-  tabEl.style.cssText = 'display:inline-flex;gap:2px;background:#f1f5f9;border-radius:999px;padding:3px;';
+  var isDkTab = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
+  tabEl.style.cssText = 'display:inline-flex;gap:2px;background:'+(isDkTab?'#1c2433':'#f1f5f9')+';border-radius:999px;padding:3px;';
   tabEl.innerHTML = '';
   [['active','Active ('+active.length+')'],['completed','Completed ('+completed.length+')'],['all','All ('+(active.length+completed.length)+')']].forEach(function(t) {
     var btn = document.createElement('button');
     var sel = _bkActiveFilter === t[0];
-    btn.style.cssText = 'background:'+(sel?'#fff':'transparent')+';color:'+(sel?'#0f172a':'#64748b')+';border:none;border-radius:999px;padding:8px 22px;font-size:13.5px;font-weight:'+(sel?'700':'500')+';cursor:pointer;font-family:Inter,sans-serif;transition:all .15s;box-shadow:'+(sel?'0 2px 6px rgba(0,0,0,.08)':'none')+';white-space:nowrap;';
+    // dark: active = #2d3748 bg + #e6edf3 text; inactive = transparent + #8b949e
+    btn.style.cssText = 'background:'+(isDkTab?(sel?'#2d3748':'transparent'):(sel?'#fff':'transparent'))+';'
+      +'color:'+(isDkTab?(sel?'#e6edf3':'#8b949e'):(sel?'#0f172a':'#64748b'))+';'
+      +'border:none;border-radius:999px;padding:8px 22px;font-size:13.5px;'
+      +'font-weight:'+(sel?'700':'500')+';cursor:pointer;font-family:Inter,sans-serif;'
+      +'transition:all .15s;white-space:nowrap;'
+      +'box-shadow:'+(sel?(isDkTab?'0 1px 4px rgba(0,0,0,.4)':'0 2px 6px rgba(0,0,0,.08)'):'none')+';';
     btn.textContent = t[1];
     btn.onclick = (function(f){ return function(){ _bkActiveFilter=f; renderBookingsPage(); }; })(t[0]);
     tabEl.appendChild(btn);
@@ -5972,21 +5983,22 @@ function renderBookingsPage() {
   if (!jobs.length) {
     // Card-style zero state (white card with rounded border like the image)
     var zeroCard = document.createElement('div');
-    zeroCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:18px;padding:60px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;';
+    zeroCard.style.cssText = 'background:'+(isDkZ?'#161b22':'#fff')+';border:1.5px solid '+(isDkZ?'#30363d':'#e2e8f0')+';border-radius:18px;padding:60px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;';
 
     // Icon circle
     var iconCircle = document.createElement('div');
-    iconCircle.style.cssText = 'width:72px;height:72px;border-radius:20px;background:#eff6ff;display:flex;align-items:center;justify-content:center;margin-bottom:20px;';
+    iconCircle.style.cssText = 'width:72px;height:72px;border-radius:20px;background:'+(isDkZ?'#1c2433':'#eff6ff')+';display:flex;align-items:center;justify-content:center;margin-bottom:20px;';
     iconCircle.innerHTML = '<svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#1A5FC8" stroke-width="1.5"><rect x="5" y="10" width="24" height="18" rx="3"/><path d="M5 16h24"/><path d="M11 7v5M23 7v5"/><circle cx="11" cy="22" r="1.5" fill="#1A5FC8" stroke="none"/></svg>';
     zeroCard.appendChild(iconCircle);
 
+    var isDkZ = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
     var title = document.createElement('div');
-    title.style.cssText = 'font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:10px;';
+    title.style.cssText = 'font-size:20px;font-weight:800;color:'+(isDkZ?'#e6edf3':'#0f172a')+';font-family:Fraunces,serif;margin-bottom:10px;';
     title.textContent = 'No jobs yet';
     zeroCard.appendChild(title);
 
     var sub = document.createElement('div');
-    sub.style.cssText = 'font-size:13.5px;color:#64748b;max-width:300px;line-height:1.65;font-family:Inter,sans-serif;margin-bottom:26px;';
+    sub.style.cssText = 'font-size:13.5px;color:'+(isDkZ?'#8b949e':'#64748b')+';max-width:300px;line-height:1.65;font-family:Inter,sans-serif;margin-bottom:26px;';
     sub.textContent = _isLoggedIn
       ? 'Book your first property service and track all your jobs, progress and reports here.'
       : 'Sign in to view and manage your booked services.';
@@ -6031,10 +6043,11 @@ function renderBookingsPage() {
   // ── Render job cards ──
   jobs.forEach(function(job) {
     var sc = _jobStatusColors[job.status] || {bg:'#f8fafc',color:'#475569'};
+    var isDkC = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
     var card = document.createElement('div');
-    card.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px;margin-bottom:12px;cursor:pointer;transition:box-shadow .15s,border-color .15s;';
-    card.onmouseover = function(){ this.style.boxShadow='0 4px 16px rgba(0,0,0,.07)'; this.style.borderColor='#cbd5e1'; };
-    card.onmouseout  = function(){ this.style.boxShadow='none'; this.style.borderColor='#e2e8f0'; };
+    card.style.cssText = 'background:'+(isDkC?'#161b22':'#fff')+';border:1.5px solid '+(isDkC?'#30363d':'#e2e8f0')+';border-radius:16px;padding:20px;margin-bottom:12px;cursor:pointer;transition:box-shadow .15s,border-color .15s;';
+    card.onmouseover = function(){ this.style.boxShadow='0 4px 16px rgba(0,0,0,.12)'; this.style.borderColor=isDkC?'#3b82f6':'#cbd5e1'; };
+    card.onmouseout  = function(){ this.style.boxShadow='none'; this.style.borderColor=isDkC?'#30363d':'#e2e8f0'; };
     card.onclick     = function(){ showJobModal(job); };
 
     // ── Row 1: icon + service name/meta + status + arrow ──
@@ -7480,8 +7493,9 @@ function _bfRenderStep(step) {
     body.appendChild(searchWrap);
 
     // Assignment badge
+    var isDkB = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
     var badge = document.createElement('div');
-    badge.style.cssText = 'background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:11px 16px;display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:13px;font-weight:600;color:#1d4ed8;font-family:Inter,sans-serif;';
+    badge.style.cssText = 'background:'+(isDkB?'#1e3a5f':'#eff6ff')+';border:1px solid '+(isDkB?'#1e40af':'#bfdbfe')+';border-radius:10px;padding:11px 16px;display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:13px;font-weight:600;color:'+(isDkB?'#60a5fa':'#1d4ed8')+';font-family:Inter,sans-serif;';
     badge.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1d4ed8" stroke-width="1.8"><rect x="1" y="3" width="12" height="9" rx="1.5"/><path d="M1 6h12M4 1v3M10 1v3"/></svg>';
     var badgeText = document.createElement('span');
     badgeText.textContent = '3 suppliers are assigned to ' + s.property;
