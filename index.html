@@ -2625,15 +2625,51 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .exp-profile-btn{background:transparent;border:1.5px solid #e2e8f0;color:#374151;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;transition:border-color .15s;}
 .exp-profile-btn:hover{border-color:#94a3b8;}
 .exp-show-more{background:none;border:none;color:#1A5FC8;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:4px 0 2px;display:flex;align-items:center;gap:4px;}
+/* ── Explore dark mode ── */
 .dash-dark .exp-pcard{background:#161b22;border-color:#30363d;}
-.dash-dark .exp-pcard:hover{border-color:#2d4a7a;}
+.dash-dark .exp-pcard:hover{border-color:#2d4a7a;box-shadow:0 4px 16px rgba(0,0,0,.3);}
 .dash-dark .exp-pcard-name,.dash-dark .exp-pcard-price strong{color:#e6edf3;}
 .dash-dark .exp-pcard-price,.dash-dark .exp-pcard-sub,.dash-dark .exp-pcard-rating{color:#8b949e;}
 .dash-dark .exp-avail-item{background:#1c2433;border-color:#30363d;color:#8b949e;}
 .dash-dark .exp-svc-row{color:#c9d1d9;}
+.dash-dark .exp-pcard-services-title{color:#8b949e;}
+.dash-dark .exp-cert-chip{background:#1c2433;border-color:#30363d;color:#8b949e;}
+.dash-dark .exp-book-btn{background:linear-gradient(90deg,#1A5FC8,#0FA3D0);}
 .dash-dark .exp-profile-btn{background:transparent;border-color:#30363d;color:#c9d1d9;}
+.dash-dark .exp-profile-btn:hover{background:#1c2433;}
 .dash-dark .exp-filter-panel{background:#1c2433;border-color:#30363d;}
 .dash-dark .exp-search-input{background:#1c2433;border-color:#30363d;color:#e6edf3;}
+.dash-dark .exp-search-input::placeholder{color:#4b5563;}
+.dash-dark #exploreCategoryChips .ef-pill{background:#1c2433;border-color:#30363d;color:#8b949e;}
+.dash-dark #exploreCategoryChips .ef-pill.ef-active{background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border-color:transparent;}
+.dash-dark #exploreCatCards .pp-stat-val{color:#e6edf3;}
+/* Category card groups in dark mode */
+.dash-dark #exploreCatCards > div { color:#e6edf3 !important; }
+.dash-dark #exploreCatCards > div > div > div { background:#1c2433 !important; border-color:#30363d !important; }
+.dash-dark #exploreCatCards > div > div > div:hover { border-color:#2d4a7a !important; }
+.dash-dark #exploreCatCards > div > div > div div { color:#c9d1d9 !important; }
+
+/* ── Bookings dark mode ── */
+.dash-dark #page-bookings { background:#0d1117; }
+.dash-dark #bkStats > div { background:#161b22; border-color:#30363d; }
+.dash-dark #bkStats > div > div:first-child { color:#8b949e; }
+.dash-dark #bkTabs > button { background:#161b22; border-color:#30363d; color:#8b949e; }
+.dash-dark #bkTabs > button[style*="#0f172a"] { background:#e6edf3 !important; color:#0d1117 !important; border-color:#e6edf3 !important; }
+.dash-dark #bkList > div { background:#161b22 !important; border-color:#30363d !important; }
+.dash-dark #bkList > div:hover { border-color:#2d4a7a !important; }
+/* Job card inner text */
+.dash-dark #bkList .jc-name { color:#e6edf3 !important; }
+.dash-dark #bkList .jc-meta { color:#8b949e !important; }
+.dash-dark #bkList .jc-meta svg { stroke:#6b7280 !important; }
+.dash-dark #bkList .jc-prog-label { color:#6b7280 !important; }
+.dash-dark #bkList .jc-prog-track { background:#1c2433 !important; }
+.dash-dark #bkList .jc-date { color:#6b7280 !important; }
+.dash-dark #bkList .jc-price { color:#e6edf3 !important; }
+/* Zero state card in dark */
+.dash-dark #bkList > div[style*="border-radius:18px"] { background:#161b22 !important; border-color:#30363d !important; }
+.dash-dark #bkList > div[style*="border-radius:18px"] > div[style*="font-size:20px"] { color:#e6edf3 !important; }
+.dash-dark #bkList > div[style*="border-radius:18px"] > div[style*="font-size:13.5px"] { color:#8b949e !important; }
+.dash-dark #bkList > div[style*="border-radius:18px"] > div[style*="width:72px"] { background:#1c2433 !important; }
 .pp-svc-row .pp-svc-book-btn{opacity:0;pointer-events:none;transition:opacity .15s;}
 .pp-svc-row:hover .pp-svc-book-btn{opacity:1 !important;pointer-events:auto !important;}
 .pp-svc-row .pp-svc-book-btn:hover{background:#1d4ed8;}
@@ -4034,7 +4070,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
       </div>
       <div class="biz-ob-footer">
         <button class="biz-ob-skip-btn" onclick="skipBizOnboarding()">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 6.5h7M2 6.5l3-3M2 6.5l3 3"/><path d="M11 2v9"/></svg>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3l5 3.5L3 10z" fill="currentColor" stroke="none"/><path d="M11 3v8" stroke-linecap="round"/></svg>
           Skip for now
         </button>
         <button class="biz-ob-save-btn" onclick="saveBizOnboarding()">
@@ -4153,7 +4189,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2L5 7l4 5"/></svg>
           Back
         </button>
-        <button id="disc-page-skip" class="disc-page-skip-btn" onclick="discPageSkip()">Skip this step</button>
+        <button id="disc-page-skip" class="disc-page-skip-btn" onclick="discPageSkip()"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:middle;margin-right:4px;"><path d="M3 3l5 3.5L3 10z" fill="currentColor" stroke="none"/><path d="M11 3v8" stroke-linecap="round"/></svg>Skip for now</button>
         <button id="disc-page-cont" class="disc-page-cont-btn" onclick="discPageContinue()">Continue &#x2192;</button>
       </div>
     </div>
@@ -5628,7 +5664,7 @@ function renderBookingsPage() {
   [['active','Active ('+active.length+')'],['completed','Completed ('+completed.length+')'],['all','All ('+(active.length+completed.length)+')']].forEach(function(t) {
     var btn = document.createElement('button');
     var sel = _bkActiveFilter === t[0];
-    btn.style.cssText = 'background:'+(sel?'#0f172a':'#fff')+';color:'+(sel?'#fff':'#374151')+';border:1.5px solid '+(sel?'#0f172a':'#e2e8f0')+';border-radius:999px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
+    btn.style.cssText = 'background:'+(sel?'#0f172a':'#fff')+';color:'+(sel?'#fff':'#64748b')+';border:1.5px solid '+(sel?'#0f172a':'#e2e8f0')+';border-radius:999px;padding:8px 20px;font-size:13.5px;font-weight:'+(sel?'700':'500')+';cursor:pointer;font-family:Inter,sans-serif;transition:all .15s;box-shadow:'+(sel?'0 1px 4px rgba(0,0,0,.12)':'none')+';';
     btn.textContent = t[1];
     btn.onclick = (function(f){ return function(){ _bkActiveFilter=f; renderBookingsPage(); }; })(t[0]);
     tabEl.appendChild(btn);
@@ -5669,7 +5705,7 @@ function renderBookingsPage() {
       var bookBtn = document.createElement('button');
       bookBtn.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px 32px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;margin-bottom:22px;';
       bookBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h10M7 2v10"/></svg>Book your first service';
-      bookBtn.onclick = function(){ openBookingFlow(null, null); };
+      bookBtn.onclick = function(){ startNewChat&&startNewChat(); showPage('chat',null); };
       zeroCard.appendChild(bookBtn);
 
       // Feature chips
@@ -5721,9 +5757,11 @@ function renderBookingsPage() {
     var nameWrap = document.createElement('div');
     nameWrap.style.cssText = 'flex:1;min-width:0;';
     var nameEl = document.createElement('div');
+    nameEl.className = 'jc-name';
     nameEl.style.cssText = 'font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:3px;';
     nameEl.textContent = job.service;
     var metaEl = document.createElement('div');
+    metaEl.className = 'jc-meta';
     metaEl.style.cssText = 'font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;';
     metaEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#94a3b8" stroke-width="1.5"><circle cx="6" cy="4.5" r="2.5"/><path d="M1.5 11c0-2.5 2-4.5 4.5-4.5s4.5 2 4.5 4.5"/></svg>'
       + '<span>'+job.property+'</span>'
@@ -5753,8 +5791,10 @@ function renderBookingsPage() {
     progWrap.style.cssText = 'margin-bottom:12px;';
     var progLabel = document.createElement('div');
     progLabel.style.cssText = 'display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:6px;';
+    progLabel.className = 'jc-prog-label';
     progLabel.innerHTML = '<span>Progress</span><span style="font-weight:600;color:#64748b;">'+job.progress+'%</span>';
     var progTrack = document.createElement('div');
+    progTrack.className = 'jc-prog-track';
     progTrack.style.cssText = 'height:6px;background:#f1f5f9;border-radius:4px;overflow:hidden;';
     var progFill = document.createElement('div');
     progFill.style.cssText = 'height:100%;width:'+job.progress+'%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:4px;';
@@ -5768,11 +5808,13 @@ function renderBookingsPage() {
     row3.style.cssText = 'display:flex;align-items:center;gap:12px;';
     if (job.date) {
       var dateEl = document.createElement('span');
+      dateEl.className = 'jc-date';
       dateEl.style.cssText = 'font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;';
       dateEl.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#94a3b8" stroke-width="1.5"><rect x="1.5" y="2.5" width="10" height="9" rx="1.5"/><path d="M1.5 5.5h10M4.5 1v3M8.5 1v3"/></svg>'+job.date;
       row3.appendChild(dateEl);
     }
     var priceEl = document.createElement('span');
+    priceEl.className = 'jc-price';
     priceEl.style.cssText = 'font-size:14px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;';
     priceEl.textContent = job.price;
     row3.appendChild(priceEl);
