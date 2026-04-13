@@ -3555,7 +3555,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           <!-- Header -->
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
             <div><h2 style="font-size:24px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin:0 0 4px;">My Jobs</h2><div id="bkSubtitle" style="font-size:13px;color:#94a3b8;font-family:Inter,sans-serif;">0 active · 0 completed</div></div>
-            <button onclick="openBookingFlow(null,null)" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 1v11M1 6.5h11"/></svg>Book a service</button>
+            <button onclick="startNewChat&&startNewChat();showPage('chat',null);" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 1v11M1 6.5h11"/></svg>Book a service</button>
           </div>
 
           <!-- Stats cards -->
@@ -5710,48 +5710,70 @@ function renderBookingsPage() {
     card.onmouseout  = function(){ this.style.boxShadow='none'; this.style.borderColor='#e2e8f0'; };
     card.onclick     = function(){ showJobModal(job); };
 
+    // ── Row 1: icon + service name/meta + status + arrow ──
     var row1 = document.createElement('div');
-    row1.style.cssText = 'display:flex;align-items:center;gap:12px;margin-bottom:10px;';
+    row1.style.cssText = 'display:flex;align-items:center;gap:12px;margin-bottom:12px;';
+
     var iconWrap = document.createElement('div');
-    iconWrap.style.cssText = 'width:40px;height:40px;border-radius:10px;background:'+_iconBgColor(job.icon)+';color:'+_iconColor(job.icon)+';display:flex;align-items:center;justify-content:center;flex-shrink:0;';
+    iconWrap.style.cssText = 'width:42px;height:42px;border-radius:11px;background:'+_iconBgColor(job.icon)+';color:'+_iconColor(job.icon)+';display:flex;align-items:center;justify-content:center;flex-shrink:0;';
     iconWrap.innerHTML = _jobIconSvg(job.icon);
+
     var nameWrap = document.createElement('div');
     nameWrap.style.cssText = 'flex:1;min-width:0;';
     var nameEl = document.createElement('div');
-    nameEl.style.cssText = 'font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;';
+    nameEl.style.cssText = 'font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:3px;';
     nameEl.textContent = job.service;
     var metaEl = document.createElement('div');
-    metaEl.style.cssText = 'font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:2px;display:flex;align-items:center;gap:4px;';
-    metaEl.innerHTML = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#94a3b8" stroke-width="1.6"><circle cx="6" cy="5" r="3"/><path d="M2 11c0-2 2-4 4-4s4 2 4 4"/></svg> '+job.property+'<span style="margin:0 4px;color:#e2e8f0;">|</span>'+job.provider;
-    nameWrap.appendChild(nameEl); nameWrap.appendChild(metaEl);
+    metaEl.style.cssText = 'font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;';
+    metaEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#94a3b8" stroke-width="1.5"><circle cx="6" cy="4.5" r="2.5"/><path d="M1.5 11c0-2.5 2-4.5 4.5-4.5s4.5 2 4.5 4.5"/></svg>'
+      + '<span>'+job.property+'</span>'
+      + '<span style="color:#d1d5db;">·</span>'
+      + '<span>'+job.provider+'</span>';
+    nameWrap.appendChild(nameEl);
+    nameWrap.appendChild(metaEl);
+
+    var rightEl = document.createElement('div');
+    rightEl.style.cssText = 'display:flex;align-items:center;gap:8px;flex-shrink:0;';
     var statusBadge = document.createElement('span');
-    statusBadge.style.cssText = 'background:'+sc.bg+';color:'+sc.color+';border-radius:6px;padding:4px 10px;font-size:11.5px;font-weight:700;font-family:Inter,sans-serif;white-space:nowrap;';
+    statusBadge.style.cssText = 'background:'+sc.bg+';color:'+sc.color+';border-radius:8px;padding:4px 12px;font-size:12px;font-weight:600;font-family:Inter,sans-serif;';
     statusBadge.textContent = job.status;
-    var arrowEl = document.createElement('div');
-    arrowEl.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#cbd5e1" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>';
-    row1.appendChild(iconWrap); row1.appendChild(nameWrap); row1.appendChild(statusBadge); row1.appendChild(arrowEl);
+    var arrowEl = document.createElement('span');
+    arrowEl.style.cssText = 'color:#cbd5e1;';
+    arrowEl.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>';
+    rightEl.appendChild(statusBadge);
+    rightEl.appendChild(arrowEl);
+
+    row1.appendChild(iconWrap);
+    row1.appendChild(nameWrap);
+    row1.appendChild(rightEl);
     card.appendChild(row1);
 
+    // ── Progress bar ──
+    var progWrap = document.createElement('div');
+    progWrap.style.cssText = 'margin-bottom:12px;';
     var progLabel = document.createElement('div');
-    progLabel.style.cssText = 'display:flex;justify-content:space-between;font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:5px;';
-    progLabel.innerHTML = '<span>Progress</span><span>'+job.progress+'%</span>';
-    var progBar = document.createElement('div');
-    progBar.style.cssText = 'height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:12px;';
+    progLabel.style.cssText = 'display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:6px;';
+    progLabel.innerHTML = '<span>Progress</span><span style="font-weight:600;color:#64748b;">'+job.progress+'%</span>';
+    var progTrack = document.createElement('div');
+    progTrack.style.cssText = 'height:6px;background:#f1f5f9;border-radius:4px;overflow:hidden;';
     var progFill = document.createElement('div');
-    progFill.style.cssText = 'height:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:3px;width:'+job.progress+'%;';
-    progBar.appendChild(progFill);
-    card.appendChild(progLabel); card.appendChild(progBar);
+    progFill.style.cssText = 'height:100%;width:'+job.progress+'%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:4px;';
+    progTrack.appendChild(progFill);
+    progWrap.appendChild(progLabel);
+    progWrap.appendChild(progTrack);
+    card.appendChild(progWrap);
 
+    // ── Bottom row: date + price ──
     var row3 = document.createElement('div');
-    row3.style.cssText = 'display:flex;align-items:center;gap:14px;';
+    row3.style.cssText = 'display:flex;align-items:center;gap:12px;';
     if (job.date) {
       var dateEl = document.createElement('span');
-      dateEl.style.cssText = 'font-size:12px;color:#64748b;font-family:Inter,sans-serif;display:flex;align-items:center;gap:4px;';
-      dateEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#94a3b8" stroke-width="1.5"><rect x="1" y="2" width="10" height="9" rx="1.5"/><path d="M1 5h10M4 1v2M8 1v2"/></svg>'+job.date;
+      dateEl.style.cssText = 'font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;';
+      dateEl.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#94a3b8" stroke-width="1.5"><rect x="1.5" y="2.5" width="10" height="9" rx="1.5"/><path d="M1.5 5.5h10M4.5 1v3M8.5 1v3"/></svg>'+job.date;
       row3.appendChild(dateEl);
     }
     var priceEl = document.createElement('span');
-    priceEl.style.cssText = 'font-size:13px;font-weight:700;color:#0f172a;font-family:Fraunces,serif;';
+    priceEl.style.cssText = 'font-size:14px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;';
     priceEl.textContent = job.price;
     row3.appendChild(priceEl);
     card.appendChild(row3);
