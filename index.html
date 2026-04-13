@@ -651,10 +651,12 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .db-sidebar.collapsed .sb-platform-card-desc,
 .db-sidebar.collapsed .sb-platform-upgrade-btn{display:none;}
 .db-sidebar.collapsed .sb-platform-card-head{margin:0;justify-content:center;}
-.db-sidebar.collapsed .sb-platform-card-icon{font-size:20px;cursor:pointer;}
+.db-sidebar.collapsed .sb-platform-card-icon{cursor:pointer;}
+.db-sidebar.collapsed .sb-platform-card-icon svg{width:20px;height:20px;}
 /* Dark mode sidebar cards */
 .dash-dark .sb-platform-card{background:linear-gradient(135deg,#1a2d4a,#1a3040);border-color:#2d4a7a;}
 .dash-dark .sb-platform-card-title{color:#60a5fa;}
+.dash-dark .sb-platform-card-icon svg{stroke:#60a5fa;}
 .dash-dark .sb-platform-card-desc{color:#93c5fd;}
 .dash-dark .sb-platform-upgrade-btn{color:#60a5fa;}
 .dash-dark .sb-compliance-card{background:#2a1515;border-color:#7f1d1d;}
@@ -2911,7 +2913,12 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
         <!-- Keylr Platform card -->
         <div class="sb-platform-card">
           <div class="sb-platform-card-head">
-            <span class="sb-platform-card-icon">👑</span>
+            <span class="sb-platform-card-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1e40af" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="10" width="14" height="5" rx="1.5"/>
+                <path d="M1 10l3-7 4 4 4-6 3 9"/>
+              </svg>
+            </span>
             <span class="sb-platform-card-title">Keylr Platform</span>
           </div>
           <div class="sb-platform-card-desc">Unlock full operations: team management, invoicing &amp; workflows</div>
@@ -4149,7 +4156,17 @@ function _syncUserUI() {
 
   if (sbAuth)    sbAuth.style.display    = _user ? 'none'  : 'block';
   if (sbProfile) sbProfile.style.display = _user ? 'flex'  : 'none';
-  if (_user && sbIni)   sbIni.textContent   = _getInitials(_user.name);
+  if (_user && sbIni) {
+    if (_user._avatar) {
+      sbIni.style.background = 'none';
+      sbIni.style.overflow = 'hidden';
+      sbIni.innerHTML = '<img src="'+_user._avatar+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />';
+    } else {
+      sbIni.style.background = 'linear-gradient(135deg,#1A5FC8,#0FA3D0)';
+      sbIni.style.overflow = '';
+      sbIni.textContent = _getInitials(_user.name);
+    }
+  }
   if (_user && sbName)  sbName.textContent  = _user.name  || '';
   if (_user && sbEmail) sbEmail.textContent = _user.email || _user.phone || _user.contact || '';
   // Show/hide sidebar cards based on login state
@@ -7090,20 +7107,42 @@ function profileAvatarSelected(input) {
     if (ini) {
       ini.style.background = 'none';
       ini.style.overflow = 'hidden';
-      // Replace initials with image
       ini.innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />';
     }
-    if (_user) _user._avatar = e.target.result;
-    // Show remove option
+    if (_user) {
+      _user._avatar = e.target.result;
+      // Persist to store
+      if (typeof _userKey === 'function' && typeof _userStore !== 'undefined') {
+        var key = _userKey(_user.email || _user.phone || _user.contact || '');
+        if (key) { _userStore[key] = JSON.parse(JSON.stringify(_user)); if (typeof _saveUserStore==='function') _saveUserStore(); }
+      }
+    }
+    // Sync sidebar avatar
+    _updateSidebarAvatar(e.target.result);
     _showAvatarRemoveOption();
     showToast('Profile photo updated!','success');
   };
   reader.readAsDataURL(file);
 }
 
+function _updateSidebarAvatar(src) {
+  var sbIni = document.getElementById('sbProfileIni');
+  if (!sbIni) return;
+  if (src) {
+    sbIni.style.background = 'none';
+    sbIni.style.overflow = 'hidden';
+    sbIni.innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />';
+  } else {
+    var initials = (_user && _user.name) ? _getInitials(_user.name) : '?';
+    sbIni.style.background = 'linear-gradient(135deg,#1A5FC8,#0FA3D0)';
+    sbIni.style.overflow = '';
+    sbIni.innerHTML = initials;
+  }
+}
+
 function _showAvatarRemoveOption() {
   var existing = document.getElementById('avatarRemoveBtn');
-  if (existing) return;
+  if (existing) existing.remove();
   var ini = document.getElementById('settingsIni');
   if (!ini) return;
   var btn = document.createElement('button');
@@ -7114,12 +7153,22 @@ function _showAvatarRemoveOption() {
   btn.onclick = function(e) {
     e.stopPropagation();
     var ini2 = document.getElementById('settingsIni');
+    var initials = (_user && _user.name) ? _getInitials(_user.name) : '?';
     if (ini2) {
-      var initials = (_user && _user.name) ? _user.name.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase() : '?';
       ini2.style.background = 'linear-gradient(135deg,#1A5FC8,#0FA3D0)';
+      ini2.style.overflow = '';
       ini2.innerHTML = '<span style="font-size:24px;font-weight:700;color:#fff;font-family:Inter,sans-serif;">'+initials+'</span>';
     }
-    if (_user) _user._avatar = null;
+    if (_user) {
+      _user._avatar = null;
+      // Persist removal
+      if (typeof _userKey === 'function' && typeof _userStore !== 'undefined') {
+        var key = _userKey(_user.email || _user.phone || _user.contact || '');
+        if (key) { _userStore[key] = JSON.parse(JSON.stringify(_user)); if (typeof _saveUserStore==='function') _saveUserStore(); }
+      }
+    }
+    // Sync sidebar back to initials
+    _updateSidebarAvatar(null);
     btn.remove();
     showToast('Profile photo removed','success');
   };
@@ -7393,7 +7442,17 @@ function _syncSettingsPage(){
   if(!_user)return;
   // Avatar + header
   var ini=document.getElementById('settingsIni');
-  if(ini)ini.textContent=_getInitials(_user.name||'?');
+  if(ini){
+    if(_user._avatar){
+      ini.style.background='none';ini.style.overflow='hidden';
+      ini.innerHTML='<img src="'+_user._avatar+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />';
+      // Re-show remove button
+      if(typeof _showAvatarRemoveOption==='function') setTimeout(_showAvatarRemoveOption,50);
+    } else {
+      ini.style.background='linear-gradient(135deg,#1A5FC8,#0FA3D0)';ini.style.overflow='';
+      ini.textContent=_getInitials(_user.name||'?');
+    }
+  }
   var nm=document.getElementById('settingsName');
   if(nm)nm.textContent=_user.name||'-';
   var ct=document.getElementById('settingsContact');
