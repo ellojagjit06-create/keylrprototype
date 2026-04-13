@@ -1833,8 +1833,10 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .db-sidebar.collapsed #sbProfileArea{
   justify-content:center;padding:8px 0;gap:0;width:100%;
 }
+.db-sidebar.collapsed #sbProfileArea>div{justify-content:center;}
 .db-sidebar.collapsed #sbProfileArea .db-nav-item-label{display:none;}
 .db-sidebar.collapsed #sbProfileArea svg.db-nav-item-label{display:none;}
+.db-sidebar.collapsed #sbProfileArea button{display:none;}
 /* Collapsed: nav items fully centered */
 .db-sidebar.collapsed .db-nav-item{
   display:flex;justify-content:center;align-items:center;
@@ -2433,6 +2435,9 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .dash-dark #themeToggleBtn{border-color:#30363d;color:#8b949e;background:#1c2433;}
 .dash-dark #themeToggleBtn:hover{background:#243046 !important;}
 .dash-dark #sbProfileName{color:#e6edf3;}
+.dash-dark #sbProfileArea button{color:#8b949e;}
+.dash-dark #sbProfileArea button:hover{background:rgba(239,68,68,0.15) !important;color:#fca5a5 !important;}
+.dash-dark #sbProfileArea>div>div{transition:background 0.12s;}
 .dash-dark #sbProfileEmail{color:#8b949e;}
 .dash-dark #sbComplianceAlert{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);}
 
@@ -2887,7 +2892,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="7.5" cy="7.5" r="2.2"/><path d="M7.5 1v2M7.5 12v2M1 7.5h2M12 7.5h2M3.1 3.1l1.4 1.4M10.5 10.5l1.4 1.4M3.1 11.9l1.4-1.4M10.5 4.5l1.4-1.4"/></svg>
         <span class="db-nav-item-label">Pricing</span>
       </a>
-      <a class="db-nav-item" href="javascript:void(0)" onclick="showPage('settings',event)" data-label="Settings"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="7.5" cy="5" r="2.5"/><path d="M2 13c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/></svg><span class="db-nav-item-label">Settings</span></a>
+
     </nav>
 
     <div class="db-sidebar-bottom">
@@ -2923,21 +2928,27 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           <button class="db-login-btn" onclick="showAuthPage('login')">Log in</button>
         </div>
       </div>
-      <!-- Logged in: profile row -->
-      <div id="sbProfileArea" style="display:none;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;transition:background 0.12s;" onclick="_showProfileDropdown('sbProfileArea')" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">
-        <div id="sbProfileIni" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);color:#fff;font-size:13px;font-weight:700;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;">JD</div>
-        <div style="flex:1;min-width:0;" class="db-nav-item-label">
-          <div id="sbProfileName" style="font-size:13px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">John Doe</div>
-          <div id="sbProfileEmail" style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">john@property.co</div>
-          <!-- Mini progress bar -->
-          <div style="display:flex;align-items:center;gap:5px;margin-top:4px;">
-            <div style="flex:1;height:3px;background:#e2e8f0;border-radius:2px;overflow:hidden;">
-              <div id="sbProgressBar" style="height:100%;width:15%;background:linear-gradient(90deg,#f59e0b,#fbbf24);border-radius:2px;transition:width 0.6s ease,background 0.6s ease;"></div>
+      <!-- Logged in: profile row (no popover — direct actions) -->
+      <div id="sbProfileArea" style="display:none;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;">
+        <!-- Left: avatar + info → click goes to Settings -->
+        <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer;border-radius:10px;padding:4px 0;transition:background 0.12s;" onclick="showPage('settings',null)" onmouseover="this.style.background='var(--gray-50)'" onmouseout="this.style.background='transparent'" title="Go to Settings">
+          <div id="sbProfileIni" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);color:#fff;font-size:13px;font-weight:700;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;">JD</div>
+          <div style="flex:1;min-width:0;" class="db-nav-item-label">
+            <div id="sbProfileName" style="font-size:13px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">John Doe</div>
+            <div id="sbProfileEmail" style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">john@property.co</div>
+            <!-- Mini progress bar -->
+            <div style="display:flex;align-items:center;gap:5px;margin-top:4px;">
+              <div style="flex:1;height:3px;background:#e2e8f0;border-radius:2px;overflow:hidden;">
+                <div id="sbProgressBar" style="height:100%;width:15%;background:linear-gradient(90deg,#f59e0b,#fbbf24);border-radius:2px;transition:width 0.6s ease,background 0.6s ease;"></div>
+              </div>
+              <span id="sbProgressPct" style="font-size:10px;font-weight:700;color:#f59e0b;font-family:Inter,sans-serif;flex-shrink:0;transition:color 0.6s;">15%</span>
             </div>
-            <span id="sbProgressPct" style="font-size:10px;font-weight:700;color:#f59e0b;font-family:Inter,sans-serif;flex-shrink:0;transition:color 0.6s;">15%</span>
           </div>
         </div>
-        <svg class="db-nav-item-label" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M3 5l3-3 3 3M3 7l3 3 3-3"/></svg>
+        <!-- Right: logout icon → confirmation modal -->
+        <button onclick="_doLogout()" class="db-nav-item-label" title="Log out" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.12s,color 0.12s;" onmouseover="this.style.background='#fee2e2';this.style.color='#ef4444'" onmouseout="this.style.background='transparent';this.style.color='#94a3b8'">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 14H3a1 1 0 01-1-1V3a1 1 0 011-1h3"/><path d="M10 11l3-3-3-3M13 8H6"/></svg>
+        </button>
       </div>
     </div>
   </aside>
