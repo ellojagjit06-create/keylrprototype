@@ -5871,19 +5871,11 @@ function jobBadge(status) {
 }
 
 function addJobFromBooking(data) {
-  var now = new Date();
-  var dateStr = now.toISOString().split('T')[0];
-  _confirmedJobs.unshift({
-    ref: data.ref||('K'+Math.floor(Math.random()*90000+10000)),
-    service: data.service||'Property Service',
-    pro: data.pro||'', eta: data.eta||'',
-    price: data.price||'', address: data.address||'',
-    status: 'confirmed', date: dateStr, isNew: true
-  });
-  setTimeout(function(){ var j=_confirmedJobs[0]; if(j) j.isNew=false; }, 60000);
+  // _allJobs is now the source of truth; stub kept so legacy calls don't throw
 }
+var _confirmedJobs = []; // kept so legacy references don't throw
 
-function renderJobs(filter) {
+function renderJobs(filter) { if(typeof renderBookingsPage==='function') renderBookingsPage(); return;
   var list = document.getElementById('bkJobList');
   if (!list) return;
   var isDk = document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark');
@@ -5969,10 +5961,10 @@ function refreshBkPage() {
   var sb=document.getElementById('bkSubtitle'); if(sb) sb.textContent=active+' active · '+done+' completed';
   var sa=document.getElementById('bkStatActive'); if(sa) sa.textContent=active;
   var sd=document.getElementById('bkStatDone'); if(sd) sd.textContent=done;
-  var sm=document.getElementById('bkStatMonth'); if(sm) sm.textContent=_confirmedJobs.length;
+  // bkStatMonth removed - handled by renderBookingsPage
   var ta=document.getElementById('bkTabActive'); if(ta) ta.textContent='Active ('+active+')';
   var td=document.getElementById('bkTabDone'); if(td) td.textContent='Completed ('+done+')';
-  var tall=document.getElementById('bkTabAll'); if(tall) tall.textContent='All ('+_confirmedJobs.length+')';
+  // bkTabAll removed - handled by renderBookingsPage
   renderJobs('active');
 }
 
