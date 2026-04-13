@@ -5727,7 +5727,7 @@ function _renderExploreCatCards() {
   var el = document.getElementById('exploreCatCards');
   if (!el) return;
   el.innerHTML = _catDefs.map(function(c) {
-    return '<div onclick="filterExploreCategory(document.querySelector(\'.ef-pill:not(.ef-active)\'), \'' + c.key + '\')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:18px 10px 14px;text-align:center;cursor:pointer;transition:border-color .15s,box-shadow .15s;position:relative;" onmouseover="this.style.borderColor='#93c5fd';this.style.boxShadow='0 4px 16px rgba(26,95,200,.08)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'">'
+    return '<div onclick="filterExploreCategory(null,\'' + c.key + '\')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:18px 10px 14px;text-align:center;cursor:pointer;transition:border-color .15s,box-shadow .15s;position:relative;" onmouseover="this.style.borderColor=&quot;#93c5fd&quot;" onmouseout="this.style.borderColor=&quot;#e2e8f0&quot;">'
       + '<div style="display:flex;justify-content:center;margin-bottom:10px;">' + c.icon + '</div>'
       + '<div style="font-size:12.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;line-height:1.3;">' + c.label + '</div>'
       + (c.count > 0 ? '<div style="font-size:11px;color:#1A5FC8;font-family:Inter,sans-serif;margin-top:4px;font-weight:600;">' + c.count + ' provider' + (c.count!==1?'s':'') + '</div>' : '<div style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:4px;">Coming soon</div>')
@@ -5749,7 +5749,8 @@ function renderExploreProviders(cat, minRating) {
     return;
   }
   var gridHTML = '<div class="exp-provider-grid">';
-  filtered.forEach(function(p) {
+  window._expProviders = _exploreProviders;
+  filtered.forEach(function(p, _pi) {
     var stars = '';
     for (var i=1;i<=5;i++) stars += '<svg width="11" height="11" viewBox="0 0 11 11" fill="'+(i<=Math.floor(p.rating)?'#f59e0b':'none')+'" stroke="#f59e0b" stroke-width="1.4"><path d="M5.5 1l1.1 3.4H10L7.3 6.6l1.1 3.4-2.9-2-2.9 2 1.1-3.4L1 4.4h3.4z"/></svg>';
     var certsHTML = p.certs.map(function(c){ return '<span class="exp-badge">' + c + '</span>'; }).join('');
@@ -5766,7 +5767,7 @@ function renderExploreProviders(cat, minRating) {
       + svcsDefaultHTML
       + (extraCount > 0
         ? '<div id="svcs_more_'+p.id+'" style="display:none;">' + svcsMoreHTML + '</div>'
-          + '<button onclick="toggleSvcs('' + p.id + '')" id="svcs_btn_'+p.id+'" class="exp-show-more">+' + extraCount + ' more <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4l2 2 2-2"/></svg></button>'
+          + '<button data-pid="'+p.id+'" onclick="toggleSvcs(this.getAttribute(\'data-pid\'))" id="svcs_btn_'+p.id+'" class="exp-show-more">+' + extraCount + ' more <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4l2 2 2-2"/></svg></button>'
         : '');
     var footer = '';
     if (p.areas) footer += '<span style="font-size:11px;color:#64748b;font-family:Inter,sans-serif;display:flex;align-items:center;gap:3px;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#94a3b8" stroke-width="1.5"><circle cx="6" cy="5" r="2.5"/><path d="M6 11C6 11 1 7.5 1 5a5 5 0 0110 0c0 2.5-5 6-5 6z"/></svg>' + p.areas + '</span>';
@@ -5787,9 +5788,9 @@ function renderExploreProviders(cat, minRating) {
       + '<div class="exp-pcard-services">' + svcsSection + '</div>'
       + '<div style="display:flex;gap:10px;align-items:center;padding:10px 16px 0;flex-wrap:wrap;">' + footer + '</div>'
       + '<div class="exp-pcard-footer">'
-        + '<button class="exp-book-btn" onclick="openBookingFlow('' + p.id + '')">'
+        + '<button class="exp-book-btn" onclick="openBookingFlow(_expProviders['+_pi+'].id)"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="11" height="9" rx="1.5"/><path d="M1 6h11M4 1v3M9 1v3"/></svg> Book now</button>'
           + '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="11" height="9" rx="1.5"/><path d="M1 6h11M4 1v3M9 1v3"/></svg> Book now</button>'
-        + '<button class="exp-profile-btn" onclick="showProviderProfile('' + p.id + '')">Profile <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h6M7 3l3 3-3 3"/></svg></button>'
+        + '<button class="exp-profile-btn" onclick="showProviderProfile(_expProviders['+_pi+'].id)">Profile <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h6M7 3l3 3-3 3"/></svg></button>'
       + '</div>'
     + '</div>';
   });
@@ -5803,7 +5804,7 @@ function _svcRowHTML(s) {
   return '<div class="exp-svc-row"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg>' + s.name + ' ' + tags + priceEl + '</div>';
 }
 
-function toggleSvcs(pid) {
+function toggleSvcs(pid) { pid = String(pid);
   var more = document.getElementById('svcs_more_'+pid);
   var btn = document.getElementById('svcs_btn_'+pid);
   if (!more || !btn) return;
@@ -5822,14 +5823,16 @@ function exploredSvcClick(query) {
 
 function filterExploreCategory(btn, cat) {
   document.querySelectorAll('#exploreCategoryChips .ef-pill').forEach(function(b){ b.classList.remove('ef-active'); });
-  // find the right chip button and activate it
-  var chips = document.querySelectorAll('#exploreCategoryChips .ef-pill');
-  chips.forEach(function(c){
-    var txt = c.textContent.trim();
-    if (cat === 'all' && txt === 'All') c.classList.add('ef-active');
-    else if (cat !== 'all') { /* will be activated below */ }
-  });
-  if (btn) btn.classList.add('ef-active');
+  // Activate correct chip
+  if (btn) {
+    btn.classList.add('ef-active');
+  } else {
+    // Find chip by category key mapping
+    var chips = document.querySelectorAll('#exploreCategoryChips .ef-pill');
+    var catTexts = {all:'All',plumbing:'Plumbing',electrical:'Electrical',cleaning:'Cleaning',fire:'Fire',inventory:'Inventory',repairs:'General Repairs',hvac:'HVAC',pest:'Pest',maintenance:'Property Maintenance'};
+    var targetText = catTexts[cat] || '';
+    chips.forEach(function(c){ if(c.textContent.trim().toLowerCase().indexOf(targetText.toLowerCase()) >= 0) c.classList.add('ef-active'); });
+  }
   _currentExploreCat = cat;
   var catCards = document.getElementById('exploreCatCards');
   var provCards = document.getElementById('exploreProviderCards');
@@ -5931,7 +5934,7 @@ function showProviderProfile(pid) {
         + '</div>'
         + '<div style="margin-top:16px;padding-top:16px;border-top:1px solid #f1f5f9;font-size:13.5px;color:#374151;font-family:Inter,sans-serif;line-height:1.6;">Award-winning service provider with extensive experience in residential and commercial properties. ' + (p.insured?'Fully insured.':'' ) + ' ' + (p.dbs?'DBS checked.':'') + ' Trusted by property managers across ' + p.areas + '.</div>'
         + '<div style="display:flex;gap:10px;margin-top:16px;">'
-          + '<button onclick="openBookingFlow('' + p.id + '')" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="12" height="9" rx="1.5"/><path d="M1 6h12M4 1v3M10 1v3"/></svg>Book now</button>'
+          + '<button onclick="openBookingFlow(\"+p.id+\")" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="12" height="9" rx="1.5"/><path d="M1 6h12M4 1v3M10 1v3"/></svg>Book now</button>'
           + '<button style="background:#fff;border:1.5px solid #e2e8f0;color:#374151;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Request quote</button>'
         + '</div>'
       + '</div>'
@@ -6077,7 +6080,7 @@ function _bfRenderStep(step) {
       + '<div id="bfmProvList">';
     _exploreProviders.forEach(function(p) {
       var sel = s.providerName === p.name;
-      provHTML += '<div class="bfm-prov-card '+(sel?'selected':'')+'" onclick="_bfSelectProv(''+p.id+'')" id="bfProv_'+p.id+'">'
+      provHTML += '<div class="bfm-prov-card '+(sel?'selected':'')+'" onclick="_bfSelectProv(\"+p.id+\")" id="bfProv_'+p.id+'">'
         + '<div class="bfm-prov-img" style="background:linear-gradient(135deg,#1a3356,#0f1c38);display:flex;align-items:center;justify-content:center;">'
           + '<span style="font-size:28px;font-weight:800;color:rgba(255,255,255,.2);font-family:Fraunces,serif;">'+p.initials+'</span>'
           + (sel?'<div style="position:absolute;top:8px;right:8px;background:#1A5FC8;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.5"><path d="M2 6l3 3 5-5"/></svg></div>':'')
@@ -6136,20 +6139,20 @@ function _bfRenderStep(step) {
       + '<div class="bfm-review-row"><span class="bfm-review-key">Type</span><span class="bfm-review-val">Direct booking</span></div>'
       + '<div class="bfm-review-row"><span class="bfm-review-key">Date &amp; Time</span><span class="bfm-review-val">'+dateDisplay+' · '+s.time+'</span></div>'
       + '</div>'
-      + '<div class="bfm-payment-info"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#15803d" stroke-width="1.7"><rect x="1" y="5" width="16" height="10" rx="2"/><path d="M1 9h16"/></svg><div><div style="font-weight:600;font-size:13px;">Payment</div><div style="font-size:12px;margin-top:2px;">You'll only be charged after the job is completed and confirmed.</div></div></div>';
+      + '<div class="bfm-payment-info"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#15803d" stroke-width="1.7"><rect x="1" y="5" width="16" height="10" rx="2"/><path d="M1 9h16"/></svg><div><div style="font-weight:600;font-size:13px;">Payment</div><div style="font-size:12px;margin-top:2px;">You\'ll only be charged after the job is completed and confirmed.</div></div></div>';
   }
 }
 
 function _bfUrgCard(label, sub) {
   var sel = _bfState.urgency === label;
-  return '<div class="bfm-urgency-card '+(sel?'selected':'')+'" onclick="_bfSelUrgency(''+label+'',this)">'
+  return '<div class="bfm-urgency-card '+(sel?'selected':'')+'" onclick="_bfSelUrgency(\"+label+\",this)">'
     + '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">'+label+'</div>'
     + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:3px;">'+sub+'</div>'
   + '</div>';
 }
 function _bfTimeCard(label, icon, sub) {
   var sel = _bfState.time === label;
-  return '<div class="bfm-time-card '+(sel?'selected':'')+'" onclick="_bfSelTime(''+label+'',this)">'
+  return '<div class="bfm-time-card '+(sel?'selected':'')+'" onclick="_bfSelTime(\"+label+\",this)">'
     + '<div style="font-size:22px;margin-bottom:6px;">'+icon+'</div>'
     + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">'+label+'</div>'
     + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">'+sub+'</div>'
@@ -6197,6 +6200,8 @@ function _bfConfirm() {
     if(id==='explore') setTimeout(function(){ _initExploreAll(); _currentExploreCat='all'; document.querySelectorAll('#exploreCategoryChips .ef-pill').forEach(function(b){b.classList.remove('ef-active');}); var allBtn=document.querySelector('#exploreCategoryChips .ef-pill'); if(allBtn) allBtn.classList.add('ef-active'); }, 80);
   };
 })();
+
+function filterExplore(query) {
   var q = query.toLowerCase().trim();
   document.querySelectorAll('.efp').forEach(function(b){ b.classList.remove('efp-active'); });
   var first = document.querySelector('.efp'); if(first) first.classList.add('efp-active');
