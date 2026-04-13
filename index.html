@@ -1831,12 +1831,16 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .db-sidebar.collapsed #themeToggleBtn .db-nav-item-label{display:none;}
 /* Collapsed: profile area shows only centered avatar */
 .db-sidebar.collapsed #sbProfileArea{
-  justify-content:center;padding:8px 0;gap:0;width:100%;
+  justify-content:center;padding:8px 0;gap:6px;width:100%;
+  flex-direction:column;align-items:center;
 }
 .db-sidebar.collapsed #sbProfileArea>div{justify-content:center;}
 .db-sidebar.collapsed #sbProfileArea .db-nav-item-label{display:none;}
 .db-sidebar.collapsed #sbProfileArea svg.db-nav-item-label{display:none;}
-.db-sidebar.collapsed #sbProfileArea button{display:none;}
+/* Show logout btn below avatar when collapsed — icon only, smaller */
+.db-sidebar.collapsed #sbProfileArea button{
+  display:flex !important;width:28px;height:28px;padding:0;border-radius:7px;
+}
 /* Collapsed: nav items fully centered */
 .db-sidebar.collapsed .db-nav-item{
   display:flex;justify-content:center;align-items:center;
@@ -11420,6 +11424,27 @@ button:active { transform: scale(0.98); }
 }
 .dash-dark .chat-hint { color: #484f58 !important; }
 .dash-dark .chat-send-btn:disabled { background:#30363d !important; color:#484f58 !important; }
+
+/* ── Browse category item names (Plumbing, Electrical etc) ── */
+.dash-dark [style*="font-size:12px;font-weight:600;color:#0f172a;text-align:center"] { color:#e6edf3 !important; }
+
+/* ── HIW step headings (Tell us what you need / Get instant quotes etc) ── */
+.dash-dark .hiw-card [style*="font-size:13px;font-weight:600;color:#0f172a"] { color:#e6edf3 !important; }
+.dash-dark [style*="font-size:13px;font-weight:600;color:#0f172a;"] { color:#e6edf3 !important; }
+
+/* ── HIW icon boxes dark background ── */
+.dash-dark [style*="border:2px solid #dbeafe"][style*="background:#fff"] { background:#1c2433 !important; border-color:#2d4a7a !important; }
+
+/* ── Country code button in mobile field ── */
+.dash-dark #profCcBtn { background:#1c2433 !important; border-color:#30363d !important; color:#e6edf3 !important; }
+.dash-dark #profCcList { background:#1c2433 !important; border-color:#30363d !important; }
+.dash-dark #profCcList > div { color:#e6edf3 !important; }
+.dash-dark #profCcList > div:hover { background:#243046 !important; }
+
+/* ── Discovery "Complete your discovery profile" banner ── */
+.dash-dark #discStartPrompt { background:#1a2d4a !important; border-color:#2d4a7a !important; }
+.dash-dark #discStartPrompt [style*="color:#1e3a5f"] { color:#c9d1d9 !important; }
+.dash-dark #discStartPrompt [style*="color:#3b82f6"] { color:#60a5fa !important; }
 
 </style>
 
