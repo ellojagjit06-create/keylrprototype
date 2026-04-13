@@ -4893,6 +4893,8 @@ function handleHeroSearch() {
 // =============================================
 function goToDashboard(query, autoSend = false) {
   _isLoggedIn = true;
+  // Update sidebar auth icons (logged in → hide icons)
+  setTimeout(_updateSidebarAuthIcons, 100);
   // Resume pending booking after login
   if (window._pendingBookingState) {
     var pbs = window._pendingBookingState;
@@ -4936,6 +4938,7 @@ function goToDashboard(query, autoSend = false) {
     requestAnimationFrame(() => {
       db.classList.add('visible');
       checkSidebarAutoCollapse();
+      _updateSidebarAuthIcons();
       showPage('home', null);
       if (autoSend && query) {
         showPage('chat', null);
@@ -5705,16 +5708,17 @@ function toggleMobileNav() {
 // Settings tab switcher
 
 // Collapsible sidebar — Claude-style
+function _updateSidebarAuthIcons() {
+  var sb = document.getElementById('dbSidebar');
+  var authIcons = document.getElementById('sbAuthIconsWrap');
+  if (!authIcons || !sb) return;
+  // Show ONLY when: sidebar is collapsed AND user is NOT logged in
+  var collapsed = sb.classList.contains('collapsed');
+  authIcons.style.display = (collapsed && !_isLoggedIn) ? 'flex' : 'none';
+}
+
 function toggleSidebar() {
-  // Show/hide auth icon buttons in collapsed state
-  setTimeout(function() {
-    var sb = document.querySelector('.db-sidebar');
-    var authIcons = document.getElementById('sbAuthIconsWrap');
-    if (authIcons && sb) {
-      // Only show when collapsed AND user is not logged in (guest)
-      authIcons.style.display = (sb.classList.contains('collapsed') && !_isLoggedIn) ? 'flex' : 'none';
-    }
-  }, 50);
+  setTimeout(_updateSidebarAuthIcons, 60);
   var sb = document.getElementById('dbSidebar');
   if (!sb) return;
   if (window.innerWidth <= 450 && sb.classList.contains('mobile-open')) {
