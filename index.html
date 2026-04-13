@@ -3450,7 +3450,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           <div id="exploreSearchRow" style="display:flex;gap:10px;align-items:center;margin-bottom:14px;">
             <div style="position:relative;flex:1;">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.8" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="6" cy="6" r="4.5"/><path d="M10 10l2.5 2.5"/></svg>
-              <input id="expSearchInput" class="exp-search-input" placeholder="Search providers..." oninput="_filterExpSearch(this.value)" style="padding-left:36px;" />
+              <input id="expSearchInput" class="exp-search-input" id="expSearchInput" placeholder="Search services..." oninput="_filterExpSearch(this.value)" style="padding-left:36px;" />
             </div>
             <button id="expFilterToggleBtn" class="exp-filter-btn" onclick="_toggleExpFilter()" style="display:none;">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 3h12M3 7h8M5 11h4"/></svg>
@@ -3516,6 +3516,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
           <!-- ALL VIEW: category icon cards -->
           <div id="exploreCatCards" style="display:none;margin-bottom:8px;"></div>
+            <div id="exploreProviderCards" style="display:none;margin-top:8px;"></div>
 
           <!-- CATEGORY VIEW: provider cards -->
           <div id="exploreProviderCards" style="display:none;"></div>
@@ -4541,6 +4542,7 @@ function handleHeroSearch() {
 // PAGE TRANSITION
 // =============================================
 function goToDashboard(query, autoSend = false) {
+  _isLoggedIn = true;
   var _discPg = document.getElementById('pg-discovery-flow');
   if (_discPg) _discPg.classList.remove('visible');
   currentQuery = query;
@@ -5586,6 +5588,39 @@ function _iconColor(icon) {
 }
 
 function renderBookingsPage() {
+  var list = document.getElementById('bkList');
+  var stats = document.getElementById('bkStats');
+  var tabs = document.getElementById('bkTabs');
+
+  // ── Not logged in: show zero/login state ──
+  if (!_isLoggedIn) {
+    if (stats) stats.innerHTML = '';
+    if (tabs) tabs.innerHTML = '';
+    if (list) {
+      list.innerHTML = '';
+      var zeroDiv = document.createElement('div');
+      zeroDiv.style.cssText = 'text-align:center;padding:60px 24px;';
+      zeroDiv.innerHTML = '<svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="#e2e8f0" stroke-width="1.5" style="margin-bottom:18px;"><rect x="12" y="8" width="40" height="48" rx="4"/><path d="M22 22h20M22 32h20M22 42h12"/></svg>'
+        +'<div style="font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">No jobs yet</div>'
+        +'<div style="font-size:14px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:6px;">Sign in to view and manage your booked services</div>'
+        +'<div style="font-size:13px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:24px;">Your bookings will appear here once you\'re logged in</div>'
+        +'<div id="bkAuthBtns" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;"></div>';
+      list.appendChild(zeroDiv);
+      (function(){
+        var b1=document.createElement('button');
+        b1.style.cssText='background:#fff;border:1.5px solid #e2e8f0;color:#374151;border-radius:10px;padding:11px 24px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
+        b1.textContent='Log in'; b1.onclick=function(){showAuthPage('login');};
+        var b2=document.createElement('button');
+        b2.style.cssText='background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
+        b2.textContent='Sign up free'; b2.onclick=function(){showAuthPage('signup');};
+        var wrap=document.getElementById('bkAuthBtns');
+        if(wrap){wrap.appendChild(b1);wrap.appendChild(b2);}
+      })();
+      list.appendChild(zeroDiv);
+    }
+    return;
+  }
+
   var active = _allJobs.filter(function(j){ return j.status!=='Completed'; });
   var completed = _allJobs.filter(function(j){ return j.status==='Completed'; });
   var totalSpent = completed.reduce(function(s,j){ return s+parseInt((j.price||'0').replace(/[^0-9]/g,'')); },0);
@@ -6294,6 +6329,12 @@ function exploredSvcClick(query) {
 }
 
 function filterExploreCategory(btn, cat) {
+  // Clear search input when switching chips
+  var inp = document.getElementById('expSearchInput');
+  if (inp) { inp.value = ''; }
+  // Hide search results pane
+  var pr = document.getElementById('exploreProviderCards');
+  if (pr) { pr.style.display = 'none'; pr.innerHTML = ''; }
   document.querySelectorAll('#exploreCategoryChips .ef-pill').forEach(function(b){ b.classList.remove('ef-active'); });
   // Activate correct chip
   if (btn) {
@@ -6345,11 +6386,103 @@ function _clearExpFilter() {
   if (panel) panel.classList.remove('open');
   renderExploreProviders(_currentExploreCat, 0);
 }
+function _clearExpSearch() {
+  var inp = document.getElementById('expSearchInput');
+  if (inp) inp.value = '';
+  _filterExpSearch('');
+}
 function _filterExpSearch(q) {
-  q = q.toLowerCase();
-  document.querySelectorAll('.exp-pcard').forEach(function(card) {
-    card.style.display = (!q || card.textContent.toLowerCase().includes(q)) ? '' : 'none';
-  });
+  q = (q||'').toLowerCase().trim();
+  var searchInput = document.getElementById('expSearchInput');
+
+  if (_currentExploreCat === 'all') {
+    // On "All" chip: search both service cards AND provider names
+    var catCards = document.getElementById('exploreCatCards');
+    var provGrid = document.getElementById('exploreProviderCards');
+
+    if (!q) {
+      // No query: restore All chip view (service groups)
+      if (catCards) catCards.style.display = 'block';
+      if (provGrid) provGrid.style.display = 'none';
+      if (searchInput) searchInput.placeholder = 'Search services...';
+      return;
+    }
+
+    // Has query: hide service groups, show matching providers
+    if (catCards) catCards.style.display = 'none';
+    if (provGrid) { provGrid.style.display = ''; provGrid.innerHTML = ''; }
+
+    var matched = _exploreProviders.filter(function(p) {
+      return p.name.toLowerCase().includes(q) ||
+             p.role.toLowerCase().includes(q) ||
+             p.certs.join(' ').toLowerCase().includes(q) ||
+             p.services.some(function(s){ return s.name.toLowerCase().includes(q); });
+    });
+
+    if (!matched.length) {
+      if (provGrid) {
+        var emptyEl = document.createElement('div');
+        emptyEl.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:60px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;';
+        emptyEl.innerHTML = '<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#d1d5db" stroke-width="1.8"><circle cx="18" cy="18" r="11"/><path d="M27 27l7 7"/></svg>'
+          +'<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Fraunces,serif;">No providers found</div>'
+          +'<div style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;">No suppliers match your search</div>'
+          +"<button onclick=\"_clearExpSearch()\" style=\"background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 24px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;margin-top:8px;\">Clear search</button>";
+        provGrid.appendChild(emptyEl);
+      }
+      return;
+    }
+
+    // Render matching provider cards in 2-col grid
+    if (provGrid) {
+      window._expProviders = matched;
+      var grid = document.createElement('div');
+      grid.className = 'exp-provider-grid';
+      matched.forEach(function(p, _pi) {
+        // Build provider card same as renderExploreProviders
+        var svcsAll = p.services || [];
+        var svcsDefault = svcsAll.slice(0, 3);
+        var extraCount = Math.max(0, svcsAll.length - 3);
+        var svcsDefaultHTML = svcsDefault.map(_svcRowHTML).join('');
+        var svcsMoreHTML = svcsAll.slice(3).map(_svcRowHTML).join('');
+        var svcsSection = '<div class="exp-pcard-services-title">SERVICES (' + svcsAll.length + ')</div>'
+          + svcsDefaultHTML
+          + (extraCount > 0
+            ? '<div id="svcs_more_'+p.id+'" style="display:none;">' + svcsMoreHTML + '</div>'
+              + '<button data-pid="'+p.id+'" onclick="toggleSvcs(this.dataset.pid)" id="svcs_btn_'+p.id+'" class="exp-show-more">+' + extraCount + ' more <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4l2 2 2-2"/></svg></button>'
+            : '');
+        var certs = (p.certs||[]).map(function(c){ return '<span class="exp-cert-chip">'+c+'</span>'; }).join('');
+        var avail = '<span class="exp-avail-item"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l2 2"/></svg>' + p.sla + ' SLA</span>';
+        avail += '<span class="exp-avail-item"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="2" width="10" height="9" rx="1.5"/><path d="M1 5h10M4 1v2M8 1v2"/></svg>' + (p.days||'') + ' ' + p.hours + '</span>';
+        if (p.emergency) avail += '<span class="exp-avail-item emg"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#92400e" stroke-width="1.6"><path d="M6 1l1.5 4H11L7.5 8l1.5 4L6 8.5 2 12l1.5-4L0 5h3.5z"/></svg> 24/7 Emergency</span>';
+        var stars = '';
+        for(var i=1;i<=5;i++) stars+='<svg width="11" height="11" viewBox="0 0 11 11" fill="'+(i<=Math.floor(p.rating)?'#f59e0b':'none')+'" stroke="#f59e0b" stroke-width="1.4"><path d="M5.5 1l1.1 3.4H10L7.3 6.6l1.1 3.4-2.9-2-2.9 2 1.1-3.4L1 4.4h3.4z"/></svg>';
+        var footer='';
+        if(p.areas) footer+='<span class="exp-footer-item"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="5" r="2.5"/><path d="M2 11c0-3 2-5 4-5s4 2 4 5"/></svg>'+p.areas+'</span>';
+        if(p.insured) footer+='<span class="exp-footer-item"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 1l4 2v4c0 3-4 5-4 5S2 10 2 7V3z"/></svg>Insured</span>';
+        if(p.dbs) footer+='<span class="exp-footer-item"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 6l3 3 5-5"/></svg>DBS</span>';
+        var cardHTML = '<div class="exp-pcard" id="epc_'+p.id+'">'
+          +'<div class="exp-pcard-header"><div class="exp-pcard-avatar">'+p.initials+'</div><div class="exp-pcard-info"><div class="exp-pcard-name">'+p.name+'</div><div class="exp-pcard-role">'+p.role+'</div><div class="exp-pcard-certs">'+certs+'</div></div><div class="exp-pcard-price">from<span class="exp-price-val">£'+p.price+'</span></div></div>'
+          +'<div class="exp-pcard-rating">'+stars+'<span class="exp-rat-num">'+p.rating+'</span><span class="exp-rat-rev">('+p.reviews+')</span><span class="exp-rat-jobs">'+p.jobs+' jobs</span></div>'
+          +'<div class="exp-pcard-avail">'+avail+'</div>'
+          +'<div class="exp-pcard-services">'+svcsSection+'</div>'
+          +'<div style="display:flex;gap:10px;align-items:center;padding:10px 16px 0;flex-wrap:wrap;"></div>'
+          +'<div class="exp-pcard-footer">'
+            +'<button class="exp-book-btn" onclick="openBookingFlow(_expProviders['+_pi+'].id)"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="11" height="9" rx="1.5"/><path d="M1 6h11M4 1v3M9 1v3"/></svg> Book now</button>'
+            +'<button class="exp-profile-btn" onclick="showProviderProfile(_expProviders['+_pi+'].id)">Profile <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h6M7 3l3 3-3 3"/></svg></button>'
+          +'</div>'
+        +'</div>';
+        var cardEl = document.createElement('div');
+        cardEl.innerHTML = cardHTML;
+        grid.appendChild(cardEl.firstChild);
+      });
+      provGrid.appendChild(grid);
+    }
+  } else {
+    // On specific chip: filter visible provider cards
+    document.querySelectorAll('.exp-pcard').forEach(function(card) {
+      card.style.display = (!q || card.textContent.toLowerCase().includes(q)) ? '' : 'none';
+    });
+  }
 }
 function _ppGetQuote(pid, svcName) {
   // From additional services "Get quote" → step 2 (Choose a provider), quote type
@@ -6394,6 +6527,12 @@ function _serviceCardClick(catKey, serviceLabel) {
   var targetText = catToText[catKey] || '';
   chips.forEach(function(c){ if(c.textContent.trim().toLowerCase().indexOf(targetText.toLowerCase()) >= 0) targetBtn = c; });
   filterExploreCategory(targetBtn, catKey);
+}
+
+function _updateExpSearchPlaceholder() {
+  var inp = document.getElementById('expSearchInput');
+  if (!inp) return;
+  inp.placeholder = _currentExploreCat === 'all' ? 'Search services...' : 'Search providers...';
 }
 
 function _initExploreAll() {
@@ -6696,6 +6835,7 @@ function showProviderProfile(pid) {
 }
 
 // ── Booking Flow (full-page, not modal) ──
+var _isLoggedIn = false; // set true on dashboard login
 var _bfState = { step:0, service:'', bookingType:'direct', providerId:null, providerName:'', property:'', propertyAddr:'', urgency:'Flexible', date:'', time:'Afternoon', details:'' };
 var _bfProperties = [
   { name:'Maple Court', addr:'123 Oak Street, London', type:'flat', beds:'2 bed', suppliers:3 },
@@ -7223,6 +7363,29 @@ function _bfFilterProv(q) {
   q=q.toLowerCase(); document.querySelectorAll('[id^="bfProv_"]').forEach(function(card){card.style.display=(!q||card.textContent.toLowerCase().includes(q))?'':'none';});
 }
 function _bfConfirm() {
+  // If not logged in, show auth modal then retry
+  if (!_isLoggedIn) {
+    var authOverlay = document.createElement('div');
+    authOverlay.id = 'bfAuthGate';
+    authOverlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(15,23,42,0.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;';
+    var authCard = document.createElement('div');
+    authCard.style.cssText = 'background:#fff;border-radius:20px;max-width:400px;width:100%;padding:32px 28px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.22);';
+    authCard.innerHTML = '<div style="font-size:36px;margin-bottom:12px;">🔐</div>'
+      +'<div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">Sign in to confirm your booking</div>'
+      +'<div style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:24px;">Create a free account or log in to book services and track your jobs</div>'
+      +'<div style="display:flex;flex-direction:column;gap:10px;">'
+        +'<button id="bfAuthSignup" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Create free account</button>'
+        +'<button id="bfAuthLogin" style="background:#fff;border:1.5px solid #e2e8f0;color:#374151;border-radius:12px;padding:14px;font-size:14px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Log in</button>'
+        +'<button id="bfAuthCancel" style="background:none;border:none;color:#94a3b8;font-size:13px;cursor:pointer;font-family:Inter,sans-serif;padding:4px;">Cancel</button>'
+      +'</div>';
+    authOverlay.appendChild(authCard);
+    document.body.appendChild(authOverlay);
+    authOverlay.addEventListener('click', function(e){ if(e.target===authOverlay) authOverlay.remove(); });
+    document.getElementById('bfAuthSignup').onclick = function(){ authOverlay.remove(); showAuthPage('signup'); };
+    document.getElementById('bfAuthLogin').onclick = function(){ authOverlay.remove(); showAuthPage('login'); };
+    document.getElementById('bfAuthCancel').onclick = function(){ authOverlay.remove(); };
+    return;
+  }
   var s=_bfState;
   var ref='K'+Math.floor(Math.random()*90000+10000);
   var dateDisplay=s.date?new Date(s.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'';
