@@ -2755,6 +2755,10 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .dash-dark .bfm-review-val { color:#e6edf3 !important; }
 .dash-dark .bfm-payment-info { background:#052e16 !important; border-color:#14532d !important; color:#34d399 !important; }
 /* Back + Continue buttons */
+.dash-dark .bf-step-title { color:#e6edf3 !important; }
+.dash-dark .bf-sub-heading { color:#e6edf3 !important; }
+.dash-dark .bf-card-heading { color:#e6edf3 !important; }
+.dash-dark .bf-muted-text { color:#8b949e !important; }
 .dash-dark .bfm-back-footer { background:#1c2433 !important; border-color:#30363d !important; color:#c9d1d9 !important; }
 
 /* ── Job Bookings page ── */
@@ -2782,6 +2786,175 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .dash-dark #bkList > div[style*="border-radius:18px"] div[style*="font-size:13.5px"] { color:#8b949e !important; }
 .dash-dark #bkList > div[style*="border-radius:18px"] div[style*="width:72px"] { background:#1c2433 !important; }
 .dash-dark #bkList > div[style*="border-radius:18px"] div[style*="gap:16px"] span { color:#8b949e !important; }
+
+/* ════════════════════════════════════════════
+   DARK MODE — BOOKING FLOW HEADINGS & ALL STEPS
+   ════════════════════════════════════════════ */
+
+/* Page heading (step title) */
+.dash-dark #page-booking-flow { background:#0d1117 !important; }
+.dash-dark #bfPageInner > div:first-child > div[style*="font-size:18px"],
+.dash-dark #bfPageInner > div:first-child > div[style*="Fraunces"] {
+  color:#e6edf3 !important;
+}
+.dash-dark #bfPageInner > div:first-child { color:#e6edf3; }
+
+/* Step label "Step X/6" */
+.dash-dark #bfPageInner > div:first-child > div[style*="margin-left:auto"] { color:#8b949e !important; }
+.dash-dark #bfPageInner > div:first-child > div[style*="12.5px"] { color:#8b949e !important; }
+
+/* All step body headings (Select a property, booking type, etc.) */
+.dash-dark #bfPageBody > div[style*="font-weight:700"],
+.dash-dark #bfPageBody > div[style*="font-weight:800"],
+.dash-dark #bfPageBody > div[style*="font-size:14px"][style*="font-weight:6"],
+.dash-dark #bfPageBody > div[style*="font-size:14px"][style*="font-weight:7"] {
+  color:#e6edf3 !important;
+}
+
+/* Step 1: Select property cards */
+.dash-dark .bfm-prop-card { background:#161b22 !important; border-color:#30363d !important; }
+.dash-dark .bfm-prop-card:hover { border-color:#3b82f6 !important; background:#1a2744 !important; }
+.dash-dark .bfm-prop-card.selected { background:#1a2744 !important; border-color:#3b82f6 !important; }
+.dash-dark .bfm-prop-name { color:#e6edf3 !important; }
+.dash-dark .bfm-prop-addr { color:#8b949e !important; }
+.dash-dark .bfm-ptag { background:#1c2433 !important; color:#8b949e !important; }
+.dash-dark .bfm-prop-thumb { background:#1c2433 !important; }
+
+/* Step 2: Choose a provider - provider card name */
+.dash-dark .bfm-prov-card { background:#161b22 !important; border-color:#30363d !important; }
+.dash-dark .bfm-prov-card.selected { border-color:#3b82f6 !important; background:#1a2744 !important; }
+.dash-dark .bfm-prov-body > div[style*="font-weight:700"] { color:#e6edf3 !important; }
+.dash-dark .bfm-prov-body > div[style*="font-size:14px"] { color:#e6edf3 !important; }
+.dash-dark .bfm-prov-body > div > div[style*="font-weight:700"] { color:#e6edf3 !important; }
+.dash-dark .bfm-prov-avatar { background:linear-gradient(135deg,#1a3a6e,#0e2a5a) !important; color:#60a5fa !important; }
+.dash-dark .bfm-prov-badge.green { background:#052e16 !important; color:#34d399 !important; border:1px solid #14532d !important; }
+.dash-dark .bfm-prov-badge.blue { background:#1e3a5f !important; color:#60a5fa !important; border:1px solid #1e40af !important; }
+
+/* Step 2: provider search input */
+.dash-dark #bfPageBody input[type="text"] { background:#1c2433 !important; border-color:#30363d !important; color:#e6edf3 !important; }
+.dash-dark #bfPageBody input[type="text"]::placeholder { color:#4b5563 !important; }
+/* Assignment badge */
+.dash-dark #bfPageBody > div[style*="background:#eff6ff"] { background:#1e3a5f !important; border-color:#1e40af !important; color:#60a5fa !important; }
+
+/* Step 3: Job details */
+.dash-dark #bfPageBody textarea { background:#1c2433 !important; border-color:#30363d !important; color:#e6edf3 !important; }
+.dash-dark #bfPageBody textarea::placeholder { color:#4b5563 !important; }
+/* Photo upload box */
+.dash-dark #bfPageBody > div[style*="dashed"] { background:#161b22 !important; border-color:#30363d !important; }
+/* Urgency grid cards */
+.dash-dark .bfm-urgency-card { background:#161b22 !important; border-color:#30363d !important; }
+.dash-dark .bfm-urgency-card:hover { border-color:#3b82f6 !important; }
+.dash-dark .bfm-urgency-card.selected { background:#1a2744 !important; border-color:#3b82f6 !important; }
+.dash-dark .bfm-urgency-card > div:first-child { color:#e6edf3 !important; }
+.dash-dark .bfm-urgency-card > div:last-child { color:#8b949e !important; }
+
+/* Step 4: Date & time */
+/* Date input wrapper */
+.dash-dark #bfPageBody > div[style*="border:1.5px solid #e2e8f0"] { background:#161b22 !important; border-color:#30363d !important; }
+/* Date input field */
+.dash-dark #bfPageBody input[type="date"] { background:#161b22 !important; border-color:#30363d !important; color:#e6edf3 !important; color-scheme:dark; }
+/* Time cards */
+.dash-dark .bfm-time-card { background:#161b22 !important; border-color:#30363d !important; }
+.dash-dark .bfm-time-card.selected { background:#1a2744 !important; border-color:#3b82f6 !important; }
+.dash-dark .bfm-time-card > div:nth-child(2) { color:#e6edf3 !important; }
+.dash-dark .bfm-time-card > div:last-child { color:#8b949e !important; }
+
+/* Step 5: Review & confirm */
+.dash-dark .bfm-review-table { background:#161b22 !important; border-color:#30363d !important; }
+.dash-dark .bfm-review-row { border-color:#30363d !important; }
+.dash-dark .bfm-review-key { color:#8b949e !important; }
+.dash-dark .bfm-review-val { color:#e6edf3 !important; }
+.dash-dark .bfm-payment-info { background:#052e16 !important; border-color:#14532d !important; }
+.dash-dark .bfm-payment-info div { color:#34d399 !important; }
+
+/* Back / Continue footer buttons */
+.dash-dark .bfm-back-footer { background:#1c2433 !important; border-color:#30363d !important; color:#c9d1d9 !important; }
+.dash-dark .bfm-continue-btn { background:linear-gradient(90deg,#1A5FC8,#0FA3D0) !important; }
+
+/* Step 0: booking type cards */
+.dash-dark #bfPageBody > div[style*="grid-template-columns:1fr 1fr"] > div {
+  background:#161b22 !important; border-color:#30363d !important;
+}
+.dash-dark #bfPageBody > div[style*="grid-template-columns:1fr 1fr"] > div:hover {
+  border-color:#3b82f6 !important;
+}
+.dash-dark #bfPageBody > div[style*="grid-template-columns:1fr 1fr"] > div > div:nth-child(2) {
+  color:#e6edf3 !important;
+}
+.dash-dark #bfPageBody > div[style*="grid-template-columns:1fr 1fr"] > div > div:last-child {
+  color:#8b949e !important;
+}
+/* Popular service chips */
+.dash-dark #bfPageBody > div[style*="flex-wrap:wrap"] > button {
+  background:#161b22 !important; border-color:#30363d !important; color:#c9d1d9 !important;
+}
+.dash-dark #bfPageBody input[type="text"] { background:#1c2433 !important; border-color:#30363d !important; color:#e6edf3 !important; }
+
+/* ── Explore service category cards dark mode ── */
+/* The icon square inside each card */
+.dash-dark #exploreCatCards > div > div > div > div:first-child > div {
+  background:#1c2433 !important;
+}
+/* White card bg → dark */
+.dash-dark #exploreCatCards > div > div > div {
+  background:#161b22 !important;
+  border-color:#30363d !important;
+}
+.dash-dark #exploreCatCards > div > div > div:hover {
+  border-color:#3b82f6 !important;
+  box-shadow:0 2px 16px rgba(59,130,246,.15) !important;
+}
+/* Service name → white; pro count → grey */
+.dash-dark #exploreCatCards > div > div > div > div:last-child > div:first-child {
+  color:#e6edf3 !important;
+}
+.dash-dark #exploreCatCards > div > div > div > div:last-child > div:last-child {
+  color:#8b949e !important;
+}
+/* Category heading (Compliance & safety etc.) */
+.dash-dark #exploreCatCards > div > div:first-child,
+.dash-dark #exploreCatCards h3 {
+  color:#e6edf3 !important;
+}
+
+/* ── Dark mode tabs container (bookings) ── */
+.dash-dark #bkTabs { background:#1c2433 !important; border-radius:999px !important; }
+.dash-dark #bkTabs > button { color:#8b949e !important; background:transparent !important; box-shadow:none !important; }
+.dash-dark #bkTabs > button[style*="background:#fff"] {
+  background:#2d3748 !important; color:#e6edf3 !important; box-shadow:0 1px 4px rgba(0,0,0,.4) !important;
+}
+
+/* ── Modal dialog dark mode (job detail modal) ── */
+.dash-dark #jobModalOverlay > div { background:#161b22 !important; }
+.dash-dark #jobModalOverlay > div > div[style*="border-bottom"] { background:#161b22 !important; border-color:#30363d !important; }
+.dash-dark #jobModalOverlay > div > div[style*="border-bottom"] > div > div[style*="font-size:16px"] { color:#e6edf3 !important; }
+.dash-dark #jobModalOverlay > div > div[style*="border-bottom"] > div > div[style*="font-size:12px"] { color:#8b949e !important; }
+/* Pipeline segments in modal */
+.dash-dark #jobModalOverlay > div > div:nth-child(2) { background:#161b22 !important; }
+/* Tab bar */
+.dash-dark #jobModalOverlay > div > div[style*="background:#f8fafc"] { background:#1c2433 !important; }
+/* Tab buttons */
+.dash-dark #jobModalOverlay button[style*="transparent"] { color:#8b949e !important; }
+.dash-dark #jobModalOverlay button[style*="#fff"] { background:#2d3748 !important; color:#e6edf3 !important; }
+/* Scrollable content */
+.dash-dark #jobModalOverlay > div > div[style*="overflow-y:auto"] { background:#161b22 !important; }
+/* Overview table */
+.dash-dark #jobModalOverlay .bfm-review-table,
+.dash-dark #jobModalOverlay > div > div[style*="overflow-y"] > div[style*="background:#f8fafc"] {
+  background:#1c2433 !important; border-color:#30363d !important;
+}
+.dash-dark #jobModalOverlay > div > div[style*="overflow-y"] > div > div { border-color:#30363d !important; }
+.dash-dark #jobModalOverlay > div > div[style*="overflow-y"] > div > div > span:first-child { color:#8b949e !important; }
+.dash-dark #jobModalOverlay > div > div[style*="overflow-y"] > div > div > span:last-child { color:#e6edf3 !important; }
+/* Rating card */
+.dash-dark #jobModalOverlay > div > div[style*="overflow-y"] > div[style*="fffbeb"] { background:#2d1500 !important; border-color:#78350f !important; }
+/* Timeline dots */
+.dash-dark #jobModalOverlay > div > div[style*="overflow-y"] > div > div[style*="flex-direction:column"] > div { background:#3b82f6 !important; }
+/* Footer */
+.dash-dark #jobModalOverlay > div > div[style*="border-top"] { background:#161b22 !important; border-color:#30363d !important; }
+.dash-dark #jobModalOverlay > div > div[style*="border-top"] > button[style*="background:#f8fafc"] { background:#1c2433 !important; border-color:#30363d !important; color:#c9d1d9 !important; }
+
+
 
 
 /* 6-Step Booking Modal */
@@ -5769,12 +5942,12 @@ function renderBookingsPage() {
   });
 
   // ── Tabs — always visible ──
-  tabEl.style.cssText = 'display:flex;gap:2px;background:#f1f5f9;border-radius:999px;padding:3px;';
+  tabEl.style.cssText = 'display:inline-flex;gap:2px;background:#f1f5f9;border-radius:999px;padding:3px;';
   tabEl.innerHTML = '';
   [['active','Active ('+active.length+')'],['completed','Completed ('+completed.length+')'],['all','All ('+(active.length+completed.length)+')']].forEach(function(t) {
     var btn = document.createElement('button');
     var sel = _bkActiveFilter === t[0];
-    btn.style.cssText = 'background:'+(sel?'#fff':'transparent')+';color:'+(sel?'#0f172a':'#64748b')+';border:none;border-radius:999px;padding:8px 20px;font-size:13.5px;font-weight:'+(sel?'700':'500')+';cursor:pointer;font-family:Inter,sans-serif;transition:all .15s;box-shadow:'+(sel?'0 2px 6px rgba(0,0,0,.08)':'none')+';';
+    btn.style.cssText = 'background:'+(sel?'#fff':'transparent')+';color:'+(sel?'#0f172a':'#64748b')+';border:none;border-radius:999px;padding:8px 22px;font-size:13.5px;font-weight:'+(sel?'700':'500')+';cursor:pointer;font-family:Inter,sans-serif;transition:all .15s;box-shadow:'+(sel?'0 2px 6px rgba(0,0,0,.08)':'none')+';white-space:nowrap;';
     btn.textContent = t[1];
     btn.onclick = (function(f){ return function(){ _bkActiveFilter=f; renderBookingsPage(); }; })(t[0]);
     tabEl.appendChild(btn);
@@ -7096,6 +7269,7 @@ function _bfRenderPage() {
   backBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg>';
   backBtn.onclick = _bfBack;
   var titleEl = document.createElement('div');
+  titleEl.className = 'bf-step-title';
   titleEl.style.cssText = 'font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;';
   titleEl.textContent = titles[s.step] || '';
   var stepLbl = document.createElement('div');
@@ -7163,6 +7337,7 @@ function _bfRenderStep(step) {
   if (step === 0) {
     // ── Step 0: Choose a service ──
     var h0 = document.createElement('div');
+    h0.className = 'bf-sub-heading';
     h0.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;';
     h0.textContent = 'What service do you need?';
     body.appendChild(h0);
@@ -7178,6 +7353,7 @@ function _bfRenderStep(step) {
     body.appendChild(svcInput);
 
     var popLabel = document.createElement('div');
+    popLabel.className = 'bf-muted-text';
     popLabel.style.cssText = 'font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:8px;';
     popLabel.textContent = 'Popular services';
     body.appendChild(popLabel);
@@ -7199,6 +7375,7 @@ function _bfRenderStep(step) {
     body.appendChild(chipsWrap);
 
     var btLabel = document.createElement('div');
+    btLabel.className = 'bf-sub-heading';
     btLabel.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;';
     btLabel.textContent = 'Booking type';
     body.appendChild(btLabel);
@@ -7216,6 +7393,7 @@ function _bfRenderStep(step) {
       iconDiv.style.cssText = 'color:#1A5FC8;margin-bottom:8px;';
       iconDiv.innerHTML = t[1];
       var titleEl = document.createElement('div');
+      titleEl.className = 'bf-card-heading';
       titleEl.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;';
       titleEl.textContent = t[2];
       var subEl = document.createElement('div');
@@ -7360,6 +7538,7 @@ function _bfRenderStep(step) {
       avatar.textContent = p.initials;
       var nameInfo = document.createElement('div');
       var nameEl = document.createElement('div');
+      nameEl.className = 'bf-card-heading';
       nameEl.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;';
       nameEl.textContent = p.name;
       var subEl = document.createElement('div');
@@ -7408,6 +7587,7 @@ function _bfRenderStep(step) {
   } else if (step === 3) {
     // ── Job details ──
     var h3 = document.createElement('div');
+    h3.className = 'bf-sub-heading';
     h3.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:6px;';
     h3.innerHTML = 'Additional details <span style="font-size:12px;color:#94a3b8;font-weight:400;">(optional)</span>';
     body.appendChild(h3);
@@ -7421,11 +7601,13 @@ function _bfRenderStep(step) {
     body.appendChild(ta);
 
     var h3b = document.createElement('div');
+    h3b.className = 'bf-sub-heading';
     h3b.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:6px;';
     h3b.innerHTML = 'Photos <span style="font-size:12px;color:#94a3b8;font-weight:400;">(optional)</span>';
     body.appendChild(h3b);
 
     var photoSub = document.createElement('div');
+    photoSub.className = 'bf-muted-text';
     photoSub.style.cssText = 'font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:10px;';
     photoSub.textContent = 'Add photos to help providers understand the job';
     body.appendChild(photoSub);
@@ -7436,6 +7618,7 @@ function _bfRenderStep(step) {
     body.appendChild(uploadBox);
 
     var h3c = document.createElement('div');
+    h3c.className = 'bf-sub-heading';
     h3c.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;';
     h3c.textContent = 'Urgency';
     body.appendChild(h3c);
@@ -7447,6 +7630,7 @@ function _bfRenderStep(step) {
       card.className = 'bfm-urgency-card' + (s.urgency===pair[0]?' selected':'');
       card.onclick = function(){ _bfSelUrgency(pair[0], this); };
       var title = document.createElement('div');
+      title.className = 'bf-card-heading';
       title.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;';
       title.textContent = pair[0];
       var sub = document.createElement('div');
@@ -7460,6 +7644,7 @@ function _bfRenderStep(step) {
   } else if (step === 4) {
     // ── Pick date & time ──
     var h4 = document.createElement('div');
+    h4.className = 'bf-sub-heading';
     h4.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;';
     h4.textContent = 'Preferred date';
     body.appendChild(h4);
@@ -7480,6 +7665,7 @@ function _bfRenderStep(step) {
     if (!s.date) _bfState.date = defDate;
 
     var h4b = document.createElement('div');
+    h4b.className = 'bf-sub-heading';
     h4b.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;';
     h4b.textContent = 'Preferred time';
     body.appendChild(h4b);
@@ -7494,6 +7680,7 @@ function _bfRenderStep(step) {
       icon.style.cssText = 'font-size:22px;margin-bottom:6px;';
       icon.textContent = t[1];
       var label = document.createElement('div');
+      label.className = 'bf-card-heading';
       label.style.cssText = 'font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;';
       label.textContent = t[0];
       var subT = document.createElement('div');
@@ -11140,7 +11327,7 @@ function saveCompanyDetailsPrompt() {
 function skipCompanyDetails() {
   var m = document.getElementById('companyDetailsPrompt');
   if (m) m.remove();
-  if (typeof showToast === 'function') showToast('You can complete this later in Settings → Business', 'warning');
+  if (typeof showToast === 'function') showToast('You can complete this later via the Company details card on your home page', 'info');
   setTimeout(triggerProfilingFromProgress, 800);
 }
 
@@ -11296,7 +11483,7 @@ function skipBizOnboarding() {
   var ob = document.getElementById('pg-biz-onboard');
   if (ob) ob.classList.remove('visible');
   goToDashboard('', false);
-  if (typeof showToast === 'function') showToast('You can complete this later in Settings → Business', 'warning');
+  if (typeof showToast === 'function') showToast('You can complete this later via the Company details card on your home page', 'info');
   // Show 0 alerts by default on skip
   updateSidebarCards(0);
 }
