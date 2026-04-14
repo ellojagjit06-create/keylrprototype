@@ -6995,10 +6995,8 @@ function _renderPropertiesGrid() {
   if (!grid) return;
   grid.innerHTML = '';
   if (!_isLoggedIn || !_userProperties.length) {
-    grid.innerHTML = '<div style="text-align:center;padding:60px 24px;">'
-      +'<div style="font-size:17px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">No properties yet</div>'
-      +'<div style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:20px;">Add your first property to track compliance and book services.</div>'
-      +'</div>';
+    grid.innerHTML = '<div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">No properties yet</div>'
+      +'<div style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:20px;max-width:240px;line-height:1.65;text-align:center;">Add your first property to track compliance and book services.</div>';
     return;
   }
   _userProperties.forEach(function(prop) {
