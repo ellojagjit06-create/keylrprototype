@@ -7079,6 +7079,9 @@ function showProviderProfile(pid) {
   var el = document.getElementById('providerProfileContent');
   if (!el) return;
 
+  // Dark mode flag — must be first so all inline styles use it
+  var isDkPP = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
+
   // Stars
   var stars = '';
   for (var i=1;i<=5;i++) {
@@ -7086,18 +7089,20 @@ function showProviderProfile(pid) {
     stars += '<svg width="16" height="16" viewBox="0 0 11 11" fill="'+filled+'" stroke="#f59e0b" stroke-width="1.4"><path d="M5.5 1l1.1 3.4H10L7.3 6.6l1.1 3.4-2.9-2-2.9 2 1.1-3.4L1 4.4h3.4z"/></svg>';
   }
   // Cert badges
-  var certsHTML = p.certs.map(function(c){ return '<span style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;font-family:Inter,sans-serif;">'+c+'</span>'; }).join(' ');
+  var certBadgeBg = isDkPP?'#1a2d54':'#eff6ff', certBadgeColor = isDkPP?'#7eb4ff':'#1d4ed8', certBadgeBorder = isDkPP?'#2d4a8a':'#bfdbfe';
+  var certsHTML = p.certs.map(function(c){ return '<span style="background:'+certBadgeBg+';color:'+certBadgeColor+';border:1px solid '+certBadgeBorder+';border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;font-family:Inter,sans-serif;">'+c+'</span>'; }).join(' ');
   // Rating bars
   var dist = [65,25,8,2,2];
   var ratingBars = '';
   [5,4,3,2,1].forEach(function(star,i){
+    var rbTrack = isDkPP?'#21262d':'#f1f5f9', rbTxt = isDkPP?'#8b949e':'#64748b';
     ratingBars += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">'
-      +'<span style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;width:8px;">'+star+'</span>'
+      +'<span style="font-size:12px;color:'+rbTxt+';font-family:Inter,sans-serif;width:8px;">'+star+'</span>'
       +'<svg width="12" height="12" viewBox="0 0 11 11" fill="#f59e0b" stroke="none"><path d="M5.5 1l1.1 3.4H10L7.3 6.6l1.1 3.4-2.9-2-2.9 2 1.1-3.4L1 4.4h3.4z"/></svg>'
-      +'<div style="flex:1;height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;">'
+      +'<div style="flex:1;height:6px;background:'+rbTrack+';border-radius:3px;overflow:hidden;">'
         +'<div style="height:100%;background:#f59e0b;border-radius:3px;width:'+dist[i]+'%;"></div>'
       +'</div>'
-      +'<span style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;width:28px;">'+dist[i]+'%</span>'
+      +'<span style="font-size:12px;color:'+rbTxt+';font-family:Inter,sans-serif;width:28px;">'+dist[i]+'%</span>'
     +'</div>';
   });
   // Services
@@ -7105,28 +7110,30 @@ function showProviderProfile(pid) {
   p.services.forEach(function(s){
     var svcName = s.name;
     if (!s.quote) {
-      fixedSvcs += '<div class="pp-svc-row" style="display:flex;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;position:relative;">'
-        +'<div style="flex:1;font-size:14px;font-weight:500;color:#0f172a;font-family:Inter,sans-serif;">'+svcName+' <span style="font-size:11px;color:#94a3b8;font-weight:400;">flat rate</span></div>'
+      var svcBorder = isDkPP?'#21262d':'#f1f5f9', svcNameColor = isDkPP?'#e6edf3':'#0f172a', svcPriceColor = isDkPP?'#e6edf3':'#0f172a';
+      fixedSvcs += '<div class="pp-svc-row" style="display:flex;align-items:center;padding:14px 0;border-bottom:1px solid '+svcBorder+';position:relative;">'
+        +'<div style="flex:1;font-size:14px;font-weight:500;color:'+svcNameColor+';font-family:Inter,sans-serif;">'+svcName+' <span style="font-size:11px;color:#94a3b8;font-weight:400;">flat rate</span></div>'
         +'<span style="font-size:11px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:5px;padding:2px 8px;font-weight:600;font-family:Inter,sans-serif;margin-right:10px;">Within budget</span>'
-        +'<span style="font-size:16px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-right:10px;">'+s.price+'</span>'
+        +'<span style="font-size:16px;font-weight:800;color:'+svcPriceColor+';font-family:Fraunces,serif;margin-right:10px;">'+s.price+'</span>'
         +'<button class="pp-svc-book-btn" data-pid="'+p.id+'" data-svc="'+svcName+'" onclick="openBookingFlow(this.dataset.pid,this.dataset.svc)" style="background:#1A5FC8;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Book</button>'
       +'</div>';
     } else {
       var qSvcName = s.name;
-      quoteSvcs += '<div style="display:flex;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;">'
-        +'<div style="flex:1;font-size:14px;font-weight:500;color:#0f172a;font-family:Inter,sans-serif;">'+qSvcName+'</div>'
-        +'<button data-pid="'+p.id+'" data-svc="'+qSvcName+'" onclick="_ppGetQuote(this.dataset.pid,this.dataset.svc)" style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:6px 16px;font-size:13px;font-family:Inter,sans-serif;cursor:pointer;color:#374151;font-weight:600;">Get quote</button>'
+      var qSvcBorder = isDkPP?'#21262d':'#f1f5f9', qSvcNameColor = isDkPP?'#e6edf3':'#0f172a', qBtnBg = isDkPP?'#21262d':'#f8fafc', qBtnBorder = isDkPP?'#30363d':'#e2e8f0', qBtnColor = isDkPP?'#e6edf3':'#374151';
+      quoteSvcs += '<div style="display:flex;align-items:center;padding:14px 0;border-bottom:1px solid '+qSvcBorder+'">'
+        +'<div style="flex:1;font-size:14px;font-weight:500;color:'+qSvcNameColor+';font-family:Inter,sans-serif;">'+qSvcName+'</div>'
+        +'<button data-pid="'+p.id+'" data-svc="'+qSvcName+'" onclick="_ppGetQuote(this.dataset.pid,this.dataset.svc)" style="background:'+qBtnBg+';border:1.5px solid '+qBtnBorder+';border-radius:8px;padding:6px 16px;font-size:13px;font-family:Inter,sans-serif;cursor:pointer;color:'+qBtnColor+';font-weight:600;">Get quote</button>'
       +'</div>';
     }
   });
   // Area tags
-  var areaTags = p.areas.split(/,\s*/).map(function(a){ return '<span style="background:#f1f5f9;color:#374151;border-radius:5px;padding:3px 9px;font-size:12px;font-family:Inter,sans-serif;">'+a.trim()+'</span>'; }).join(' ');
+  var areaTagBg = isDkPP?'#21262d':'#f1f5f9', areaTagColor = isDkPP?'#8b949e':'#374151';
+  var areaTags = p.areas.split(/,\s*/).map(function(a){ return '<span style="background:'+areaTagBg+';color:'+areaTagColor+';border-radius:5px;padding:3px 9px;font-size:12px;font-family:Inter,sans-serif;">'+a.trim()+'</span>'; }).join(' ');
 
   // Build HTML safely using DOM elements instead of string concatenation
   el.innerHTML = '';
 
   var wrap = document.createElement('div');
-  var isDkPP = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
   wrap.style.cssText = 'display:grid;grid-template-columns:1fr 280px;gap:20px;align-items:start;';
 
   // LEFT COLUMN
@@ -7194,10 +7201,10 @@ function showProviderProfile(pid) {
   var nameRow = document.createElement('div');
   nameRow.style.cssText = 'display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;';
   var nameSpan = document.createElement('span');
-  nameSpan.style.cssText = 'font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;';
+  nameSpan.style.cssText = 'font-size:22px;font-weight:800;color:'+(isDkPP?'#e6edf3':'#0f172a')+';font-family:Fraunces,serif;';
   nameSpan.textContent = p.name;
   var roleChip = document.createElement('span');
-  roleChip.style.cssText = 'background:#f1f5f9;color:#374151;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:600;font-family:Inter,sans-serif;';
+  roleChip.style.cssText = 'background:'+(isDkPP?'#21262d':'#f1f5f9')+';color:'+(isDkPP?'#8b949e':'#374151')+';border-radius:6px;padding:3px 10px;font-size:12px;font-weight:600;font-family:Inter,sans-serif;';
   roleChip.textContent = p.role;
   var verChip = document.createElement('span');
   verChip.style.cssText = 'background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:600;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:4px;';
@@ -7207,7 +7214,7 @@ function showProviderProfile(pid) {
   
   // Role subtitle (specialisations)
   var subRoleEl = document.createElement('div');
-  subRoleEl.style.cssText = 'font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:8px;';
+  subRoleEl.style.cssText = 'font-size:13.5px;color:'+(isDkPP?'#8b949e':'#64748b')+';font-family:Inter,sans-serif;margin-bottom:8px;';
   subRoleEl.textContent = p.certs.join(' · ');
   infoEl.appendChild(subRoleEl);
   
@@ -7217,12 +7224,13 @@ function showProviderProfile(pid) {
   var starSvg = '<svg width="16" height="16" viewBox="0 0 11 11" fill="#f59e0b" stroke="none"><path d="M5.5 1l1.1 3.4H10L7.3 6.6l1.1 3.4-2.9-2-2.9 2 1.1-3.4L1 4.4h3.4z"/></svg>';
   var ratingEl = document.createElement('div');
   ratingEl.style.cssText = 'display:flex;align-items:center;gap:4px;';
-  ratingEl.innerHTML = starSvg + '<span style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">' + p.rating + '</span>'
-    + '<span style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">(' + p.reviews + ' reviews)</span>'
-    + '<span style="color:#e2e8f0;margin:0 4px;">·</span>'
-    + '<span style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">' + p.jobs + ' jobs completed</span>'
-    + '<span style="color:#e2e8f0;margin:0 4px;">·</span>'
-    + '<span style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Member since 2020</span>';
+  var rrBold = isDkPP?'#e6edf3':'#0f172a', rrSub = isDkPP?'#8b949e':'#64748b', rrDot = isDkPP?'#30363d':'#e2e8f0';
+  ratingEl.innerHTML = starSvg + '<span style="font-size:14px;font-weight:700;color:'+rrBold+';font-family:Inter,sans-serif;">' + p.rating + '</span>'
+    + '<span style="font-size:13px;color:'+rrSub+';font-family:Inter,sans-serif;">(' + p.reviews + ' reviews)</span>'
+    + '<span style="color:'+rrDot+';margin:0 4px;">·</span>'
+    + '<span style="font-size:13px;color:'+rrSub+';font-family:Inter,sans-serif;">' + p.jobs + ' jobs completed</span>'
+    + '<span style="color:'+rrDot+';margin:0 4px;">·</span>'
+    + '<span style="font-size:13px;color:'+rrSub+';font-family:Inter,sans-serif;">Member since 2020</span>';
   ratingRow.appendChild(ratingEl);
   infoEl.appendChild(ratingRow);
   hcWrap.appendChild(infoEl);
@@ -7230,7 +7238,7 @@ function showProviderProfile(pid) {
   
   // Description
   var descEl = document.createElement('p');
-  descEl.style.cssText = 'font-size:13.5px;color:#374151;font-family:Inter,sans-serif;line-height:1.6;margin:16px 0 0;padding-top:16px;border-top:1px solid #f1f5f9;';
+  descEl.style.cssText = 'font-size:13.5px;color:'+(isDkPP?'#8b949e':'#374151')+';font-family:Inter,sans-serif;line-height:1.6;margin:16px 0 0;padding-top:16px;border-top:1px solid '+(isDkPP?'#21262d':'#f1f5f9')+';';
   descEl.textContent = 'Award-winning service provider with extensive experience in residential and commercial properties. ' + (p.insured?'Fully insured. ':'') + (p.dbs?'DBS checked.':'') + ' Trusted by property managers across ' + p.areas + '.';
   headerCard.appendChild(descEl);
   
@@ -7243,7 +7251,7 @@ function showProviderProfile(pid) {
   bookBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="12" height="9" rx="1.5"/><path d="M1 6h12M4 1v3M10 1v3"/></svg> Book now';
   var quoteBtn = document.createElement('button');
   quoteBtn.id = 'pp-quote-btn';
-  quoteBtn.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;color:#374151;border-radius:10px;padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:6px;';
+  quoteBtn.style.cssText = 'background:'+(isDkPP?'#21262d':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';color:'+(isDkPP?'#e6edf3':'#374151')+';border-radius:10px;padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:6px;';
   quoteBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 2C4.5 2 2.5 3.8 2.5 6c0 1 .4 2 1.2 2.7L3 11l2.5-1c.4.1.97.2 1.5.2C9.5 10.2 11.5 8.3 11.5 6S9.5 2 7 2z"/></svg> Request quote';
   btnRow.appendChild(bookBtn); btnRow.appendChild(quoteBtn);
   headerCard.appendChild(btnRow);
@@ -7273,8 +7281,8 @@ function showProviderProfile(pid) {
     var sc = document.createElement('div');
     sc.style.cssText = 'background:'+(isDkPP?'#161b22':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';border-radius:14px;padding:18px 14px;text-align:center;';
     sc.innerHTML = '<div style="display:flex;justify-content:center;margin-bottom:8px;">'+s.icon+'</div>'
-      +'<div style="font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+s.val+'</div>'
-      +'<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:3px;">'+s.label+'</div>';
+      +'<div style="font-size:18px;font-weight:800;color:'+(isDkPP?'#e6edf3':'#0f172a')+';font-family:Fraunces,serif;">'+s.val+'</div>'
+      +'<div style="font-size:12px;color:'+(isDkPP?'#8b949e':'#64748b')+';font-family:Inter,sans-serif;margin-top:3px;">'+s.label+'</div>';
     statsCard.appendChild(sc);
   });
   left.appendChild(statsCard);
@@ -7283,14 +7291,14 @@ function showProviderProfile(pid) {
   if (fixedSvcs) {
     var fCard = document.createElement('div');
     fCard.style.cssText = 'background:'+(isDkPP?'#161b22':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:22px 24px;margin-bottom:16px;';
-    fCard.innerHTML = '<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;display:flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>Fixed-price services</div>'+fixedSvcs;
+    fCard.innerHTML = '<div style="font-size:16px;font-weight:700;color:'+(isDkPP?'#e6edf3':'#0f172a')+';font-family:Inter,sans-serif;margin-bottom:4px;display:flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>Fixed-price services</div>'+fixedSvcs;
     left.appendChild(fCard);
   }
   // Quote services
   if (quoteSvcs) {
     var qCard = document.createElement('div');
     qCard.style.cssText = 'background:'+(isDkPP?'#161b22':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:22px 24px;margin-bottom:16px;';
-    qCard.innerHTML = '<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">Additional services</div>'+quoteSvcs;
+    qCard.innerHTML = '<div style="font-size:16px;font-weight:700;color:'+(isDkPP?'#e6edf3':'#0f172a')+';font-family:Inter,sans-serif;margin-bottom:4px;">Additional services</div>'+quoteSvcs;
     left.appendChild(qCard);
   }
   // Reviews moved to right sidebar
@@ -7303,7 +7311,7 @@ function showProviderProfile(pid) {
   // Verification status card
   var vCard = document.createElement('div');
   vCard.style.cssText = 'background:'+(isDkPP?'#161b22':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:18px;margin-bottom:12px;';
-  vCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Verification status</div>'
+  vCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:'+(isDkPP?'#e6edf3':'#0f172a')+';font-family:Inter,sans-serif;margin-bottom:12px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Verification status</div>'
     +'<div style="font-size:13px;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:8px;">'
       +'<div style="display:flex;align-items:center;gap:8px;color:#15803d;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Identity verified</div>'
       +'<div style="display:flex;align-items:center;gap:8px;color:#15803d;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Insurance verified</div>'
@@ -7315,32 +7323,32 @@ function showProviderProfile(pid) {
   // Certifications card
   var certCard = document.createElement('div');
   certCard.style.cssText = 'background:'+(isDkPP?'#161b22':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:18px;margin-bottom:12px;';
-  certCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M7 1l2 4h4l-3 2.5 1 4L7 9l-4 2.5 1-4L1 5h4z"/></svg>Certifications</div>'
+  certCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:'+(isDkPP?'#e6edf3':'#0f172a')+';font-family:Inter,sans-serif;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M7 1l2 4h4l-3 2.5 1 4L7 9l-4 2.5 1-4L1 5h4z"/></svg>Certifications</div>'
     +'<div style="display:flex;gap:6px;flex-wrap:wrap;">'+certsHTML+'</div>';
   right.appendChild(certCard);
 
   // Insurance card (separate)
   var insCard = document.createElement('div');
   insCard.style.cssText = 'background:'+(isDkPP?'#161b22':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:18px;margin-bottom:12px;';
-  insCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Insurance</div>'
-    +'<div style="font-size:13px;color:#374151;font-family:Inter,sans-serif;margin-bottom:6px;">&#163;1M public liability</div>'
+  insCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:'+(isDkPP?'#e6edf3':'#0f172a')+';font-family:Inter,sans-serif;margin-bottom:10px;">Insurance</div>'
+    +'<div style="font-size:13px;color:'+(isDkPP?'#8b949e':'#374151')+';font-family:Inter,sans-serif;margin-bottom:6px;">&#163;1M public liability</div>'
     +(p.emergency ? '<div style="font-size:12.5px;color:#f59e0b;font-family:Inter,sans-serif;display:flex;align-items:center;gap:4px;font-weight:600;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#f59e0b" stroke-width="1.6"><path d="M6 1l1.5 4H11L7.5 8l1.5 4L6 9.5 2 12l1.5-4L0 5h3.5z"/></svg>Emergency callout available</div>' : '');
   right.appendChild(insCard);
 
   // Coverage card
   var covCard = document.createElement('div');
   covCard.style.cssText = 'background:'+(isDkPP?'#161b22':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:18px;margin-bottom:12px;';
-  covCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Coverage</div>'
+  covCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:'+(isDkPP?'#e6edf3':'#0f172a')+';font-family:Inter,sans-serif;margin-bottom:10px;">Coverage</div>'
     +'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">'+areaTags+'</div>'
-    +'<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:6px;">Serves Residential &amp; Commercial</div>'
+    +'<div style="font-size:12px;color:'+(isDkPP?'#8b949e':'#64748b')+';font-family:Inter,sans-serif;margin-bottom:6px;">Serves Residential &amp; Commercial</div>'
     +'<div style="font-size:12px;color:#1A5FC8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#1A5FC8" stroke-width="1.5"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l2 2"/></svg>SLA: '+p.sla+' response</div>';
   right.appendChild(covCard);
 
   // Contact card
   var contactCard = document.createElement('div');
   contactCard.style.cssText = 'background:'+(isDkPP?'#161b22':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:18px;margin-bottom:12px;';
-  contactCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;">Contact</div>'
-    +'<div style="font-size:13px;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:8px;color:#374151;">'
+  contactCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:'+(isDkPP?'#e6edf3':'#0f172a')+';font-family:Inter,sans-serif;margin-bottom:10px;">Contact</div>'
+    +'<div style="font-size:13px;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:8px;color:'+(isDkPP?'#8b949e':'#374151')+';'>'
       +'<div style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.6"><path d="M2 3h10a1 1 0 011 1v7a1 1 0 01-1 1H2a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M1 4l6 4 6-4"/></svg>info@'+p.name.toLowerCase().split(' ').join('')+'.co.uk</div>'
       +'<div style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.6"><path d="M2 2c0 8 2.5 10.5 10 10l1-3-3-1-1 1.5C7 9 5 7 4.5 5L6 4 5 1 2 2z"/></svg>+44 7700 900001</div>'
     +'</div>';
@@ -7348,11 +7356,11 @@ function showProviderProfile(pid) {
 
   // Reviews card (below contact)
   var revCard = document.createElement('div');
-  revCard.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px;';
-  revCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;">Reviews</div>'
+  revCard.style.cssText = 'background:'+(isDkPP?'#161b22':'#fff')+';border:1.5px solid '+(isDkPP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:18px;';
+  revCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:'+(isDkPP?'#e6edf3':'#0f172a')+';font-family:Inter,sans-serif;margin-bottom:12px;">Reviews</div>'
     +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">'
-      +'<div><div style="font-size:32px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+p.rating+'</div><div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;">/ 5</div></div>'
-      +'<div style="flex:1;"><div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:8px;">'+p.reviews+' verified reviews</div>'+ratingBars+'</div>'
+      +'<div><div style="font-size:32px;font-weight:800;color:'+(isDkPP?'#e6edf3':'#0f172a')+';font-family:Fraunces,serif;">'+p.rating+'</div><div style="font-size:12px;color:'+(isDkPP?'#6e7681':'#94a3b8')+';font-family:Inter,sans-serif;">/ 5</div></div>'
+      +'<div style="flex:1;"><div style="font-size:12px;color:'+(isDkPP?'#8b949e':'#64748b')+';font-family:Inter,sans-serif;margin-bottom:8px;">'+p.reviews+' verified reviews</div>'+ratingBars+'</div>'
     +'</div>';
   right.appendChild(revCard);
 
