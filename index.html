@@ -3934,7 +3934,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             <div class="prop-title">My Properties</div>
             <div class="prop-sub">0 properties · 0 alerts</div>
           </div>
-          <button class="prop-add-btn" onclick="if(!_isLoggedIn){window._postLoginAction='addProperty';showAuthPage('signup');}">
+          <button class="prop-add-btn" onclick="if(!window._isLoggedIn){window._postLoginAction='addProperty';window.showAuthPage('signup');}">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h10M7 2v10"/></svg>Add Property
           </button>
         </div>
@@ -7580,14 +7580,16 @@ function _bfRenderStep(step) {
       propSub.style.cssText = 'font-size:13.5px;color:'+(isDkP?'#8b949e':'#64748b')+';font-family:Inter,sans-serif;max-width:280px;line-height:1.6;';
       propSub.textContent = 'Add your first property in the Properties tab before booking a service.';
       var addPropB = document.createElement('button');
+      addPropB.type = 'button';
       addPropB.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;margin-top:4px;';
       addPropB.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M6.5 2v9"/></svg>Add a property';
-      addPropB.onclick = function(){
-        if (!_isLoggedIn) {
+      addPropB.onclick = function(e){
+        e.stopPropagation();
+        if (!window._isLoggedIn) {
           window._postLoginAction = 'addProperty';
-          showAuthPage('signup');
+          window.showAuthPage('signup');
         } else {
-          showPage('properties', null);
+          window.showPage('properties', null);
         }
       };
       emptyProp.appendChild(propIcon);
