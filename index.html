@@ -2614,9 +2614,16 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .exp-pcard-badges{display:flex;gap:6px;flex-wrap:wrap;padding:10px 16px 0;}
 .exp-badge{font-size:10.5px;font-weight:600;font-family:Inter,sans-serif;padding:3px 8px;border-radius:5px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;}
 .exp-badge.blue{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;}
-.exp-pcard-avail{display:flex;gap:8px;padding:10px 16px 0;flex-wrap:wrap;}
-.exp-avail-item{font-size:11px;font-weight:500;font-family:Inter,sans-serif;color:#475569;display:inline-flex;align-items:center;gap:4px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:20px;padding:5px 11px;white-space:nowrap;}
-.exp-avail-item.emg{background:#fff7ed;border-color:#fdba74;color:#c2410c;font-weight:600;}
+.exp-pcard-avail{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:12px 16px 0;}
+.exp-pcard-avail.two-col{grid-template-columns:repeat(2,1fr);}
+.exp-avail-card{background:#f8fafc;border:1px solid #e8edf2;border-radius:10px;padding:10px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;}
+.exp-avail-card.emg{background:#fff7ed;border-color:#fed7aa;}
+.exp-avail-card-icon{display:flex;align-items:center;justify-content:center;color:#64748b;margin-bottom:2px;}
+.exp-avail-card.emg .exp-avail-card-icon{color:#ea580c;}
+.exp-avail-card-val{font-size:12.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;line-height:1.2;}
+.exp-avail-card.emg .exp-avail-card-val{color:#c2410c;}
+.exp-avail-card-lbl{font-size:10px;color:#94a3b8;font-family:Inter,sans-serif;}
+.exp-avail-card.emg .exp-avail-card-lbl{color:#ea580c;opacity:.75;}
 .exp-pcard-services{padding:10px 16px 0;}
 .exp-pcard-services-title{font-size:10.5px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
 .exp-svc-row{display:flex;align-items:center;gap:6px;font-size:12.5px;font-family:Inter,sans-serif;color:#374151;padding:8px 0;border-bottom:1px solid #f1f5f9;}
@@ -2636,7 +2643,14 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .dash-dark .exp-pcard:hover{border-color:#2d4a7a;box-shadow:0 4px 16px rgba(0,0,0,.3);}
 .dash-dark .exp-pcard-name,.dash-dark .exp-pcard-price strong{color:#e6edf3;}
 .dash-dark .exp-pcard-price,.dash-dark .exp-pcard-sub,.dash-dark .exp-pcard-rating{color:#8b949e;}
-.dash-dark .exp-avail-item{background:#1c2433;border-color:#30363d;color:#8b949e;}
+.dash-dark .exp-avail-card{background:#1c2433;border-color:#30363d;}
+.dash-dark .exp-avail-card-val{color:#e6edf3;}
+.dash-dark .exp-avail-card-lbl{color:#6e7681;}
+.dash-dark .exp-avail-card-icon{color:#8b949e;}
+.dash-dark .exp-avail-card.emg{background:#2d1a00;border-color:#92400e;}
+.dash-dark .exp-avail-card.emg .exp-avail-card-val{color:#fb923c;}
+.dash-dark .exp-avail-card.emg .exp-avail-card-icon{color:#fb923c;}
+.dash-dark .exp-avail-card.emg .exp-avail-card-lbl{color:#fb923c;}
 .dash-dark .exp-svc-row{color:#c9d1d9;}
 .dash-dark .exp-pcard-services-title{color:#8b949e;}
 .dash-dark .exp-cert-chip{background:#1c2433;border-color:#30363d;color:#8b949e;}
@@ -2707,10 +2721,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .dash-dark .exp-pcard-price { color:#8b949e !important; }
 .dash-dark .exp-price-val { color:#e6edf3 !important; }
 .dash-dark .exp-rat-num,.dash-dark .exp-rat-rev,.dash-dark .exp-rat-jobs { color:#8b949e !important; }
-.dash-dark .exp-pcard-avail { border-color:#30363d !important; }
-.dash-dark .exp-avail-item { background:#1c2433 !important; border-color:#30363d !important; color:#8b949e !important; }
-.dash-dark .exp-avail-item.emg { background:#2d1a00 !important; border-color:#92400e !important; color:#fb923c !important; }
-.dash-dark .exp-avail-item.emg { background:#2d1f00 !important; color:#f59e0b !important; border-color:#78350f !important; }
+
 .dash-dark .exp-pcard-services-title { color:#8b949e !important; }
 .dash-dark .exp-svc-row { color:#c9d1d9 !important; border-bottom-color:#21262d !important; }
 .dash-dark .svc-tag { background:#1c2433 !important; color:#8b949e !important; border-color:#30363d !important; }
@@ -6733,6 +6744,11 @@ function _renderExploreCatCards() {
   });
 }
 
+function _daysLabel(days) {
+  if (!days) return days || '';
+  var m = {'Mon-Sun':'7 days','Mon-Sat':'6 days','Mon-Fri':'5 days'};
+  return m[days] || days;
+}
 function renderExploreProviders(cat, minRating) {
   var container = document.getElementById('exploreProviderCards');
   if (!container) return;
@@ -6770,9 +6786,13 @@ function renderExploreProviders(cat, minRating) {
     var stars = '';
     for (var i=1;i<=5;i++) stars += '<svg width="11" height="11" viewBox="0 0 11 11" fill="'+(i<=Math.floor(p.rating)?'#f59e0b':'none')+'" stroke="#f59e0b" stroke-width="1.4"><path d="M5.5 1l1.1 3.4H10L7.3 6.6l1.1 3.4-2.9-2-2.9 2 1.1-3.4L1 4.4h3.4z"/></svg>';
     var certsHTML = p.certs.map(function(c){ return '<span class="exp-cert-chip">' + c + '</span>'; }).join('');
-    var avail = '<span class="exp-avail-item"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l1.5 1.5"/></svg>&nbsp;' + p.sla + ' SLA</span>';
-    avail += '<span class="exp-avail-item"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="2" width="10" height="9" rx="1.5"/><path d="M1 5h10M4 1v2M8 1v2"/></svg>&nbsp;' + (p.days||'') + ' · ' + p.hours + '</span>';
-    if (p.emergency) avail += '<span class="exp-avail-item emg"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 1L4 7h4l-3 4 7-7H8z" stroke-linejoin="round"/></svg>&nbsp;24/7 Emergency</span>';
+    var _slaIco = '<svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l1.5 1.5"/></svg>';
+    var _calIco = '<svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="2" width="10" height="9" rx="1.5"/><path d="M1 5h10M4 1v2M8 1v2"/></svg>';
+    var _emgIco = '<svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 1L4 7h4l-3 4 7-7H8z" stroke-linejoin="round"/></svg>';
+    var _availClass = p.emergency ? 'exp-pcard-avail' : 'exp-pcard-avail two-col';
+    var avail = '<div class="exp-avail-card"><div class="exp-avail-card-icon">' + _slaIco + '</div><div class="exp-avail-card-val">' + p.sla + '</div><div class="exp-avail-card-lbl">SLA</div></div>';
+    avail += '<div class="exp-avail-card"><div class="exp-avail-card-icon">' + _calIco + '</div><div class="exp-avail-card-val">' + _daysLabel(p.days) + '</div><div class="exp-avail-card-lbl">' + p.hours + '</div></div>';
+    if (p.emergency) avail += '<div class="exp-avail-card emg"><div class="exp-avail-card-icon">' + _emgIco + '</div><div class="exp-avail-card-val">24/7</div><div class="exp-avail-card-lbl">Emergency</div></div>';
     // Services — collapsible (show 2 default)
     var svcsAll = p.services;
     var svcsDefault = svcsAll.slice(0,2);
@@ -6800,7 +6820,7 @@ function renderExploreProviders(cat, minRating) {
         + '<div class="exp-pcard-price">from<strong>£' + p.price + '</strong></div>'
       + '</div>'
       + '<div class="exp-pcard-badges">' + certsHTML + '</div>'
-      + '<div class="exp-pcard-avail">' + avail + '</div>'
+      + '<div class="' + _availClass + '">' + avail + '</div>'
       + '<div class="exp-pcard-services">' + svcsSection + '</div>'
       + '<div style="display:flex;gap:10px;align-items:center;padding:10px 16px 0;flex-wrap:wrap;">' + footer + '</div>'
       + '<div class="exp-pcard-footer">'
@@ -6960,9 +6980,13 @@ function _filterExpSearch(q) {
               + '<button data-pid="'+p.id+'" onclick="toggleSvcs(this.dataset.pid)" id="svcs_btn_'+p.id+'" class="exp-show-more">+' + extraCount + ' more <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4l2 2 2-2"/></svg></button>'
             : '');
         var certs = (p.certs||[]).map(function(c){ return '<span class="exp-cert-chip">'+c+'</span>'; }).join('');
-        var avail = '<span class="exp-avail-item"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l1.5 1.5"/></svg>&nbsp;' + p.sla + ' SLA</span>';
-        avail += '<span class="exp-avail-item"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="2" width="10" height="9" rx="1.5"/><path d="M1 5h10M4 1v2M8 1v2"/></svg>&nbsp;' + (p.days||'') + ' · ' + p.hours + '</span>';
-        if (p.emergency) avail += '<span class="exp-avail-item emg"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 1L4 7h4l-3 4 7-7H8z" stroke-linejoin="round"/></svg>&nbsp;24/7 Emergency</span>';
+        var _slaIco2 = '<svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l1.5 1.5"/></svg>';
+        var _calIco2 = '<svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="2" width="10" height="9" rx="1.5"/><path d="M1 5h10M4 1v2M8 1v2"/></svg>';
+        var _emgIco2 = '<svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 1L4 7h4l-3 4 7-7H8z" stroke-linejoin="round"/></svg>';
+        var _availClass2 = p.emergency ? 'exp-pcard-avail' : 'exp-pcard-avail two-col';
+        var avail = '<div class="exp-avail-card"><div class="exp-avail-card-icon">' + _slaIco2 + '</div><div class="exp-avail-card-val">' + p.sla + '</div><div class="exp-avail-card-lbl">SLA</div></div>';
+        avail += '<div class="exp-avail-card"><div class="exp-avail-card-icon">' + _calIco2 + '</div><div class="exp-avail-card-val">' + _daysLabel(p.days) + '</div><div class="exp-avail-card-lbl">' + p.hours + '</div></div>';
+        if (p.emergency) avail += '<div class="exp-avail-card emg"><div class="exp-avail-card-icon">' + _emgIco2 + '</div><div class="exp-avail-card-val">24/7</div><div class="exp-avail-card-lbl">Emergency</div></div>';
         var stars = '';
         for(var i=1;i<=5;i++) stars+='<svg width="11" height="11" viewBox="0 0 11 11" fill="'+(i<=Math.floor(p.rating)?'#f59e0b':'none')+'" stroke="#f59e0b" stroke-width="1.4"><path d="M5.5 1l1.1 3.4H10L7.3 6.6l1.1 3.4-2.9-2-2.9 2 1.1-3.4L1 4.4h3.4z"/></svg>';
         var footer='';
@@ -6972,7 +6996,7 @@ function _filterExpSearch(q) {
         var cardHTML = '<div class="exp-pcard" id="epc_'+p.id+'">'
           +'<div class="exp-pcard-header"><div class="exp-pcard-avatar">'+p.initials+'</div><div class="exp-pcard-info"><div class="exp-pcard-name">'+p.name+'</div><div class="exp-pcard-role">'+p.role+'</div><div class="exp-pcard-certs">'+certs+'</div></div><div class="exp-pcard-price">from<span class="exp-price-val">£'+p.price+'</span></div></div>'
           +'<div class="exp-pcard-rating">'+stars+'<span class="exp-rat-num">'+p.rating+'</span><span class="exp-rat-rev">('+p.reviews+')</span><span class="exp-rat-jobs">'+p.jobs+' jobs</span></div>'
-          +'<div class="exp-pcard-avail">'+avail+'</div>'
+          +'<div class="'+_availClass2+'">'+avail+'</div>'
           +'<div class="exp-pcard-services">'+svcsSection+'</div>'
           +'<div style="display:flex;gap:10px;align-items:center;padding:10px 16px 0;flex-wrap:wrap;"></div>'
           +'<div class="exp-pcard-footer">'
