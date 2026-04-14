@@ -5020,7 +5020,9 @@ function backToLanding(e) {
 // =============================================
 const pages = ['home','chat','explore','bookings','properties','pricing','settings','provider-profile','booking-flow'];
 
+var _activePage = 'home';
 function showPage(id, e) {
+  _activePage = id;
   if (e) e.preventDefault();
   pages.forEach(p => {
     const el = document.getElementById('page-' + p);
@@ -7078,6 +7080,7 @@ function showProviderProfile(pid) {
   if (!p) return;
   var el = document.getElementById('providerProfileContent');
   if (!el) return;
+  window._currentProvider = p; // store for dark-mode re-render
 
   // Dark mode flag — must be first so all inline styles use it
   var isDkPP = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
@@ -7400,7 +7403,8 @@ function _bfRenderPage() {
   var titles = {0:'Choose a service',1:'Select property',2:'Choose a provider',3:'Job details',4:'Pick a date & time',5:'Review & confirm'};
   // Progress segs
   var segs = '';
-  for (var i=0;i<=5;i++) segs += '<div style="flex:1;height:4px;border-radius:2px;background:'+(i<=s.step?'#1A5FC8':'#e2e8f0')+';transition:background .3s;"></div>';
+  var _isDkSeg = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
+  for (var i=0;i<=5;i++) segs += '<div style="flex:1;height:4px;border-radius:2px;background:'+(i<=s.step?'#1A5FC8':(_isDkSeg?'#30363d':'#e2e8f0'))+';transition:background .3s;"></div>';
   // Use the page-booking-flow page
   showPage('booking-flow', null);
   var inner = document.getElementById('bfPageInner');
@@ -7494,28 +7498,29 @@ function _bfRenderStep(step) {
   if (!body) return;
   body.innerHTML = '';
   var s = _bfState;
+  var isDk = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
 
   if (step === 0) {
     // ── Step 0: Choose a service ──
     var h0 = document.createElement('div');
     h0.className = 'bf-sub-heading';
-    h0.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:10px;';
+    h0.style.cssText = 'font-size:14px;font-weight:700;color:'+(isDk?'#e6edf3':'#0f172a')+';font-family:Inter,sans-serif;margin-bottom:10px;';
     h0.textContent = 'What service do you need?';
     body.appendChild(h0);
 
     var svcInput = document.createElement('input');
     svcInput.type = 'text';
     svcInput.placeholder = 'e.g. Boiler Service, Deep Clean, EICR...';
-    svcInput.style.cssText = 'width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 16px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;margin-bottom:14px;';
+    svcInput.style.cssText = 'width:100%;border:1.5px solid '+(isDk?'#30363d':'#e2e8f0')+';border-radius:10px;padding:12px 16px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;margin-bottom:14px;background:'+(isDk?'#1c2433':'#fff')+';color:'+(isDk?'#e6edf3':'#0f172a')+';';
     svcInput.value = s.service || '';
     svcInput.oninput = function(){ _bfState.service = this.value; };
     svcInput.onfocus = function(){ this.style.borderColor='#1A5FC8'; };
-    svcInput.onblur = function(){ this.style.borderColor='#e2e8f0'; };
+    svcInput.onblur = function(){ this.style.borderColor=isDk?'#30363d':'#e2e8f0'; };
     body.appendChild(svcInput);
 
     var popLabel = document.createElement('div');
     popLabel.className = 'bf-muted-text';
-    popLabel.style.cssText = 'font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:8px;';
+    popLabel.style.cssText = 'font-size:12px;color:'+(isDk?'#6e7681':'#94a3b8')+';font-family:Inter,sans-serif;margin-bottom:8px;';
     popLabel.textContent = 'Popular services';
     body.appendChild(popLabel);
 
@@ -7523,12 +7528,12 @@ function _bfRenderStep(step) {
     chipsWrap.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;';
     ['Boiler Service','Gas Safety Check','Deep Clean','EICR Inspection','General Repairs','Lock Change','Check-In Report','Fire Risk Assessment'].forEach(function(svc) {
       var chip = document.createElement('button');
-      chip.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:500;color:#374151;cursor:pointer;font-family:Inter,sans-serif;transition:border-color .12s;';
+      chip.style.cssText = 'background:'+(isDk?'#21262d':'#fff')+';border:1.5px solid '+(isDk?'#30363d':'#e2e8f0')+';border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:500;color:'+(isDk?'#c9d1d9':'#374151')+';cursor:pointer;font-family:Inter,sans-serif;transition:border-color .12s;';
       chip.textContent = svc;
       chip.onclick = function(){
         _bfState.service = svc;
         svcInput.value = svc;
-        chipsWrap.querySelectorAll('button').forEach(function(b){ b.style.background='#fff'; b.style.color='#374151'; b.style.borderColor='#e2e8f0'; });
+        chipsWrap.querySelectorAll('button').forEach(function(b){ b.style.background=isDk?'#21262d':'#fff'; b.style.color=isDk?'#c9d1d9':'#374151'; b.style.borderColor=isDk?'#30363d':'#e2e8f0'; });
         chip.style.background='#eff6ff'; chip.style.color='#1d4ed8'; chip.style.borderColor='#bfdbfe';
       };
       chipsWrap.appendChild(chip);
@@ -7537,7 +7542,7 @@ function _bfRenderStep(step) {
 
     var btLabel = document.createElement('div');
     btLabel.className = 'bf-sub-heading';
-    btLabel.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;';
+    btLabel.style.cssText = 'font-size:14px;font-weight:700;color:'+(isDk?'#e6edf3':'#0f172a')+';font-family:Inter,sans-serif;margin-bottom:12px;';
     btLabel.textContent = 'Booking type';
     body.appendChild(btLabel);
 
@@ -7549,22 +7554,24 @@ function _bfRenderStep(step) {
     ].forEach(function(t) {
       var card = document.createElement('div');
       var sel = s.bookingType === t[0];
-      card.style.cssText = 'border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:12px;padding:18px 16px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:border-color .15s;';
+      var cardBg = sel?(isDk?'#1a2d54':'#eff6ff'):(isDk?'#161b22':'#fff');
+      var cardBorder = sel?'#1A5FC8':(isDk?'#30363d':'#e2e8f0');
+      card.style.cssText = 'border:1.5px solid '+cardBorder+';border-radius:12px;padding:18px 16px;cursor:pointer;background:'+cardBg+';transition:border-color .15s;';
       var iconDiv = document.createElement('div');
       iconDiv.style.cssText = 'color:#1A5FC8;margin-bottom:8px;';
       iconDiv.innerHTML = t[1];
       var titleEl = document.createElement('div');
       titleEl.className = 'bf-card-heading';
-      titleEl.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;';
+      titleEl.style.cssText = 'font-size:14px;font-weight:700;color:'+(isDk?'#e6edf3':'#0f172a')+';font-family:Inter,sans-serif;';
       titleEl.textContent = t[2];
       var subEl = document.createElement('div');
-      subEl.style.cssText = 'font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:3px;';
+      subEl.style.cssText = 'font-size:12px;color:'+(isDk?'#8b949e':'#64748b')+';font-family:Inter,sans-serif;margin-top:3px;';
       subEl.textContent = t[3];
       card.appendChild(iconDiv); card.appendChild(titleEl); card.appendChild(subEl);
       (function(type, el){ card.onclick = function(){
         _bfState.bookingType = type;
-        btGrid.querySelectorAll('div').forEach(function(c){ c.style.borderColor='#e2e8f0'; c.style.background='#fff'; });
-        el.style.borderColor='#1A5FC8'; el.style.background='#eff6ff';
+        btGrid.querySelectorAll('div').forEach(function(c){ c.style.borderColor=isDk?'#30363d':'#e2e8f0'; c.style.background=isDk?'#161b22':'#fff'; });
+        el.style.borderColor='#1A5FC8'; el.style.background=isDk?'#1a2d54':'#eff6ff';
       }; })(t[0], card);
       btGrid.appendChild(card);
     });
@@ -9207,14 +9214,19 @@ function toggleDashTheme() {
     if (icon_d) icon_d.style.display = 'none';
     if (label)  label.textContent = 'Dark mode';
   }
-  // Re-render all JS-generated content with correct dark/light colours
-  if (typeof _renderPmActionChips === 'function') _renderPmActionChips();
-  // Re-render explore cat cards and bookings so inline styles update
+  // Re-render active page so all JS-inline styles update
   setTimeout(function() {
-    if (typeof _currentExploreCat !== 'undefined' && _currentExploreCat === 'all') {
+    if (typeof _renderPmActionChips === 'function') _renderPmActionChips();
+    var ap = (typeof _activePage !== 'undefined') ? _activePage : '';
+    if (ap === 'explore' || ap === '') {
       if (typeof _renderExploreCatCards === 'function') _renderExploreCatCards();
     }
-    if (typeof renderBookingsPage === 'function') renderBookingsPage();
+    if (ap === 'bookings' && typeof renderBookingsPage === 'function') renderBookingsPage();
+    if (ap === 'provider-profile' && typeof renderProviderProfile === 'function' && window._currentProvider) {
+      renderProviderProfile(window._currentProvider);
+    }
+    if (ap === 'booking-flow' && typeof _bfRenderPage === 'function') _bfRenderPage();
+    if (ap === 'properties' && typeof renderPropertiesPage === 'function') renderPropertiesPage();
   }, 20);
 }
 
