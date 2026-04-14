@@ -3392,7 +3392,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
         <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer;border-radius:10px;padding:4px 0;transition:background 0.12s;" onclick="showPage('settings',null)" onmouseover="this.style.background='var(--gray-50)'" onmouseout="this.style.background='transparent'" title="Go to Settings">
           <div id="sbProfileIni" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);color:#fff;font-size:13px;font-weight:700;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;">JD</div>
           <div style="flex:1;min-width:0;" class="db-nav-item-label">
-            <div id="sbProfileName" style="font-size:13px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">John Doe</div>
+            <div id="sbProfileName" style="font-size:13px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
             <div id="sbProfileEmail" style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">john@property.co</div>
             <!-- Mini progress bar -->
             <div style="display:flex;align-items:center;gap:5px;margin-top:4px;">
@@ -5732,12 +5732,11 @@ function _updateSidebarAuthIcons() {
   var authIcons = document.getElementById('sbAuthIconsWrap');
   if (!authIcons || !sb) return;
   var collapsed = sb.classList.contains('collapsed');
-  // Check if user is genuinely logged in via _isLoggedIn AND sbProfileArea being populated
-  var profileName = document.getElementById('sbProfileName');
-  var hasProfile = profileName && profileName.textContent && profileName.textContent.trim() !== '';
-  var isGuest = !_isLoggedIn && !hasProfile;
-  // Show ONLY for guests with collapsed sidebar
-  authIcons.style.display = (collapsed && isGuest) ? 'flex' : 'none';
+  // sbProfileArea is display:none for guests, visible for logged-in users
+  var profileArea = document.getElementById('sbProfileArea');
+  var isLoggedIn = _isLoggedIn || (profileArea && profileArea.style.display !== 'none' && profileArea.style.display !== '');
+  // Show ONLY for guests (not logged in) with collapsed sidebar
+  authIcons.style.display = (collapsed && !isLoggedIn) ? 'flex' : 'none';
 }
 
 function toggleSidebar() {
