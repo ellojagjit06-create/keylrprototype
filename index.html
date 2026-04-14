@@ -4903,6 +4903,11 @@ function goToDashboard(query, autoSend = false, isAuthenticated = false) {
     window._postLoginAction = null;
     setTimeout(function() { showPage('properties', null); }, 500);
   }
+  // If user was on booking flow step 1 (property selection), re-render it now
+  var bfPage = document.getElementById('page-booking-flow');
+  if (bfPage && bfPage.style.display !== 'none' && _bfState.step === 1) {
+    setTimeout(function() { _bfRenderStep(1); }, 200);
+  }
   // Resume pending booking after login
   if (window._pendingBookingState) {
     var pbs = window._pendingBookingState;
@@ -8043,6 +8048,7 @@ function _bfConfirm() {
     if(id==='explore') setTimeout(function(){ _initExploreAll(); _currentExploreCat='all'; document.querySelectorAll('#exploreCategoryChips .ef-pill').forEach(function(b){b.classList.remove('ef-active');}); var allBtn=document.querySelector('#exploreCategoryChips .ef-pill'); if(allBtn) allBtn.classList.add('ef-active'); }, 80);
     if(id==='bookings') setTimeout(renderBookingsPage, 60);
     if(id==='properties') setTimeout(_renderPropertiesGrid, 50);
+    if(id==='booking-flow') setTimeout(function(){ _bfRenderPage(); }, 50);
   };
 })();
 
