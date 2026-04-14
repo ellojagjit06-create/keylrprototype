@@ -5693,6 +5693,7 @@ function checkSidebarAutoCollapse() {
   } else if (w < 1000 && !sb.classList.contains('collapsed')) {
     sb.classList.add('collapsed');
   }
+  _updateSidebarAuthIcons();
 }
 function openMobileSidebar() {
   var sb = document.getElementById('dbSidebar');
