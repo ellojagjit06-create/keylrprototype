@@ -7565,55 +7565,35 @@ function _bfRenderStep(step) {
     h.textContent = 'Select a property';
     body.appendChild(h);
 
-    // Empty / not-logged-in state
-    if (!_isLoggedIn || !_userProperties.length) {
-      var emptyProp = document.createElement('div');
+    // Empty state — show "No properties yet" card for all users
+    if (!_userProperties.length) {
       var isDkP = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
+      var emptyProp = document.createElement('div');
       emptyProp.style.cssText = 'background:'+(isDkP?'#161b22':'#fff')+';border:1.5px solid '+(isDkP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:48px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;';
       var propIcon = document.createElement('div');
       propIcon.style.cssText = 'width:64px;height:64px;border-radius:16px;background:'+(isDkP?'#1c2433':'#eff6ff')+';display:flex;align-items:center;justify-content:center;';
       propIcon.innerHTML = '<svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#1A5FC8" stroke-width="1.5"><path d="M3 27V13l12-9 12 9v14"/><path d="M11 27v-8h8v8"/></svg>';
       var propTitle = document.createElement('div');
       propTitle.style.cssText = 'font-size:17px;font-weight:800;color:'+(isDkP?'#e6edf3':'#0f172a')+';font-family:Fraunces,serif;';
-      propTitle.textContent = !_isLoggedIn ? 'Sign in to continue' : 'No properties yet';
+      propTitle.textContent = 'No properties yet';
       var propSub = document.createElement('div');
       propSub.style.cssText = 'font-size:13.5px;color:'+(isDkP?'#8b949e':'#64748b')+';font-family:Inter,sans-serif;max-width:280px;line-height:1.6;';
-      propSub.textContent = !_isLoggedIn
-        ? 'Log in or sign up to select a property and book a service.'
-        : 'Add your first property in the Properties tab before booking a service.';
-      var propBtnRow = document.createElement('div');
-      propBtnRow.style.cssText = 'display:flex;gap:10px;margin-top:4px;';
-      if (!_isLoggedIn) {
-        var loginB = document.createElement('button');
-        loginB.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;color:#374151;border-radius:10px;padding:10px 22px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
-        loginB.textContent = 'Log in';
-        loginB.onclick = function(){ window._pendingBookingState=JSON.parse(JSON.stringify(_bfState)); showAuthPage('login'); };
-        var signupB = document.createElement('button');
-        signupB.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
-        signupB.textContent = 'Sign up free';
-        signupB.onclick = function(){ window._pendingBookingState=JSON.parse(JSON.stringify(_bfState)); showAuthPage('signup'); };
-        propBtnRow.appendChild(loginB);
-        propBtnRow.appendChild(signupB);
-      } else {
-        var addPropB = document.createElement('button');
-        addPropB.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;';
-        addPropB.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M6.5 2v9"/></svg>Add a property';
-        addPropB.onclick = function(){
-          if (!_isLoggedIn) {
-            window._postLoginAction = 'addProperty';
-            showAuthPage('signup');
-          } else {
-            // Navigate to Properties tab so user can add a property
-            // After returning, step 1 will re-render with new properties
-            showPage('properties', null);
-          }
-        };
-        propBtnRow.appendChild(addPropB);
-      }
+      propSub.textContent = 'Add your first property in the Properties tab before booking a service.';
+      var addPropB = document.createElement('button');
+      addPropB.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;margin-top:4px;';
+      addPropB.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M6.5 2v9"/></svg>Add a property';
+      addPropB.onclick = function(){
+        if (!_isLoggedIn) {
+          window._postLoginAction = 'addProperty';
+          showAuthPage('signup');
+        } else {
+          showPage('properties', null);
+        }
+      };
       emptyProp.appendChild(propIcon);
       emptyProp.appendChild(propTitle);
       emptyProp.appendChild(propSub);
-      emptyProp.appendChild(propBtnRow);
+      emptyProp.appendChild(addPropB);
       body.appendChild(emptyProp);
       return;
     }
