@@ -7673,7 +7673,7 @@ function _bfRenderStep(step) {
             window._postLoginAction = 'addProperty';
             showAuthPage('signup');
           } else {
-            showPage('properties', null);
+            _showAddPropertyModal();
           }
         };
         propBtnRow.appendChild(addPropB);
