@@ -7493,7 +7493,7 @@ function _bfRenderPage() {
     }
     contBtn.onclick = _bfConfirm;
   } else {
-    contBtn.innerHTML = 'Continue <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h8M8 4l3 3-3 3"/></svg>';
+    contBtn.innerHTML = 'Next <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h8M8 4l3 3-3 3"/></svg>';
     contBtn.onclick = _bfNext;
   }
   footer.appendChild(backFooter); footer.appendChild(contBtn);
@@ -9262,12 +9262,12 @@ function toggleDashTheme() {
 var _discAnswers=[null,null,null,null,null,null,null];
 var _discQuestions=[
   {q:'What best describes what you do?',type:'single',opts:['Residential letting agent','Short-term rental manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator','Facilities manager','Individual landlord','Other']},
-  {q:'What types of property do you manage?',type:'multi',groups:[{label:'RESIDENTIAL',opts:['Houses & flats - AST','HMO - houses in multiple occupation','Short-term rental','Residential block / leasehold','Serviced apartments']},{label:'COMMERCIAL',opts:['Offices','Retail units','Industrial / warehouse','Healthcare / medical','Education']},{label:'HOSPITALITY',opts:['Hotels','Hostels','Guest houses','PBSA']},{label:'MIXED USE',opts:['Mixed residential/commercial','Estate']}]},
+  {q:'What types of property do you manage?',type:'multi',groups:[{label:'RESIDENTIAL',opts:['Houses & flats - AST','HMO - houses in multiple occupation','Short-term rental','Residential block / leasehold','Serviced apartments']},{label:'COMMERCIAL',opts:['Offices','Retail units','Industrial / warehouse','Healthcare / medical','Education','Restaurants']},{label:'HOSPITALITY',opts:['Hotels','Hostels','Guest houses','PBSA']}]},
   {q:'How many properties/units?',type:'single',opts:['1-5','6-25','26-100','101-500','500+']},
   {q:'Which services do you coordinate?',type:'multi',opts:['Cleaning','Compliance certificates','Reactive maintenance','PPM','Inspections & inventory','Landscaping','Pest control','Security','Removals','Specialist trades']},
   {q:'Where are your properties located?',type:'multi',opts:['London','South East','South West','Midlands','North West','North East','Yorkshire','Scotland','Wales','Multiple regions']},
   {q:'How do you manage service providers?',type:'single',opts:['Ad hoc (WhatsApp/phone)','Small regular contractors','Large contractor network','In-house staff','Use a PMS']},
-  {q:'What is your biggest headache?',type:'single',opts:['Finding reliable contractors','Chasing jobs','Compliance tracking','Invoices & payments','Team coordination','No single portfolio view']}
+  {q:'What is your biggest headache?',type:'multi',opts:['Finding reliable contractors','Chasing jobs','Compliance tracking','Invoices & payments','Team coordination','No single portfolio view']}
 ];
 var _discTempAnswers=[null,null,null,null,null,null,null];
 var _sgInstalled=false;
@@ -10625,7 +10625,10 @@ function showDiscoveryPage(qIdx) {
       label.style.cssText = 'font-size:10.5px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;letter-spacing:0.1em;margin:16px 0 8px;text-transform:uppercase;';
       label.textContent = g.label;
       optsEl.appendChild(label);
-      optsEl.appendChild(renderOpts(g.opts, false));
+      // Groups always use 2 columns for visual consistency
+      var grpGrid = renderOpts(g.opts, false);
+      grpGrid.style.gridTemplateColumns = 'repeat(2,1fr)';
+      optsEl.appendChild(grpGrid);
     });
   } else {
     optsEl.appendChild(renderOpts(qDef.opts, qDef.type === 'single'));
@@ -10641,7 +10644,7 @@ function showDiscoveryPage(qIdx) {
   // Continue label
   var contBtn = document.getElementById('disc-page-cont');
   if (contBtn) {
-    contBtn.textContent = (qIdx === total-1) ? 'Finish ✓' : 'Continue →';
+    contBtn.textContent = (qIdx === total-1) ? 'Finish ✓' : 'Next →';
     contBtn.dataset.q = qIdx;
   }
 
@@ -10778,7 +10781,7 @@ function showDiscoveryModal(qIdx){
     optsHtml+='</div>';
   }
   var backBtn=qIdx>0?'<button onclick="discGoBack('+qIdx+')" style="background:#f1f5f9;border:none;border-radius:9px;padding:10px 20px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;">&larr; Back</button>':'<div></div>';
-  var contLbl=qIdx===total-1?'Finish':'Continue &rarr;';
+  var contLbl=qIdx===total-1?'Finish':'Next &rarr;';
 
   // Reuse modal element — prevents full blink
   var modal=document.getElementById('discoveryModal');
