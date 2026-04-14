@@ -11971,7 +11971,7 @@ var _suppOnboard = {
   insProvider: '', insPolicy: '', insCoverage: '', insExpiry: '',
   profIndemnity: false, tradeCerts: [], customCerts: [],
   // Background
-  teamSize: '', companyDbsDecl: '', dbsDeclared: '', rightToWork: '', jobRefs: '',
+  teamSize: '', companyDbsDecl: '', dbsDeclared: '', convictionsDetail: '', rightToWork: '', jobRefs: '',
   // Availability
   workDays: ['Mon','Tue','Wed','Thu','Fri'],
   startTime: '08:00', endTime: '17:00', emergencyCallouts: '',
@@ -12430,14 +12430,23 @@ function _buildSuppOnboardStep(step) {
            'I have unspent convictions to declare|Having a record doesn\'t automatically disqualify you — we review each case individually.'].map(function(opt){
             var parts = opt.split('|');
             var sel = _suppOnboard.dbsDeclared === parts[0];
-            return '<div onclick="_suppSetDbsDecl(\''+parts[0].replace(/'/g,"\\'")+'\')" style="border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;padding:14px 16px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;">'
-              + '<div style="width:20px;height:20px;border-radius:50%;border:2px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">'
+            var isUnspentOpt = parts[0] === 'I have unspent convictions to declare';
+            var selAmber = sel && isUnspentOpt;
+            return '<div onclick="_suppSetDbsDecl(\''+parts[0].replace(/'/g,"\\'")+'\')" style="border:1.5px solid '+(selAmber?'#f59e0b':sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;padding:14px 16px;cursor:pointer;background:'+(selAmber?'#fffbeb':sel?'#eff6ff':'#fff')+';margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;">'
+              + '<div style="width:20px;height:20px;border-radius:50%;border:2px solid '+(selAmber?'#f59e0b':sel?'#1A5FC8':'#d1d5db')+';background:'+(selAmber?'#f59e0b':sel?'#1A5FC8':'#fff')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">'
                 + (sel?'<div style="width:7px;height:7px;border-radius:50%;background:#fff;"></div>':'')
               + '</div>'
               + '<div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">'+parts[0]+'</div>'
                 + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:3px;">'+parts[1]+'</div></div>'
             + '</div>';
           }).join('')
+        + (_suppOnboard.dbsDeclared === 'I have unspent convictions to declare'
+            ? '<div style="margin-top:2px;margin-bottom:10px;padding:16px;background:#fffbeb;border:1.5px solid #fde68a;border-radius:12px;">'
+                + '<div style="font-size:13.5px;font-weight:700;color:#374151;font-family:Inter,sans-serif;margin-bottom:10px;">Please describe your unspent convictions</div>'
+                + '<textarea id="so-convictions-detail" rows="5" placeholder="Provide details of any unspent convictions including dates, offences, and outcomes. This information is kept confidential and reviewed by our compliance team." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 13px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;resize:vertical;color:#374151;background:#fff;" onfocus="this.style.borderColor=\"#f59e0b\"" onblur="this.style.borderColor=\"#e2e8f0\""></textarea>'
+                + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:6px;">Check the <a href="https://www.gov.uk/government/publications/dbs-filtering-guidance/dbs-filtering-guidance" target="_blank" style="color:#1d4ed8;font-weight:600;text-decoration:none;">DBS filtering rules</a> if unsure what must be disclosed. Only unspent convictions need to be declared.</div>'
+              + '</div>'
+            : '')
       + '</div>' : '')
       // ── Company DBS (company only) ──
       + (isCompany ? '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;">'
@@ -12930,7 +12939,7 @@ function _suppCompCheck(id, label, sub, icon, checked) {
 }
 
 
-function _suppSetDbsDecl(val){_suppOnboard.dbsDeclared=val;_renderSuppOnboard();}
+function _suppSetDbsDecl(val){_suppOnboard.dbsDeclared=val;_renderSuppOnboard();setTimeout(function(){var ta=document.getElementById('so-convictions-detail');if(ta){ta.oninput=function(){_suppOnboard.convictionsDetail=this.value;};ta.value=_suppOnboard.convictionsDetail||'';}},50);}
 function _suppSetRightToWork(val){_suppOnboard.rightToWork=val;_renderSuppOnboard();}
 function _suppSetTeamSize(val){_suppOnboard.teamSize=val;_renderSuppOnboard();}
 function _suppToggleDay(day,el){
