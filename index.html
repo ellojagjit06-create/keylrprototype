@@ -3024,6 +3024,10 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .bfm-confirm-toast{position:fixed;top:24px;right:24px;z-index:99999;background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.18);padding:16px 40px 16px 16px;min-width:280px;max-width:360px;border:1.5px solid #e2e8f0;animation:bfmToastIn .3s ease;}
 @keyframes bfmToastIn{from{transform:translateY(-16px);opacity:0;}to{transform:translateY(0);opacity:1;}}
 .bfm-toast-close{position:absolute;top:10px;right:12px;background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;line-height:1;}
+
+/* Auth icons in collapsed sidebar: show for guests, hide for logged-in */
+.db-sidebar.collapsed #sbAuthIconsWrap { display:flex; }
+#pg-dashboard.user-logged-in .db-sidebar.collapsed #sbAuthIconsWrap { display:none !important; }
 </style>
 </head>
 <body>
@@ -4897,7 +4901,12 @@ function handleHeroSearch() {
 // =============================================
 function goToDashboard(query, autoSend = false, isAuthenticated = false) {
   _isLoggedIn = isAuthenticated;
-  // Update sidebar auth icons (logged in → hide icons)
+  // Update sidebar auth icons immediately via CSS class (no setTimeout needed)
+  var _db = document.getElementById('pg-dashboard');
+  if (_db) {
+    if (isAuthenticated) _db.classList.add('user-logged-in');
+    else _db.classList.remove('user-logged-in');
+  }
   setTimeout(_updateSidebarAuthIcons, 100);
   // After real auth (login/signup), always land on Home tab
   if (isAuthenticated) {
@@ -5728,12 +5737,14 @@ function toggleMobileNav() {
 
 // Collapsible sidebar — Claude-style
 function _updateSidebarAuthIcons() {
-  var sb = document.getElementById('dbSidebar');
-  var authIcons = document.getElementById('sbAuthIconsWrap');
-  if (!authIcons || !sb) return;
-  var collapsed = sb.classList.contains('collapsed');
-  // Show icons ONLY when sidebar is collapsed AND user is NOT logged in (guest)
-  authIcons.style.display = (collapsed && !_isLoggedIn) ? 'flex' : 'none';
+  var db = document.getElementById('pg-dashboard');
+  if (!db) return;
+  // Add/remove CSS class that controls icon visibility via CSS
+  if (_isLoggedIn) {
+    db.classList.add('user-logged-in');
+  } else {
+    db.classList.remove('user-logged-in');
+  }
 }
 
 function toggleSidebar() {
