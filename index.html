@@ -7602,8 +7602,11 @@ function _bfRenderStep(step) {
           if (!_isLoggedIn) {
             window._postLoginAction = 'addProperty';
             showAuthPage('signup');
+          } else {
+            // Navigate to Properties tab so user can add a property
+            // After returning, step 1 will re-render with new properties
+            showPage('properties', null);
           }
-          // If logged in: modal not yet defined — do nothing for now
         };
         propBtnRow.appendChild(addPropB);
       }
