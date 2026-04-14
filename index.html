@@ -1749,12 +1749,13 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
 /* Page layout — each page fills the main panel */
 #page-home,#page-explore,#page-bookings,#page-properties,#page-pricing,#page-settings,#page-chat,#page-provider-profile,#page-booking-flow {
+  position:absolute;inset:0;
   display:none;
   flex-direction:column;
   overflow:hidden;
-  flex:1;
-  min-height:0;
+  z-index:100;
 }
+.dash-dark #page-booking-flow { background:#0d1117; }
 
 .bk-scroll-area,.pr-scroll-area,.px-scroll-area {
   flex:1;
@@ -2727,7 +2728,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .dash-dark .exp-search-input::placeholder { color:#4b5563 !important; }
 
 /* ── Booking flow (6 steps) ── */
-.dash-dark #page-booking-flow { background:#0d1117 !important; }
+.dash-dark 
 .dash-dark #bfPageInner { color:#e6edf3; }
 .dash-dark #bfPageInner > div[style*="font-size:18px"] { color:#e6edf3 !important; }
 .dash-dark #bfPageInner > div[style*="margin-left:auto"] { color:#8b949e !important; }
@@ -2807,7 +2808,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
    ════════════════════════════════════════════ */
 
 /* Page heading (step title) */
-.dash-dark #page-booking-flow { background:#0d1117 !important; }
+.dash-dark 
 .dash-dark #bfPageInner > div:first-child > div[style*="font-size:18px"],
 .dash-dark #bfPageInner > div:first-child > div[style*="Fraunces"] {
   color:#e6edf3 !important;
@@ -3760,8 +3761,8 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     </div>
 
     <!-- EXPLORE SERVICES PAGE -->
-    <div id="page-explore">
-      <div style="flex:1;overflow-y:auto;">
+    <div id="page-explore" style="flex-direction:column;">
+      <div style="flex:1;overflow-y:auto;min-height:0;">
         <div class="db-main-inner">
 
           <!-- AI ASSISTANT CARD -->
@@ -5005,6 +5006,9 @@ const pages = ['home','chat','explore','bookings','properties','pricing','settin
 
 function showPage(id, e) {
   if (e) e.preventDefault();
+  // Always hide booking-flow overlay first so it doesn't block other pages
+  var bfEl = document.getElementById('page-booking-flow');
+  if (bfEl && id !== 'booking-flow') bfEl.style.display = 'none';
   pages.forEach(p => {
     const el = document.getElementById('page-' + p);
     if (el) el.style.display = p === id ? 'flex' : 'none';
@@ -7586,11 +7590,11 @@ function _bfRenderStep(step) {
       addPropB.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M6.5 2v9"/></svg>Add a property';
       addPropB.onclick = function(e){
         e.stopPropagation();
+        // Hide booking flow overlay so auth modal / page shows correctly
+        var bfPage = document.getElementById('page-booking-flow');
+        if (bfPage) bfPage.style.display = 'none';
         if (!window._isLoggedIn) {
           window._postLoginAction = 'addProperty';
-          // Hide booking flow page first so auth modal isn't blocked by the overlay
-          var bfPage = document.getElementById('page-booking-flow');
-          if (bfPage) bfPage.style.display = 'none';
           window.showAuthPage('signup');
         } else {
           window.showPage('properties', null);
