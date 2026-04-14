@@ -2560,8 +2560,16 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .disc-opt-page{display:flex;align-items:center;gap:10px;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 14px;cursor:pointer;background:#fff;transition:border-color 0.12s,background 0.12s;font-size:13.5px;color:#0f172a;font-family:Inter,sans-serif;}
 .disc-opt-page:hover{border-color:#93c5fd;background:#f8fbff;}
 .disc-opt-page.selected{border-color:#1A5FC8;background:#eff6ff;}
+/* Radio (single) indicator */
 .disc-opt-page .disc-check-pg{width:18px;height:18px;border-radius:50%;border:1.5px solid #d1d5db;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.12s;}
 .disc-opt-page.selected .disc-check-pg{border-color:#1A5FC8;background:#1A5FC8;}
+/* Checkbox (multi) indicator override */
+.disc-opt-page.checkbox-opt .disc-check-pg{border-radius:4px;}
+.disc-opt-page.checkbox-opt.selected .disc-check-pg{border-color:#1A5FC8;background:#1A5FC8;}
+/* Dark mode */
+.dash-dark .disc-opt-page{background:#161b22;border-color:#30363d;color:#e6edf3;}
+.dash-dark .disc-opt-page:hover{border-color:#2d4a7a;background:#1c2433;}
+.dash-dark .disc-opt-page.selected{border-color:#1A5FC8;background:#1a2d54;}
 @media(max-width:600px){.disc-page-inner{padding:0 4px;}.disc-page-btn-row{flex-wrap:wrap;}}
 .disc-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f1f5f9;}
 .disc-row>div:first-child{flex:1;min-width:0;}
@@ -9266,7 +9274,7 @@ var _discQuestions=[
   {q:'How many properties/units?',type:'single',opts:['1-5','6-25','26-100','101-500','500+']},
   {q:'Which services do you coordinate?',type:'multi',opts:['Cleaning','Compliance certificates','Reactive maintenance','PPM','Inspections & inventory','Landscaping','Pest control','Security','Removals','Specialist trades']},
   {q:'Where are your properties located?',type:'multi',opts:['London','South East','South West','Midlands','North West','North East','Yorkshire','Scotland','Wales','Multiple regions']},
-  {q:'How do you manage service providers?',type:'single',opts:['Ad hoc (WhatsApp/phone)','Small regular contractors','Large contractor network','In-house staff','Use a PMS']},
+  {q:'Which model best describes your service operations?',type:'single',opts:['Ad hoc (WhatsApp/phone)','Small regular contractors','Large contractor network','In-house staff','Use a PMS']},
   {q:'What is your biggest headache?',type:'multi',opts:['Finding reliable contractors','Chasing jobs','Compliance tracking','Invoices & payments','Team coordination','No single portfolio view']}
 ];
 var _discTempAnswers=[null,null,null,null,null,null,null];
@@ -10607,12 +10615,17 @@ function showDiscoveryPage(qIdx) {
     opts.forEach(function(opt) {
       var sel = isSingle ? cur === opt : (Array.isArray(cur) && cur.indexOf(opt) >= 0);
       var item = document.createElement('div');
-      item.className = 'disc-opt-page' + (sel ? ' selected' : '');
+      // Radio for single, checkbox for multi
+      item.className = 'disc-opt-page' + (isSingle ? '' : ' checkbox-opt') + (sel ? ' selected' : '');
       item.dataset.opt = opt;
       item.dataset.single = isSingle ? '1' : '0';
-      item.innerHTML =
-        '<div class="disc-check-pg">'+(sel?'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M2 5l2.5 2.5 4-4"/></svg>':'')+'</div>'
-        + opt;
+      // Single → filled dot; multi → checkmark svg
+      var innerIcon = sel
+        ? (isSingle
+            ? '<div style="width:7px;height:7px;background:#fff;border-radius:50%;"></div>'
+            : '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 5l2.5 2.5 4-4"/></svg>')
+        : '';
+      item.innerHTML = '<div class="disc-check-pg">' + innerIcon + '</div>' + opt;
       item.onclick = function() { discPageSelectOpt(this, qIdx); };
       grid.appendChild(item);
     });
@@ -10662,12 +10675,14 @@ function discPageSelectOpt(el, qIdx) {
   var opt = el.dataset.opt;
   var isSingle = el.dataset.single === '1';
   var optsEl = document.getElementById('disc-page-opts');
+  var _radioDot = '<div style="width:7px;height:7px;background:#fff;border-radius:50%;"></div>';
+  var _chkSvg  = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 5l2.5 2.5 4-4"/></svg>';
   if (isSingle) {
     if (optsEl) optsEl.querySelectorAll('.disc-opt-page').forEach(function(item) {
       var s = item.dataset.opt === opt;
       item.className = 'disc-opt-page' + (s ? ' selected' : '');
       var cb = item.querySelector('.disc-check-pg');
-      if (cb) cb.innerHTML = s ? '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M2 5l2.5 2.5 4-4"/></svg>' : '';
+      if (cb) cb.innerHTML = s ? _radioDot : '';
     });
     _discTempAnswers[qIdx] = opt;
   } else {
@@ -10676,9 +10691,9 @@ function discPageSelectOpt(el, qIdx) {
     var sel = idx < 0;
     if (sel) cur.push(opt); else cur.splice(idx,1);
     _discTempAnswers[qIdx] = cur;
-    el.className = 'disc-opt-page' + (sel ? ' selected' : '');
+    el.className = 'disc-opt-page checkbox-opt' + (sel ? ' selected' : '');
     var cb = el.querySelector('.disc-check-pg');
-    if (cb) cb.innerHTML = sel ? '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M2 5l2.5 2.5 4-4"/></svg>' : '';
+    if (cb) cb.innerHTML = sel ? _chkSvg : '';
   }
 }
 
@@ -10759,7 +10774,7 @@ function showDiscoveryModal(qIdx){
   function mkOpt(opt,isSingle){
     var sel=isSingle?cur===opt:(cur&&cur.indexOf(opt)>=0);
     var br=isSingle?'50%':'4px';
-    var innerHtml=sel?(isSingle?'<div style="width:6px;height:6px;background:#fff;border-radius:50%;"></div>':'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M2 5l2.5 2.5 4-4"/></svg>'):'';
+    var innerHtml=sel?(isSingle?'<div style="width:7px;height:7px;background:#fff;border-radius:50%;"></div>':'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 5l2.5 2.5 4-4"/></svg>'):''; // radio=dot, checkbox=tick
     var safeOpt=opt.replace(/"/g,'&quot;');
     return '<div class="disc-opt" onclick="discSelectOpt(this,'+qIdx+')" data-opt="'+safeOpt+'" data-single="'+(isSingle?'1':'0')+'" style="display:flex;align-items:center;gap:10px;border:1.5px solid '+(sel?'#1d4ed8':'#e2e8f0')+';border-radius:10px;padding:11px 14px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:border-color 0.12s,background 0.12s;">'
       +'<div class="disc-check" style="width:16px;height:16px;border-radius:'+br+';border:1.5px solid '+(sel?'#1d4ed8':'#d1d5db')+';background:'+(sel?'#1d4ed8':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.12s;">'+innerHtml+'</div>'
@@ -10830,7 +10845,7 @@ function discSelectOpt(el,qIdx){
         item.style.borderColor=s?'#1d4ed8':'#e2e8f0';
         item.style.background=s?'#eff6ff':'#fff';
         var cb=item.querySelector('.disc-check');
-        if(cb){cb.style.borderColor=s?'#1d4ed8':'#d1d5db';cb.style.background=s?'#1d4ed8':'transparent';cb.innerHTML=s?'<div style="width:6px;height:6px;background:#fff;border-radius:50%;"></div>':'';}
+        if(cb){cb.style.borderColor=s?'#1d4ed8':'#d1d5db';cb.style.background=s?'#1d4ed8':'transparent';cb.innerHTML=s?'<div style="width:7px;height:7px;background:#fff;border-radius:50%;"></div>':'';}
       });
     }
     _discTempAnswers[qIdx]=opt;
@@ -10843,7 +10858,7 @@ function discSelectOpt(el,qIdx){
     el.style.borderColor=sel?'#1d4ed8':'#e2e8f0';
     el.style.background=sel?'#eff6ff':'#fff';
     var cb=el.querySelector('.disc-check');
-    if(cb){cb.style.borderColor=sel?'#1d4ed8':'#d1d5db';cb.style.background=sel?'#1d4ed8':'transparent';cb.innerHTML=sel?'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M2 5l2.5 2.5 4-4"/></svg>':'';}
+    if(cb){cb.style.borderColor=sel?'#1d4ed8':'#d1d5db';cb.style.background=sel?'#1d4ed8':'transparent';cb.innerHTML=sel?'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 5l2.5 2.5 4-4"/></svg>':'';}
   }
 }
 
