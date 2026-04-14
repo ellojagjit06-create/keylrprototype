@@ -2615,14 +2615,16 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .exp-badge{font-size:10.5px;font-weight:600;font-family:Inter,sans-serif;padding:3px 8px;border-radius:5px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;}
 .exp-badge.blue{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;}
 .exp-pcard-avail{display:flex;gap:8px;padding:10px 16px 0;flex-wrap:wrap;}
-.exp-avail-item{font-size:11px;font-family:Inter,sans-serif;color:#64748b;display:flex;align-items:center;gap:4px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;padding:5px 9px;}
-.exp-avail-item.emg{background:#fef9ee;border-color:#fde68a;color:#92400e;}
+.exp-avail-item{font-size:11px;font-weight:500;font-family:Inter,sans-serif;color:#475569;display:inline-flex;align-items:center;gap:4px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:20px;padding:5px 11px;white-space:nowrap;}
+.exp-avail-item.emg{background:#fff7ed;border-color:#fdba74;color:#c2410c;font-weight:600;}
 .exp-pcard-services{padding:10px 16px 0;}
 .exp-pcard-services-title{font-size:10.5px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
-.exp-svc-row{display:flex;align-items:center;gap:6px;font-size:12.5px;font-family:Inter,sans-serif;color:#374151;margin-bottom:5px;}
+.exp-svc-row{display:flex;align-items:center;gap:6px;font-size:12.5px;font-family:Inter,sans-serif;color:#374151;padding:8px 0;border-bottom:1px solid #f1f5f9;}
 .exp-svc-row .svc-tag{font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px;background:#eff6ff;color:#1d4ed8;}
 .exp-svc-row .svc-price{margin-left:auto;font-weight:700;color:#0f172a;font-size:12.5px;}
 .exp-svc-row .svc-quote{margin-left:auto;font-size:12px;color:#94a3b8;background:#f8fafc;border:1px solid #e2e8f0;border-radius:5px;padding:1px 7px;}
+.exp-svc-row:last-child{border-bottom:none;}
+.exp-show-more{margin-top:4px;}
 .exp-pcard-footer{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 16px 16px;}
 .exp-book-btn{background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:opacity .15s;}
 .exp-book-btn:hover{opacity:.88;}
@@ -2707,9 +2709,10 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .dash-dark .exp-rat-num,.dash-dark .exp-rat-rev,.dash-dark .exp-rat-jobs { color:#8b949e !important; }
 .dash-dark .exp-pcard-avail { border-color:#30363d !important; }
 .dash-dark .exp-avail-item { background:#1c2433 !important; border-color:#30363d !important; color:#8b949e !important; }
+.dash-dark .exp-avail-item.emg { background:#2d1a00 !important; border-color:#92400e !important; color:#fb923c !important; }
 .dash-dark .exp-avail-item.emg { background:#2d1f00 !important; color:#f59e0b !important; border-color:#78350f !important; }
 .dash-dark .exp-pcard-services-title { color:#8b949e !important; }
-.dash-dark .exp-svc-row { color:#c9d1d9 !important; border-color:#30363d !important; }
+.dash-dark .exp-svc-row { color:#c9d1d9 !important; border-bottom-color:#21262d !important; }
 .dash-dark .svc-tag { background:#1c2433 !important; color:#8b949e !important; border-color:#30363d !important; }
 .dash-dark .svc-price { color:#e6edf3 !important; }
 .dash-dark .svc-quote { color:#64748b !important; }
@@ -6037,10 +6040,10 @@ function renderBookingsPage() {
   statEl.innerHTML = '';
   statEl.style.display = 'grid';
   [
-    { label:'ACTIVE',      val: _isLoggedIn ? active.length    : 0,          color:'#1A5FC8' },
-    { label:'COMPLETED',   val: _isLoggedIn ? completed.length : 0,          color:'#10b981' },
-    { label:'TOTAL SPENT', val: _isLoggedIn && totalSpent > 0 ? '£'+totalSpent : '£0', color:'#0f172a', bold:true },
-    { label:'AVG RATING',  val: _isLoggedIn && completed.length ? (completed.reduce(function(s,j){return s+(j.rating||4.5);},0)/completed.length).toFixed(1) : '4.5', color:'#f59e0b', icon:'⭐' },
+    { label:'ACTIVE',      val: _isLoggedIn ? active.length : '—',    color:'#1A5FC8' },
+    { label:'COMPLETED',   val: _isLoggedIn ? completed.length : '—', color:'#10b981' },
+    { label:'TOTAL SPENT', val: _isLoggedIn && totalSpent > 0 ? '£'+totalSpent : (_isLoggedIn ? '£0' : '—'), color:'#6366f1' },
+    { label:'AVG RATING',  val: _isLoggedIn && completed.length ? (completed.reduce(function(s,j){return s+(j.rating||4.5);},0)/completed.length).toFixed(1) : '—', color:'#f59e0b', icon:'⭐' },
   ].forEach(function(s) {
     var isDkSt = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
     var card = document.createElement('div');
@@ -6048,14 +6051,14 @@ function renderBookingsPage() {
     // Icon for stat card
     var iconDiv = document.createElement('div');
     iconDiv.style.cssText = 'margin-bottom:8px;';
-    var iconMap = {ACTIVE:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M4 11l4 4 10-10"/></svg>',COMPLETED:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#10b981" stroke-width="1.6"><circle cx="10" cy="10" r="8"/><path d="M6 10l3 3 5-5"/></svg>','TOTAL SPENT':'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#0f172a" stroke-width="1.6"><rect x="2" y="5" width="16" height="12" rx="2"/><path d="M2 9h16"/></svg>','AVG RATING':'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#f59e0b" stroke-width="1.6"><path d="M10 2l2 5.5H18l-4.5 3.5 1.5 5.5L10 13l-5 3.5 1.5-5.5L2 7.5h6z"/></svg>'};
+    var iconMap = {ACTIVE:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M4 11l4 4 10-10"/></svg>',COMPLETED:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#10b981" stroke-width="1.6"><circle cx="10" cy="10" r="8"/><path d="M6 10l3 3 5-5"/></svg>','TOTAL SPENT':'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#6366f1" stroke-width="1.6"><rect x="2" y="5" width="16" height="12" rx="2"/><path d="M2 9h16"/></svg>','AVG RATING':'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#f59e0b" stroke-width="1.6"><path d="M10 2l2 5.5H18l-4.5 3.5 1.5 5.5L10 13l-5 3.5 1.5-5.5L2 7.5h6z"/></svg>'};
     iconDiv.innerHTML = iconMap[s.label] || '';
     var lbl = document.createElement('div');
     lbl.style.cssText = 'font-size:11px;font-weight:700;color:'+(isDkSt?'#8b949e':'#94a3b8')+';font-family:Inter,sans-serif;letter-spacing:.04em;margin-bottom:8px;';
     lbl.textContent = s.label;
     var val = document.createElement('div');
     val.className = 'bk-stat-val';
-    val.style.cssText = 'font-size:28px;font-weight:900;color:'+(isDkSt?'#e6edf3':s.color)+';font-family:Fraunces,serif;';
+    val.style.cssText = 'font-size:24px;font-weight:700;color:'+(isDkSt?'#e6edf3':s.color)+';font-family:Inter,sans-serif;line-height:1.1;';
     val.textContent = s.val;
     card.appendChild(iconDiv); card.appendChild(val); card.appendChild(lbl);
     statEl.appendChild(card);
@@ -6767,9 +6770,9 @@ function renderExploreProviders(cat, minRating) {
     var stars = '';
     for (var i=1;i<=5;i++) stars += '<svg width="11" height="11" viewBox="0 0 11 11" fill="'+(i<=Math.floor(p.rating)?'#f59e0b':'none')+'" stroke="#f59e0b" stroke-width="1.4"><path d="M5.5 1l1.1 3.4H10L7.3 6.6l1.1 3.4-2.9-2-2.9 2 1.1-3.4L1 4.4h3.4z"/></svg>';
     var certsHTML = p.certs.map(function(c){ return '<span class="exp-cert-chip">' + c + '</span>'; }).join('');
-    var avail = '<span class="exp-avail-item"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l2 2"/></svg>' + p.sla + ' SLA</span>';
-    avail += '<span class="exp-avail-item"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="2" width="10" height="9" rx="1.5"/><path d="M1 5h10M4 1v2M8 1v2"/></svg>' + (p.days||'') + ' ' + p.hours + '</span>';
-    if (p.emergency) avail += '<span class="exp-avail-item emg"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#92400e" stroke-width="1.6"><path d="M6 1l1 3.5H10L7.5 7l1 3.5L6 8.5l-2.5 2 1-3.5L2 4.5h3z"/></svg> 24/7 Emergency</span>';
+    var avail = '<span class="exp-avail-item"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l1.5 1.5"/></svg>&nbsp;' + p.sla + ' SLA</span>';
+    avail += '<span class="exp-avail-item"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="2" width="10" height="9" rx="1.5"/><path d="M1 5h10M4 1v2M8 1v2"/></svg>&nbsp;' + (p.days||'') + ' · ' + p.hours + '</span>';
+    if (p.emergency) avail += '<span class="exp-avail-item emg"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 1L4 7h4l-3 4 7-7H8z" stroke-linejoin="round"/></svg>&nbsp;24/7 Emergency</span>';
     // Services — collapsible (show 2 default)
     var svcsAll = p.services;
     var svcsDefault = svcsAll.slice(0,2);
@@ -6957,9 +6960,9 @@ function _filterExpSearch(q) {
               + '<button data-pid="'+p.id+'" onclick="toggleSvcs(this.dataset.pid)" id="svcs_btn_'+p.id+'" class="exp-show-more">+' + extraCount + ' more <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4l2 2 2-2"/></svg></button>'
             : '');
         var certs = (p.certs||[]).map(function(c){ return '<span class="exp-cert-chip">'+c+'</span>'; }).join('');
-        var avail = '<span class="exp-avail-item"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l2 2"/></svg>' + p.sla + ' SLA</span>';
-        avail += '<span class="exp-avail-item"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="2" width="10" height="9" rx="1.5"/><path d="M1 5h10M4 1v2M8 1v2"/></svg>' + (p.days||'') + ' ' + p.hours + '</span>';
-        if (p.emergency) avail += '<span class="exp-avail-item emg"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#92400e" stroke-width="1.6"><path d="M6 1l1.5 4H11L7.5 8l1.5 4L6 8.5 2 12l1.5-4L0 5h3.5z"/></svg> 24/7 Emergency</span>';
+        var avail = '<span class="exp-avail-item"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l1.5 1.5"/></svg>&nbsp;' + p.sla + ' SLA</span>';
+        avail += '<span class="exp-avail-item"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="2" width="10" height="9" rx="1.5"/><path d="M1 5h10M4 1v2M8 1v2"/></svg>&nbsp;' + (p.days||'') + ' · ' + p.hours + '</span>';
+        if (p.emergency) avail += '<span class="exp-avail-item emg"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 1L4 7h4l-3 4 7-7H8z" stroke-linejoin="round"/></svg>&nbsp;24/7 Emergency</span>';
         var stars = '';
         for(var i=1;i<=5;i++) stars+='<svg width="11" height="11" viewBox="0 0 11 11" fill="'+(i<=Math.floor(p.rating)?'#f59e0b':'none')+'" stroke="#f59e0b" stroke-width="1.4"><path d="M5.5 1l1.1 3.4H10L7.3 6.6l1.1 3.4-2.9-2-2.9 2 1.1-3.4L1 4.4h3.4z"/></svg>';
         var footer='';
