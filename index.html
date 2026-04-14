@@ -4943,10 +4943,22 @@ function goToDashboard(query, autoSend = false, isAuthenticated = false) {
     window._postLoginAction = null;
     setTimeout(function() { showPage('properties', null); }, 500);
   }
-  // If user was on booking flow step 1 (property selection), re-render it now
-  var bfPage = document.getElementById('page-booking-flow');
-  if (bfPage && bfPage.style.display !== 'none' && _bfState.step === 1) {
-    setTimeout(function() { _bfRenderStep(1); }, 200);
+  // Restore booking state saved before auth gate
+  if (window._bfStateBeforeAuth) {
+    var saved = window._bfStateBeforeAuth;
+    window._bfStateBeforeAuth = null;
+    setTimeout(function() {
+      _bfState = saved;
+      _bfState.step = 1; // Always return to property step
+      showPage('booking-flow', null);
+      _bfRenderPage();
+    }, 300);
+  } else {
+    // If user was already on booking flow step 1, re-render it
+    var bfPage = document.getElementById('page-booking-flow');
+    if (bfPage && bfPage.style.display !== 'none' && _bfState.step === 1) {
+      setTimeout(function() { _bfRenderStep(1); }, 200);
+    }
   }
   // Resume pending booking after login
   if (window._pendingBookingState) {
@@ -7515,6 +7527,18 @@ function _bfRenderPage() {
   _bfRenderStep(s.step);
 }
 
+function _bfSaveExtraProp() {
+  var n = (document.getElementById('bf-extra-prop-name')||{}).value||'';
+  var a = (document.getElementById('bf-extra-prop-addr')||{}).value||'';
+  if (!n.trim()) { showToast('Please enter a property name','warning'); return; }
+  if (!a.trim()) { showToast('Please enter an address','warning'); return; }
+  _userProperties.push({ name:n.trim(), addr:a.trim(), type:'Residential', beds:'', suppliers:0 });
+  _bfState.property = n.trim();
+  _bfState.propertyAddr = a.trim();
+  showToast('Property saved!','success');
+  _bfNext();
+}
+
 function _bfBack() {
   if (_bfState.step > 0) { _bfState.step--; _bfRenderPage(); }
   else { showPage('explore', null); }
@@ -7522,7 +7546,8 @@ function _bfBack() {
 function _bfNext() {
   var s = _bfState;
   if (s.step===0 && !s.service) { showToast('Please enter or select a service','warning'); return; }
-  if (s.step===1 && !s.property) { showToast('Please select a property','warning'); return; }
+  if (s.step===1 && !window._isLoggedIn) { showToast('Please sign up to continue','warning'); return; }
+  if (s.step===1 && !s.property) { showToast('Please select or add a property','warning'); return; }
   if (s.step===2 && !s.providerName) { showToast('Please choose a provider','warning'); return; }
   if (s.step===4 && !s.date) { showToast('Please pick a date','warning'); return; }
   s.step++; _bfRenderPage();
@@ -7613,47 +7638,164 @@ function _bfRenderStep(step) {
     body.appendChild(btGrid);
 
   } else if (step === 1) {
-    // ── Select property ──
-    var h = document.createElement('div');
-    h.className = 'bf-sub-heading';
-    h.style.cssText = 'font-size:14px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:16px;';
-    h.textContent = 'Select a property';
-    body.appendChild(h);
+    // ── Step 1: Where should we deliver this service? ──
+    var isDkP = isDk;
 
-    // Empty state — show "No properties yet" card for all users
-    if (!_userProperties.length) {
-      var isDkP = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
-      var emptyProp = document.createElement('div');
-      emptyProp.style.cssText = 'background:'+(isDkP?'#161b22':'#fff')+';border:1.5px solid '+(isDkP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:48px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;';
-      var propIcon = document.createElement('div');
-      propIcon.style.cssText = 'width:64px;height:64px;border-radius:16px;background:'+(isDkP?'#1c2433':'#eff6ff')+';display:flex;align-items:center;justify-content:center;';
-      propIcon.innerHTML = '<svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#1A5FC8" stroke-width="1.5"><path d="M3 27V13l12-9 12 9v14"/><path d="M11 27v-8h8v8"/></svg>';
-      var propTitle = document.createElement('div');
-      propTitle.style.cssText = 'font-size:17px;font-weight:800;color:'+(isDkP?'#e6edf3':'#0f172a')+';font-family:Fraunces,serif;';
-      propTitle.textContent = 'No properties yet';
-      var propSub = document.createElement('div');
-      propSub.style.cssText = 'font-size:13.5px;color:'+(isDkP?'#8b949e':'#64748b')+';font-family:Inter,sans-serif;max-width:280px;line-height:1.6;';
-      propSub.textContent = 'Add your first property in the Properties tab before booking a service.';
-      var addPropB = document.createElement('button');
-      addPropB.type = 'button';
-      addPropB.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;margin-top:4px;';
-      addPropB.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M6.5 2v9"/></svg>Add a property';
-      addPropB.onclick = function(e){
-        e.stopPropagation();
-        if (!window._isLoggedIn) {
-          window._postLoginAction = 'addProperty';
-          window.showAuthPage('signup');
-        } else {
-          window.showPage('properties', null);
-        }
+    // ── HEADING ──
+    var h1 = document.createElement('div');
+    h1.style.cssText = 'font-size:18px;font-weight:800;color:'+(isDkP?'#e6edf3':'#0f172a')+';font-family:Fraunces,serif;margin-bottom:4px;';
+    h1.textContent = 'Where should we deliver this service?';
+    body.appendChild(h1);
+    var h1sub = document.createElement('div');
+    h1sub.style.cssText = 'font-size:13px;color:'+(isDkP?'#8b949e':'#64748b')+';font-family:Inter,sans-serif;margin-bottom:20px;';
+    h1sub.textContent = s.providerName ? 'Booking with ' + s.providerName + (s.service ? ' · ' + s.service : '') : (s.service || 'Your booking');
+    body.appendChild(h1sub);
+
+    // ══════════════════════════════════════════════════════
+    // GUEST USER — Smart Auth Gate
+    // ══════════════════════════════════════════════════════
+    if (!window._isLoggedIn) {
+      // Disabled preview form with auth gate overlay
+      var guestWrap = document.createElement('div');
+      guestWrap.style.cssText = 'position:relative;';
+
+      // Disabled form (visual preview)
+      var previewForm = document.createElement('div');
+      previewForm.style.cssText = 'background:'+(isDkP?'#161b22':'#fff')+';border:1.5px solid '+(isDkP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:20px;pointer-events:none;user-select:none;';
+      previewForm.innerHTML =
+        '<div style="font-size:12px;font-weight:700;color:'+(isDkP?'#6e7681':'#94a3b8')+';font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">Property details</div>'
+        + '<div style="margin-bottom:14px;">'
+          + '<label style="font-size:12px;font-weight:600;color:'+(isDkP?'#8b949e':'#374151')+';display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Property name</label>'
+          + '<input disabled type="text" placeholder="e.g. Flat 3, Oak House" style="width:100%;border:1.5px solid '+(isDkP?'#30363d':'#e2e8f0')+';border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;background:'+(isDkP?'#0d1117':'#f8fafc')+';color:'+(isDkP?'#4b5563':'#94a3b8')+';box-sizing:border-box;cursor:not-allowed;">'
+        + '</div>'
+        + '<div>'
+          + '<label style="font-size:12px;font-weight:600;color:'+(isDkP?'#8b949e':'#374151')+';display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Address</label>'
+          + '<input disabled type="text" placeholder="Start typing your address..." style="width:100%;border:1.5px solid '+(isDkP?'#30363d':'#e2e8f0')+';border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;background:'+(isDkP?'#0d1117':'#f8fafc')+';color:'+(isDkP?'#4b5563':'#94a3b8')+';box-sizing:border-box;cursor:not-allowed;">'
+        + '</div>';
+      guestWrap.appendChild(previewForm);
+
+      // Auth gate overlay
+      var overlay = document.createElement('div');
+      overlay.style.cssText = 'position:absolute;inset:0;border-radius:16px;background:'+(isDkP?'rgba(13,17,23,0.7)':'rgba(255,255,255,0.72)')+';backdrop-filter:blur(3px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;z-index:2;padding:20px;';
+      overlay.onclick = function() {
+        // Save full booking state before auth
+        window._bfStateBeforeAuth = JSON.parse(JSON.stringify(_bfState));
+        showAuthPage('signup');
       };
-      emptyProp.appendChild(propIcon);
-      emptyProp.appendChild(propTitle);
-      emptyProp.appendChild(propSub);
-      emptyProp.appendChild(addPropB);
-      body.appendChild(emptyProp);
+      var lockIcon = document.createElement('div');
+      lockIcon.style.cssText = 'width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(26,95,200,0.35);';
+      lockIcon.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2"><rect x="4" y="9" width="12" height="9" rx="2"/><path d="M7 9V6a3 3 0 016 0v3"/></svg>';
+      var gateMsg = document.createElement('div');
+      gateMsg.style.cssText = 'text-align:center;';
+      gateMsg.innerHTML = '<div style="font-size:14.5px;font-weight:700;color:'+(isDkP?'#e6edf3':'#0f172a')+';font-family:Fraunces,serif;margin-bottom:4px;">Create a free account to continue</div>'
+        + '<div style="font-size:12.5px;color:'+(isDkP?'#8b949e':'#64748b')+';font-family:Inter,sans-serif;max-width:220px;line-height:1.5;">Save your property and complete your booking — free, no card required</div>';
+      var gateBtn = document.createElement('button');
+      gateBtn.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-top:4px;';
+      gateBtn.textContent = 'Sign up free →';
+      gateBtn.onclick = function(e) {
+        e.stopPropagation();
+        window._bfStateBeforeAuth = JSON.parse(JSON.stringify(_bfState));
+        showAuthPage('signup');
+      };
+      var loginLink = document.createElement('div');
+      loginLink.style.cssText = 'font-size:12px;color:'+(isDkP?'#8b949e':'#64748b')+';font-family:Inter,sans-serif;';
+      loginLink.innerHTML = 'Already have an account? <button onclick="event.stopPropagation();window._bfStateBeforeAuth=JSON.parse(JSON.stringify(window._bfState));showAuthPage(\'login\')" style="background:none;border:none;color:#1A5FC8;font-weight:600;font-size:12px;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Log in</button>';
+      overlay.appendChild(lockIcon);
+      overlay.appendChild(gateMsg);
+      overlay.appendChild(gateBtn);
+      overlay.appendChild(loginLink);
+      guestWrap.appendChild(overlay);
+      body.appendChild(guestWrap);
+
+      // Progress message below
+      var progressNote = document.createElement('div');
+      progressNote.style.cssText = 'margin-top:14px;padding:12px 16px;background:'+(isDkP?'#1c2433':'#f0f9ff')+';border:1px solid '+(isDkP?'#30363d':'#bae6fd')+';border-radius:10px;display:flex;align-items:center;gap:10px;';
+      progressNote.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#0ea5e9" stroke-width="1.8"><circle cx="7" cy="7" r="5.5"/><path d="M7 4.5v3l1.5 1.5"/></svg>'
+        + '<span style="font-size:12.5px;color:'+(isDkP?'#8b949e':'#0369a1')+';font-family:Inter,sans-serif;">Your service selection is saved \u2014 you\'ll return right here after signing up</span>';
+      body.appendChild(progressNote);
       return;
     }
+
+    // ══════════════════════════════════════════════════════
+    // LOGGED-IN: Auto-select if 1 property
+    // ══════════════════════════════════════════════════════
+    if (_bfProperties.length === 1 && !s.property) {
+      // Auto-select the only property silently
+      _bfState.property = _bfProperties[0].name;
+      _bfState.propertyAddr = _bfProperties[0].addr;
+      s = _bfState;
+    }
+
+    // ══════════════════════════════════════════════════════
+    // LOGGED-IN: No properties → inline add form
+    // ══════════════════════════════════════════════════════
+    if (!_bfProperties.length) {
+      var addFormWrap = document.createElement('div');
+      addFormWrap.style.cssText = 'background:'+(isDkP?'#161b22':'#fff')+';border:1.5px solid '+(isDkP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:22px;';
+
+      var afHeading = document.createElement('div');
+      afHeading.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:16px;';
+      afHeading.innerHTML = '<div style="width:36px;height:36px;border-radius:10px;background:#eff6ff;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M2 16V7l7-5 7 5v9"/><path d="M6 16v-5h6v5"/></svg></div>'
+        + '<div><div style="font-size:14px;font-weight:700;color:'+(isDkP?'#e6edf3':'#0f172a')+';font-family:Inter,sans-serif;">Add your property</div>'
+        + '<div style="font-size:12px;color:'+(isDkP?'#8b949e':'#64748b')+';font-family:Inter,sans-serif;">It will be saved to your portfolio</div></div>';
+      addFormWrap.appendChild(afHeading);
+
+      // Property name field
+      var nameLabel = document.createElement('label');
+      nameLabel.style.cssText = 'font-size:12px;font-weight:600;color:'+(isDkP?'#8b949e':'#374151')+';display:block;margin-bottom:5px;font-family:Inter,sans-serif;';
+      nameLabel.textContent = 'Property name';
+      var nameInput = document.createElement('input');
+      nameInput.id = 'bf-new-prop-name';
+      nameInput.type = 'text';
+      nameInput.placeholder = 'e.g. Flat 3, Oak House';
+      nameInput.style.cssText = 'width:100%;border:1.5px solid '+(isDkP?'#30363d':'#e2e8f0')+';border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:'+(isDkP?'#0d1117':'#fff')+';color:'+(isDkP?'#e6edf3':'#0f172a')+';margin-bottom:12px;';
+      nameInput.onfocus = function(){ this.style.borderColor='#1A5FC8'; };
+      nameInput.onblur  = function(){ this.style.borderColor=isDkP?'#30363d':'#e2e8f0'; };
+      addFormWrap.appendChild(nameLabel);
+      addFormWrap.appendChild(nameInput);
+
+      // Address field
+      var addrLabel = document.createElement('label');
+      addrLabel.style.cssText = 'font-size:12px;font-weight:600;color:'+(isDkP?'#8b949e':'#374151')+';display:block;margin-bottom:5px;font-family:Inter,sans-serif;';
+      addrLabel.textContent = 'Address';
+      var addrInput = document.createElement('input');
+      addrInput.id = 'bf-new-prop-addr';
+      addrInput.type = 'text';
+      addrInput.placeholder = 'Full address';
+      addrInput.style.cssText = 'width:100%;border:1.5px solid '+(isDkP?'#30363d':'#e2e8f0')+';border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:'+(isDkP?'#0d1117':'#fff')+';color:'+(isDkP?'#e6edf3':'#0f172a')+';margin-bottom:16px;';
+      addrInput.onfocus = function(){ this.style.borderColor='#1A5FC8'; };
+      addrInput.onblur  = function(){ this.style.borderColor=isDkP?'#30363d':'#e2e8f0'; };
+      addFormWrap.appendChild(addrLabel);
+      addFormWrap.appendChild(addrInput);
+
+      // Save & continue button
+      var saveBtn = document.createElement('button');
+      saveBtn.style.cssText = 'width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;';
+      saveBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7l3.5 3.5L12 4"/></svg>Save property & continue';
+      saveBtn.onclick = function() {
+        var n = (document.getElementById('bf-new-prop-name')||{}).value||'';
+        var a = (document.getElementById('bf-new-prop-addr')||{}).value||'';
+        if (!n.trim()) { showToast('Please enter a property name','warning'); return; }
+        if (!a.trim()) { showToast('Please enter an address','warning'); return; }
+        // Add to properties array and auto-select
+        _userProperties.push({ name:n.trim(), addr:a.trim(), type:'Residential', beds:'', suppliers:0 });
+        _bfState.property = n.trim();
+        _bfState.propertyAddr = a.trim();
+        showToast('Property saved!','success');
+        _bfNext();
+      };
+      addFormWrap.appendChild(saveBtn);
+      body.appendChild(addFormWrap);
+      return;
+    }
+
+    // ══════════════════════════════════════════════════════
+    // LOGGED-IN: Multiple properties → selectable list
+    // ══════════════════════════════════════════════════════
+    var propListLabel = document.createElement('div');
+    propListLabel.style.cssText = 'font-size:12px;font-weight:700;color:'+(isDkP?'#6e7681':'#94a3b8')+';font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;';
+    propListLabel.textContent = 'Your properties';
+    body.appendChild(propListLabel);
 
     _bfProperties.forEach(function(prop, idx) {
       var card = document.createElement('div');
@@ -7664,12 +7806,12 @@ function _bfRenderStep(step) {
       thumb.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5"><path d="M3 21V10l9-7 9 7v11"/><path d="M9 21v-6h6v6"/></svg>';
       var info = document.createElement('div');
       info.style.cssText = 'flex:1;';
-      var name = document.createElement('div');
-      name.className = 'bfm-prop-name';
-      name.textContent = prop.name;
-      var addr = document.createElement('div');
-      addr.className = 'bfm-prop-addr';
-      addr.textContent = prop.addr;
+      var pname = document.createElement('div');
+      pname.className = 'bfm-prop-name';
+      pname.textContent = prop.name;
+      var paddr = document.createElement('div');
+      paddr.className = 'bfm-prop-addr';
+      paddr.textContent = prop.addr;
       var tags = document.createElement('div');
       tags.style.cssText = 'display:flex;gap:6px;margin-top:6px;align-items:center;';
       var typeTag = document.createElement('span');
@@ -7678,11 +7820,8 @@ function _bfRenderStep(step) {
       var bedsSpan = document.createElement('span');
       bedsSpan.style.cssText = 'font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;';
       bedsSpan.textContent = prop.beds;
-      var suppSpan = document.createElement('span');
-      suppSpan.style.cssText = 'font-size:11.5px;color:#1A5FC8;font-family:Inter,sans-serif;font-weight:600;';
-      suppSpan.textContent = prop.suppliers + ' suppliers assigned';
-      tags.appendChild(typeTag); tags.appendChild(bedsSpan); tags.appendChild(suppSpan);
-      info.appendChild(name); info.appendChild(addr); info.appendChild(tags);
+      tags.appendChild(typeTag); if(prop.beds){tags.appendChild(bedsSpan);}
+      info.appendChild(pname); info.appendChild(paddr); info.appendChild(tags);
       card.appendChild(thumb); card.appendChild(info);
       if (s.property===prop.name) {
         var chk = document.createElement('div');
@@ -7691,6 +7830,23 @@ function _bfRenderStep(step) {
       }
       body.appendChild(card);
     });
+
+    // Add another property link
+    var addMoreBtn = document.createElement('button');
+    addMoreBtn.style.cssText = 'margin-top:10px;background:none;border:1.5px dashed '+(isDkP?'#30363d':'#e2e8f0')+';border-radius:10px;padding:12px;width:100%;font-size:13px;font-weight:600;color:'+(isDkP?'#8b949e':'#64748b')+';cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;';
+    addMoreBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M6.5 2v9"/></svg> Add another property';
+    addMoreBtn.onclick = function(){
+      // Show inline mini-form below
+      addMoreBtn.style.display = 'none';
+      var miniForm = document.createElement('div');
+      miniForm.style.cssText = 'margin-top:10px;background:'+(isDkP?'#161b22':'#f8fafc')+';border:1.5px solid '+(isDkP?'#30363d':'#e2e8f0')+';border-radius:12px;padding:16px;';
+      miniForm.innerHTML = '<div style="font-size:13px;font-weight:700;color:'+(isDkP?'#e6edf3':'#0f172a')+';font-family:Inter,sans-serif;margin-bottom:12px;">New property</div>'
+        + '<input id="bf-extra-prop-name" type="text" placeholder="Property name" style="width:100%;border:1.5px solid '+(isDkP?'#30363d':'#e2e8f0')+';border-radius:9px;padding:10px 13px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:'+(isDkP?'#0d1117':'#fff')+';color:'+(isDkP?'#e6edf3':'#0f172a')+';margin-bottom:8px;">'
+        + '<input id="bf-extra-prop-addr" type="text" placeholder="Address" style="width:100%;border:1.5px solid '+(isDkP?'#30363d':'#e2e8f0')+';border-radius:9px;padding:10px 13px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:'+(isDkP?'#0d1117':'#fff')+';color:'+(isDkP?'#e6edf3':'#0f172a')+';margin-bottom:10px;">'
+        + '<button onclick="_bfSaveExtraProp()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save property</button>';
+      body.appendChild(miniForm);
+    };
+    body.appendChild(addMoreBtn);
 
   } else if (step === 2) {
     // ── Choose a provider ──
