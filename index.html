@@ -3965,7 +3965,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
         </div>
         <!-- Empty state — matches No jobs yet style -->
         <div class="prop-empty-card" style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:60px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;margin-bottom:24px;">
-          <div style="width:72px;height:72px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">
+          <div style="width:72px;height:72px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
             <svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#3b82f6" stroke-width="1.5"><path d="M4 28V15l13-10 13 10v13"/><path d="M12 28v-8h10v8"/></svg>
           </div>
           <div id="propDynamicGrid" style="margin-top:8px;"></div>
@@ -6066,22 +6066,22 @@ function renderBookingsPage() {
   if (!jobs.length) {
     // Card-style zero state (white card with rounded border like the image)
     var zeroCard = document.createElement('div');
-    zeroCard.style.cssText = 'background:'+(isDkZ?'#161b22':'#fff')+';border:1.5px solid '+(isDkZ?'#30363d':'#e2e8f0')+';border-radius:18px;padding:60px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;';
+    zeroCard.style.cssText = 'background:'+(isDkZ?'#161b22':'#fff')+';border:1.5px solid '+(isDkZ?'#30363d':'#e2e8f0')+';border-radius:18px;padding:40px 24px 36px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:0;';
 
     // Icon circle
     var iconCircle = document.createElement('div');
-    iconCircle.style.cssText = 'width:72px;height:72px;border-radius:20px;background:'+(isDkZ?'#1c2433':'#eff6ff')+';display:flex;align-items:center;justify-content:center;margin-bottom:20px;';
+    iconCircle.style.cssText = 'width:72px;height:72px;border-radius:20px;background:'+(isDkZ?'#1c2433':'#eff6ff')+';display:flex;align-items:center;justify-content:center;margin-bottom:16px;';
     iconCircle.innerHTML = '<svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#1A5FC8" stroke-width="1.5"><rect x="5" y="10" width="24" height="18" rx="3"/><path d="M5 16h24"/><path d="M11 7v5M23 7v5"/><circle cx="11" cy="22" r="1.5" fill="#1A5FC8" stroke="none"/></svg>';
     zeroCard.appendChild(iconCircle);
 
     var isDkZ = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
     var title = document.createElement('div');
-    title.style.cssText = 'font-size:20px;font-weight:800;color:'+(isDkZ?'#e6edf3':'#0f172a')+';font-family:Fraunces,serif;margin-bottom:10px;';
+    title.style.cssText = 'font-size:20px;font-weight:800;color:'+(isDkZ?'#e6edf3':'#0f172a')+';font-family:Fraunces,serif;margin-bottom:8px;';
     title.textContent = 'No jobs yet';
     zeroCard.appendChild(title);
 
     var sub = document.createElement('div');
-    sub.style.cssText = 'font-size:13.5px;color:'+(isDkZ?'#8b949e':'#64748b')+';max-width:300px;line-height:1.65;font-family:Inter,sans-serif;margin-bottom:26px;';
+    sub.style.cssText = 'font-size:13.5px;color:'+(isDkZ?'#8b949e':'#64748b')+';max-width:300px;line-height:1.65;font-family:Inter,sans-serif;margin-bottom:20px;';
     sub.textContent = _isLoggedIn
       ? 'Book your first property service and track all your jobs, progress and reports here.'
       : 'Sign in to view and manage your booked services.';
