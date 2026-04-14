@@ -1749,10 +1749,11 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
 /* Page layout — each page fills the main panel */
 #page-home,#page-explore,#page-bookings,#page-properties,#page-pricing,#page-settings,#page-chat,#page-provider-profile,#page-booking-flow {
-  position:absolute;inset:0;
   display:none;
   flex-direction:column;
   overflow:hidden;
+  flex:1;
+  min-height:0;
 }
 
 .bk-scroll-area,.pr-scroll-area,.px-scroll-area {
@@ -7587,6 +7588,9 @@ function _bfRenderStep(step) {
         e.stopPropagation();
         if (!window._isLoggedIn) {
           window._postLoginAction = 'addProperty';
+          // Hide booking flow page first so auth modal isn't blocked by the overlay
+          var bfPage = document.getElementById('page-booking-flow');
+          if (bfPage) bfPage.style.display = 'none';
           window.showAuthPage('signup');
         } else {
           window.showPage('properties', null);
