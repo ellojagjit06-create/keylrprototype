@@ -1753,7 +1753,6 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   display:none;
   flex-direction:column;
   overflow:hidden;
-  z-index:100;
 }
 .dash-dark #page-booking-flow { background:#0d1117; }
 
@@ -5006,9 +5005,6 @@ const pages = ['home','chat','explore','bookings','properties','pricing','settin
 
 function showPage(id, e) {
   if (e) e.preventDefault();
-  // Always hide booking-flow overlay first so it doesn't block other pages
-  var bfEl = document.getElementById('page-booking-flow');
-  if (bfEl && id !== 'booking-flow') bfEl.style.display = 'none';
   pages.forEach(p => {
     const el = document.getElementById('page-' + p);
     if (el) el.style.display = p === id ? 'flex' : 'none';
@@ -7590,9 +7586,6 @@ function _bfRenderStep(step) {
       addPropB.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M6.5 2v9"/></svg>Add a property';
       addPropB.onclick = function(e){
         e.stopPropagation();
-        // Hide booking flow overlay so auth modal / page shows correctly
-        var bfPage = document.getElementById('page-booking-flow');
-        if (bfPage) bfPage.style.display = 'none';
         if (!window._isLoggedIn) {
           window._postLoginAction = 'addProperty';
           window.showAuthPage('signup');
@@ -8041,7 +8034,7 @@ function _bfConfirm() {
     if(id==='explore') setTimeout(function(){ _initExploreAll(); _currentExploreCat='all'; document.querySelectorAll('#exploreCategoryChips .ef-pill').forEach(function(b){b.classList.remove('ef-active');}); var allBtn=document.querySelector('#exploreCategoryChips .ef-pill'); if(allBtn) allBtn.classList.add('ef-active'); }, 80);
     if(id==='bookings') setTimeout(renderBookingsPage, 60);
     if(id==='properties') setTimeout(_renderPropertiesGrid, 50);
-    if(id==='booking-flow') setTimeout(function(){ _bfRenderPage(); }, 50);
+
   };
 })();
 
