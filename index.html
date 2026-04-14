@@ -4894,8 +4894,8 @@ function handleHeroSearch() {
 // =============================================
 // PAGE TRANSITION
 // =============================================
-function goToDashboard(query, autoSend = false) {
-  _isLoggedIn = true;
+function goToDashboard(query, autoSend = false, isAuthenticated = false) {
+  _isLoggedIn = isAuthenticated;
   // Update sidebar auth icons (logged in → hide icons)
   setTimeout(_updateSidebarAuthIcons, 100);
   // Resume post-login action if any
@@ -8387,7 +8387,7 @@ function showAuthPage(mode, forcedRole) {
         });
       }
       modal.remove(); delete window._auth;
-      goToDashboard('', false);
+      goToDashboard('', false, true);
     }
   };
   window._authSwitchVariant=function(){showAuthPage(window._auth&&window._auth.isSignup?'signup':'login');modal.remove();delete window._auth;};
