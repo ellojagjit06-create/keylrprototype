@@ -3025,9 +3025,13 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 @keyframes bfmToastIn{from{transform:translateY(-16px);opacity:0;}to{transform:translateY(0);opacity:1;}}
 .bfm-toast-close{position:absolute;top:10px;right:12px;background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;line-height:1;}
 
-/* Auth icons in collapsed sidebar: show for guests, hide for logged-in */
+/* Auth icons in collapsed sidebar: guests only */
+/* Collapsed + guest: show the compact login/signup icons */
 .db-sidebar.collapsed #sbAuthIconsWrap { display:flex; }
+/* Collapsed + logged-in: keep hidden */
 #pg-dashboard.user-logged-in .db-sidebar.collapsed #sbAuthIconsWrap { display:none !important; }
+/* Expanded: hide the collapsed auth icons (inline style handles this, but be explicit) */
+.db-sidebar:not(.collapsed) #sbAuthIconsWrap { display:none !important; }
 </style>
 </head>
 <body>
@@ -3390,6 +3394,15 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           <button class="db-login-btn" onclick="showAuthPage('login')">Log in</button>
         </div>
       </div>
+      <!-- Collapsed sidebar: guest-only auth icon buttons -->
+      <div id="sbAuthIconsWrap" style="display:none;flex-direction:column;align-items:center;gap:6px;padding:4px 0;">
+        <button class="sb-auth-icon-btn" onclick="showAuthPage('login')" title="Log in" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border:1.5px solid #e2e8f0;cursor:pointer;color:#374151;">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="6" r="3"/><path d="M2 14c0-3 3-5 6-5s6 2 6 5"/></svg>
+        </button>
+        <button class="sb-auth-icon-btn" onclick="showAuthPage('signup')" title="Sign up" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);border:none;cursor:pointer;color:#fff;">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="6" r="3"/><path d="M2 14c0-3 3-5 6-5s6 2 6 5"/><path d="M13 3v4M11 5h4"/></svg>
+        </button>
+      </div>
       <!-- Logged in: profile row (no popover — direct actions) -->
       <div id="sbProfileArea" style="display:none;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;">
         <!-- Left: avatar + info → click goes to Settings -->
@@ -3408,15 +3421,6 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           </div>
         </div>
         <!-- Right: logout icon → confirmation modal -->
-        <!-- Auth icons (shown in collapsed state for non-authed or always accessible) -->
-        <div id="sbAuthIconsWrap" style="display:none;flex-direction:column;align-items:center;gap:6px;margin-bottom:8px;">
-          <button class="sb-auth-icon-btn" onclick="showAuthPage('login')" title="Log in" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border:1.5px solid #e2e8f0;cursor:pointer;color:#374151;">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="6" r="3"/><path d="M2 14c0-3 3-5 6-5s6 2 6 5"/></svg>
-          </button>
-          <button class="sb-auth-icon-btn" onclick="showAuthPage('signup')" title="Sign up" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);border:none;cursor:pointer;color:#fff;">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="6" r="3"/><path d="M2 14c0-3 3-5 6-5s6 2 6 5"/><path d="M13 3v4M11 5h4"/></svg>
-          </button>
-        </div>
         <button onclick="_doLogout()" id="sbLogoutBtn" title="Log out" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.12s,color 0.12s;" onmouseover="this.style.background='#fee2e2';this.style.color='#ef4444'" onmouseout="this.style.background='transparent';this.style.color='#94a3b8'">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 14H3a1 1 0 01-1-1V3a1 1 0 011-1h3"/><path d="M10 11l3-3-3-3M13 8H6"/></svg>
         </button>
