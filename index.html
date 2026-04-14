@@ -5732,11 +5732,8 @@ function _updateSidebarAuthIcons() {
   var authIcons = document.getElementById('sbAuthIconsWrap');
   if (!authIcons || !sb) return;
   var collapsed = sb.classList.contains('collapsed');
-  // sbProfileArea is display:none for guests, visible for logged-in users
-  var profileArea = document.getElementById('sbProfileArea');
-  var isLoggedIn = _isLoggedIn || (profileArea && profileArea.style.display !== 'none' && profileArea.style.display !== '');
-  // Show ONLY for guests (not logged in) with collapsed sidebar
-  authIcons.style.display = (collapsed && !isLoggedIn) ? 'flex' : 'none';
+  // Show icons ONLY when sidebar is collapsed AND user is NOT logged in (guest)
+  authIcons.style.display = (collapsed && !_isLoggedIn) ? 'flex' : 'none';
 }
 
 function toggleSidebar() {
