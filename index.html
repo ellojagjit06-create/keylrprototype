@@ -3934,7 +3934,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             <div class="prop-title">My Properties</div>
             <div class="prop-sub">0 properties · 0 alerts</div>
           </div>
-          <button class="prop-add-btn" onclick="_showAddPropertyModal()">
+          <button class="prop-add-btn" onclick="if(!_isLoggedIn){window._postLoginAction='addProperty';showAuthPage('signup');}">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h10M7 2v10"/></svg>Add Property
           </button>
         </div>
@@ -4901,7 +4901,7 @@ function goToDashboard(query, autoSend = false) {
   // Resume post-login action if any
   if (window._postLoginAction === 'addProperty') {
     window._postLoginAction = null;
-    setTimeout(function() { showPage('properties', null); _showAddPropertyModal(); }, 500);
+    setTimeout(function() { showPage('properties', null); }, 500);
   }
   // Resume pending booking after login
   if (window._pendingBookingState) {
@@ -6995,81 +6995,6 @@ function _ppGetQuote(pid, svcName) {
   _bfRenderPage();
 }
 
-function _showAddPropertyModal() {
-  if (!_isLoggedIn) {
-    // Save intent so after login we come back here
-    window._postLoginAction = 'addProperty';
-    showAuthPage('signup');
-    return;
-  }
-  var overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.5);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;';
-  var modal = document.createElement('div');
-  modal.style.cssText = 'background:#fff;border-radius:16px;width:100%;max-width:440px;padding:28px;box-shadow:0 24px 64px rgba(0,0,0,.2);';
-  modal.innerHTML = '<div style="font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:20px;">Add a property</div>';
-  var fields = [
-    {id:'ap-name',label:'Property name',placeholder:'e.g. Maple Court'},
-    {id:'ap-addr',label:'Address',placeholder:'e.g. 123 Oak Street, London'},
-  ];
-  fields.forEach(function(f) {
-    var lbl = document.createElement('label');
-    lbl.style.cssText = 'display:block;font-size:12.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:5px;';
-    lbl.textContent = f.label;
-    var inp = document.createElement('input');
-    inp.id = f.id;
-    inp.type = 'text';
-    inp.placeholder = f.placeholder;
-    inp.style.cssText = 'width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;margin-bottom:14px;';
-    inp.onfocus = function(){ this.style.borderColor='#1A5FC8'; };
-    inp.onblur  = function(){ this.style.borderColor='#e2e8f0'; };
-    modal.appendChild(lbl); modal.appendChild(inp);
-  });
-  // Type selector
-  var typeLbl = document.createElement('label');
-  typeLbl.style.cssText = 'display:block;font-size:12.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:5px;';
-  typeLbl.textContent = 'Property type';
-  var typeRow = document.createElement('div');
-  typeRow.style.cssText = 'display:flex;gap:8px;margin-bottom:20px;';
-  ['flat','house','hmo'].forEach(function(t) {
-    var btn = document.createElement('button');
-    btn.style.cssText = 'flex:1;padding:8px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:12.5px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;background:#fff;text-transform:uppercase;transition:all .15s;';
-    btn.textContent = t;
-    btn.dataset.type = t;
-    btn.onclick = function() {
-      typeRow.querySelectorAll('button').forEach(function(b){ b.style.background='#fff'; b.style.borderColor='#e2e8f0'; b.style.color='#374151'; });
-      btn.style.background='#eff6ff'; btn.style.borderColor='#1A5FC8'; btn.style.color='#1A5FC8';
-    };
-    typeRow.appendChild(btn);
-  });
-  modal.appendChild(typeLbl); modal.appendChild(typeRow);
-  // Buttons
-  var btnRow = document.createElement('div');
-  btnRow.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:10px;';
-  var cancelBtn = document.createElement('button');
-  cancelBtn.style.cssText = 'background:#f8fafc;border:1.5px solid #e2e8f0;color:#374151;border-radius:10px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
-  cancelBtn.textContent = 'Cancel';
-  cancelBtn.onclick = function(){ overlay.remove(); };
-  var saveBtn = document.createElement('button');
-  saveBtn.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;';
-  saveBtn.textContent = 'Add property';
-  saveBtn.onclick = function() {
-    var name = document.getElementById('ap-name').value.trim();
-    var addr = document.getElementById('ap-addr').value.trim();
-    var typeBtn = typeRow.querySelector('[style*="#eff6ff"]');
-    var type = typeBtn ? typeBtn.dataset.type : 'flat';
-    if (!name) { document.getElementById('ap-name').style.borderColor='#ef4444'; return; }
-    _userProperties.push({ name:name, addr:addr||'', type:type, beds:'', suppliers:0 });
-    overlay.remove();
-    _renderPropertiesGrid();
-    if (typeof showToast==='function') showToast('Property added!', 'success');
-  };
-  btnRow.appendChild(cancelBtn); btnRow.appendChild(saveBtn);
-  modal.appendChild(btnRow);
-  overlay.appendChild(modal);
-  document.body.appendChild(overlay);
-  overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.remove(); });
-  setTimeout(function(){ var inp=document.getElementById('ap-name'); if(inp) inp.focus(); }, 100);
-}
 
 function _renderPropertiesGrid() {
   var grid = document.getElementById('propDynamicGrid');
@@ -7672,9 +7597,8 @@ function _bfRenderStep(step) {
           if (!_isLoggedIn) {
             window._postLoginAction = 'addProperty';
             showAuthPage('signup');
-          } else {
-            _showAddPropertyModal();
           }
+          // If logged in: modal not yet defined — do nothing for now
         };
         propBtnRow.appendChild(addPropB);
       }
