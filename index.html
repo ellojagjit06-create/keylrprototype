@@ -6082,42 +6082,26 @@ function renderBookingsPage() {
 
     var sub = document.createElement('div');
     sub.style.cssText = 'font-size:13.5px;color:'+(isDkZ?'#8b949e':'#64748b')+';max-width:300px;line-height:1.65;font-family:Inter,sans-serif;margin-bottom:20px;';
-    sub.textContent = _isLoggedIn
-      ? 'Book your first property service and track all your jobs, progress and reports here.'
-      : 'Sign in to view and manage your booked services.';
+    sub.textContent = 'Book your first property service and track all your jobs, progress and reports here.';
     zeroCard.appendChild(sub);
 
-    if (_isLoggedIn) {
-      var bookBtn = document.createElement('button');
-      bookBtn.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px 32px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;margin-bottom:22px;';
-      bookBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h10M7 2v10"/></svg>Book your first service';
-      bookBtn.onclick = function(){ startNewChat&&startNewChat(); showPage('chat',null); };
-      zeroCard.appendChild(bookBtn);
+    // Single Book a Service button for all users — redirects to AI Chat
+    var bookBtn = document.createElement('button');
+    bookBtn.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px 32px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;margin-bottom:18px;';
+    bookBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h10M7 2v10"/></svg>Book your first service';
+    bookBtn.onclick = function(){ startNewChat&&startNewChat(); showPage('chat',null); };
+    zeroCard.appendChild(bookBtn);
 
-      // Feature chips
-      var chips = document.createElement('div');
-      chips.style.cssText = 'display:flex;gap:16px;flex-wrap:wrap;justify-content:center;';
-      ['Real-time tracking','Vetted professionals','Job history & reports'].forEach(function(txt) {
-        var chip = document.createElement('span');
-        chip.style.cssText = 'font-size:12px;color:#64748b;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;';
-        chip.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 6.5l3 3 6-6"/></svg>'+txt;
-        chips.appendChild(chip);
-      });
-      zeroCard.appendChild(chips);
-    } else {
-      var btnRow = document.createElement('div');
-      btnRow.style.cssText = 'display:flex;gap:10px;justify-content:center;';
-      var loginBtn = document.createElement('button');
-      loginBtn.style.cssText = 'background:#fff;border:1.5px solid #e2e8f0;color:#374151;border-radius:10px;padding:11px 24px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
-      loginBtn.textContent = 'Log in';
-      loginBtn.onclick = function(){ showAuthPage('login'); };
-      var signupBtn = document.createElement('button');
-      signupBtn.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
-      signupBtn.textContent = 'Sign up free';
-      signupBtn.onclick = function(){ showAuthPage('signup'); };
-      btnRow.appendChild(loginBtn); btnRow.appendChild(signupBtn);
-      zeroCard.appendChild(btnRow);
-    }
+    // Feature chips
+    var chips = document.createElement('div');
+    chips.style.cssText = 'display:flex;gap:16px;flex-wrap:wrap;justify-content:center;';
+    ['Real-time tracking','Vetted professionals','Job history & reports'].forEach(function(txt) {
+      var chip = document.createElement('span');
+      chip.style.cssText = 'font-size:12px;color:'+(isDkZ?'#8b949e':'#64748b')+';font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;';
+      chip.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 6.5l3 3 6-6"/></svg>'+txt;
+      chips.appendChild(chip);
+    });
+    zeroCard.appendChild(chips);
 
     listEl.appendChild(zeroCard);
     return;
