@@ -5731,9 +5731,13 @@ function _updateSidebarAuthIcons() {
   var sb = document.getElementById('dbSidebar');
   var authIcons = document.getElementById('sbAuthIconsWrap');
   if (!authIcons || !sb) return;
-  // Show ONLY when: sidebar is collapsed AND user is NOT logged in
   var collapsed = sb.classList.contains('collapsed');
-  authIcons.style.display = (collapsed && !_isLoggedIn) ? 'flex' : 'none';
+  // Check if user is genuinely logged in via _isLoggedIn AND sbProfileArea being populated
+  var profileName = document.getElementById('sbProfileName');
+  var hasProfile = profileName && profileName.textContent && profileName.textContent.trim() !== '';
+  var isGuest = !_isLoggedIn && !hasProfile;
+  // Show ONLY for guests with collapsed sidebar
+  authIcons.style.display = (collapsed && isGuest) ? 'flex' : 'none';
 }
 
 function toggleSidebar() {
@@ -5753,6 +5757,8 @@ function toggleSidebar() {
     if(localStorage.getItem('sidebarCollapsed') === 'true') {
       const sb = document.getElementById('dbSidebar');
       if(sb) sb.classList.add('collapsed');
+      // Update auth icons after restore — they are only shown for guests
+      setTimeout(function(){ if(typeof _updateSidebarAuthIcons==='function') _updateSidebarAuthIcons(); }, 50);
     }
   } catch(e){}
 })();
