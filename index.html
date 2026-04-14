@@ -3964,12 +3964,12 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           <input class="prop-search-input" type="text" placeholder="Search properties..."/>
         </div>
         <!-- Empty state — matches No jobs yet style -->
-        <div class="prop-empty-card" style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:60px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;margin-bottom:24px;">
-          <div style="width:72px;height:72px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+        <div class="prop-empty-card" style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:40px 24px 36px;text-align:center;display:flex;flex-direction:column;align-items:center;margin-bottom:24px;">
+          <div style="width:72px;height:72px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
             <svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#3b82f6" stroke-width="1.5"><path d="M4 28V15l13-10 13 10v13"/><path d="M12 28v-8h10v8"/></svg>
           </div>
-          <div id="propDynamicGrid" style="margin-top:8px;"></div>
-          <button onclick="showAuthPage('signup')" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;margin-bottom:20px;">
+          <div id="propDynamicGrid"></div>
+          <button onclick="if(!window._isLoggedIn){window._postLoginAction='addProperty';window.showAuthPage('signup');}" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;margin-bottom:18px;">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 1.5v11M1.5 7h11"/></svg>Add your first property
           </button>
           <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;"><span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Gas & EICR tracking</span><span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Compliance alerts</span><span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Service history</span></div>
@@ -4899,6 +4899,10 @@ function goToDashboard(query, autoSend = false, isAuthenticated = false) {
   _isLoggedIn = isAuthenticated;
   // Update sidebar auth icons (logged in → hide icons)
   setTimeout(_updateSidebarAuthIcons, 100);
+  // After real auth (login/signup), always land on Home tab
+  if (isAuthenticated) {
+    setTimeout(function() { showPage('home', null); }, 80);
+  }
   // Resume post-login action if any
   if (window._postLoginAction === 'addProperty') {
     window._postLoginAction = null;
