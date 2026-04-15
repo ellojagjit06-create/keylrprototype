@@ -4592,6 +4592,7 @@ function _clearUser() {
   window._apAfterSave = null;
   window._bfStateBeforeAuth = null;
   window._pendingBookingRestore = null;
+  if (typeof _clearGuestBookingTimer === 'function') _clearGuestBookingTimer();
   window._postLoginAction = null;
   window._apLastImgDataUrl = null;
   // Reset properties page UI
@@ -4971,19 +4972,14 @@ function goToDashboard(query, autoSend = false, isAuthenticated = false) {
     else _db.classList.remove('user-logged-in');
   }
   setTimeout(_updateSidebarAuthIcons, 100);
-  // After real auth (login/signup): if user came from guest booking flow,
-  // save the booking state to survive onboarding, then restore after
+  // After real auth (login/signup): cancel the 1-min guest cleanup timer
+  // so the booking state is preserved through onboarding
   if (isAuthenticated) {
-    if (window._bfStateBeforeAuth) {
-      // Transfer to persistent flag — survives onboarding
-      window._pendingBookingRestore = window._bfStateBeforeAuth;
-      window._bfStateBeforeAuth = null;
-      // Don't redirect yet — let onboarding/home render normally
-      // The restore happens in discPageClose() or on home load
-      setTimeout(function() { showPage('home', null); }, 80);
-    } else {
-      setTimeout(function() { showPage('home', null); }, 80);
-    }
+    _clearGuestBookingTimer(); // cancel TTL — user is now signed in
+    // _pendingBookingRestore is already set (from _saveGuestBookingState)
+    // Don't redirect now — let onboarding happen first
+    // discPageClose() or _checkPendingBookingRestore() will handle the redirect
+    setTimeout(function() { showPage('home', null); }, 80);
   }
   // Resume post-login action if any
   if (window._postLoginAction === 'addProperty') {
@@ -7171,6 +7167,30 @@ function _renderPropertiesGrid() {
 }
 
 // ── Property Detail Modal ──
+// ── Guest Booking State System (1-min TTL) ──
+var _guestBookingTimer = null;
+
+function _saveGuestBookingState() {
+  // Cancel any existing timer
+  if (_guestBookingTimer) clearTimeout(_guestBookingTimer);
+  // Save current booking state
+  window._pendingBookingRestore = JSON.parse(JSON.stringify(_bfState));
+  window._pendingBookingRestore.step = 1; // always return to property step
+  // Auto-clear after 60 seconds if user never signs up
+  _guestBookingTimer = setTimeout(function() {
+    if (!_isUserLoggedIn()) {
+      window._pendingBookingRestore = null;
+      _guestBookingTimer = null;
+      console.log('Guest booking state cleared after 60s inactivity');
+    }
+  }, 60000);
+}
+
+function _clearGuestBookingTimer() {
+  // Called on successful signup — cancel the cleanup timer, keep the state
+  if (_guestBookingTimer) { clearTimeout(_guestBookingTimer); _guestBookingTimer = null; }
+}
+
 function _checkPendingBookingRestore() {
   if (!window._pendingBookingRestore) return;
   var _saved = window._pendingBookingRestore;
@@ -7933,13 +7953,19 @@ function _bfRenderStep(step) {
       addPropB.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M6.5 2v9"/></svg>Add a property';
       addPropB.onclick = function(e){
         e.stopPropagation();
-        // Store callback: after property saved, auto-select it and re-render step 1
-        window._apAfterSave = function(prop) {
-          _bfState.property = prop.name;
-          _bfState.propertyAddr = prop.addr;
-          _bfRenderPage();
-        };
-        if (typeof showAddPropertyModal === 'function') showAddPropertyModal();
+        if (_isUserLoggedIn()) {
+          // Logged in: open Add Property modal inline, auto-select after save
+          window._apAfterSave = function(prop) {
+            _bfState.property = prop.name;
+            _bfState.propertyAddr = prop.addr;
+            _bfRenderPage();
+          };
+          if (typeof showAddPropertyModal === 'function') showAddPropertyModal();
+        } else {
+          // Guest: save booking state with 1-min TTL, then show signup
+          _saveGuestBookingState();
+          showAuthPage('signup');
+        }
       };
       emptyProp.appendChild(propIcon);
       emptyProp.appendChild(propTitle);
