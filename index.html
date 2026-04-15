@@ -12554,12 +12554,9 @@ function _buildSuppOnboardStep(step) {
                 + '<span style="font-size:12.5px;color:#9a3412;font-family:Inter,sans-serif;line-height:1.55;">You cannot list services on the marketplace without the legal right to work in the UK. Please contact our support team if you need guidance.</span>'
               + '</div>'
             : '')
-        + (_suppOnboard.rightToWork === 'Yes' && isCompany
-            ? '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;">You are responsible for maintaining up-to-date Right to Work records. Keylr may request evidence of compliance checks during periodic audits.</div>'
-            : '')
-        + (_suppOnboard.rightToWork === 'Yes' && !isCompany
-            ? '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;">If a client requires document verification, you can provide your UKVI share code later \u2014 verified via the Home Office API.</div>'
-            : '')
+        + (isCompany
+            ? '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;margin-top:2px;">You are responsible for maintaining up-to-date Right to Work records. Keylr may request evidence of compliance checks during periodic audits.</div>'
+            : '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;margin-top:2px;">If a client requires document verification, you can provide your UKVI share code later — verified via the Home Office API.</div>')
       + '</div>'
       // Job references
       + '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin-top:20px;">'
