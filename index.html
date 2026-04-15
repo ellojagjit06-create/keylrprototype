@@ -7052,6 +7052,7 @@ function _renderPropertiesGrid() {
   if (!_isLoggedIn || !_userProperties.length) {
     grid.innerHTML = '<div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">No properties yet</div>'
       +'<div style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:20px;max-width:240px;line-height:1.65;text-align:center;">Add your first property to track compliance and book services.</div>';
+    // If logged in, the static button below already handles this via showAddPropertyModal
     return;
   }
   _userProperties.forEach(function(prop) {
@@ -13587,7 +13588,6 @@ window.addEventListener('resize', function(){
 var _apUploadedDocs = [];
 
 function showAddPropertyModal() {
-  if (!window._isLoggedIn) return;
   var m = document.getElementById('addPropertyModal');
   if (!m) return;
   // Reset form
@@ -13678,11 +13678,25 @@ function _apSubmit() {
   closeAddPropertyModal();
   showToast('Property added successfully!', 'success');
 
-  // Refresh properties page if visible
-  if (typeof renderPropertiesPage === 'function') setTimeout(renderPropertiesPage, 350);
-  // Update stats
-  var statEl = document.querySelector('.prop-stat-num');
-  if(statEl) statEl.textContent = _userProperties.length;
+  // Refresh properties grid and stats
+  setTimeout(function(){
+    if (typeof _renderPropertiesGrid === 'function') _renderPropertiesGrid();
+    // Update Properties stat card
+    var statNums = document.querySelectorAll('.prop-stat-num');
+    if(statNums && statNums[0]) statNums[0].textContent = _userProperties.length;
+    // Hide empty card if we now have properties
+    var emptyCard = document.querySelector('.prop-empty-card');
+    if(emptyCard && _userProperties.length > 0) {
+      // Show property cards, hide empty state illustration
+      var btn = emptyCard.querySelector('button');
+      var icon = emptyCard.querySelector('div:first-child');
+      if(icon) icon.style.display = 'none';
+      if(btn) btn.style.display = 'none';
+    }
+    // Update subtitle
+    var sub = document.querySelector('.prop-sub');
+    if(sub) sub.textContent = _userProperties.length + ' propert' + (_userProperties.length===1?'y':'ies') + ' · 0 alerts';
+  }, 350);
 }
 
 // Close modal on backdrop click
