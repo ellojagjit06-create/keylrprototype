@@ -3965,7 +3965,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             <div class="prop-title">My Properties</div>
             <div class="prop-sub">0 properties · 0 alerts</div>
           </div>
-          <button class="prop-add-btn" onclick="if(!window._isLoggedIn){window._postLoginAction='addProperty';window.showAuthPage('signup');}else{showAddPropertyModal();}">
+          <button class="prop-add-btn" onclick="showAddPropertyModal()">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h10M7 2v10"/></svg>Add Property
           </button>
         </div>
@@ -3999,7 +3999,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             <svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#3b82f6" stroke-width="1.5"><path d="M4 28V15l13-10 13 10v13"/><path d="M12 28v-8h10v8"/></svg>
           </div>
           <div id="propDynamicGrid"></div>
-          <button onclick="if(!window._isLoggedIn){window._postLoginAction='addProperty';window.showAuthPage('signup');}else{showAddPropertyModal();}" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+          <button onclick="showAddPropertyModal()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;margin-bottom:18px;">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 1.5v11M1.5 7h11"/></svg>Add your first property
           </button>
           <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;"><span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Gas & EICR tracking</span><span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Compliance alerts</span><span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Service history</span></div>
@@ -4566,6 +4566,7 @@ function _userKey(contact) {
 
 function _setUser(data) {
   _user = data;
+  _isLoggedIn = true;
   // Persist to store using contact as key
   if (data && data.contact) {
     var key = _userKey(data.contact);
@@ -4577,6 +4578,7 @@ function _setUser(data) {
 
 function _clearUser() {
   _user = null;
+  _isLoggedIn = false;
   _syncUserUI();
 }
 
@@ -13589,6 +13591,12 @@ window.addEventListener('resize', function(){
 var _apUploadedDocs = [];
 
 function showAddPropertyModal() {
+  // Check either auth signal — _user is set by auth flow, _isLoggedIn by goToDashboard
+  if (!window._user && !window._isLoggedIn) {
+    window._postLoginAction = 'addProperty';
+    showAuthPage('signup');
+    return;
+  }
   var m = document.getElementById('addPropertyModal');
   if (!m) return;
   // Reset form
