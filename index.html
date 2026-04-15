@@ -13590,9 +13590,21 @@ window.addEventListener('resize', function(){
 // ── Add Property Modal ──
 var _apUploadedDocs = [];
 
+function _isUserLoggedIn() {
+  // Check all available auth signals — any one being true means logged in
+  if (window._isLoggedIn) return true;
+  if (window._user) return true;
+  // Sidebar profile area visible = logged in (CSS-driven truth)
+  var sbPro = document.getElementById('sbProfileArea');
+  if (sbPro && sbPro.style.display === 'flex') return true;
+  // pg-dashboard has user-logged-in class
+  var db = document.getElementById('pg-dashboard');
+  if (db && db.classList.contains('user-logged-in')) return true;
+  return false;
+}
+
 function showAddPropertyModal() {
-  // Check either auth signal — _user is set by auth flow, _isLoggedIn by goToDashboard
-  if (!window._user && !window._isLoggedIn) {
+  if (!_isUserLoggedIn()) {
     window._postLoginAction = 'addProperty';
     showAuthPage('signup');
     return;
