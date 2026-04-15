@@ -14426,15 +14426,37 @@ function showAddPropertyModal() {
     if(el){ el.value=''; el.style.borderColor='#e2e8f0'; el.placeholder=({'apName':'e.g. Flat 3, Oak House','apAddress':'Street address','apPostcode':'e.g. SW1A 1AA','apBeds':'e.g. 3'})[id]||''; }
   });
   ['apRegion','apType'].forEach(function(id){ var el=document.getElementById(id); if(el){ el.selectedIndex=0; el.style.borderColor='#e2e8f0'; } });
-  var prev=document.getElementById('apImgPreview'); if(prev) prev.style.display='none';
+  var prev=document.getElementById('apImgPreview'); if(prev){ prev.style.display='none'; prev.style.zIndex='2'; }
   var ph=document.getElementById('apImgPlaceholder'); if(ph) ph.style.display='flex';
+  var prevImg=document.getElementById('apImgPreviewImg'); if(prevImg) prevImg.src='';
   var docList=document.getElementById('apDocList'); if(docList) docList.innerHTML='';
   _apUploadedDocs=[];
   window._apLastImgDataUrl=null;
   m.style.display='flex';
   document.body.style.overflow='hidden';
+  // Wire file input via addEventListener (more reliable than onchange attribute)
+  var inp = document.getElementById('apImgInput');
+  if (inp) {
+    // Clone to remove old listeners, then re-wire
+    var newInp = inp.cloneNode(true);
+    inp.parentNode.replaceChild(newInp, inp);
+    newInp.addEventListener('change', function() {
+      if (this.files && this.files[0]) _apHandleImg(this.files[0]);
+    });
+  }
+  // Wire dropzone click (excluding the change-photo overlay)
+  var dz = document.getElementById('apImgDropzone');
+  if (dz) {
+    dz.onclick = function(e) {
+      var newI = document.getElementById('apImgInput');
+      if (newI) newI.click();
+    };
+    dz.style.borderColor = '#e2e8f0';
+    dz.style.borderStyle = 'dashed';
+    dz.style.background  = '#f8fafc';
+  }
   // Focus first field
-  setTimeout(function(){ var f=document.getElementById('apName'); if(f) f.focus(); }, 100);
+  setTimeout(function(){ var f=document.getElementById('apName'); if(f) f.focus(); }, 120);
 }
 
 function closeAddPropertyModal() {
@@ -14447,17 +14469,23 @@ function closeAddPropertyModal() {
 }
 
 function _apHandleImg(file) {
-  if(!file || !file.type.startsWith('image/')) return;
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { showToast('Please upload an image file (JPG, PNG, WEBP)','warning'); return; }
+  if (file.size > 5 * 1024 * 1024) { showToast('Image must be under 5MB','warning'); return; }
   var reader = new FileReader();
-  reader.onload = function(e){
+  reader.onload = function(e) {
     window._apLastImgDataUrl = e.target.result;
-    var img = document.getElementById('apImgPreviewImg');
+    var img  = document.getElementById('apImgPreviewImg');
     var prev = document.getElementById('apImgPreview');
     var ph   = document.getElementById('apImgPlaceholder');
-    if(img) img.src = e.target.result;
-    if(prev) prev.style.display='block';
-    if(ph)   ph.style.display='none';
+    if (img)  { img.src = e.target.result; }
+    if (prev) { prev.style.display = 'flex'; prev.style.zIndex = '2'; }
+    if (ph)   { ph.style.display   = 'none'; }
+    // Visual feedback on dropzone
+    var dz = document.getElementById('apImgDropzone');
+    if (dz) { dz.style.borderColor = '#10b981'; dz.style.borderStyle = 'solid'; }
   };
+  reader.onerror = function() { showToast('Failed to read image file','warning'); };
   reader.readAsDataURL(file);
 }
 
@@ -15170,10 +15198,21 @@ button:active { transform: scale(0.98); }
       <!-- Property Image -->
       <div style="margin-bottom:20px;">
         <div style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:6px;">Property Image <span style="font-size:11px;font-weight:400;color:#94a3b8;">(Optional)</span></div>
-        <div id="apImgDropzone" onclick="document.getElementById('apImgInput').click()" ondragover="event.preventDefault();this.style.borderColor='#1A5FC8';this.style.background='#f0f9ff'" ondragleave="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'" ondrop="event.preventDefault();_apHandleImg(event.dataTransfer.files[0])" style="border:2px dashed #e2e8f0;border-radius:12px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;background:#f8fafc;position:relative;height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;">
-          <div id="apImgPreview" style="display:none;position:absolute;inset:0;border-radius:10px;overflow:hidden;"><img id="apImgPreviewImg" style="width:100%;height:100%;object-fit:cover;" src="" alt=""></div>
-          <div id="apImgPlaceholder" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:1;">
-            <!-- Large faded house icon -->
+        <div id="apImgDropzone"
+          ondragover="event.preventDefault();event.stopPropagation();this.style.borderColor='#1A5FC8';this.style.background='#f0f9ff'"
+          ondragleave="event.stopPropagation();this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'"
+          ondrop="event.preventDefault();event.stopPropagation();_apHandleImg(event.dataTransfer.files[0])"
+          style="border:2px dashed #e2e8f0;border-radius:12px;cursor:pointer;background:#f8fafc;position:relative;height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:border-color .15s,background .15s;">
+          <!-- Image preview — z-index:2 so it appears above placeholder -->
+          <div id="apImgPreview" style="display:none;position:absolute;inset:0;z-index:2;border-radius:10px;overflow:hidden;">
+            <img id="apImgPreviewImg" style="width:100%;height:100%;object-fit:cover;display:block;" src="" alt="">
+            <!-- Change photo overlay -->
+            <div id="apImgChangeOverlay" style="position:absolute;inset:0;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;transition:background .2s;" onmouseover="this.style.background='rgba(0,0,0,0.35)';this.querySelector('span').style.opacity='1'" onmouseout="this.style.background='rgba(0,0,0,0)';this.querySelector('span').style.opacity='0'">
+              <span style="color:#fff;font-size:12px;font-weight:600;font-family:Inter,sans-serif;opacity:0;transition:opacity .2s;background:rgba(0,0,0,0.5);padding:6px 12px;border-radius:8px;">Change photo</span>
+            </div>
+          </div>
+          <!-- Placeholder — z-index:1, below preview -->
+          <div id="apImgPlaceholder" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:1;pointer-events:none;">
             <svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="#cbd5e1" stroke-width="1.5" style="opacity:0.7;">
               <path d="M8 56V28l24-18 24 18v28"/>
               <path d="M22 56V40h20v16"/>
@@ -15183,7 +15222,8 @@ button:active { transform: scale(0.98); }
             <div style="font-size:11.5px;color:#cbd5e1;font-family:Inter,sans-serif;">JPG, PNG or WEBP &middot; Max 5MB</div>
           </div>
         </div>
-        <input id="apImgInput" type="file" accept="image/*" style="display:none;" onchange="_apHandleImg(this.files[0])">
+        <!-- File input wired via JS addEventListener in showAddPropertyModal -->
+        <input id="apImgInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;">
       </div>
       <!-- Property Name -->
       <div style="margin-bottom:14px;">
