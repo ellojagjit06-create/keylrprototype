@@ -4591,6 +4591,7 @@ function _clearUser() {
   _bfState = { step:0, service:'', bookingType:'direct', providerId:null, providerName:'', property:'', propertyAddr:'', urgency:'Flexible', date:'', time:'Afternoon', details:'' };
   window._apAfterSave = null;
   window._bfStateBeforeAuth = null;
+  window._pendingBookingRestore = null;
   window._postLoginAction = null;
   window._apLastImgDataUrl = null;
   // Reset properties page UI
@@ -4970,18 +4971,16 @@ function goToDashboard(query, autoSend = false, isAuthenticated = false) {
     else _db.classList.remove('user-logged-in');
   }
   setTimeout(_updateSidebarAuthIcons, 100);
-  // After real auth (login/signup): restore booking state if came from guest flow
+  // After real auth (login/signup): if user came from guest booking flow,
+  // save the booking state to survive onboarding, then restore after
   if (isAuthenticated) {
     if (window._bfStateBeforeAuth) {
-      var _saved = window._bfStateBeforeAuth;
+      // Transfer to persistent flag — survives onboarding
+      window._pendingBookingRestore = window._bfStateBeforeAuth;
       window._bfStateBeforeAuth = null;
-      setTimeout(function() {
-        _bfState = _saved;
-        _bfState.step = 1;
-        showPage('booking-flow', null);
-        _bfRenderPage();
-        setTimeout(function(){ if(typeof showToast==='function') showToast('Welcome! Continue adding your property to complete booking.','success'); }, 400);
-      }, 300);
+      // Don't redirect yet — let onboarding/home render normally
+      // The restore happens in discPageClose() or on home load
+      setTimeout(function() { showPage('home', null); }, 80);
     } else {
       setTimeout(function() { showPage('home', null); }, 80);
     }
@@ -5052,6 +5051,10 @@ function goToDashboard(query, autoSend = false, isAuthenticated = false) {
         });
         document.querySelectorAll('.db-nav-item').forEach(item => item.classList.remove('active'));
         updateFloatBtn('home');
+        // If a booking was pending before auth/onboarding, restore it now
+        if (window._pendingBookingRestore && typeof _checkPendingBookingRestore === 'function') {
+          setTimeout(_checkPendingBookingRestore, 600);
+        }
       }
     });
   }, 380);
@@ -7168,6 +7171,18 @@ function _renderPropertiesGrid() {
 }
 
 // ── Property Detail Modal ──
+function _checkPendingBookingRestore() {
+  if (!window._pendingBookingRestore) return;
+  var _saved = window._pendingBookingRestore;
+  window._pendingBookingRestore = null;
+  setTimeout(function() {
+    _bfState = _saved;
+    _bfState.step = 1;
+    showPage('booking-flow', null);
+    _bfRenderPage();
+    if (typeof showToast === 'function') showToast('Now add your property to continue booking ✔', 'success');
+  }, 150);
+}
 function _closePropModal(){ var m=document.getElementById('propDetailModal'); if(m) m.remove(); }
 function _propRenewDoc(btn) {
   var doc = btn.getAttribute('data-doc') || '';
@@ -11031,13 +11046,24 @@ function discPageContinue() {
 function discPageClose() {
   var pg = document.getElementById('pg-discovery-flow');
   if (pg) pg.classList.remove('visible');
-  // Return to where user came from
-  if (_discPageFrom === 'settings') {
+  // If user came from guest booking flow, resume the booking instead
+  if (window._pendingBookingRestore) {
+    var _saved = window._pendingBookingRestore;
+    window._pendingBookingRestore = null;
+    // Show dashboard
+    var dash = document.getElementById('pg-dashboard');
+    if (dash) { dash.style.display = 'flex'; dash.classList.add('visible'); }
+    setTimeout(function() {
+      _bfState = _saved;
+      _bfState.step = 1;
+      showPage('booking-flow', null);
+      _bfRenderPage();
+      if (typeof showToast === 'function') showToast('Great! Now add your property to complete your booking ✔', 'success');
+    }, 200);
+  } else if (_discPageFrom === 'settings') {
     goToDashboard('', false);
     window._pendingSettingsTab = 'discovery';
-    setTimeout(function(){
-      showPage('settings', null);
-    }, 100);
+    setTimeout(function(){ showPage('settings', null); }, 100);
   } else {
     goToDashboard('', false);
   }
@@ -11912,7 +11938,7 @@ function triggerProfilingFromProgress() {
     + '<p style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 20px;line-height:1.5;">Answer 7 quick questions so we can personalise your dashboard, match you with the right professionals, and set up compliance tracking.</p>'
     + '<div style="display:flex;gap:10px;">'
     + '<button onclick="document.getElementById(\'profilingPromptModal\').remove();if(typeof startDiscoveryFlow===\'function\')startDiscoveryFlow();" style="flex:2;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Start 7 questions →</button>'
-    + '<button onclick="document.getElementById(\'profilingPromptModal\').remove()" style="flex:1;background:#f1f5f9;border:none;color:#374151;border-radius:12px;padding:13px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Later</button>'
+    + '<button onclick="document.getElementById(\'profilingPromptModal\').remove();_checkPendingBookingRestore()" style="flex:1;background:#f1f5f9;border:none;color:#374151;border-radius:12px;padding:13px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Later</button>'
     + '</div>';
 
   modal.appendChild(sheet);
