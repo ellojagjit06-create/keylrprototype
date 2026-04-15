@@ -3965,7 +3965,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             <div class="prop-title">My Properties</div>
             <div class="prop-sub">0 properties · 0 alerts</div>
           </div>
-          <button class="prop-add-btn" onclick="if(!window._isLoggedIn){window._postLoginAction='addProperty';window.showAuthPage('signup');}/* logged in: form coming soon */">
+          <button class="prop-add-btn" onclick="if(!window._isLoggedIn){window._postLoginAction='addProperty';window.showAuthPage('signup');}else{showAddPropertyModal();}">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h10M7 2v10"/></svg>Add Property
           </button>
         </div>
@@ -3999,7 +3999,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             <svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#3b82f6" stroke-width="1.5"><path d="M4 28V15l13-10 13 10v13"/><path d="M12 28v-8h10v8"/></svg>
           </div>
           <div id="propDynamicGrid"></div>
-          <button onclick="if(!window._isLoggedIn){window._postLoginAction='addProperty';window.showAuthPage('signup');}" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+          <button onclick="if(!window._isLoggedIn){window._postLoginAction='addProperty';window.showAuthPage('signup');}else{showAddPropertyModal();}" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;margin-bottom:18px;">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 1.5v11M1.5 7h11"/></svg>Add your first property
           </button>
           <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;"><span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Gas & EICR tracking</span><span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Compliance alerts</span><span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Service history</span></div>
@@ -13582,6 +13582,115 @@ function _suppGenericToggle(id) {
 window.addEventListener('resize', function(){
   if (typeof _applyChipResponsive === 'function') _applyChipResponsive();
 });
+
+// ── Add Property Modal ──
+var _apUploadedDocs = [];
+
+function showAddPropertyModal() {
+  if (!window._isLoggedIn) return;
+  var m = document.getElementById('addPropertyModal');
+  if (!m) return;
+  // Reset form
+  ['apName','apAddress','apPostcode','apBeds'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+  ['apRegion','apType'].forEach(function(id){ var el=document.getElementById(id); if(el) el.selectedIndex=0; });
+  var prev = document.getElementById('apImgPreview');
+  var ph   = document.getElementById('apImgPlaceholder');
+  if(prev) prev.style.display='none';
+  if(ph)   ph.style.display='block';
+  var docList = document.getElementById('apDocList');
+  if(docList) docList.innerHTML='';
+  _apUploadedDocs = [];
+  m.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  // Animate sheet in
+  var sheet = document.getElementById('addPropertySheet');
+  if(sheet){ sheet.style.transform='translateY(100%)'; setTimeout(function(){ sheet.style.transition='transform 0.3s ease'; sheet.style.transform='translateY(0)'; }, 10); }
+}
+
+function closeAddPropertyModal() {
+  var sheet = document.getElementById('addPropertySheet');
+  if(sheet){ sheet.style.transform='translateY(100%)'; }
+  setTimeout(function(){
+    var m = document.getElementById('addPropertyModal');
+    if(m) m.style.display='none';
+    document.body.style.overflow='';
+    var sheet2 = document.getElementById('addPropertySheet');
+    if(sheet2){ sheet2.style.transition=''; sheet2.style.transform=''; }
+  }, 280);
+}
+
+function _apHandleImg(file) {
+  if(!file || !file.type.startsWith('image/')) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var img = document.getElementById('apImgPreviewImg');
+    var prev = document.getElementById('apImgPreview');
+    var ph   = document.getElementById('apImgPlaceholder');
+    if(img) img.src = e.target.result;
+    if(prev) prev.style.display='block';
+    if(ph)   ph.style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function _apHandleDocs(files) {
+  var list = document.getElementById('apDocList');
+  if(!list || !files) return;
+  Array.from(files).forEach(function(f){
+    _apUploadedDocs.push(f.name);
+    var row = document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px 12px;';
+    var icon = f.type==='application/pdf'
+      ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#ef4444" stroke-width="1.6"><rect x="2" y="1" width="10" height="12" rx="1.5"/><path d="M4 5h6M4 8h4"/></svg>'
+      : '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1A5FC8" stroke-width="1.6"><rect x="1" y="2" width="12" height="9" rx="1.5"/><circle cx="5" cy="6" r="1.5"/><path d="M1 10l3-3 3 2 2-2 4 3"/></svg>';
+    row.innerHTML = icon
+      + '<span style="font-size:12.5px;color:#374151;font-family:Inter,sans-serif;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+f.name+'</span>'
+      + '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg>';
+    list.appendChild(row);
+  });
+}
+
+function _apSubmit() {
+  var name     = (document.getElementById('apName')||{}).value||'';
+  var address  = (document.getElementById('apAddress')||{}).value||'';
+  var postcode = (document.getElementById('apPostcode')||{}).value||'';
+  var region   = (document.getElementById('apRegion')||{}).value||'';
+  var type     = (document.getElementById('apType')||{}).value||'';
+  var beds     = (document.getElementById('apBeds')||{}).value||'';
+
+  if(!name.trim()){ showToast('Please enter a property name','warning'); return; }
+  if(!address.trim()){ showToast('Please enter an address','warning'); return; }
+  if(!postcode.trim()){ showToast('Please enter a postcode','warning'); return; }
+  if(!type){ showToast('Please select a property type','warning'); return; }
+
+  // Add to _userProperties
+  var newProp = {
+    name: name.trim(),
+    addr: address.trim() + (postcode?' · '+postcode.trim().toUpperCase():''),
+    type: type,
+    beds: beds ? beds+' bed' : '',
+    suppliers: 0,
+    region: region,
+    docs: _apUploadedDocs.slice()
+  };
+  _userProperties.push(newProp);
+
+  closeAddPropertyModal();
+  showToast('Property added successfully!', 'success');
+
+  // Refresh properties page if visible
+  if (typeof renderPropertiesPage === 'function') setTimeout(renderPropertiesPage, 350);
+  // Update stats
+  var statEl = document.querySelector('.prop-stat-num');
+  if(statEl) statEl.textContent = _userProperties.length;
+}
+
+// Close modal on backdrop click
+document.addEventListener('click', function(e){
+  var m = document.getElementById('addPropertyModal');
+  if(e.target === m) closeAddPropertyModal();
+});
+
 </script>
 
 <!-- =============================================
@@ -14069,3 +14178,94 @@ button:active { transform: scale(0.98); }
   display:flex !important;
   width:28px;height:28px;padding:0;border-radius:7px;
   align-ite
+<!-- ── Add Property Modal ── -->
+<div id="addPropertyModal" style="display:none;position:fixed;inset:0;z-index:9990;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;padding:0;">
+  <div id="addPropertySheet" style="width:100%;max-width:600px;margin:0 auto;background:#fff;border-radius:20px 20px 0 0;display:flex;flex-direction:column;max-height:92vh;box-shadow:0 -8px 40px rgba(0,0,0,0.18);">
+    <div style="padding:20px 24px 16px;border-bottom:1px solid #f1f5f9;flex-shrink:0;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+        <div>
+          <div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:3px;">Add Property</div>
+          <div style="font-size:13px;color:#94a3b8;font-family:Inter,sans-serif;">Fill in the details to add a property to your portfolio</div>
+        </div>
+        <button onclick="closeAddPropertyModal()" style="background:#f1f5f9;border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#64748b;font-size:20px;line-height:1;">&times;</button>
+      </div>
+    </div>
+    <div id="addPropertyFormBody" style="flex:1;overflow-y:auto;padding:20px 24px;">
+      <!-- Property Image -->
+      <div style="margin-bottom:20px;">
+        <div style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:6px;">Property Image <span style="font-size:11px;font-weight:400;color:#94a3b8;">(Optional)</span></div>
+        <div id="apImgDropzone" onclick="document.getElementById('apImgInput').click()" ondragover="event.preventDefault();this.style.borderColor='#1A5FC8'" ondragleave="this.style.borderColor='#e2e8f0'" ondrop="event.preventDefault();_apHandleImg(event.dataTransfer.files[0])" style="border:2px dashed #e2e8f0;border-radius:12px;padding:28px 16px;text-align:center;cursor:pointer;transition:border-color .15s;background:#fafafa;position:relative;min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <div id="apImgPreview" style="display:none;position:absolute;inset:0;border-radius:10px;overflow:hidden;"><img id="apImgPreviewImg" style="width:100%;height:100%;object-fit:cover;" src="" alt=""></div>
+          <div id="apImgPlaceholder">
+            <div style="width:48px;height:48px;border-radius:12px;background:#eff6ff;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1A5FC8" stroke-width="1.6"><rect x="2" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M2 16l5-4 4 3 3-3 6 5"/></svg>
+            </div>
+            <div style="font-size:13.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:3px;">Drop an image or click to upload</div>
+            <div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;">JPG, PNG or WEBP &middot; Max 5MB</div>
+          </div>
+        </div>
+        <input id="apImgInput" type="file" accept="image/*" style="display:none;" onchange="_apHandleImg(this.files[0])">
+      </div>
+      <!-- Property Name -->
+      <div style="margin-bottom:14px;">
+        <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Property Name <span style="color:#ef4444;">*</span></label>
+        <input id="apName" type="text" placeholder="e.g. Flat 3, Oak House" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'">
+      </div>
+      <!-- Address -->
+      <div style="margin-bottom:14px;">
+        <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Address <span style="color:#ef4444;">*</span></label>
+        <input id="apAddress" type="text" placeholder="Street address" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'">
+      </div>
+      <!-- Postcode + Region -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+        <div>
+          <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Postcode <span style="color:#ef4444;">*</span></label>
+          <input id="apPostcode" type="text" placeholder="e.g. SW1A 1AA" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'">
+        </div>
+        <div>
+          <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Region</label>
+          <select id="apRegion" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;background:#fff;appearance:none;cursor:pointer;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'">
+            <option value="">Select region</option>
+            <option>London</option><option>South East</option><option>South West</option>
+            <option>Midlands</option><option>North West</option><option>North East</option>
+            <option>Yorkshire</option><option>Scotland</option><option>Wales</option><option>Multiple regions</option>
+          </select>
+        </div>
+      </div>
+      <!-- Property Type + Bedrooms -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+        <div>
+          <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Property Type <span style="color:#ef4444;">*</span></label>
+          <select id="apType" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;background:#fff;appearance:none;cursor:pointer;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'">
+            <option value="">Select type</option>
+            <option>Flat</option><option>House</option><option>HMO</option>
+            <option>Commercial</option><option>Studio</option><option>Bungalow</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;font-family:Inter,sans-serif;">Bedrooms</label>
+          <input id="apBeds" type="number" min="0" max="99" placeholder="e.g. 3" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'">
+        </div>
+      </div>
+      <!-- Documents -->
+      <div style="margin-bottom:8px;">
+        <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:4px;font-family:Inter,sans-serif;">Documents <span style="font-size:11px;font-weight:400;color:#94a3b8;">(Optional)</span></label>
+        <div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:8px;">Gas Safety Certificate, EICR, Fire Risk Assessment, PAT Testing, etc.</div>
+        <div id="apDocDropzone" onclick="document.getElementById('apDocInput').click()" ondragover="event.preventDefault();this.style.borderColor='#1A5FC8';this.style.background='#f0f9ff'" ondragleave="this.style.borderColor='#e2e8f0';this.style.background='#fafafa'" ondrop="event.preventDefault();_apHandleDocs(event.dataTransfer.files)" style="border:2px dashed #e2e8f0;border-radius:10px;padding:16px;text-align:center;cursor:pointer;background:#fafafa;transition:all .15s;">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#94a3b8" stroke-width="1.6" style="margin-bottom:6px;"><path d="M4 14v2a1 1 0 001 1h10a1 1 0 001-1v-2"/><path d="M10 3v10M7 6l3-3 3 3"/></svg>
+          <div style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Drop files or click to upload</div>
+          <div style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:2px;">PDF, JPG, PNG &middot; Multiple files supported</div>
+        </div>
+        <input id="apDocInput" type="file" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="_apHandleDocs(this.files)">
+        <div id="apDocList" style="margin-top:10px;display:flex;flex-direction:column;gap:6px;"></div>
+      </div>
+    </div>
+    <!-- Fixed footer -->
+    <div style="padding:16px 24px 20px;border-top:1px solid #f1f5f9;flex-shrink:0;background:#fff;">
+      <button onclick="_apSubmit()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7.5l3.5 3.5 7.5-7"/></svg>
+        Add Property
+      </button>
+    </div>
+  </div>
+</div>
