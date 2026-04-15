@@ -7276,7 +7276,7 @@ function _renderPropertiesGrid() {
 
   _userProperties.forEach(function(prop, i) {
     var typeKey = (prop.type||'default').toLowerCase().replace(/\s/g,'');
-    var imgSrc = prop._imgDataUrl || _propImgMap[typeKey] || _propImgMap.default;
+    var imgSrc = prop._imgDataUrl || null; // Only use uploaded images
     // Compute real alerts from compliance docs
     var propAlerts = _getPropertyAlerts(prop);
     prop.alerts = propAlerts.length;
@@ -7304,10 +7304,29 @@ function _renderPropertiesGrid() {
     card.onmouseout  = function(){ this.style.boxShadow='none'; this.style.transform='translateY(0)'; };
     (function(p){ card.onclick = function(){ _showPropertyModal(p); }; })(prop);
 
+    // Type-based placeholder colors and icons
+    var typeThemes = {
+      flat:       { bg:'linear-gradient(135deg,#eff6ff,#dbeafe)', icon:'#3b82f6', label:'Flat' },
+      house:      { bg:'linear-gradient(135deg,#f0fdf4,#dcfce7)', icon:'#16a34a', label:'House' },
+      hmo:        { bg:'linear-gradient(135deg,#fdf4ff,#f3e8ff)', icon:'#9333ea', label:'HMO' },
+      commercial: { bg:'linear-gradient(135deg,#fff7ed,#ffedd5)', icon:'#ea580c', label:'Commercial' },
+      studio:     { bg:'linear-gradient(135deg,#fef9c3,#fef08a)', icon:'#ca8a04', label:'Studio' },
+      bungalow:   { bg:'linear-gradient(135deg,#fef2f2,#fecaca)', icon:'#dc2626', label:'Bungalow' },
+      default:    { bg:'linear-gradient(135deg,#f8fafc,#e2e8f0)', icon:'#94a3b8', label:'Property' }
+    };
+    var theme = typeThemes[typeKey] || typeThemes.default;
+
+    var imageSection = imgSrc
+      ? '<div style="height:160px;background:'+theme.bg+';overflow:hidden;position:relative;">'
+          + '<img src="'+imgSrc+'" style="width:100%;height:100%;object-fit:cover;display:block;">'
+        + '</div>'
+      : '<div style="height:160px;background:'+theme.bg+';overflow:hidden;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;">'
+          + '<svg width="52" height="52" viewBox="0 0 52 52" fill="none" stroke="'+theme.icon+'" stroke-width="1.2" opacity="0.4"><path d="M6 46V22L26 6l20 16v24"/><path d="M18 46V34h16v12"/><rect x="22" y="20" width="8" height="8" rx="1"/></svg>'
+          + '<span style="font-size:11px;font-weight:600;color:'+theme.icon+';font-family:Inter,sans-serif;opacity:0.6;letter-spacing:.05em;text-transform:uppercase;">'+escapeHtml(prop.type||'Property')+'</span>'
+        + '</div>';
+
     card.innerHTML =
-      '<div style="height:160px;background:linear-gradient(135deg,#e8f4fd,#dbeafe);overflow:hidden;position:relative;">'
-        + '<img src="'+imgSrc+'" style="width:100%;height:100%;object-fit:cover;display:block;" >'
-      + '</div>'
+      imageSection
       + '<div style="padding:14px 16px 16px;">'
         + '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;">'
           + '<div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;line-height:1.3;flex:1;margin-right:8px;">'+prop.name+'</div>'
