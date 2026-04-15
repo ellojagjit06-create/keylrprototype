@@ -3914,12 +3914,19 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     <div id="page-booking-flow" style="display:none;flex-direction:column;">
       <!-- Scrollable content area -->
       <div style="flex:1;overflow-y:auto;min-height:0;">
-        <div class="db-main-inner" id="bfPageInner">
+        <div id="bfPageInner" style="width:100%;max-width:720px;margin:0 auto;padding:32px clamp(20px,4vw,48px) 48px;box-sizing:border-box;">
           <!-- populated by _bfRenderPage() -->
         </div>
       </div>
       <!-- Fixed footer (Back + Continue) — rendered by _bfRenderPage -->
       <div id="bfFixedFooter" style="flex-shrink:0;"></div>
+    </div>
+    <!-- Revert booking flow pill — always accessible during booking -->
+    <div id="bfRevertPill" style="display:none;position:fixed;bottom:90px;right:20px;z-index:8000;">
+      <button onclick="_bfRevertToOldFlow()" title="Revert to previous booking flow" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:999px;padding:8px 14px 8px 10px;font-size:12px;font-weight:600;color:#64748b;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;box-shadow:0 2px 12px rgba(0,0,0,0.1);transition:border-color .15s,color .15s;" onmouseover="this.style.borderColor='#94a3b8';this.style.color='#374151'" onmouseout="this.style.borderColor='#e2e8f0';this.style.color='#64748b'">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7A5 5 0 1 0 4 3.5M2 2v4h4"/></svg>
+        Revert flow
+      </button>
     </div>
 
         <!-- BOOKINGS PAGE -->
@@ -4934,8 +4941,8 @@ function goToDashboard(query, autoSend = false, isAuthenticated = false) {
     else _db.classList.remove('user-logged-in');
   }
   setTimeout(_updateSidebarAuthIcons, 100);
-  // After real auth (login/signup), always land on Home tab
-  if (isAuthenticated) {
+  // After real auth (login/signup), land on Home unless resuming booking
+  if (isAuthenticated && !window._bfStateBeforeAuth) {
     setTimeout(function() { showPage('home', null); }, 80);
   }
   // Resume post-login action if any
@@ -4949,9 +4956,14 @@ function goToDashboard(query, autoSend = false, isAuthenticated = false) {
     window._bfStateBeforeAuth = null;
     setTimeout(function() {
       _bfState = saved;
-      _bfState.step = 1; // Always return to property step
+      _bfState.step = 1; // Return to property step
       showPage('booking-flow', null);
       _bfRenderPage();
+      setTimeout(function(){
+        if (typeof showToast === 'function') {
+          showToast('Welcome! You\'re continuing your booking \u2014 add your property below', 'success');
+        }
+      }, 400);
     }, 300);
   } else {
     // If user was already on booking flow step 1, re-render it
@@ -5058,6 +5070,9 @@ var _activePage = 'home';
 function showPage(id, e) {
   _activePage = id;
   if (e) e.preventDefault();
+  // Show revert pill only when on booking flow page
+  var revertPill = document.getElementById('bfRevertPill');
+  if (revertPill) revertPill.style.display = id === 'booking-flow' ? 'block' : 'none';
   pages.forEach(p => {
     const el = document.getElementById('page-' + p);
     if (el) el.style.display = p === id ? 'flex' : 'none';
@@ -7527,6 +7542,51 @@ function _bfRenderPage() {
   _bfRenderStep(s.step);
 }
 
+function _bfRevertToOldFlow() {
+  if (!confirm('Revert to the previous booking flow? Your current progress will be kept.')) return;
+  // Flag to use legacy step 1 (old property select logic)
+  window._bfLegacyFlow = true;
+  showToast('Reverted to previous booking flow', 'info');
+  _bfRenderPage();
+}
+// Legacy step 1 renderer — old-style for fallback
+function _bfRenderLegacyStep1(body, s, isDk) {
+  var h = document.createElement('div');
+  h.style.cssText = 'font-size:14px;font-weight:600;color:'+(isDk?'#e6edf3':'#0f172a')+';font-family:Inter,sans-serif;margin-bottom:16px;';
+  h.textContent = 'Select a property';
+  body.appendChild(h);
+  if (!_bfProperties.length) {
+    var isDkP = isDk;
+    var emptyProp = document.createElement('div');
+    emptyProp.style.cssText = 'background:'+(isDkP?'#161b22':'#fff')+';border:1.5px solid '+(isDkP?'#30363d':'#e2e8f0')+';border-radius:16px;padding:48px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;';
+    var propIcon = document.createElement('div');
+    propIcon.style.cssText = 'width:64px;height:64px;border-radius:16px;background:'+(isDkP?'#1c2433':'#eff6ff')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;';
+    propIcon.innerHTML = '<svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#1A5FC8" stroke-width="1.5"><path d="M3 27V13l12-9 12 9v14"/><path d="M11 27v-8h8v8"/></svg>';
+    var propTitle = document.createElement('div');
+    propTitle.style.cssText = 'font-size:17px;font-weight:800;color:'+(isDkP?'#e6edf3':'#0f172a')+';font-family:Fraunces,serif;';
+    propTitle.textContent = 'No properties yet';
+    var propSub = document.createElement('div');
+    propSub.style.cssText = 'font-size:13.5px;color:'+(isDkP?'#8b949e':'#64748b')+';font-family:Inter,sans-serif;max-width:280px;line-height:1.6;';
+    propSub.textContent = 'Add your first property in the Properties tab before booking a service.';
+    var addPropB = document.createElement('button');
+    addPropB.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;margin-top:4px;';
+    addPropB.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M6.5 2v9"/></svg>Add a property';
+    addPropB.onclick = function(e){ e.stopPropagation(); if(!window._isLoggedIn){window._postLoginAction='addProperty';window.showAuthPage('signup');}else{window.showPage('properties',null);} };
+    emptyProp.appendChild(propIcon); emptyProp.appendChild(propTitle); emptyProp.appendChild(propSub); emptyProp.appendChild(addPropB);
+    body.appendChild(emptyProp); return;
+  }
+  _bfProperties.forEach(function(prop, idx) {
+    var card = document.createElement('div'); card.className='bfm-prop-card'+(s.property===prop.name?' selected':''); card.onclick=function(){_bfSelectProp(idx);};
+    var thumb = document.createElement('div'); thumb.className='bfm-prop-thumb'; thumb.innerHTML='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5"><path d="M3 21V10l9-7 9 7v11"/><path d="M9 21v-6h6v6"/></svg>';
+    var info = document.createElement('div'); info.style.cssText='flex:1;';
+    var pname=document.createElement('div'); pname.className='bfm-prop-name'; pname.textContent=prop.name;
+    var paddr=document.createElement('div'); paddr.className='bfm-prop-addr'; paddr.textContent=prop.addr;
+    info.appendChild(pname); info.appendChild(paddr); card.appendChild(thumb); card.appendChild(info);
+    if (s.property===prop.name){var chk=document.createElement('div');chk.innerHTML='<svg width="20" height="20" viewBox="0 0 20 20" fill="#1A5FC8"><circle cx="10" cy="10" r="10"/><path d="M6 10l3 3 5-5" stroke="#fff" stroke-width="1.8" fill="none"/></svg>';card.appendChild(chk);}
+    body.appendChild(card);
+  });
+}
+
 function _bfSaveExtraProp() {
   var n = (document.getElementById('bf-extra-prop-name')||{}).value||'';
   var a = (document.getElementById('bf-extra-prop-addr')||{}).value||'';
@@ -7639,6 +7699,8 @@ function _bfRenderStep(step) {
 
   } else if (step === 1) {
     // ── Step 1: Where should we deliver this service? ──
+    // Legacy flow revert check
+    if (window._bfLegacyFlow) { _bfRenderLegacyStep1(body, s, isDk); return; }
     var isDkP = isDk;
 
     // ── HEADING ──
@@ -7676,14 +7738,14 @@ function _bfRenderStep(step) {
 
       // Auth gate overlay
       var overlay = document.createElement('div');
-      overlay.style.cssText = 'position:absolute;inset:0;border-radius:16px;background:'+(isDkP?'rgba(13,17,23,0.7)':'rgba(255,255,255,0.72)')+';backdrop-filter:blur(3px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;z-index:2;padding:20px;';
+      overlay.style.cssText = 'position:absolute;inset:0;border-radius:16px;background:'+(isDkP?'rgba(13,17,23,0.75)':'rgba(255,255,255,0.78)')+';backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;z-index:2;padding:24px;text-align:center;';
       overlay.onclick = function() {
         // Save full booking state before auth
         window._bfStateBeforeAuth = JSON.parse(JSON.stringify(_bfState));
         showAuthPage('signup');
       };
       var lockIcon = document.createElement('div');
-      lockIcon.style.cssText = 'width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(26,95,200,0.35);';
+      lockIcon.style.cssText = 'width:48px;height:48px;min-width:48px;min-height:48px;flex-shrink:0;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(26,95,200,0.35);';
       lockIcon.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2"><rect x="4" y="9" width="12" height="9" rx="2"/><path d="M7 9V6a3 3 0 016 0v3"/></svg>';
       var gateMsg = document.createElement('div');
       gateMsg.style.cssText = 'text-align:center;';
