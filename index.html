@@ -12392,7 +12392,7 @@ function _buildSuppOnboardStep(step) {
   // ── background ──
   if (id === 'background') {
     var isCompany = _suppOnboard.operationType === 'company';
-    var teamSizes = ['Just me|I work alone','2–5|Small team','6–10|Growing team','11–25|Medium team','26–50|Large team','50+|Enterprise'];
+    var teamSizes = ['Just me|Sole trader','2–10|Small team','11–50|Small-medium company','51–249|Medium company','250–499|Large company','500+|Enterprise'];
     return '<div style="display:flex;flex-direction:column;gap:20px;">'
       // ── How many people (company only) ──
       + (isCompany ? '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;">'
