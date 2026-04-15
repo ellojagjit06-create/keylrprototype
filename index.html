@@ -3019,7 +3019,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .bfm-prop-card{background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:14px;display:flex;align-items:center;gap:14px;cursor:pointer;margin-bottom:10px;transition:border-color .15s,background .12s;}
 .bfm-prop-card:hover{border-color:#93c5fd;background:#f8fbff;}
 .bfm-prop-card.selected{border-color:#1A5FC8;background:#eff6ff;}
-.bfm-prop-thumb{width:56px;height:56px;border-radius:10px;background:#e2e8f0;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.bfm-prop-thumb{width:56px;height:56px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
 .bfm-prop-name{font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;}
 .bfm-prop-addr{font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;}
 .bfm-ptag{font-size:11px;font-weight:600;font-family:Inter,sans-serif;padding:2px 8px;border-radius:5px;background:#f1f5f9;color:#64748b;text-transform:uppercase;}
@@ -8450,9 +8450,37 @@ function _bfRenderStep(step) {
       var card = document.createElement('div');
       card.className = 'bfm-prop-card' + (s.property===prop.name?' selected':'');
       card.onclick = function(){ _bfSelectProp(idx); };
+      // Build thumb — uploaded photo OR type-themed gradient + icon
       var thumb = document.createElement('div');
       thumb.className = 'bfm-prop-thumb';
-      thumb.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5"><path d="M3 21V10l9-7 9 7v11"/><path d="M9 21v-6h6v6"/></svg>';
+      var _bfTypeColors = {
+        flat:'#3b82f6',house:'#16a34a',hmo:'#9333ea',
+        commercial:'#ea580c',studio:'#ca8a04',bungalow:'#dc2626'
+      };
+      var _bfTypeBgs = {
+        flat:'linear-gradient(135deg,#eff6ff,#dbeafe)',
+        house:'linear-gradient(135deg,#f0fdf4,#dcfce7)',
+        hmo:'linear-gradient(135deg,#fdf4ff,#f3e8ff)',
+        commercial:'linear-gradient(135deg,#fff7ed,#ffedd5)',
+        studio:'linear-gradient(135deg,#fef9c3,#fef08a)',
+        bungalow:'linear-gradient(135deg,#fef2f2,#fecaca)'
+      };
+      var _tKey = (prop.type||'').toLowerCase();
+      var _tColor = _bfTypeColors[_tKey] || '#94a3b8';
+      var _tBg    = _bfTypeBgs[_tKey]   || 'linear-gradient(135deg,#f8fafc,#e2e8f0)';
+      if (prop._imgDataUrl) {
+        // Show uploaded image, cropped to square
+        thumb.style.cssText = 'width:56px;height:56px;border-radius:10px;flex-shrink:0;overflow:hidden;';
+        var tImg = document.createElement('img');
+        tImg.src = prop._imgDataUrl;
+        tImg.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+        tImg.alt = prop.name;
+        thumb.appendChild(tImg);
+      } else {
+        // Type-themed gradient placeholder
+        thumb.style.cssText = 'width:56px;height:56px;border-radius:10px;flex-shrink:0;background:'+_tBg+';display:flex;align-items:center;justify-content:center;';
+        thumb.innerHTML = '<svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="'+_tColor+'" stroke-width="1.5" opacity="0.8"><path d="M3 23V11l10-8 10 8v12"/><path d="M10 23v-6h6v6"/></svg>';
+      }
       var info = document.createElement('div');
       info.style.cssText = 'flex:1;';
       var name = document.createElement('div');
