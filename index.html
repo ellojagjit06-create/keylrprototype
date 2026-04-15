@@ -3062,6 +3062,11 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 <body>
 
 <div id="overlay"></div>
+<!-- Global page loader -->
+<div id="keylrPageLoader" style="display:none;position:fixed;inset:0;z-index:89999;background:rgba(248,250,252,0.82);backdrop-filter:blur(3px);align-items:center;justify-content:center;flex-direction:column;gap:12px;">
+  <div class="ks-spin" style="width:32px;height:32px;border-width:3.5px;"></div>
+  <div id="keylrLoaderText" style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;font-weight:500;">Loading...</div>
+</div>
 
 <!-- =============================================
      LANDING PAGE
@@ -5046,12 +5051,14 @@ function goToDashboard(query, autoSend = false, isAuthenticated = false) {
     document.getElementById('pg-landing').style.display = 'none';
     const db = document.getElementById('pg-dashboard');
     db.style.display = 'flex';
-    ol.classList.remove('on');
+    // Ensure dashboard is ready before removing overlay
     requestAnimationFrame(() => {
       db.classList.add('visible');
       checkSidebarAutoCollapse();
       _updateSidebarAuthIcons();
       showPage('home', null);
+      // Slight delay so content renders before overlay fades
+      setTimeout(function(){ ol.classList.remove('on'); }, 60);
       if (autoSend && query) {
         showPage('chat', null);
         setTimeout(() => sendFromSuggestion(query), 400);
@@ -6724,6 +6731,14 @@ var _currentExploreCat = 'all';
 var _exploreMinRating = 0;
 
 function _renderExploreCatCards() {
+  // Brief skeleton while category cards build
+  var catEl = document.getElementById('exploreCatCards');
+  if (catEl && catEl.children.length === 0) {
+    catEl.innerHTML = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">'
+      + Array(9).fill('<div class="ks-skel" style="height:100px;border-radius:14px;"></div>').join('')
+      + '</div>';
+    catEl.style.display = 'grid';
+  }
   var el = document.getElementById('exploreCatCards');
   if (!el) return;
 
@@ -6851,6 +6866,10 @@ function renderExploreProviders(cat, minRating) {
     container.appendChild(emptyWrap);
     return;
   }
+  // Show skeleton cards while filtering/rendering
+  if (typeof _showExploreSkeleton === 'function') _showExploreSkeleton();
+  // Small tick to let skeleton paint before heavy DOM work
+  var _doRender = function() {
   var gridHTML = '<div class="exp-provider-grid">';
   window._expProviders = _exploreProviders;
   filtered.forEach(function(p, _pi) {
@@ -6902,6 +6921,10 @@ function renderExploreProviders(cat, minRating) {
   });
   gridHTML += '</div>';
   container.innerHTML = gridHTML;
+  // Add fade-in to the grid
+  container.style.animation = 'keylrFadeIn 0.2s ease';
+  }; // end _doRender
+  setTimeout(_doRender, 80); // let skeleton paint first
 }
 
 function _svcRowHTML(s) {
@@ -7265,6 +7288,10 @@ function _renderPropertiesGrid() {
   grid.style.display = hasProps ? '' : 'none';
   if (!hasProps) return;
 
+  // Show skeleton while cards render
+  if (typeof _showPropSkeleton === 'function') _showPropSkeleton();
+
+  setTimeout(function() {
   // Update properties count
   var statNums = document.querySelectorAll('.prop-stat-num');
   if (statNums[0]) statNums[0].textContent = _userProperties.length;
@@ -7338,6 +7365,9 @@ function _renderPropertiesGrid() {
       + '</div>';
     grid.appendChild(card);
   });
+  // Fade in the grid
+  if (grid) grid.style.animation = 'keylrFadeIn 0.25s ease';
+  }, 60); // let skeleton paint first
 }
 
 // ── Property Detail Modal ──
@@ -7377,6 +7407,83 @@ function _checkPendingBookingRestore() {
     if (typeof showToast === 'function') showToast('Now add your property to continue booking ✔', 'success');
   }, 150);
 }
+// ── Keylr Loading System ──
+function _showLoader(text) {
+  var el = document.getElementById('keylrPageLoader');
+  var tx = document.getElementById('keylrLoaderText');
+  if (el) { el.style.display='flex'; if(tx) tx.textContent = text||'Loading...'; }
+}
+function _hideLoader() {
+  var el = document.getElementById('keylrPageLoader');
+  if (el) el.style.display='none';
+}
+function _btnLoad(btn, text) {
+  if (!btn) return;
+  btn._originalHTML = btn.innerHTML;
+  btn._originalDisabled = btn.disabled;
+  btn.classList.add('ks-loading');
+  btn.innerHTML = '<span class="ks-spin sm white" style="margin-right:6px;"></span>' + (text||'');
+  btn.disabled = true;
+}
+function _btnReset(btn) {
+  if (!btn || !btn._originalHTML) return;
+  btn.classList.remove('ks-loading');
+  btn.innerHTML = btn._originalHTML;
+  btn.disabled = btn._originalDisabled || false;
+}
+function _propSkelCard() {
+  // Returns a skeleton card HTML string
+  return '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;overflow:hidden;">'
+    + '<div class="ks-skel" style="height:160px;"></div>'
+    + '<div style="padding:14px 16px 16px;">'
+      + '<div class="ks-skel" style="height:16px;width:60%;margin-bottom:8px;"></div>'
+      + '<div class="ks-skel" style="height:12px;width:80%;margin-bottom:10px;"></div>'
+      + '<div style="display:flex;gap:6px;">'
+        + '<div class="ks-skel" style="height:20px;width:48px;border-radius:20px;"></div>'
+        + '<div class="ks-skel" style="height:20px;width:40px;border-radius:20px;"></div>'
+      + '</div>'
+    + '</div>'
+  + '</div>';
+}
+function _showExploreSkeleton() {
+  var container = document.getElementById('exploreProviderCards');
+  if (!container) return;
+  var html = '<div class="exp-provider-grid">';
+  for (var i=0;i<4;i++) {
+    html += '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;overflow:hidden;">'
+      + '<div style="padding:16px;">'
+        + '<div style="display:flex;gap:12px;margin-bottom:12px;">'
+          + '<div class="ks-skel" style="width:48px;height:48px;border-radius:12px;flex-shrink:0;"></div>'
+          + '<div style="flex:1;">'
+            + '<div class="ks-skel" style="height:14px;width:70%;margin-bottom:6px;"></div>'
+            + '<div class="ks-skel" style="height:12px;width:50%;"></div>'
+          + '</div>'
+        + '</div>'
+        + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;">'
+          + '<div class="ks-skel" style="height:52px;border-radius:10px;"></div>'
+          + '<div class="ks-skel" style="height:52px;border-radius:10px;"></div>'
+          + '<div class="ks-skel" style="height:52px;border-radius:10px;"></div>'
+        + '</div>'
+        + '<div class="ks-skel" style="height:12px;width:90%;margin-bottom:4px;"></div>'
+        + '<div class="ks-skel" style="height:12px;width:75%;"></div>'
+      + '</div>'
+      + '<div style="padding:0 16px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+        + '<div class="ks-skel" style="height:38px;border-radius:10px;"></div>'
+        + '<div class="ks-skel" style="height:38px;border-radius:10px;"></div>'
+      + '</div>'
+    + '</div>';
+  }
+  html += '</div>';
+  container.innerHTML = html;
+  container.style.display = 'block';
+}
+function _showPropSkeleton() {
+  var grid = document.getElementById('propDynamicGrid');
+  if (!grid) return;
+  grid.innerHTML = _propSkelCard() + _propSkelCard() + _propSkelCard();
+  grid.style.display = '';
+}
+
 function _closePropModal(){ var m=document.getElementById('propDetailModal'); if(m) m.remove(); }
 function _propRenewDoc(btn) {
   var doc = btn.getAttribute('data-doc') || '';
@@ -7507,7 +7614,7 @@ function _showPropertyModal(prop) {
   // Build modal
   var overlay = document.createElement('div');
   overlay.id = 'propDetailModal';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:9995;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9995;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;animation:keylrFadeIn 0.18s ease;';
   overlay.onclick = function(e){ if(e.target===overlay) overlay.remove(); };
 
   var sheet = document.createElement('div');
@@ -7963,6 +8070,20 @@ function _bfRenderPage() {
   var bodyDiv = document.createElement('div');
   bodyDiv.id = 'bfPageBody';
   bodyDiv.style.cssText = 'padding-bottom:8px;';
+  // Show skeleton briefly while step content renders
+  bodyDiv.innerHTML = '<div style="display:flex;flex-direction:column;gap:10px;padding-top:4px;">'
+    + '<div class="ks-skel" style="height:18px;width:50%;border-radius:6px;"></div>'
+    + '<div class="ks-skel" style="height:44px;border-radius:10px;"></div>'
+    + '<div class="ks-skel" style="height:14px;width:35%;border-radius:6px;"></div>'
+    + '<div style="display:flex;gap:8px;">'
+      + '<div class="ks-skel" style="height:28px;width:80px;border-radius:20px;"></div>'
+      + '<div class="ks-skel" style="height:28px;width:80px;border-radius:20px;"></div>'
+    + '</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">'
+      + '<div class="ks-skel" style="height:80px;border-radius:12px;"></div>'
+      + '<div class="ks-skel" style="height:80px;border-radius:12px;"></div>'
+    + '</div>'
+  + '</div>';
   inner.appendChild(bodyDiv);
 
   // Footer buttons
@@ -8017,7 +8138,10 @@ function _bfNext() {
 function _bfRenderStep(step) {
   var body = document.getElementById('bfPageBody');
   if (!body) return;
+  // Fade out skeleton, render real content
+  body.style.opacity = '0';
   body.innerHTML = '';
+  body.style.transition = 'opacity 0.15s';
   var s = _bfState;
   var isDk = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
 
@@ -8506,6 +8630,13 @@ function _bfFilterProv(q) {
   q=q.toLowerCase(); document.querySelectorAll('[id^="bfProv_"]').forEach(function(card){card.style.display=(!q||card.textContent.toLowerCase().includes(q))?'':'none';});
 }
 function _bfConfirm() {
+  // Spinner on the confirm button
+  var confirmBtn = document.getElementById('bfPageContinue');
+  if (confirmBtn) _btnLoad(confirmBtn, '');
+  _showLoader('Confirming your booking...');
+  setTimeout(function() { _hideLoader(); _bfConfirmExec(); }, 900);
+}
+function _bfConfirmExec() {
   // If not logged in, show auth modal then retry
   if (!_isLoggedIn) {
     var authOverlay = document.createElement('div');
@@ -13626,6 +13757,10 @@ function _suppSaveCurrentStep(){
 }
 
 function _suppOnboardNext(){
+  _showLoader('Loading next step...');
+  setTimeout(function(){ _hideLoader(); _suppOnboardNextExec(); }, 300);
+}
+function _suppOnboardNextExec(){
   _suppSaveCurrentStep();
   var step=_suppOnboard.step;
   if(step>=_suppOnboardSteps.length-1){_suppOnboardFinish();}
@@ -14165,6 +14300,13 @@ function _apHandleDocs(files) {
 }
 
 function _apSubmit() {
+  // Show spinner on submit button
+  var subBtn = document.querySelector('#addPropertyModal button[onclick="_apSubmit()"]');
+  if (!subBtn) {
+    var allBtns = document.querySelectorAll('#addPropertyModal button');
+    allBtns.forEach(function(b){ if(b.textContent.trim().indexOf('Add Property')>=0) subBtn=b; });
+  }
+  if (subBtn) _btnLoad(subBtn, 'Saving...');
   var name     = (document.getElementById('apName')||{}).value||'';
   var address  = (document.getElementById('apAddress')||{}).value||'';
   var postcode = (document.getElementById('apPostcode')||{}).value||'';
@@ -14279,7 +14421,25 @@ document.addEventListener('click', function(e){
 </div>
 
 <style>
-@keyframes modalPop{from{opacity:0;transform:scale(0.95)translateY(10px);}to{opacity:1;transform:scale(1)translateY(0);}}
+@keyframes modalPop{from{opacity:0;transform:scale(0.96) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}
+@keyframes keylrSpin{to{transform:rotate(360deg);}}
+@keyframes keylrFadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+@keyframes keylrShimmer{0%{background-position:-400px 0;}100%{background-position:400px 0;}}
+@keyframes keylrPulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+/* Skeleton shimmer */
+.ks-skel{background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%);background-size:400px 100%;animation:keylrShimmer 1.4s infinite;border-radius:8px;}
+.dash-dark .ks-skel{background:linear-gradient(90deg,#1c2433 25%,#21262d 50%,#1c2433 75%);background-size:400px 100%;}
+/* Spinner */
+.ks-spin{width:20px;height:20px;border:2.5px solid rgba(26,95,200,0.2);border-top-color:#1A5FC8;border-radius:50%;animation:keylrSpin .7s linear infinite;display:inline-block;flex-shrink:0;}
+.ks-spin.sm{width:14px;height:14px;border-width:2px;}
+.ks-spin.white{border-color:rgba(255,255,255,0.3);border-top-color:#fff;}
+/* Page content fade-in */
+.ks-page-enter{animation:keylrFadeIn 0.22s ease forwards;}
+/* Button loading state */
+button.ks-loading{opacity:0.7;pointer-events:none;cursor:not-allowed;}
+/* Global page loader overlay */
+#keylrPageLoader{display:none;position:fixed;inset:0;z-index:89999;background:rgba(248,250,252,0.85);backdrop-filter:blur(2px);align-items:center;justify-content:center;}
+.dash-dark #keylrPageLoader{background:rgba(13,17,23,0.85);}
 
 /* ── Smooth global transitions ── */
 * { box-sizing: border-box; }
