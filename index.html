@@ -8015,6 +8015,9 @@ Object.defineProperty(window, '_bfProperties', {
 });
 
 function openBookingFlow(providerId, service) {
+  // Close Add Property modal if open (prevents overlay clash)
+  var apModal = document.getElementById('addPropertyModal');
+  if (apModal && apModal.style.display !== 'none') { closeAddPropertyModal(); }
   // If called with a providerId (from card/profile), skip "Choose a service" (step 0)
   // and go directly to step 1 (Select property)
   var startStep = providerId ? 1 : 0;
@@ -14247,18 +14250,21 @@ function showAddPropertyModal() {
   }
   var m = document.getElementById('addPropertyModal');
   if (!m) return;
-  // Reset form
-  ['apName','apAddress','apPostcode','apBeds'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
-  ['apRegion','apType'].forEach(function(id){ var el=document.getElementById(id); if(el) el.selectedIndex=0; });
-  var prev = document.getElementById('apImgPreview');
-  var ph   = document.getElementById('apImgPlaceholder');
-  if(prev) prev.style.display='none';
-  if(ph)   ph.style.display='block';
-  var docList = document.getElementById('apDocList');
-  if(docList) docList.innerHTML='';
-  _apUploadedDocs = [];
-  m.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
+  // Always reset form to clean state on fresh open
+  ['apName','apAddress','apPostcode','apBeds'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){ el.value=''; el.style.borderColor='#e2e8f0'; el.placeholder=({'apName':'e.g. Flat 3, Oak House','apAddress':'Street address','apPostcode':'e.g. SW1A 1AA','apBeds':'e.g. 3'})[id]||''; }
+  });
+  ['apRegion','apType'].forEach(function(id){ var el=document.getElementById(id); if(el){ el.selectedIndex=0; el.style.borderColor='#e2e8f0'; } });
+  var prev=document.getElementById('apImgPreview'); if(prev) prev.style.display='none';
+  var ph=document.getElementById('apImgPlaceholder'); if(ph) ph.style.display='flex';
+  var docList=document.getElementById('apDocList'); if(docList) docList.innerHTML='';
+  _apUploadedDocs=[];
+  window._apLastImgDataUrl=null;
+  m.style.display='flex';
+  document.body.style.overflow='hidden';
+  // Focus first field
+  setTimeout(function(){ var f=document.getElementById('apName'); if(f) f.focus(); }, 100);
 }
 
 function closeAddPropertyModal() {
@@ -14300,13 +14306,7 @@ function _apHandleDocs(files) {
 }
 
 function _apSubmit() {
-  // Show spinner on submit button
-  var subBtn = document.querySelector('#addPropertyModal button[onclick="_apSubmit()"]');
-  if (!subBtn) {
-    var allBtns = document.querySelectorAll('#addPropertyModal button');
-    allBtns.forEach(function(b){ if(b.textContent.trim().indexOf('Add Property')>=0) subBtn=b; });
-  }
-  if (subBtn) _btnLoad(subBtn, 'Saving...');
+  // Read values first
   var name     = (document.getElementById('apName')||{}).value||'';
   var address  = (document.getElementById('apAddress')||{}).value||'';
   var postcode = (document.getElementById('apPostcode')||{}).value||'';
@@ -14314,10 +14314,23 @@ function _apSubmit() {
   var type     = (document.getElementById('apType')||{}).value||'';
   var beds     = (document.getElementById('apBeds')||{}).value||'';
 
-  if(!name.trim()){ showToast('Please enter a property name','warning'); return; }
-  if(!address.trim()){ showToast('Please enter an address','warning'); return; }
-  if(!postcode.trim()){ showToast('Please enter a postcode','warning'); return; }
-  if(!type){ showToast('Please select a property type','warning'); return; }
+  // Highlight invalid fields inline
+  function _apFieldErr(id, msg) {
+    var el = document.getElementById(id);
+    if (el) { el.style.borderColor='#ef4444'; el.focus(); el.setAttribute('placeholder', msg); setTimeout(function(){ if(el.style.borderColor==='rgb(239, 68, 68)') el.style.borderColor='#e2e8f0'; }, 3000); }
+  }
+  if (!name.trim())    { _apFieldErr('apName','Required — enter a property name'); showToast('Please enter a property name','warning'); return; }
+  if (!address.trim()) { _apFieldErr('apAddress','Required — enter the address'); showToast('Please enter an address','warning'); return; }
+  if (!postcode.trim()){ _apFieldErr('apPostcode','Required — e.g. SW1A 1AA'); showToast('Please enter a postcode','warning'); return; }
+  if (!type)           { var typeEl=document.getElementById('apType'); if(typeEl){ typeEl.style.borderColor='#ef4444'; setTimeout(function(){ typeEl.style.borderColor='#e2e8f0'; },3000); } showToast('Please select a property type','warning'); return; }
+
+  // Validation passed — now show spinner
+  var subBtn = document.querySelector('#addPropertyModal .bfm-continue-btn, #addPropertyModal button:last-child');
+  if (!subBtn) {
+    var allBtns = document.querySelectorAll('#addPropertyModal button');
+    allBtns.forEach(function(b){ if(b.textContent.trim().indexOf('Add Property')>=0) subBtn=b; });
+  }
+  if (subBtn) _btnLoad(subBtn, 'Saving...');
 
   // Add to _userProperties
   var newProp = {
