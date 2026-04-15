@@ -2010,7 +2010,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   .trending-grid{grid-template-columns:repeat(2,1fr) !important;}
   .cat-grid-5{grid-template-columns:repeat(5,1fr) !important;}
   .how-grid{grid-template-columns:repeat(2,1fr) !important;}
-  .portfolio-stats-grid{grid-template-columns:repeat(2,1fr) !important;}
+  .portfolio-stats-grid{grid-template-columns:repeat(3,1fr) !important;}
   .quick-links-grid{grid-template-columns:1fr !important;}
 }
 @media(max-width:680px){
@@ -3712,12 +3712,47 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             </div>
           </div>
 
-          <!-- PORTFOLIO STATS -->
-          <div class="portfolio-stats-grid home-animate home-animate-d5" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;">
-            <div class="portfolio-stat-card"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#3b82f6" stroke-width="1.7" style="margin-bottom:8px;"><path d="M2 18V9l8-6 8 6v9"/><path d="M7 18v-5h6v5"/></svg><div id="hmPortProps" style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">0</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">Properties</div></div>
-            <div class="portfolio-stat-card"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#f59e0b" stroke-width="1.7" style="margin-bottom:8px;"><path d="M10 2l2 6h6l-5 3.5 2 6L10 14l-5 3.5 2-6L2 8h6z"/></svg><div id="hmPortActive" style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">0</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">Active jobs</div></div>
-            <div class="portfolio-stat-card"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#10b981" stroke-width="1.7" style="margin-bottom:8px;"><circle cx="10" cy="10" r="7.5"/><path d="M7 10l2 2 4-4"/></svg><div id="hmPortDone" style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">0</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">Completed</div></div>
-            <div class="portfolio-stat-card"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#6366f1" stroke-width="1.7" style="margin-bottom:8px;"><circle cx="10" cy="10" r="7.5"/><path d="M10 6v4.5l3 2"/></svg><div id="hmPortSpent" style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">£0</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">Total spent</div></div>
+          <!-- PORTFOLIO STATS — 5 cards, all live from _updateHomeStats -->
+          <div class="portfolio-stats-grid home-animate home-animate-d5" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px;">
+
+            <!-- Properties -->
+            <div class="portfolio-stat-card" onclick="showPage('properties',null)" style="cursor:pointer;">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#3b82f6" stroke-width="1.7" style="margin-bottom:8px;"><path d="M2 18V9l8-6 8 6v9"/><path d="M7 18v-5h6v5"/></svg>
+              <div id="hmPortProps" style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">0</div>
+              <div style="font-size:12px;color:#94a3b8;margin-top:4px;">Properties</div>
+            </div>
+
+            <!-- Certificates Valid X/Y -->
+            <div class="portfolio-stat-card" onclick="showPage('properties',null)" style="cursor:pointer;">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#10b981" stroke-width="1.7" style="margin-bottom:8px;"><circle cx="10" cy="10" r="7.5"/><path d="M7 10l2 2 4-4"/></svg>
+              <div style="display:flex;align-items:baseline;gap:2px;line-height:1;">
+                <span id="hmPortCertsValid" style="font-size:24px;font-weight:700;color:#10b981;">0</span>
+                <span id="hmPortCertsTotal" style="font-size:14px;font-weight:500;color:#94a3b8;">/0</span>
+              </div>
+              <div style="font-size:12px;color:#94a3b8;margin-top:4px;">Certs valid</div>
+            </div>
+
+            <!-- Active jobs -->
+            <div class="portfolio-stat-card" onclick="_goToActiveJobs()" style="cursor:pointer;">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#f59e0b" stroke-width="1.7" style="margin-bottom:8px;"><path d="M10 2l2 6h6l-5 3.5 2 6L10 14l-5 3.5 2-6L2 8h6z"/></svg>
+              <div id="hmPortActive" style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">0</div>
+              <div style="font-size:12px;color:#94a3b8;margin-top:4px;">Active jobs</div>
+            </div>
+
+            <!-- Completed -->
+            <div class="portfolio-stat-card">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#6366f1" stroke-width="1.7" style="margin-bottom:8px;"><circle cx="10" cy="10" r="7.5"/><path d="M7 10l2 2 4-4"/></svg>
+              <div id="hmPortDone" style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">0</div>
+              <div style="font-size:12px;color:#94a3b8;margin-top:4px;">Completed</div>
+            </div>
+
+            <!-- Total spent -->
+            <div class="portfolio-stat-card">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#ec4899" stroke-width="1.7" style="margin-bottom:8px;"><path d="M10 2v16M6 6h6a2 2 0 010 4H6m0 0h7a2 2 0 010 4H6"/></svg>
+              <div id="hmPortSpent" style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">£0</div>
+              <div style="font-size:12px;color:#94a3b8;margin-top:4px;">Total spent</div>
+            </div>
+
           </div>
 
           <!-- NOT SURE CTA — responsive -->
@@ -7517,12 +7552,29 @@ function _updateHomeStats() {
   if(el('hmJobsDone'))  el('hmJobsDone').textContent  = completed.length;
   if(el('hmTotalSpend'))el('hmTotalSpend').textContent = totalSpend > 0 ? '£'+totalSpend.toFixed(0) : '£0';
 
-  // Update portfolio stats
-  if(el('hmPortProps'))  el('hmPortProps').textContent  = props.length;
-  if(el('hmPortActive')) el('hmPortActive').textContent = active.length;
-  if(el('hmPortDone'))   el('hmPortDone').textContent   = completed.length;
-  if(el('hmPortSpent'))  el('hmPortSpent').textContent  = totalSpend > 0 ? '£'+totalSpend.toFixed(0) : '£0';
-
+  // Compute certificate compliance from all properties
+  var totalCerts = 0, validCerts = 0;
+  if (props.length && typeof _defaultComplianceDocs !== 'undefined') {
+    var today2 = new Date();
+    props.forEach(function(prop) {
+      _defaultComplianceDocs.forEach(function(doc) {
+        if (!doc.expiry) return;
+        totalCerts++;
+        var daysLeft = Math.round((new Date(doc.expiry) - today2) / (1000*60*60*24));
+        if (daysLeft >= 0) validCerts++;
+      });
+    });
+  }
+  // Update all portfolio stat cards
+  if(el('hmPortProps'))       el('hmPortProps').textContent      = props.length;
+  if(el('hmPortCertsValid'))  el('hmPortCertsValid').textContent = validCerts;
+  if(el('hmPortCertsTotal'))  el('hmPortCertsTotal').textContent = '/'+totalCerts;
+  if(el('hmPortActive'))      el('hmPortActive').textContent     = active.length;
+  if(el('hmPortDone'))        el('hmPortDone').textContent       = completed.length;
+  if(el('hmPortSpent'))       el('hmPortSpent').textContent      = totalSpend > 0 ? '\xa3'+totalSpend.toFixed(0) : '\xa30';
+  // Colour cert valid: green=all valid, amber=some expiring, grey=no props
+  var certEl = el('hmPortCertsValid');
+  if (certEl) certEl.style.color = totalCerts===0 ? '#94a3b8' : validCerts===totalCerts ? '#10b981' : '#f59e0b';
   // Update properties page stat card[0] too
   var statNums = document.querySelectorAll('.prop-stat-num');
   if(statNums[0]) statNums[0].textContent = props.length;
@@ -14947,6 +14999,7 @@ button:active { transform: scale(0.98); }
 
 /* ── Portfolio stat cards (Properties, Active jobs, Completed, Total spent) ── */
 .dash-dark .portfolio-stat-card [style*="font-size:24px;font-weight:700;color:#0f172a"] { color:#e6edf3 !important; }
+.dash-dark #hmPortCertsTotal { color:#484f58 !important; }
 .dash-dark .portfolio-stat-card [style*="font-size:12px;color:#94a3b8"] { color:#8b949e !important; }
 
 /* ── Start a chat CTA → keep gradient, just fix text/bg ── */
