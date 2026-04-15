@@ -11971,7 +11971,7 @@ var _suppOnboard = {
   insProvider: '', insPolicy: '', insCoverage: '', insExpiry: '',
   profIndemnity: false, tradeCerts: [], customCerts: [],
   // Background
-  teamSize: '', companyDbsDecl: '', dbsDeclared: '', convictionsDetail: '', rightToWork: '', jobRefs: '',
+  teamSize: '', companyDbsDecl: '', dbsLevel: '', dbsDeclared: '', convictionsDetail: '', rightToWork: '', jobRefs: '',
   // Availability
   workDays: ['Mon','Tue','Wed','Thu','Fri'],
   startTime: '08:00', endTime: '17:00', emergencyCallouts: '',
@@ -12457,16 +12457,47 @@ function _buildSuppOnboardStep(step) {
         + '</div>'
         + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;margin-bottom:16px;">As a company, you must confirm whether all operatives dispatched through the platform have undergone DBS (Disclosure and Barring Service) checks. This declaration is displayed on your marketplace profile as a trust indicator.</div>'
         + '<div style="font-size:13.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:10px;">DBS self-declaration</div>'
-        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">'
-          + [['Yes','All operatives are DBS checked'],['No','Not all operatives have DBS checks']].map(function(o){
-              var sel = _suppOnboard.companyDbsDecl === o[0];
-              return '<div onclick="_suppOnboard.companyDbsDecl=\''+o[0]+'\';_renderSuppOnboard();" style="border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;padding:14px;text-align:center;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all 0.15s;">'
-                + '<div style="font-size:14px;font-weight:700;color:'+(sel?'#1e3a5f':'#0f172a')+';margin-bottom:3px;font-family:Inter,sans-serif;">'+o[0]+'</div>'
-                + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">'+o[1]+'</div>'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
+          + (function(){
+              var ysel = _suppOnboard.companyDbsDecl === 'Yes';
+              var nsel = _suppOnboard.companyDbsDecl === 'No';
+              var yCard = '<div onclick="_suppOnboard.companyDbsDecl=\'Yes\';_renderSuppOnboard();" style="border:1.5px solid '+(ysel?'#10b981':'#e2e8f0')+';border-radius:10px;padding:16px 14px;text-align:center;cursor:pointer;background:'+(ysel?'#f0fdf4':'#fff')+';transition:all 0.15s;">'
+                + (ysel?'<div style="color:#10b981;margin-bottom:4px;"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#10b981" stroke-width="1.8"><circle cx="10" cy="10" r="8"/><path d="M6 10l3 3 5-5"/></svg></div>':'')
+                + '<div style="font-size:14px;font-weight:700;color:'+(ysel?'#065f46':'#0f172a')+';margin-bottom:3px;font-family:Inter,sans-serif;">Yes</div>'
+                + '<div style="font-size:12px;color:'+(ysel?'#059669':'#64748b')+';font-family:Inter,sans-serif;">All operatives are DBS checked</div>'
               + '</div>';
-            }).join('')
+              var nCard = '<div onclick="_suppOnboard.companyDbsDecl=\'No\';_renderSuppOnboard();" style="border:1.5px solid '+(nsel?'#ef4444':'#e2e8f0')+';border-radius:10px;padding:16px 14px;text-align:center;cursor:pointer;background:'+(nsel?'#fef2f2':'#fff')+';transition:all 0.15s;">'
+                + (nsel?'<div style="color:#ef4444;margin-bottom:4px;"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#ef4444" stroke-width="1.8"><circle cx="10" cy="10" r="8"/><path d="M10 6v4M10 13v.5"/></svg></div>':'')
+                + '<div style="font-size:14px;font-weight:700;color:'+(nsel?'#991b1b':'#0f172a')+';margin-bottom:3px;font-family:Inter,sans-serif;">No</div>'
+                + '<div style="font-size:12px;color:'+(nsel?'#dc2626':'#64748b')+';font-family:Inter,sans-serif;">Not all operatives have DBS checks</div>'
+              + '</div>';
+              return yCard + nCard;
+            })()
         + '</div>'
-        + '<div style="font-size:13.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:4px;">DBS policy statement <span style="font-size:11.5px;color:#94a3b8;font-weight:400;">(recommended)</span></div>'
+        + (_suppOnboard.companyDbsDecl === 'No'
+            ? '<div style="display:flex;align-items:flex-start;gap:10px;background:#fff7ed;border:1.5px solid #fed7aa;border-radius:10px;padding:12px 14px;margin-bottom:14px;">'
+                + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#c2410c" stroke-width="1.6" style="flex-shrink:0;margin-top:1px;"><path d="M7.5 1.5l6 11H1.5l6-11z"/><path d="M7.5 6v3M7.5 10.5v.5"/></svg>'
+                + '<span style="font-size:12.5px;color:#9a3412;font-family:Inter,sans-serif;line-height:1.55;">Some property managers require DBS-checked operatives. You can still list on the platform, but your profile will indicate that not all staff are DBS verified.</span>'
+              + '</div>'
+            : '')
+        + (_suppOnboard.companyDbsDecl === 'Yes'
+            ? '<div style="margin-bottom:14px;">'
+                + '<div style="font-size:13.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:10px;">What level of DBS check do your operatives hold?</div>'
+                + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
+                  + [['Basic DBS','Shows unspent convictions only. Suitable for most trades.'],['Enhanced DBS','Includes spent & unspent convictions, cautions, and barred list checks.']].map(function(d){
+                      var lsel = _suppOnboard.companyDbsLevel === d[0];
+                      return '<div onclick="_suppOnboard.companyDbsLevel=\''+d[0]+'\';_renderSuppOnboard();" style="border:1.5px solid '+(lsel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;padding:14px;cursor:pointer;background:'+(lsel?'#eff6ff':'#fff')+';display:flex;align-items:flex-start;gap:10px;transition:all 0.15s;">'
+                        + '<div style="width:18px;height:18px;border-radius:50%;border:1.5px solid '+(lsel?'#1A5FC8':'#d1d5db')+';background:'+(lsel?'#1A5FC8':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">'
+                          + (lsel?'<div style="width:6px;height:6px;border-radius:50%;background:#fff;"></div>':'')
+                        + '</div>'
+                        + '<div><div style="font-size:13.5px;font-weight:600;color:'+(lsel?'#1e3a5f':'#0f172a')+';font-family:Inter,sans-serif;margin-bottom:3px;">'+d[0]+'</div>'
+                          + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;line-height:1.45;">'+d[1]+'</div></div>'
+                      + '</div>';
+                    }).join('')
+                + '</div>'
+              + '</div>'
+            : '')
+                + '<div style="font-size:13.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:4px;">DBS policy statement <span style="font-size:11.5px;color:#94a3b8;font-weight:400;">(recommended)</span></div>'
         + '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:8px;line-height:1.5;">Companies with a compliant DBS policy do not need individual certificates for each employee. Your policy should cover: check frequency, escalation process, named compliance owner, and record retention.</div>'
         + '<textarea rows="4" placeholder="Describe your company\'s DBS checking procedures, frequency of checks, escalation process, and compliance ownership." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 13px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;resize:vertical;margin-bottom:10px;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"></textarea>'
         + '<button onclick="_suppDraftWithAI(\'dbs-policy\')" onmouseover="this.style.background=\'linear-gradient(90deg,#1A5FC8,#0FA3D0)\';this.style.color=\'#fff\';this.style.borderColor=\'transparent\';this.querySelector(\'svg\').style.stroke=\'#fff\';" onmouseout="this.style.background=\'none\';this.style.color=\'#374151\';this.style.borderColor=\'#e2e8f0\';this.querySelector(\'svg\').style.stroke=\'#1A5FC8\';" style="background:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;transition:all 0.2s;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M6.5 1l1 2.7h2.8l-2.3 1.7.9 2.8L6.5 6.7l-2.4 1.5.9-2.8L2.7 3.7h2.8z"/></svg> Draft with AI</button>'
