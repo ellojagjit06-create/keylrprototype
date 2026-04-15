@@ -3712,24 +3712,14 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             </div>
           </div>
 
-          <!-- PORTFOLIO STATS — 5 cards, all live from _updateHomeStats -->
-          <div class="portfolio-stats-grid home-animate home-animate-d5" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px;">
+          <!-- PORTFOLIO STATS — 4 cards, all live from _updateHomeStats -->
+          <div class="portfolio-stats-grid home-animate home-animate-d5" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;">
 
             <!-- Properties -->
             <div class="portfolio-stat-card" onclick="showPage('properties',null)" style="cursor:pointer;">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#3b82f6" stroke-width="1.7" style="margin-bottom:8px;"><path d="M2 18V9l8-6 8 6v9"/><path d="M7 18v-5h6v5"/></svg>
               <div id="hmPortProps" style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">0</div>
               <div style="font-size:12px;color:#94a3b8;margin-top:4px;">Properties</div>
-            </div>
-
-            <!-- Certificates Valid X/Y -->
-            <div class="portfolio-stat-card" onclick="showPage('properties',null)" style="cursor:pointer;">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#10b981" stroke-width="1.7" style="margin-bottom:8px;"><circle cx="10" cy="10" r="7.5"/><path d="M7 10l2 2 4-4"/></svg>
-              <div style="display:flex;align-items:baseline;gap:2px;line-height:1;">
-                <span id="hmPortCertsValid" style="font-size:24px;font-weight:700;color:#10b981;">0</span>
-                <span id="hmPortCertsTotal" style="font-size:14px;font-weight:500;color:#94a3b8;">/0</span>
-              </div>
-              <div style="font-size:12px;color:#94a3b8;margin-top:4px;">Certs valid</div>
             </div>
 
             <!-- Active jobs -->
@@ -3741,14 +3731,14 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
             <!-- Completed -->
             <div class="portfolio-stat-card">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#6366f1" stroke-width="1.7" style="margin-bottom:8px;"><circle cx="10" cy="10" r="7.5"/><path d="M7 10l2 2 4-4"/></svg>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#10b981" stroke-width="1.7" style="margin-bottom:8px;"><circle cx="10" cy="10" r="7.5"/><path d="M7 10l2 2 4-4"/></svg>
               <div id="hmPortDone" style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">0</div>
               <div style="font-size:12px;color:#94a3b8;margin-top:4px;">Completed</div>
             </div>
 
             <!-- Total spent -->
             <div class="portfolio-stat-card">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#ec4899" stroke-width="1.7" style="margin-bottom:8px;"><path d="M10 2v16M6 6h6a2 2 0 010 4H6m0 0h7a2 2 0 010 4H6"/></svg>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#6366f1" stroke-width="1.7" style="margin-bottom:8px;"><circle cx="10" cy="10" r="7.5"/><path d="M10 6v4.5l3 2"/></svg>
               <div id="hmPortSpent" style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">£0</div>
               <div style="font-size:12px;color:#94a3b8;margin-top:4px;">Total spent</div>
             </div>
@@ -3771,7 +3761,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             <div class="quick-link-card" onclick="showPage('properties',null);">
               <div style="display:flex;align-items:flex-start;gap:12px;">
                 <div style="width:36px;height:36px;background:#eff6ff;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#3b82f6" stroke-width="1.7"><path d="M1 16V8l8-5 8 5v8"/><path d="M6 16v-5h6v5"/></svg></div>
-                <div><div style="font-size:13.5px;font-weight:600;color:#0f172a;">Property portfolio</div><div style="font-size:12px;color:#94a3b8;margin-top:2px;">0 properties · 0 certificates valid</div></div>
+                <div><div style="font-size:13.5px;font-weight:600;color:#0f172a;">Property portfolio</div><div id="hmQLPortfolio" style="font-size:12px;color:#94a3b8;margin-top:2px;">0 properties · 0 certificates valid</div></div>
               </div>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M5 3l4 4-4 4"/></svg>
             </div>
@@ -4665,7 +4655,25 @@ function _clearUser() {
   var sub = document.querySelector('.prop-sub');
   if (sub) sub.textContent = '0 properties · 0 alerts';
   var statNums = document.querySelectorAll('.prop-stat-num');
-  if (statNums[0]) statNums[0].textContent = '0';
+  statNums.forEach(function(el){ el.textContent = '0'; });
+  // Reset home page stats to zero
+  var hmIds = ['hmJobsDone','hmAvgRating','hmTotalSpend','hmPortProps','hmPortActive','hmPortDone','hmPortSpent'];
+  hmIds.forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent = id==='hmTotalSpend'||id==='hmPortSpent'?'£0':id==='hmAvgRating'?'—':'0'; });
+  // Reset quick-link portfolio subtitle
+  var ql=document.getElementById('hmQLPortfolio'); if(ql) ql.textContent='0 properties · 0 certificates valid';
+  // Reset active jobs list on home page
+  var hmJobs=document.getElementById('hmActiveJobsList');
+  if(hmJobs) hmJobs.innerHTML='<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:40px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;">'
+    +'<div style="width:56px;height:56px;background:#f8fafc;border-radius:16px;display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#cbd5e1" stroke-width="1.5"><rect x="3" y="7" width="20" height="14" rx="2.5"/><path d="M8 7V5a5 5 0 0110 0v2"/><path d="M3 12h20"/></svg></div>'
+    +'<div style="font-size:15px;font-weight:700;color:#0f172a;">No active jobs</div>'
+    +'<div style="font-size:13px;color:#94a3b8;max-width:280px;line-height:1.6;">Book a service to start tracking your jobs in real time</div>'
+    +'</div>';
+  var hmSub=document.getElementById('hmActiveJobsSub'); if(hmSub) hmSub.textContent='0 in progress';
+  var hmVA=document.getElementById('hmActiveJobsViewAll'); if(hmVA) hmVA.style.display='none';
+  // Reset compliance banner
+  var compAlert=document.getElementById('complianceAlert'); if(compAlert) compAlert.style.display='none';
+  var propAlert=document.getElementById('propAlertBar'); if(propAlert) propAlert.style.display='none';
+  var sbComp=document.getElementById('sbComplianceCard'); if(sbComp) sbComp.style.display='none';
   _syncUserUI();
 }
 
@@ -7565,17 +7573,14 @@ function _updateHomeStats() {
       });
     });
   }
-  // Update all portfolio stat cards
-  if(el('hmPortProps'))       el('hmPortProps').textContent      = props.length;
-  if(el('hmPortCertsValid'))  el('hmPortCertsValid').textContent = validCerts;
-  if(el('hmPortCertsTotal'))  el('hmPortCertsTotal').textContent = '/'+totalCerts;
-  if(el('hmPortActive'))      el('hmPortActive').textContent     = active.length;
-  if(el('hmPortDone'))        el('hmPortDone').textContent       = completed.length;
-  if(el('hmPortSpent'))       el('hmPortSpent').textContent      = totalSpend > 0 ? '\xa3'+totalSpend.toFixed(0) : '\xa30';
-  // Colour cert valid: green=all valid, amber=some expiring, grey=no props
-  var certEl = el('hmPortCertsValid');
-  if (certEl) certEl.style.color = totalCerts===0 ? '#94a3b8' : validCerts===totalCerts ? '#10b981' : '#f59e0b';
-  // Update properties page stat card[0] too
+  // Update 4-card portfolio grid
+  if(el('hmPortProps'))   el('hmPortProps').textContent   = props.length;
+  if(el('hmPortActive'))  el('hmPortActive').textContent  = active.length;
+  if(el('hmPortDone'))    el('hmPortDone').textContent    = completed.length;
+  if(el('hmPortSpent'))   el('hmPortSpent').textContent   = totalSpend > 0 ? '\xa3'+totalSpend.toFixed(0) : '\xa30';
+  // Update Property portfolio quick-link card subtitle
+  if(el('hmQLPortfolio')) el('hmQLPortfolio').textContent =
+    props.length + ' propert' + (props.length===1?'y':'ies') + ' \xb7 ' + validCerts + '/' + totalCerts + ' certs valid';
   var statNums = document.querySelectorAll('.prop-stat-num');
   if(statNums[0]) statNums[0].textContent = props.length;
 
