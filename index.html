@@ -7209,23 +7209,28 @@ function _refreshAllAlerts() {
   // ── Properties page alert bar (expired only) ──
   var bar = document.getElementById('propAlertBar');
   var alertList = document.getElementById('propAlertList');
+  var isDkBar = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
   if (bar && alertList) {
     if (expiredOnly.length > 0) {
       bar.style.display = 'block';
+      bar.style.background = isDkBar ? '#2a1515' : '#fef2f2';
+      bar.style.borderColor = isDkBar ? '#7f1d1d' : '#fecaca';
       alertList.innerHTML = expiredOnly.map(function(a) {
         return '<div style="display:flex;align-items:center;gap:8px;font-family:Inter,sans-serif;font-size:13px;">'
-          + '<span style="font-weight:700;color:#991b1b;">' + escapeHtml(a.propName) + '</span>'
-          + '<span style="color:#be4444;">— ' + escapeHtml(a.docName) + '</span>'
-          + '<span style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:20px;padding:1px 8px;font-size:11px;font-weight:700;">Expired</span>'
+          + '<span style="font-weight:700;color:'+(isDkBar?'#fca5a5':'#991b1b')+';">' + escapeHtml(a.propName) + '</span>'
+          + '<span style="color:'+(isDkBar?'#f87171':'#be4444')+'">— ' + escapeHtml(a.docName) + '</span>'
+          + '<span style="background:'+(isDkBar?'#3f1111':'#fef2f2')+';color:'+(isDkBar?'#fca5a5':'#dc2626')+';border:1px solid '+(isDkBar?'#7f1d1d':'#fecaca')+';border-radius:20px;padding:1px 8px;font-size:11px;font-weight:700;">Expired</span>'
         + '</div>';
       }).join('');
     } else if (totalAlerts > 0) {
       bar.style.display = 'block';
+      bar.style.background = isDkBar ? '#271d0d' : '#fffbeb';
+      bar.style.borderColor = isDkBar ? '#854d0e' : '#fde68a';
       alertList.innerHTML = allAlerts.map(function(a) {
         return '<div style="display:flex;align-items:center;gap:8px;font-family:Inter,sans-serif;font-size:13px;">'
-          + '<span style="font-weight:700;color:#92400e;">' + escapeHtml(a.propName) + '</span>'
-          + '<span style="color:#b45309;">— ' + escapeHtml(a.docName) + '</span>'
-          + '<span style="background:#fffbeb;color:#d97706;border:1px solid #fde68a;border-radius:20px;padding:1px 8px;font-size:11px;font-weight:700;">Expiring Soon</span>'
+          + '<span style="font-weight:700;color:'+(isDkBar?'#fcd34d':'#92400e')+';">' + escapeHtml(a.propName) + '</span>'
+          + '<span style="color:'+(isDkBar?'#fbbf24':'#b45309')+'">— ' + escapeHtml(a.docName) + '</span>'
+          + '<span style="background:'+(isDkBar?'#2d1a00':'#fffbeb')+';color:'+(isDkBar?'#fcd34d':'#d97706')+';border:1px solid '+(isDkBar?'#854d0e':'#fde68a')+';border-radius:20px;padding:1px 8px;font-size:11px;font-weight:700;">Expiring Soon</span>'
         + '</div>';
       }).join('');
     } else {
@@ -7348,15 +7353,18 @@ function _renderPropertiesGrid() {
           + '<span style="font-size:11px;font-weight:600;color:'+theme.icon+';font-family:Inter,sans-serif;opacity:0.6;letter-spacing:.05em;text-transform:uppercase;">'+escapeHtml(prop.type||'Property')+'</span>'
         + '</div>';
 
+    var isDkCard = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
+    card.style.background = isDkCard ? '#161b22' : '#fff';
+    card.style.borderColor = isDkCard ? '#30363d' : '#e2e8f0';
     card.innerHTML =
       imageSection
-      + '<div style="padding:14px 16px 16px;">'
+      + '<div style="padding:14px 16px 16px;background:'+(isDkCard?'#161b22':'#fff')+';">'
         + '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;">'
-          + '<div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;line-height:1.3;flex:1;margin-right:8px;">'+prop.name+'</div>'
-          + '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#d1d5db" stroke-width="2" style="flex-shrink:0;margin-top:2px;"><path d="M6 3l4 5-4 5"/></svg>'
+          + '<div style="font-size:15px;font-weight:700;color:'+(isDkCard?'#e6edf3':'#0f172a')+';font-family:Inter,sans-serif;line-height:1.3;flex:1;margin-right:8px;">'+prop.name+'</div>'
+          + '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="'+(isDkCard?'#484f58':'#d1d5db')+'" stroke-width="2" style="flex-shrink:0;margin-top:2px;"><path d="M6 3l4 5-4 5"/></svg>'
         + '</div>'
-        + '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:10px;">'+prop.addr+(prop.postcode?' · '+prop.postcode:'')+'</div>'
-        + '<div style="display:flex;flex-wrap:wrap;gap:6px;">'+tags+'</div>'
+        + '<div style="font-size:12.5px;color:'+(isDkCard?'#8b949e':'#64748b')+';font-family:Inter,sans-serif;margin-bottom:10px;">'+prop.addr+(prop.postcode?' · '+prop.postcode:'')+'</div>'
+        + '<div style="display:flex;flex-wrap:wrap;gap:6px;">'+tags.replace(/background:#f1f5f9/g,isDkCard?'background:#21262d':'background:#f1f5f9').replace(/color:#64748b/g,isDkCard?'color:#8b949e':'color:#64748b')+'</div>'
         + badge
       + '</div>';
     grid.appendChild(card);
@@ -14495,6 +14503,112 @@ button:active { transform: scale(0.98); }
 /* ── Dark mode: Properties empty state ── */
 .dash-dark .prop-empty-card { background:#161b22 !important; border-color:#30363d !important; }
 .dash-dark .prop-empty-card [style*="color:#0f172a"] { color:#e6edf3 !important; }
+
+/* ══════════════════════════════════════════
+   DARK MODE: Property Cards (grid)
+══════════════════════════════════════════ */
+.dash-dark .prop-dynamic-grid > div {
+  background:#161b22 !important;
+  border-color:#30363d !important;
+}
+.dash-dark .prop-dynamic-grid > div [style*="color:#0f172a"] { color:#e6edf3 !important; }
+.dash-dark .prop-dynamic-grid > div [style*="color:#64748b"] { color:#8b949e !important; }
+.dash-dark .prop-dynamic-grid > div [style*="background:#f1f5f9"] { background:#21262d !important; color:#8b949e !important; }
+.dash-dark .prop-dynamic-grid > div [style*="background:#fff"] { background:#161b22 !important; }
+
+/* ══════════════════════════════════════════
+   DARK MODE: propAlertBar (Properties page)
+══════════════════════════════════════════ */
+.dash-dark #propAlertBar {
+  background:#2a1515 !important;
+  border-color:#7f1d1d !important;
+}
+.dash-dark #propAlertBar span[style*="color:#991b1b"],
+.dash-dark #propAlertBar span[style*="color:#92400e"] { color:#fca5a5 !important; }
+.dash-dark #propAlertBar span[style*="color:#be4444"],
+.dash-dark #propAlertBar span[style*="color:#b45309"] { color:#f87171 !important; }
+.dash-dark #propAlertBar > div:first-child svg { stroke:#fca5a5 !important; }
+.dash-dark #propAlertBar > div:first-child span:first-child { color:#fca5a5 !important; }
+
+/* ══════════════════════════════════════════
+   DARK MODE: complianceAlert (Home page banner)
+══════════════════════════════════════════ */
+.dash-dark #complianceAlert {
+  background:#2a1515 !important;
+  border-color:#7f1d1d !important;
+}
+.dash-dark #complianceAlert * { color:#fca5a5 !important; }
+.dash-dark #complianceAlert button {
+  background:#dc2626 !important;
+  color:#fff !important;
+}
+.dash-dark #complianceAlert [style*="background:#fee2e2"] { background:#3f1111 !important; }
+.dash-dark #complianceAlert svg { stroke:#fca5a5 !important; }
+.dash-dark #complianceTitle { color:#fca5a5 !important; }
+.dash-dark #complianceBody  { color:#f87171 !important; }
+
+/* ══════════════════════════════════════════
+   DARK MODE: Sidebar collapsed — hide compliance card
+══════════════════════════════════════════ */
+.db-sidebar.collapsed #sbComplianceCard { display:none !important; }
+
+/* ══════════════════════════════════════════
+   DARK MODE: Discovery / PM action chips
+══════════════════════════════════════════ */
+.dash-dark #pmActionChips > div { background:transparent !important; }
+.dash-dark #pmActionChips > div > div {
+  background:#161b22 !important;
+  border-color:#30363d !important;
+}
+.dash-dark #pmActionChips [style*="color:#0f172a"],
+.dash-dark #pmActionChips [style*="color:#1e293b"] { color:#e6edf3 !important; }
+.dash-dark #pmActionChips [style*="color:#64748b"],
+.dash-dark #pmActionChips [style*="color:#94a3b8"] { color:#8b949e !important; }
+.dash-dark #pmActionChips [style*="color:#1d4ed8"],
+.dash-dark #pmActionChips [style*="color:#1A5FC8"],
+.dash-dark #pmActionChips [style*="color:#3b82f6"] { color:#58a6ff !important; }
+.dash-dark #pmActionChips button { background:linear-gradient(90deg,#1A5FC8,#0FA3D0) !important; color:#fff !important; }
+.dash-dark #pmActionChips [style*="background:#eff6ff"],
+.dash-dark #pmActionChips [style*="background:#f0f9ff"] { background:#1a2d4a !important; }
+.dash-dark #pmActionChips [style*="background:#f8fafc"],
+.dash-dark #pmActionChips [style*="background:#fff"] { background:#161b22 !important; }
+
+/* ══════════════════════════════════════════
+   DARK MODE: Subscription / Pricing plan cards
+══════════════════════════════════════════ */
+.dash-dark .plan-ob-card {
+  background:#161b22 !important;
+  border-color:#30363d !important;
+}
+.dash-dark .plan-ob-card.recommended { border-color:#1A5FC8 !important; }
+.dash-dark .plan-ob-card [style*="color:#0f172a"],
+.dash-dark .plan-ob-card [style*="color:#1e293b"],
+.dash-dark .plan-ob-card [style*="color:#111827"] { color:#e6edf3 !important; }
+.dash-dark .plan-ob-card [style*="color:#6b7280"],
+.dash-dark .plan-ob-card [style*="color:#64748b"],
+.dash-dark .plan-ob-card [style*="color:#374151"] { color:#8b949e !important; }
+.dash-dark .plan-ob-feat { color:#c9d1d9 !important; }
+.dash-dark .plan-ob-feat svg { stroke:#10b981 !important; }
+.dash-dark .plan-ob-card [style*="background:#f9fafb"],
+.dash-dark .plan-ob-card [style*="background:#f1f5f9"],
+.dash-dark .plan-ob-card [style*="background:#fff"] { background:#1c2433 !important; }
+.dash-dark .plan-ob-card [style*="color:#6d28d9"],
+.dash-dark .plan-ob-card [style*="color:#1d4ed8"] { color:#a78bfa !important; }
+/* Recommended badge */
+.dash-dark .plan-ob-card .recommended-badge,
+.dash-dark .plan-ob-card [style*="Most Popular"],
+.dash-dark .plan-ob-card [style*="background:#eff6ff"] { background:#1a2d4a !important; color:#58a6ff !important; }
+/* Plan price */
+.dash-dark .plan-ob-card [style*="font-size:28px"],
+.dash-dark .plan-ob-card [style*="font-size:32px"] { color:#e6edf3 !important; }
+/* Settings subscription tab specifically */
+.dash-dark #stab-subscription { color:#8b949e !important; }
+.dash-dark #settings-subscription .plan-ob-card { background:#161b22 !important; border-color:#30363d !important; }
+.dash-dark #settings-subscription [style*="color:#0f172a"] { color:#e6edf3 !important; }
+.dash-dark #settings-subscription [style*="color:#374151"] { color:#c9d1d9 !important; }
+.dash-dark #settings-subscription [style*="color:#64748b"] { color:#8b949e !important; }
+.dash-dark #settings-subscription [style*="background:#fff"] { background:#161b22 !important; }
+.dash-dark #settings-subscription [style*="background:#f9fafb"] { background:#1c2433 !important; }
 .dash-dark .prop-empty-card [style*="color:#64748b"] { color:#8b949e !important; }
 .dash-dark .prop-empty-card [style*="background:linear-gradient(135deg,#eff6ff"] { background:linear-gradient(135deg,#1a2d4a,#1e3a5f) !important; }
 
