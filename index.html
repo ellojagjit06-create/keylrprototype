@@ -7068,7 +7068,7 @@ function _renderPropertiesGrid() {
   if (!grid) return;
   grid.innerHTML = '';
   var hasProps = _userProperties && _userProperties.length > 0;
-  // Show/hide empty state
+  // Show/hide empty state (never check _isLoggedIn here — modal already guards)
   if (emptyState) emptyState.style.display = hasProps ? 'none' : 'flex';
   grid.style.display = hasProps ? 'grid' : 'none';
   if (!hasProps) return;
@@ -13747,9 +13747,8 @@ function _apSubmit() {
 
   closeAddPropertyModal();
   showToast('Property added successfully!', 'success');
-
-  // Refresh grid immediately
-  setTimeout(function(){ if (typeof _renderPropertiesGrid === 'function') _renderPropertiesGrid(); }, 50);
+  // Render grid immediately
+  if (typeof _renderPropertiesGrid === 'function') _renderPropertiesGrid();
 }
 
 // Close modal on backdrop click
@@ -14263,14 +14262,17 @@ button:active { transform: scale(0.98); }
       <!-- Property Image -->
       <div style="margin-bottom:20px;">
         <div style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:6px;">Property Image <span style="font-size:11px;font-weight:400;color:#94a3b8;">(Optional)</span></div>
-        <div id="apImgDropzone" onclick="document.getElementById('apImgInput').click()" ondragover="event.preventDefault();this.style.borderColor='#1A5FC8'" ondragleave="this.style.borderColor='#e2e8f0'" ondrop="event.preventDefault();_apHandleImg(event.dataTransfer.files[0])" style="border:2px dashed #e2e8f0;border-radius:12px;padding:28px 16px;text-align:center;cursor:pointer;transition:border-color .15s;background:#fafafa;position:relative;min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div id="apImgDropzone" onclick="document.getElementById('apImgInput').click()" ondragover="event.preventDefault();this.style.borderColor='#1A5FC8';this.style.background='#f0f9ff'" ondragleave="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'" ondrop="event.preventDefault();_apHandleImg(event.dataTransfer.files[0])" style="border:2px dashed #e2e8f0;border-radius:12px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;background:#f8fafc;position:relative;height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;">
           <div id="apImgPreview" style="display:none;position:absolute;inset:0;border-radius:10px;overflow:hidden;"><img id="apImgPreviewImg" style="width:100%;height:100%;object-fit:cover;" src="" alt=""></div>
-          <div id="apImgPlaceholder">
-            <div style="width:48px;height:48px;border-radius:12px;background:#eff6ff;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
-              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1A5FC8" stroke-width="1.6"><rect x="2" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M2 16l5-4 4 3 3-3 6 5"/></svg>
-            </div>
-            <div style="font-size:13.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:3px;">Drop an image or click to upload</div>
-            <div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;">JPG, PNG or WEBP &middot; Max 5MB</div>
+          <div id="apImgPlaceholder" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:1;">
+            <!-- Large faded house icon -->
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="#cbd5e1" stroke-width="1.5" style="opacity:0.7;">
+              <path d="M8 56V28l24-18 24 18v28"/>
+              <path d="M22 56V40h20v16"/>
+              <path d="M8 28l24-18 24 18"/>
+            </svg>
+            <div style="font-size:13px;font-weight:600;color:#94a3b8;font-family:Inter,sans-serif;">Click or drag to upload</div>
+            <div style="font-size:11.5px;color:#cbd5e1;font-family:Inter,sans-serif;">JPG, PNG or WEBP &middot; Max 5MB</div>
           </div>
         </div>
         <input id="apImgInput" type="file" accept="image/*" style="display:none;" onchange="_apHandleImg(this.files[0])">
@@ -14330,7 +14332,7 @@ button:active { transform: scale(0.98); }
       </div>
     </div>
     <!-- Fixed footer -->
-    <div style="padding:16px 24px 20px;border-top:1px solid #f1f5f9;flex-shrink:0;background:#fff;">
+    <div style="padding:16px 24px 20px;border-top:1px solid #f1f5f9;flex-shrink:0;background:#fff;border-radius:0 0 20px 20px;">
       <button onclick="_apSubmit()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7.5l3.5 3.5 7.5-7"/></svg>
         Add Property
