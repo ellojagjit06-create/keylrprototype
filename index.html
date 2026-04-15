@@ -4739,16 +4739,26 @@ function _doLogout() {
   btnLogout.onmouseout  = function(){ this.style.background = '#dc2626'; };
   btnLogout.onclick = function(){
     modal.remove();
-    _clearUser();
+    // Clear all auth state
+    _isLoggedIn = false;
+    window._user = null;
+    if (typeof _clearUser === 'function') _clearUser();
+    // Remove supplier screens
     var suppDash    = document.getElementById('suppDashScreen');
     var suppOnboard = document.getElementById('supplierOnboardingScreen');
     if (suppDash)    suppDash.remove();
     if (suppOnboard) suppOnboard.remove();
-    var pg_dashboard = document.getElementById('pg-dashboard');
-    var pg_landing   = document.getElementById('pg-landing');
-    if (pg_landing)   pg_landing.style.display = '';
-    if (pg_dashboard) { pg_dashboard.classList.remove('visible'); pg_dashboard.style.display = 'none'; }
-    if (typeof backToLanding === 'function') backToLanding(null);
+    // Close Add Property modal if open
+    if (typeof closeAddPropertyModal === 'function') closeAddPropertyModal();
+    // Redirect to landing page
+    if (typeof backToLanding === 'function') {
+      backToLanding(null);
+    } else {
+      var pg_dashboard = document.getElementById('pg-dashboard');
+      var pg_landing   = document.getElementById('pg-landing');
+      if (pg_dashboard) { pg_dashboard.classList.remove('visible'); pg_dashboard.style.display = 'none'; }
+      if (pg_landing)   { pg_landing.style.display = 'block'; }
+    }
   };
 
   row.appendChild(btnCancel);
@@ -7109,7 +7119,7 @@ function _renderPropertiesGrid() {
 
     card.innerHTML =
       '<div style="height:160px;background:linear-gradient(135deg,#e8f4fd,#dbeafe);overflow:hidden;position:relative;">'
-        + '<img src="'+imgSrc+'" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display=\"none\"">'
+        + '<img src="'+imgSrc+'" style="width:100%;height:100%;object-fit:cover;display:block;" >'
       + '</div>'
       + '<div style="padding:14px 16px 16px;">'
         + '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;">'
@@ -7269,7 +7279,7 @@ function showProviderProfile(pid) {
   var styles = ['grid-row:1/3;','',''];
   for (var gi=0; gi<3; gi++) {
     galleryInner += '<div style="'+styles[gi]+'position:relative;overflow:hidden;background:linear-gradient(135deg,#1a3356,#0f1c38);">'
-      +'<img src="'+imgUrls[gi]+'" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display=\'none\'" />'
+      +'<img src="'+imgUrls[gi]+'" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display=&quot;none&quot;" />'
       +'</div>';
   }
   gallery.innerHTML = galleryInner;
