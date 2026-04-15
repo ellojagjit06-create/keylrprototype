@@ -3520,11 +3520,11 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           <div class="home-stats-grid home-animate">
             <div class="home-stat-card">
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#10b981" stroke-width="1.8"><circle cx="9" cy="9" r="7"/><path d="M6 9l2 2 4-4"/></svg>
-              <div><div style="font-size:22px;font-weight:700;color:#0f172a;line-height:1;">0</div><div style="font-size:12px;color:#94a3b8;margin-top:2px;">Jobs completed</div></div>
+              <div><div id="hmJobsDone" style="font-size:22px;font-weight:700;color:#0f172a;line-height:1;">0</div><div style="font-size:12px;color:#94a3b8;margin-top:2px;">Jobs completed</div></div>
             </div>
             <div class="home-stat-card home-animate-d1">
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#6366f1" stroke-width="1.8"><path d="M9 1l2 5h5l-4 3 1.5 5L9 11.5 4.5 14 6 9 2 6h5z"/></svg>
-              <div><div style="font-size:22px;font-weight:700;color:#0f172a;line-height:1;">—</div><div style="font-size:12px;color:#94a3b8;margin-top:2px;">Avg. rating</div></div>
+              <div><div id="hmAvgRating" style="font-size:22px;font-weight:700;color:#0f172a;line-height:1;">—</div><div style="font-size:12px;color:#94a3b8;margin-top:2px;">Avg. rating</div></div>
             </div>
             <div class="home-stat-card home-animate-d2">
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#3b82f6" stroke-width="1.8"><circle cx="9" cy="9" r="7"/><path d="M9 6v3l2 2"/></svg>
@@ -3532,7 +3532,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             </div>
             <div class="home-stat-card home-animate-d3">
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#f59e0b" stroke-width="1.8"><path d="M4 14V9l5-3 5 3v5M1 14h16"/></svg>
-              <div><div style="font-size:22px;font-weight:700;color:#0f172a;line-height:1;">£0</div><div style="font-size:12px;color:#94a3b8;margin-top:2px;">Total spend</div></div>
+              <div><div id="hmTotalSpend" style="font-size:22px;font-weight:700;color:#0f172a;line-height:1;">£0</div><div style="font-size:12px;color:#94a3b8;margin-top:2px;">Total spend</div></div>
             </div>
           </div>
 
@@ -3708,10 +3708,10 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
           <!-- PORTFOLIO STATS -->
           <div class="portfolio-stats-grid home-animate home-animate-d5" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;">
-            <div class="portfolio-stat-card"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#3b82f6" stroke-width="1.7" style="margin-bottom:8px;"><path d="M2 18V9l8-6 8 6v9"/><path d="M7 18v-5h6v5"/></svg><div style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">0</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">Properties</div></div>
-            <div class="portfolio-stat-card"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#f59e0b" stroke-width="1.7" style="margin-bottom:8px;"><path d="M10 2l2 6h6l-5 3.5 2 6L10 14l-5 3.5 2-6L2 8h6z"/></svg><div style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">0</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">Active jobs</div></div>
-            <div class="portfolio-stat-card"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#10b981" stroke-width="1.7" style="margin-bottom:8px;"><circle cx="10" cy="10" r="7.5"/><path d="M7 10l2 2 4-4"/></svg><div style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">0</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">Completed</div></div>
-            <div class="portfolio-stat-card"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#6366f1" stroke-width="1.7" style="margin-bottom:8px;"><circle cx="10" cy="10" r="7.5"/><path d="M10 6v4.5l3 2"/></svg><div style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">£0</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">Total spent</div></div>
+            <div class="portfolio-stat-card"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#3b82f6" stroke-width="1.7" style="margin-bottom:8px;"><path d="M2 18V9l8-6 8 6v9"/><path d="M7 18v-5h6v5"/></svg><div id="hmPortProps" style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">0</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">Properties</div></div>
+            <div class="portfolio-stat-card"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#f59e0b" stroke-width="1.7" style="margin-bottom:8px;"><path d="M10 2l2 6h6l-5 3.5 2 6L10 14l-5 3.5 2-6L2 8h6z"/></svg><div id="hmPortActive" style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">0</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">Active jobs</div></div>
+            <div class="portfolio-stat-card"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#10b981" stroke-width="1.7" style="margin-bottom:8px;"><circle cx="10" cy="10" r="7.5"/><path d="M7 10l2 2 4-4"/></svg><div id="hmPortDone" style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">0</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">Completed</div></div>
+            <div class="portfolio-stat-card"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#6366f1" stroke-width="1.7" style="margin-bottom:8px;"><circle cx="10" cy="10" r="7.5"/><path d="M10 6v4.5l3 2"/></svg><div id="hmPortSpent" style="font-size:24px;font-weight:700;color:#0f172a;line-height:1;">£0</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">Total spent</div></div>
           </div>
 
           <!-- NOT SURE CTA — responsive -->
@@ -5074,6 +5074,8 @@ function goToDashboard(query, autoSend = false, isAuthenticated = false) {
         if (window._pendingBookingRestore && typeof _checkPendingBookingRestore === 'function') {
           setTimeout(_checkPendingBookingRestore, 600);
         }
+        // Update home stats with real data
+        if (typeof _updateHomeStats === 'function') setTimeout(_updateHomeStats, 50);
       }
     });
   }, 380);
@@ -5114,6 +5116,7 @@ const pages = ['home','chat','explore','bookings','properties','pricing','settin
 
 var _activePage = 'home';
 function showPage(id, e) {
+  if (id === 'home' && typeof _updateHomeStats === 'function') setTimeout(_updateHomeStats, 80);
   _activePage = id;
   if (e) e.preventDefault();
   pages.forEach(p => {
@@ -6581,6 +6584,7 @@ function jobBadge(status) {
 }
 
 function addJobFromBooking(data) {
+  setTimeout(function(){ if(typeof _updateHomeStats==='function') _updateHomeStats(); }, 100);
   var icons = {boiler:'gas',gas:'gas',eicr:'electric',electrical:'electric',electric:'electric',
     clean:'clean',tenancy:'clean',inspection:'doc',report:'doc',certificate:'doc',
     fire:'fire',lock:'lock',repair:'wrench',handyman:'wrench',plumb:'water',drain:'water',leak:'water'};
@@ -7487,6 +7491,36 @@ function _showPropSkeleton() {
 }
 
 function _closePropModal(){ var m=document.getElementById('propDetailModal'); if(m) m.remove(); }
+
+function _updateHomeStats() {
+  if (!_isUserLoggedIn()) return;
+  var jobs       = _allJobs || [];
+  var props      = _userProperties || [];
+  var completed  = jobs.filter(function(j){ return (j.status||'').toLowerCase()==='completed'||(j.status||'').toLowerCase()==='done'; });
+  var active     = jobs.filter(function(j){ var s=(j.status||'').toLowerCase(); return s==='active'||s==='booked'||s==='pending'||s==='scheduled'||s===''; });
+
+  // Total spend from price fields
+  var totalSpend = 0;
+  jobs.forEach(function(j){
+    var p = (j.price||'').toString().replace(/[^0-9.]/g,'');
+    if(p) totalSpend += parseFloat(p)||0;
+  });
+
+  // Update top stats
+  var el = function(id){ return document.getElementById(id); };
+  if(el('hmJobsDone'))  el('hmJobsDone').textContent  = jobs.length;
+  if(el('hmTotalSpend'))el('hmTotalSpend').textContent = totalSpend > 0 ? '£'+totalSpend.toFixed(0) : '£0';
+
+  // Update portfolio stats
+  if(el('hmPortProps'))  el('hmPortProps').textContent  = props.length;
+  if(el('hmPortActive')) el('hmPortActive').textContent = active.length || jobs.length;
+  if(el('hmPortDone'))   el('hmPortDone').textContent   = completed.length;
+  if(el('hmPortSpent'))  el('hmPortSpent').textContent  = totalSpend > 0 ? '£'+totalSpend.toFixed(0) : '£0';
+
+  // Update properties page stat card[0] too
+  var statNums = document.querySelectorAll('.prop-stat-num');
+  if(statNums[0]) statNums[0].textContent = props.length;
+}
 function _propRenewDoc(btn) {
   var doc = btn.getAttribute('data-doc') || '';
   var prop = btn.getAttribute('data-prop') || '';
@@ -14256,6 +14290,9 @@ function closeAddPropertyModal() {
   var m = document.getElementById('addPropertyModal');
   if(m) m.style.display='none';
   document.body.style.overflow='';
+  // Always reset submit button state
+  var subBtn = document.getElementById('apSubmitBtn');
+  if(subBtn) _btnReset(subBtn);
 }
 
 function _apHandleImg(file) {
@@ -14309,12 +14346,8 @@ function _apSubmit() {
   if (!postcode.trim()){ _apFieldErr('apPostcode','Required — e.g. SW1A 1AA'); showToast('Please enter a postcode','warning'); return; }
   if (!type)           { var typeEl=document.getElementById('apType'); if(typeEl){ typeEl.style.borderColor='#ef4444'; setTimeout(function(){ typeEl.style.borderColor='#e2e8f0'; },3000); } showToast('Please select a property type','warning'); return; }
 
-  // Validation passed — now show spinner
-  var subBtn = document.querySelector('#addPropertyModal .bfm-continue-btn, #addPropertyModal button:last-child');
-  if (!subBtn) {
-    var allBtns = document.querySelectorAll('#addPropertyModal button');
-    allBtns.forEach(function(b){ if(b.textContent.trim().indexOf('Add Property')>=0) subBtn=b; });
-  }
+  // Validation passed — now show spinner on the correct submit button
+  var subBtn = document.getElementById('apSubmitBtn');
   if (subBtn) _btnLoad(subBtn, 'Saving...');
 
   // Add to _userProperties
@@ -14336,6 +14369,7 @@ function _apSubmit() {
 
   closeAddPropertyModal();
   showToast('Property added successfully!', 'success');
+  if (typeof _updateHomeStats === 'function') _updateHomeStats();
   // If called from booking flow, run the callback
   if (typeof window._apAfterSave === 'function') {
     var cb = window._apAfterSave;
@@ -15053,7 +15087,7 @@ button:active { transform: scale(0.98); }
     </div>
     <!-- Fixed footer -->
     <div style="padding:16px 24px 20px;border-top:1px solid #f1f5f9;flex-shrink:0;background:#fff;border-radius:0 0 20px 20px;">
-      <button onclick="_apSubmit()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
+      <button id="apSubmitBtn" onclick="_apSubmit()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7.5l3.5 3.5 7.5-7"/></svg>
         Add Property
       </button>
