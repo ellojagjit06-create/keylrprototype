@@ -12219,7 +12219,8 @@ function _buildSuppOnboardStep(step) {
           + '<span style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Bank account details</span>'
           + '<span style="font-size:11px;color:#64748b;background:#f1f5f9;border-radius:4px;padding:1px 7px;font-family:Inter,sans-serif;">Optional</span>'
         + '</div>'
-        + _suppInfoBox('You can skip this for now. Bank details must be provided before your first job payout — you\'ll be prompted to add them once your first job is completed and payment is ready to be processed.\n\nYou are responsible for providing accurate details, and any errors may result in delays or failed payments.')
+        + _suppInfoBox('You can skip this for now. Bank details must be provided before your first job payout — you\'ll be prompted to add them once your first job is completed and payment is ready to be processed.')
+        + '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:16px;padding:10px 14px;background:#fffbeb;border:1px solid #fde68a;border-radius:9px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#b45309" stroke-width="1.6" style="flex-shrink:0;margin-top:1px;"><path d="M7 1l6 11H1L7 1z"/><path d="M7 5.5v3M7 10v.5"/></svg><span style="font-size:12.5px;color:#92400e;font-family:Inter,sans-serif;line-height:1.5;"><strong>Note:</strong> You are responsible for providing accurate details, and any errors may result in delays or failed payments.</span></div>'
         + _suppField('Account holder name','','pm-acc-holder','text','Must match your registered business name','','<div style="font-size:11.5px;color:#64748b;margin-top:4px;font-family:Inter,sans-serif;">The name on your bank account — must match your legal name for verification.</div>')
         + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">'
           + '<div>'+_suppField('Sort code','','pm-sort','text','12-34-56')+'</div>'
