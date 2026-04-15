@@ -4926,11 +4926,12 @@ function handleHeroSearch() {
 // PAGE TRANSITION
 // =============================================
 function goToDashboard(query, autoSend = false, isAuthenticated = false) {
-  _isLoggedIn = isAuthenticated;
-  // Update sidebar auth icons immediately via CSS class (no setTimeout needed)
+  // Only upgrade login state, never downgrade it mid-session
+  if (isAuthenticated) _isLoggedIn = true;
+  // (if isAuthenticated=false but user already logged in, preserve their session)
   var _db = document.getElementById('pg-dashboard');
   if (_db) {
-    if (isAuthenticated) _db.classList.add('user-logged-in');
+    if (_isLoggedIn) _db.classList.add('user-logged-in');
     else _db.classList.remove('user-logged-in');
   }
   setTimeout(_updateSidebarAuthIcons, 100);
