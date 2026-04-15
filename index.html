@@ -3696,14 +3696,20 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           </div>
                     <!-- YOUR ACTIVE JOBS -->
           <div class="home-animate home-animate-d4" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-            <div><div style="font-size:18px;font-weight:700;color:#0f172a;">Your active jobs</div><div style="font-size:12.5px;color:#94a3b8;margin-top:2px;">0 in progress</div></div>
-            <button onclick="showPage('bookings',null);" style="background:transparent;border:none;color:#3b82f6;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;">View all <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2l4 4-4 4"/></svg></button>
+            <div>
+              <div style="font-size:18px;font-weight:700;color:#0f172a;">Your active jobs</div>
+              <div id="hmActiveJobsSub" style="font-size:12.5px;color:#94a3b8;margin-top:2px;">0 in progress</div>
+            </div>
+            <button id="hmActiveJobsViewAll" onclick="showPage('bookings',null);if(typeof _bkActiveFilter!=='undefined')_bkActiveFilter='active';setTimeout(renderBookingsPage,50);" style="display:none;background:transparent;border:none;color:#3b82f6;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;">View all <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2l4 4-4 4"/></svg></button>
           </div>
-          <div class="home-animate home-animate-d5 no-jobs-card" style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:40px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:20px;">
-            <div style="width:56px;height:56px;background:#f8fafc;border-radius:16px;display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#cbd5e1" stroke-width="1.5"><rect x="3" y="7" width="20" height="14" rx="2.5"/><path d="M8 7V5a5 5 0 0110 0v2"/><path d="M3 12h20"/></svg></div>
-            <div style="font-size:15px;font-weight:700;color:#0f172a;">No active jobs</div>
-            <div style="font-size:13px;color:#94a3b8;max-width:280px;line-height:1.6;">Book a service to start tracking your jobs in real time</div>
-            <button onclick="startNewChat();showPage('chat',null);" style="background:#1d4ed8;color:#fff;border:none;border-radius:10px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:4px;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">Book a service</button>
+          <div id="hmActiveJobsList" style="margin-bottom:20px;display:flex;flex-direction:column;gap:10px;">
+            <!-- Populated by _updateHomeStats / _renderHomeActiveJobs -->
+            <div class="no-jobs-card" style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:40px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;">
+              <div style="width:56px;height:56px;background:#f8fafc;border-radius:16px;display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#cbd5e1" stroke-width="1.5"><rect x="3" y="7" width="20" height="14" rx="2.5"/><path d="M8 7V5a5 5 0 0110 0v2"/><path d="M3 12h20"/></svg></div>
+              <div style="font-size:15px;font-weight:700;color:#0f172a;">No active jobs</div>
+              <div style="font-size:13px;color:#94a3b8;max-width:280px;line-height:1.6;">Book a service to start tracking your jobs in real time</div>
+              <button onclick="startNewChat();showPage('chat',null);" style="background:#1d4ed8;color:#fff;border:none;border-radius:10px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:4px;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">Book a service</button>
+            </div>
           </div>
 
           <!-- PORTFOLIO STATS -->
@@ -7497,7 +7503,7 @@ function _updateHomeStats() {
   var jobs       = _allJobs || [];
   var props      = _userProperties || [];
   var completed  = jobs.filter(function(j){ return (j.status||'').toLowerCase()==='completed'||(j.status||'').toLowerCase()==='done'; });
-  var active     = jobs.filter(function(j){ var s=(j.status||'').toLowerCase(); return s==='active'||s==='booked'||s==='pending'||s==='scheduled'||s===''; });
+  var active     = jobs.filter(function(j){ var s=(j.status||'').toLowerCase(); return s!=='completed'&&s!=='done'; });
 
   // Total spend from price fields
   var totalSpend = 0;
@@ -7508,18 +7514,106 @@ function _updateHomeStats() {
 
   // Update top stats
   var el = function(id){ return document.getElementById(id); };
-  if(el('hmJobsDone'))  el('hmJobsDone').textContent  = jobs.length;
+  if(el('hmJobsDone'))  el('hmJobsDone').textContent  = completed.length;
   if(el('hmTotalSpend'))el('hmTotalSpend').textContent = totalSpend > 0 ? '£'+totalSpend.toFixed(0) : '£0';
 
   // Update portfolio stats
   if(el('hmPortProps'))  el('hmPortProps').textContent  = props.length;
-  if(el('hmPortActive')) el('hmPortActive').textContent = active.length || jobs.length;
+  if(el('hmPortActive')) el('hmPortActive').textContent = active.length;
   if(el('hmPortDone'))   el('hmPortDone').textContent   = completed.length;
   if(el('hmPortSpent'))  el('hmPortSpent').textContent  = totalSpend > 0 ? '£'+totalSpend.toFixed(0) : '£0';
 
   // Update properties page stat card[0] too
   var statNums = document.querySelectorAll('.prop-stat-num');
   if(statNums[0]) statNums[0].textContent = props.length;
+
+  // ── Render active jobs on home page ──
+  _renderHomeActiveJobs(active);
+}
+
+function _goToActiveJobs() {
+  if (typeof _bkActiveFilter !== 'undefined') _bkActiveFilter = 'active';
+  showPage('bookings', null);
+  setTimeout(function(){ if(typeof renderBookingsPage==='function') renderBookingsPage(); }, 50);
+}
+function _renderHomeActiveJobs(activeJobs) {
+  var container = document.getElementById('hmActiveJobsList');
+  var subEl     = document.getElementById('hmActiveJobsSub');
+  var viewAllBtn = document.getElementById('hmActiveJobsViewAll');
+  if (!container) return;
+
+  var isDk = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
+  var cardBg    = isDk ? '#161b22' : '#fff';
+  var cardBdr   = isDk ? '#30363d' : '#e2e8f0';
+  var textMain  = isDk ? '#e6edf3' : '#0f172a';
+  var textSub   = isDk ? '#8b949e' : '#64748b';
+  var tagBg     = isDk ? '#21262d' : '#f1f5f9';
+
+  // Update subtitle
+  if (subEl) subEl.textContent = activeJobs.length > 0
+    ? activeJobs.length + ' in progress'
+    : '0 in progress';
+
+  // Show/hide "View all" button
+  if (viewAllBtn) viewAllBtn.style.display = activeJobs.length > 0 ? 'flex' : 'none';
+
+  // No active jobs — show empty state
+  if (!activeJobs.length) {
+    container.innerHTML = '<div style="background:'+cardBg+';border:1px solid '+cardBdr+';border-radius:14px;padding:40px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;">'
+      + '<div style="width:56px;height:56px;background:'+(isDk?'#1c2433':'#f8fafc')+';border-radius:16px;display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="'+(isDk?'#30363d':'#cbd5e1')+'" stroke-width="1.5"><rect x="3" y="7" width="20" height="14" rx="2.5"/><path d="M8 7V5a5 5 0 0110 0v2"/><path d="M3 12h20"/></svg></div>'
+      + '<div style="font-size:15px;font-weight:700;color:'+textMain+';">No active jobs</div>'
+      + '<div style="font-size:13px;color:'+textSub+';max-width:280px;line-height:1.6;">Book a service to start tracking your jobs in real time</div>'
+      + '<button onclick="startNewChat();showPage(\'chat\',null);" style="background:#1d4ed8;color:#fff;border:none;border-radius:10px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:4px;">Book a service</button>'
+    + '</div>';
+    return;
+  }
+
+  // Show up to 3 active jobs
+  var shown = activeJobs.slice(0, 3);
+  var statusColor = { pending:'#f59e0b', active:'#3b82f6', booked:'#1d4ed8', scheduled:'#8b5cf6' };
+  var statusBg    = { pending:'#fffbeb', active:'#eff6ff', booked:'#eff6ff', scheduled:'#f5f3ff' };
+  var statusBgDk  = { pending:'#271d0d', active:'#1a2d4a', booked:'#1a2d4a', scheduled:'#2d1f4a' };
+
+  container.innerHTML = shown.map(function(job) {
+    var statusKey = (job.status||'pending').toLowerCase();
+    var sc  = statusColor[statusKey] || '#94a3b8';
+    var sbg = (isDk ? statusBgDk[statusKey] : statusBg[statusKey]) || (isDk?'#21262d':'#f1f5f9');
+    var initials = job.providerInitials || (job.provider||'P').split(' ').map(function(w){return w[0]||'';}).join('').slice(0,2).toUpperCase();
+
+    return '<div onclick="_goToActiveJobs();" style="background:'+cardBg+';border:1.5px solid '+cardBdr+';border-radius:14px;padding:14px 16px;cursor:pointer;transition:box-shadow .15s,transform .15s;display:flex;align-items:center;gap:12px;" class="hm-job-card">'
+      // Provider avatar
+      + '<div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;font-weight:700;color:#fff;font-family:Inter,sans-serif;">'+initials+'</div>'
+      // Info
+      + '<div style="flex:1;min-width:0;">'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">'
+          + '<div style="font-size:14px;font-weight:700;color:'+textMain+';font-family:Inter,sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;margin-right:8px;">'+escapeHtml(job.service||'Property Service')+'</div>'
+          + '<span style="background:'+sbg+';color:'+sc+';border-radius:20px;padding:2px 10px;font-size:11.5px;font-weight:600;font-family:Inter,sans-serif;flex-shrink:0;">'+escapeHtml((job.status||'Pending').charAt(0).toUpperCase()+(job.status||'Pending').slice(1))+'</span>'
+        + '</div>'
+        + '<div style="font-size:12.5px;color:'+textSub+';font-family:Inter,sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escapeHtml(job.provider||'Provider')+' · '+escapeHtml(job.property||'')+'</div>'
+        // Progress bar
+        + '<div style="margin-top:8px;height:4px;background:'+(isDk?'#30363d':'#f1f5f9')+';border-radius:2px;overflow:hidden;">'
+          + '<div style="height:100%;width:'+Math.max(5,(job.progress||10))+'%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:2px;transition:width .3s;"></div>'
+        + '</div>'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;">'
+          + '<span style="font-size:11px;color:'+textSub+';font-family:Inter,sans-serif;">'+(job.date?'Due: '+job.date:'In progress')+'</span>'
+          + '<span style="font-size:12px;font-weight:700;color:'+textMain+';font-family:Fraunces,serif;">'+escapeHtml(job.price||'Quote')+'</span>'
+        + '</div>'
+      + '</div>'
+    + '</div>';
+  }).join('');
+
+  // If more than 3, show a "View N more" row
+  if (activeJobs.length > 3) {
+    var more = activeJobs.length - 3;
+  var moreBtn = document.createElement('button');
+  moreBtn.onclick = _goToActiveJobs;
+  moreBtn.style.cssText = 'width:100%;background:none;border:1.5px dashed '+(isDk?'#30363d':'#e2e8f0')+';border-radius:12px;padding:10px;font-size:13px;font-weight:600;color:'+(isDk?'#58a6ff':'#3b82f6')+';cursor:pointer;font-family:Inter,sans-serif;';
+  moreBtn.textContent = '+ ' + more + ' more active job' + (more>1?'s':'') + ' →';
+  moreBtn.onmouseover = function(){ this.style.background=isDk?'#161b22':'#f8fafc'; };
+  moreBtn.onmouseout  = function(){ this.style.background='none'; };
+  container.appendChild(moreBtn);
+    + '</button>';
+  }
 }
 function _propRenewDoc(btn) {
   var doc = btn.getAttribute('data-doc') || '';
@@ -14465,6 +14559,8 @@ document.addEventListener('click', function(e){
 .ks-spin{width:20px;height:20px;border:2.5px solid rgba(26,95,200,0.2);border-top-color:#1A5FC8;border-radius:50%;animation:keylrSpin .7s linear infinite;display:inline-block;flex-shrink:0;}
 .ks-spin.sm{width:14px;height:14px;border-width:2px;}
 .ks-spin.white{border-color:rgba(255,255,255,0.3);border-top-color:#fff;}
+.hm-job-card{transition:box-shadow .15s,transform .15s;}
+.hm-job-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.1) !important;transform:translateY(-1px) !important;}
 /* Page content fade-in */
 .ks-page-enter{animation:keylrFadeIn 0.22s ease forwards;}
 /* Button loading state */
