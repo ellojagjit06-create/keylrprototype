@@ -6924,7 +6924,7 @@ function renderExploreProviders(cat, minRating) {
   // Add fade-in to the grid
   container.style.animation = 'keylrFadeIn 0.2s ease';
   }; // end _doRender
-  setTimeout(_doRender, 80); // let skeleton paint first
+  requestAnimationFrame(_doRender); // render on next frame after skeleton paints
 }
 
 function _svcRowHTML(s) {
@@ -7288,10 +7288,6 @@ function _renderPropertiesGrid() {
   grid.style.display = hasProps ? '' : 'none';
   if (!hasProps) return;
 
-  // Show skeleton while cards render
-  if (typeof _showPropSkeleton === 'function') _showPropSkeleton();
-
-  setTimeout(function() {
   // Update properties count
   var statNums = document.querySelectorAll('.prop-stat-num');
   if (statNums[0]) statNums[0].textContent = _userProperties.length;
@@ -7365,9 +7361,7 @@ function _renderPropertiesGrid() {
       + '</div>';
     grid.appendChild(card);
   });
-  // Fade in the grid
-  if (grid) grid.style.animation = 'keylrFadeIn 0.25s ease';
-  }, 60); // let skeleton paint first
+  if (grid) grid.style.animation = 'keylrFadeIn 0.2s ease';
 }
 
 // ── Property Detail Modal ──
@@ -8073,20 +8067,6 @@ function _bfRenderPage() {
   var bodyDiv = document.createElement('div');
   bodyDiv.id = 'bfPageBody';
   bodyDiv.style.cssText = 'padding-bottom:8px;';
-  // Show skeleton briefly while step content renders
-  bodyDiv.innerHTML = '<div style="display:flex;flex-direction:column;gap:10px;padding-top:4px;">'
-    + '<div class="ks-skel" style="height:18px;width:50%;border-radius:6px;"></div>'
-    + '<div class="ks-skel" style="height:44px;border-radius:10px;"></div>'
-    + '<div class="ks-skel" style="height:14px;width:35%;border-radius:6px;"></div>'
-    + '<div style="display:flex;gap:8px;">'
-      + '<div class="ks-skel" style="height:28px;width:80px;border-radius:20px;"></div>'
-      + '<div class="ks-skel" style="height:28px;width:80px;border-radius:20px;"></div>'
-    + '</div>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">'
-      + '<div class="ks-skel" style="height:80px;border-radius:12px;"></div>'
-      + '<div class="ks-skel" style="height:80px;border-radius:12px;"></div>'
-    + '</div>'
-  + '</div>';
   inner.appendChild(bodyDiv);
 
   // Footer buttons
@@ -8141,10 +8121,7 @@ function _bfNext() {
 function _bfRenderStep(step) {
   var body = document.getElementById('bfPageBody');
   if (!body) return;
-  // Fade out skeleton, render real content
-  body.style.opacity = '0';
-  body.innerHTML = '';
-  body.style.transition = 'opacity 0.15s';
+  body.innerHTML = '';  // clear and render instantly — data is synchronous
   var s = _bfState;
   var isDk = !!(document.getElementById('pg-dashboard') && document.getElementById('pg-dashboard').classList.contains('dash-dark'));
 
