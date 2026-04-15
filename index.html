@@ -1523,6 +1523,9 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 }
 .prop-add-btn:hover{opacity:0.9;}
 .prop-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.prop-dynamic-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+@media(max-width:1100px){.prop-dynamic-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:640px){.prop-dynamic-grid{grid-template-columns:1fr;gap:14px;}}
 .prop-stat-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:8px;}
 .prop-stat-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;}
 .prop-stat-num{font-size:24px;font-weight:700;color:var(--navy);}
@@ -4006,7 +4009,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;"><span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Gas & EICR tracking</span><span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Compliance alerts</span><span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>Service history</span></div>
         </div>
         <!-- Property cards grid — rendered by JS -->
-        <div id="propDynamicGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px;"></div>
+        <div id="propDynamicGrid" class="prop-dynamic-grid" style="display:none;margin-bottom:24px;"></div>
       </div></div>
       <!-- Fixed chat footer — same pattern as bookings -->
       <div class="pr-chat-bar" style="flex-shrink:0;background:#fff;border-top:1px solid #e2e8f0;padding:12px 24px 16px;">
@@ -4582,6 +4585,23 @@ function _setUser(data) {
 function _clearUser() {
   _user = null;
   _isLoggedIn = false;
+  // Clear all session data
+  _userProperties.length = 0;
+  _allJobs.length = 0;
+  _bfState = { step:0, service:'', bookingType:'direct', providerId:null, providerName:'', property:'', propertyAddr:'', urgency:'Flexible', date:'', time:'Afternoon', details:'' };
+  window._apAfterSave = null;
+  window._bfStateBeforeAuth = null;
+  window._postLoginAction = null;
+  window._apLastImgDataUrl = null;
+  // Reset properties page UI
+  var grid = document.getElementById('propDynamicGrid');
+  if (grid) { grid.innerHTML = ''; grid.style.display = 'none'; }
+  var emptyState = document.getElementById('propEmptyState');
+  if (emptyState) emptyState.style.display = 'flex';
+  var sub = document.querySelector('.prop-sub');
+  if (sub) sub.textContent = '0 properties · 0 alerts';
+  var statNums = document.querySelectorAll('.prop-stat-num');
+  if (statNums[0]) statNums[0].textContent = '0';
   _syncUserUI();
 }
 
@@ -7080,7 +7100,7 @@ function _renderPropertiesGrid() {
   var hasProps = _userProperties && _userProperties.length > 0;
   // Show/hide empty state (never check _isLoggedIn here — modal already guards)
   if (emptyState) emptyState.style.display = hasProps ? 'none' : 'flex';
-  grid.style.display = hasProps ? 'grid' : 'none';
+  grid.style.display = hasProps ? '' : 'none';
   if (!hasProps) return;
 
   // Update stats
@@ -7698,21 +7718,23 @@ function _bfRenderStep(step) {
       var propTitle = document.createElement('div');
       propTitle.style.cssText = 'font-size:17px;font-weight:800;color:'+(isDkP?'#e6edf3':'#0f172a')+';font-family:Fraunces,serif;';
       propTitle.textContent = 'No properties yet';
+
       var propSub = document.createElement('div');
       propSub.style.cssText = 'font-size:13.5px;color:'+(isDkP?'#8b949e':'#64748b')+';font-family:Inter,sans-serif;max-width:280px;line-height:1.6;';
-      propSub.textContent = 'Add your first property in the Properties tab before booking a service.';
+      propSub.textContent = 'Add a property to continue your booking.';
       var addPropB = document.createElement('button');
       addPropB.type = 'button';
       addPropB.style.cssText = 'background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;margin-top:4px;';
       addPropB.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M6.5 2v9"/></svg>Add a property';
       addPropB.onclick = function(e){
         e.stopPropagation();
-        if (!window._isLoggedIn) {
-          window._postLoginAction = 'addProperty';
-          window.showAuthPage('signup');
-        } else {
-          window.showPage('properties', null);
-        }
+        // Store callback: after property saved, auto-select it and re-render step 1
+        window._apAfterSave = function(prop) {
+          _bfState.property = prop.name;
+          _bfState.propertyAddr = prop.addr;
+          _bfRenderPage();
+        };
+        if (typeof showAddPropertyModal === 'function') showAddPropertyModal();
       };
       emptyProp.appendChild(propIcon);
       emptyProp.appendChild(propTitle);
@@ -13757,8 +13779,15 @@ function _apSubmit() {
 
   closeAddPropertyModal();
   showToast('Property added successfully!', 'success');
-  // Render grid immediately
-  if (typeof _renderPropertiesGrid === 'function') _renderPropertiesGrid();
+  // If called from booking flow, run the callback
+  if (typeof window._apAfterSave === 'function') {
+    var cb = window._apAfterSave;
+    window._apAfterSave = null;
+    setTimeout(function(){ cb(newProp); }, 100);
+  } else {
+    // Otherwise refresh the properties grid
+    if (typeof _renderPropertiesGrid === 'function') _renderPropertiesGrid();
+  }
 }
 
 // Close modal on backdrop click
