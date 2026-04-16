@@ -3473,6 +3473,21 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 @media(max-width:600px){
   .adm-stat-row{grid-template-columns:repeat(2,1fr);}
 }
+/* Applicant cards */
+.adm-app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+.adm-app-card{background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:18px 20px;cursor:pointer;transition:box-shadow .15s,border-color .15s;}
+.adm-app-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.08);border-color:#cbd5e1;}
+.adm-status-badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em;}
+.adm-status-badge.pending{background:#fef3c7;color:#d97706;}
+.adm-status-badge.approved{background:#d1fae5;color:#059669;}
+.adm-status-badge.rejected{background:#fee2e2;color:#dc2626;}
+/* Detail view */
+.adm-detail-section{background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:20px 22px;margin-bottom:16px;}
+.adm-detail-section h3{font-size:13px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin:0 0 14px;}
+.adm-detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
+.adm-detail-field label{font-size:11px;font-weight:600;color:#94a3b8;display:block;margin-bottom:3px;}
+.adm-detail-field p{font-size:13.5px;font-weight:500;color:#0f172a;margin:0;}
+.adm-chip{display:inline-block;background:#f1f5f9;color:#374151;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:500;margin:2px;}
 </style>
 <div id="pg-admin-dash" style="display:none;">
   <!-- Mobile backdrop -->
@@ -3561,50 +3576,39 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
         <!-- ── APPLICANTS ── -->
         <div id="admPage-applicants" style="display:none;">
-          <div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">Applicants</div>
-          <div style="font-size:13px;color:#94a3b8;margin-bottom:20px;">Supplier onboarding applications</div>
-          <!-- Stats row -->
-          <div class="adm-stat-row">
-            <div class="adm-stat-card">
-              <div class="adm-stat-lbl">Total Applications</div>
-              <div class="adm-stat-num">0</div>
+          <!-- List view -->
+          <div id="admApplicantsView">
+            <div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">Applicants</div>
+            <div style="font-size:13px;color:#94a3b8;margin-bottom:20px;">Supplier onboarding applications</div>
+            <div class="adm-stat-row" id="admAppStats">
+              <div class="adm-stat-card"><div class="adm-stat-lbl">Total Applications</div><div class="adm-stat-num" id="admStatTotal">0</div></div>
+              <div class="adm-stat-card"><div class="adm-stat-lbl">Pending Review</div><div class="adm-stat-num" id="admStatPending" style="color:#d97706;">0</div></div>
+              <div class="adm-stat-card"><div class="adm-stat-lbl">Approved</div><div class="adm-stat-num" id="admStatApproved" style="color:#059669;">0</div></div>
+              <div class="adm-stat-card"><div class="adm-stat-lbl">Rejected</div><div class="adm-stat-num" id="admStatRejected" style="color:#dc2626;">0</div></div>
             </div>
-            <div class="adm-stat-card">
-              <div class="adm-stat-lbl">Pending Review</div>
-              <div class="adm-stat-num" style="color:#f59e0b;">0</div>
+            <div class="adm-search-row">
+              <div style="position:relative;flex:1;">
+                <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.7"><circle cx="6" cy="6" r="4.5"/><path d="M10 10l2.5 2.5"/></svg>
+                <input class="adm-search-input" id="admAppSearchInput" style="padding-left:34px;" placeholder="Search by name, company, trade or email…" oninput="_admRenderApplicants()">
+              </div>
+              <select id="admAppStatusFilter" style="border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:13px;font-family:Inter,sans-serif;color:#374151;background:#fff;outline:none;cursor:pointer;" onchange="_admRenderApplicants()">
+                <option value="">All statuses</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
             </div>
-            <div class="adm-stat-card">
-              <div class="adm-stat-lbl">Approved</div>
-              <div class="adm-stat-num" style="color:#10b981;">0</div>
+            <div id="admApplicantsEmpty" class="adm-zero-card" style="display:none;">
+              <div style="width:60px;height:60px;background:#f8fafc;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;border:1.5px solid #e2e8f0;">
+                <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#94a3b8" stroke-width="1.5"><circle cx="10" cy="8" r="5"/><path d="M2 22c0-4.4 3.6-8 8-8"/><path d="M18 14l5 5-5 5"/><line x1="17" y1="19" x2="24" y2="19"/></svg>
+              </div>
+              <div style="font-size:15px;font-weight:700;color:#374151;margin-bottom:6px;">No applicants yet</div>
+              <div style="font-size:13px;color:#94a3b8;max-width:300px;line-height:1.6;">When suppliers start the onboarding process, their applications will appear here for review.</div>
             </div>
-            <div class="adm-stat-card">
-              <div class="adm-stat-lbl">Rejected</div>
-              <div class="adm-stat-num" style="color:#ef4444;">0</div>
-            </div>
+            <div id="admApplicantsList" class="adm-app-grid"></div>
           </div>
-          <!-- Search -->
-          <div class="adm-search-row">
-            <div style="position:relative;flex:1;">
-              <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.7"><circle cx="6" cy="6" r="4.5"/><path d="M10 10l2.5 2.5"/></svg>
-              <input class="adm-search-input" style="padding-left:34px;" placeholder="Search applicants by name, company or email…" oninput="_admSearchApplicants(this.value)">
-            </div>
-            <select style="border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:13px;font-family:Inter,sans-serif;color:#374151;background:#fff;outline:none;cursor:pointer;">
-              <option>All statuses</option>
-              <option>Pending</option>
-              <option>Approved</option>
-              <option>Rejected</option>
-            </select>
-          </div>
-          <!-- Empty state -->
-          <div class="adm-zero-card" id="admApplicantsEmpty">
-            <div style="width:60px;height:60px;background:#f8fafc;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;border:1.5px solid #e2e8f0;">
-              <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#94a3b8" stroke-width="1.5"><circle cx="10" cy="8" r="5"/><path d="M2 22c0-4.4 3.6-8 8-8"/><path d="M18 14l5 5-5 5"/><line x1="17" y1="19" x2="24" y2="19"/></svg>
-            </div>
-            <div style="font-size:15px;font-weight:700;color:#374151;margin-bottom:6px;">No applicants yet</div>
-            <div style="font-size:13px;color:#94a3b8;max-width:300px;line-height:1.6;">When suppliers start the onboarding process, their applications will appear here for review.</div>
-          </div>
-          <!-- List (hidden until data) -->
-          <div id="admApplicantsList" style="display:none;"></div>
+          <!-- Detail view -->
+          <div id="admApplicantDetail" style="display:none;"></div>
         </div>
 
         <!-- ── ACTIVE SUPPLIERS ── -->
@@ -7405,9 +7409,268 @@ function _admCloseMobile() {
   if(bd){ bd.classList.remove('show'); }
   document.body.style.overflow = '';
 }
-function _admSearchApplicants(q) {
-  // placeholder — will filter list when data exists
+/* ── ADMIN APPLICANTS DATA ── */
+var _DEMO_APPLICANTS = [
+  {
+    id:'demo_001', submittedAt:'2025-10-14T09:22:00Z', updatedAt:'2025-10-14T09:22:00Z', status:'pending',
+    name:'James Whitfield', email:'james.whitfield@example.com', phone:'07712 334 561',
+    operationType:'sole_trader', sector:'residential', sectorSubRes:['Houses','Flats'], sectorSubCom:[],
+    fullLegalName:'James Daniel Whitfield', dob:'1985-04-22', niNumber:'AB 12 34 56 C', homeAddress:'14 Maple Grove, Leeds, LS2 9HJ',
+    tradingName:'', regCompanyName:'', companyRegNum:'', regOfficeAddr:'', pscFullName:'', pscDob:'', tinNum:'',
+    vatRegistered:false, vatNumber:'', accountHolder:'James Whitfield', sortCode:'20-14-83', accountNumber:'34571288', bankName:'Lloyds Bank', businessAccount:false,
+    insProvider:'Simply Business', insPolicy:'SB-2039182', insCoverage:'£1,000,000', insExpiry:'2026-03-31',
+    profIndemnity:false, tradeCerts:['Gas Safe Registered','NICEIC Approved'], employersLiability:false, allWorkersValidCerts:false,
+    teamSize:'', dbsDeclared:'Yes', dbsLevel:'Basic', companyDbsDecl:'', companyDbsLevel:'', rightToWork:'Yes',
+    primaryTrade:'Plumber', secondaryTrades:['Gas Engineer'], pricingModels:['Fixed price','Day rate'],
+    experience:'5–10 years', jobsCompleted:'500–1000', bio:'Experienced plumber covering Leeds and surrounding areas.',
+    workDays:['Mon','Tue','Wed','Thu','Fri'], emergencyCallouts:'Yes'
+  },
+  {
+    id:'demo_002', submittedAt:'2025-10-10T14:05:00Z', updatedAt:'2025-10-11T10:30:00Z', status:'approved',
+    name:'Meridian Property Services Ltd', email:'ops@meridianps.co.uk', phone:'0113 496 7823',
+    operationType:'company', sector:'both', sectorSubRes:['Houses','HMOs'], sectorSubCom:['Office','Retail'],
+    fullLegalName:'', dob:'', niNumber:'', homeAddress:'',
+    tradingName:'Meridian Property Services', regCompanyName:'Meridian Property Services Ltd', companyRegNum:'13847291', regOfficeAddr:'55 Commerce Way, Sheffield, S1 4HT', pscFullName:'Rachel Holt', pscDob:'1978-11-02', tinNum:'GB293847102',
+    vatRegistered:true, vatNumber:'GB293847102', accountHolder:'Meridian Property Services Ltd', sortCode:'30-00-02', accountNumber:'81294730', bankName:'Barclays', businessAccount:true,
+    insProvider:'Hiscox', insPolicy:'HX-5829301', insCoverage:'£2,000,000', insExpiry:'2026-06-30',
+    profIndemnity:true, tradeCerts:['NICEIC Approved','Gas Safe Registered','CHAS Accredited'], employersLiability:true, allWorkersValidCerts:true,
+    teamSize:'2–10', dbsDeclared:'', dbsLevel:'', companyDbsDecl:'Yes', companyDbsLevel:'Enhanced', rightToWork:'Yes',
+    primaryTrade:'Electrician', secondaryTrades:['General Handyman','HVAC Engineer','Painter & Decorator'],
+    pricingModels:['Day rate','Fixed price','Call-out fee'], experience:'10+ years', jobsCompleted:'1000+',
+    bio:'Multi-trade property maintenance company serving Sheffield and South Yorkshire.',
+    workDays:['Mon','Tue','Wed','Thu','Fri','Sat'], emergencyCallouts:'Yes'
+  },
+  {
+    id:'demo_003', submittedAt:'2025-10-16T11:48:00Z', updatedAt:'2025-10-16T11:48:00Z', status:'pending',
+    name:'Priya Sharma', email:'priya.sharma@quickfix.uk', phone:'07889 221 044',
+    operationType:'sole_trader', sector:'commercial', sectorSubRes:[], sectorSubCom:['Office','Industrial'],
+    fullLegalName:'Priya Sharma', dob:'1992-07-15', niNumber:'CD 98 76 54 A', homeAddress:'8 Birchwood Close, Manchester, M14 6NQ',
+    tradingName:'', regCompanyName:'', companyRegNum:'', regOfficeAddr:'', pscFullName:'', pscDob:'', tinNum:'',
+    vatRegistered:false, vatNumber:'', accountHolder:'Priya Sharma', sortCode:'60-14-32', accountNumber:'10284756', bankName:'Nationwide', businessAccount:false,
+    insProvider:'PolicyBee', insPolicy:'PB-1109382', insCoverage:'£1,000,000', insExpiry:'2025-12-31',
+    profIndemnity:true, tradeCerts:['COSHH Trained'], employersLiability:false, allWorkersValidCerts:false,
+    teamSize:'', dbsDeclared:'Yes', dbsLevel:'Basic', companyDbsDecl:'', companyDbsLevel:'', rightToWork:'Yes',
+    primaryTrade:'Painter & Decorator', secondaryTrades:['Plasterer'],
+    pricingModels:['Day rate'], experience:'3–5 years', jobsCompleted:'100–500',
+    bio:'Specialist commercial decorator with experience in open-plan offices and retail fit-outs.',
+    workDays:['Mon','Tue','Wed','Thu','Fri'], emergencyCallouts:'No'
+  }
+];
+
+function _admLoadApplicants() {
+  try {
+    var stored = JSON.parse(localStorage.getItem('keylr_applicants')||'[]');
+    // Merge demos (don't duplicate by id)
+    var ids = stored.map(function(a){ return a.id; });
+    _DEMO_APPLICANTS.forEach(function(d){ if(ids.indexOf(d.id)<0) stored.unshift(d); });
+    return stored;
+  } catch(e){ return _DEMO_APPLICANTS.slice(); }
 }
+
+function _admSaveApplicants(apps) {
+  try { localStorage.setItem('keylr_applicants', JSON.stringify(apps)); } catch(e){}
+}
+
+function _admRenderApplicants() {
+  var apps = _admLoadApplicants();
+  var q = ((document.getElementById('admAppSearchInput')||{}).value||'').toLowerCase();
+  var statusF = ((document.getElementById('admAppStatusFilter')||{}).value||'');
+  var filtered = apps.filter(function(a){
+    var match = !q || (a.name||'').toLowerCase().indexOf(q)>=0
+      || (a.email||'').toLowerCase().indexOf(q)>=0
+      || (a.primaryTrade||'').toLowerCase().indexOf(q)>=0
+      || (a.tradingName||'').toLowerCase().indexOf(q)>=0
+      || (a.regCompanyName||'').toLowerCase().indexOf(q)>=0;
+    var statusMatch = !statusF || a.status===statusF;
+    return match && statusMatch;
+  });
+  // Stats
+  var tot = apps.length, pend = apps.filter(function(a){return a.status==='pending';}).length;
+  var appr = apps.filter(function(a){return a.status==='approved';}).length;
+  var rej = apps.filter(function(a){return a.status==='rejected';}).length;
+  var st = document.getElementById('admStatTotal'); if(st) st.textContent = tot;
+  var sp = document.getElementById('admStatPending'); if(sp) sp.textContent = pend;
+  var sa = document.getElementById('admStatApproved'); if(sa) sa.textContent = appr;
+  var sr = document.getElementById('admStatRejected'); if(sr) sr.textContent = rej;
+  // List
+  var list = document.getElementById('admApplicantsList');
+  var empty = document.getElementById('admApplicantsEmpty');
+  if(!list||!empty) return;
+  if(!filtered.length){ empty.style.display='flex'; list.style.display='none'; return; }
+  empty.style.display='none'; list.style.display='grid';
+  list.innerHTML = filtered.map(function(app){
+    var isCo = app.operationType==='company';
+    var badge = app.status==='approved'?'approved':app.status==='rejected'?'rejected':'pending';
+    var badgeTxt = badge==='approved'?'Approved':badge==='rejected'?'Rejected':'Pending Review';
+    var date = app.submittedAt ? new Date(app.submittedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '';
+    var displayName = isCo ? (app.tradingName||app.regCompanyName||app.name) : app.name;
+    var sectorLabel = app.sector==='residential'?'Residential':app.sector==='commercial'?'Commercial':'Residential & Commercial';
+    return '<div class="adm-app-card" onclick="_admOpenApplicant(\''+app.id+'\')">'      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">'        +'<div>'          +'<div style="font-size:14.5px;font-weight:700;color:#0f172a;margin-bottom:3px;">'+_admEsc(displayName)+'</div>'          +'<div style="font-size:12px;color:#64748b;">'+_admEsc(app.email||app.phone)+'</div>'        +'</div>'        +'<span class="adm-status-badge '+badge+'">'+badgeTxt+'</span>'      +'</div>'      +'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">'        +'<span class="adm-chip">'+_admEsc(app.primaryTrade||'—')+'</span>'        +'<span class="adm-chip">'+_admEsc(sectorLabel)+'</span>'        +'<span class="adm-chip" style="background:'+(isCo?'#eff6ff':'#f0fdf4')+';color:'+(isCo?'#1A5FC8':'#059669')+';">'          +(isCo?'Company':'Sole Trader')+'</span>'      +'</div>'      +'<div style="font-size:11.5px;color:#94a3b8;">Applied '+date+'</div>'    +'</div>';
+  }).join('');
+}
+
+function _admEsc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function _admOpenApplicant(id) {
+  var apps = _admLoadApplicants();
+  var app = apps.find(function(a){ return a.id===id; });
+  if(!app) return;
+  var view = document.getElementById('admApplicantsView');
+  var detail = document.getElementById('admApplicantDetail');
+  if(view) view.style.display='none';
+  if(detail) {
+    detail.style.display='block';
+    detail.innerHTML = _admBuildDetail(app);
+    // Wire approve/reject buttons
+    var ab = document.getElementById('admApprovBtn');
+    var rb = document.getElementById('admRejectBtn');
+    if(ab) ab.onclick = function(){ _admUpdateStatus(id,'approved'); };
+    if(rb) rb.onclick = function(){ _admUpdateStatus(id,'rejected'); };
+  }
+}
+
+function _admBackToApplicants() {
+  var view = document.getElementById('admApplicantsView');
+  var detail = document.getElementById('admApplicantDetail');
+  if(view){ view.style.display=''; _admRenderApplicants(); }
+  if(detail) detail.style.display='none';
+}
+
+function _admUpdateStatus(id, status) {
+  var apps = _admLoadApplicants();
+  var idx = apps.findIndex(function(a){ return a.id===id; });
+  if(idx>=0){ apps[idx].status=status; _admSaveApplicants(apps); }
+  var app = apps[idx];
+  if(app) {
+    var detail = document.getElementById('admApplicantDetail');
+    if(detail) {
+      detail.innerHTML = _admBuildDetail(app);
+      var ab = document.getElementById('admApprovBtn');
+      var rb = document.getElementById('admRejectBtn');
+      if(ab) ab.onclick = function(){ _admUpdateStatus(id,'approved'); };
+      if(rb) rb.onclick = function(){ _admUpdateStatus(id,'rejected'); };
+    }
+  }
+  _admRenderApplicants();
+}
+
+function _admBuildDetail(app) {
+  var isCo = app.operationType === 'company';
+  var badge = app.status==='approved'?'approved':app.status==='rejected'?'rejected':'pending';
+  var badgeTxt = badge==='approved'?'Approved':badge==='rejected'?'Rejected':'Pending Review';
+  var displayName = isCo ? (app.tradingName||app.regCompanyName||app.name) : app.name;
+  var sectorLabel = app.sector==='residential'?'Residential':app.sector==='commercial'?'Commercial':'Residential & Commercial';
+  var subSecs = ((app.sectorSubRes||[]).concat(app.sectorSubCom||[])).join(', ');
+  var date = app.submittedAt ? new Date(app.submittedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '—';
+
+  function field(label, val) {
+    return '<div class="adm-detail-field"><label>'+label+'</label><p>'+(val?_admEsc(val):'<span style="color:#cbd5e1;">Not provided</span>')+'</p></div>';
+  }
+  function chips(arr) {
+    if(!arr||!arr.length) return '<span style="color:#cbd5e1;font-size:13px;">None</span>';
+    return arr.map(function(v){ return '<span class="adm-chip">'+_admEsc(v)+'</span>'; }).join('');
+  }
+  function boolBadge(val, trueLabel, falseLabel) {
+    return val ? '<span style="color:#059669;font-weight:600;">✓ '+(trueLabel||'Yes')+'</span>'
+               : '<span style="color:#94a3b8;">'+(falseLabel||'No')+'</span>';
+  }
+
+  var html = ''
+  // ── Header ──
+  +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">'
+    +'<button onclick="_admBackToApplicants()" style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;">'
+      +'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2L4 6l4 4"/></svg>All applicants</button>'
+    +'<div style="flex:1;min-width:0;">'
+      +'<div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+_admEsc(displayName)+'</div>'
+      +'<div style="font-size:12px;color:#94a3b8;margin-top:2px;">Applied '+date+' · '+_admEsc(app.email||app.phone)+'</div>'
+    +'</div>'
+    +'<div style="display:flex;align-items:center;gap:8px;">'
+      +'<span class="adm-status-badge '+badge+'">'+badgeTxt+'</span>'
+      +(app.status!=='approved'?'<button id="admApprovBtn" style="background:#059669;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Approve</button>':'')
+      +(app.status!=='rejected'?'<button id="admRejectBtn" style="background:#fff;color:#dc2626;border:1.5px solid #fecaca;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Reject</button>':'')
+    +'</div>'
+  +'</div>'
+
+  // ── Overview chips ──
+  +'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">'
+    +'<span class="adm-chip" style="background:'+(isCo?'#eff6ff':'#f0fdf4')+';color:'+(isCo?'#1A5FC8':'#059669')+';font-weight:700;">'+(isCo?'Company':'Sole Trader')+'</span>'
+    +'<span class="adm-chip">'+_admEsc(sectorLabel)+'</span>'
+    +(subSecs?'<span class="adm-chip" style="color:#64748b;">'+_admEsc(subSecs)+'</span>':'')
+    +'<span class="adm-chip">'+_admEsc(app.primaryTrade||'—')+'</span>'
+  +'</div>'
+
+  // ── Identity ──
+  +'<div class="adm-detail-section">'
+    +'<h3>'+(isCo?'Company & Director Identity':'Personal Identity')+'</h3>'
+    +'<div class="adm-detail-grid">'
+    +(isCo
+      ? field('Trading Name',app.tradingName)+field('Registered Company Name',app.regCompanyName)
+        +field('Company Reg Number',app.companyRegNum)+field('Registered Office',app.regOfficeAddr)
+        +field('PSC Full Name',app.pscFullName)+field('PSC Date of Birth',app.pscDob)
+        +field('TIN / Tax ID',app.tinNum)
+      : field('Full Legal Name',app.fullLegalName)+field('Date of Birth',app.dob)
+        +field('NI Number',app.niNumber)+field('Home Address',app.homeAddress)
+    )
+    +'</div></div>'
+
+  // ── Sector ──
+  +'<div class="adm-detail-section"><h3>Sectors Served</h3>'
+    +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+      +'<span class="adm-chip" style="font-weight:600;">'+_admEsc(sectorLabel)+'</span>'
+      +chips((app.sectorSubRes||[]).concat(app.sectorSubCom||[]))
+    +'</div></div>'
+
+  // ── Payment ──
+  +'<div class="adm-detail-section"><h3>Payment & Banking</h3>'
+    +'<div class="adm-detail-grid">'
+      +field('Account Holder',app.accountHolder)+field('Bank Name',app.bankName)
+      +field('Sort Code',app.sortCode)+field('Account Number',app.accountNumber?'••••'+app.accountNumber.slice(-4):'')
+      +'<div class="adm-detail-field"><label>VAT Registered</label><p>'+boolBadge(app.vatRegistered,'Yes ·'+' '+_admEsc(app.vatNumber||''),'No')+'</p></div>'
+      +'<div class="adm-detail-field"><label>Business Account</label><p>'+boolBadge(app.businessAccount)+'</p></div>'
+    +'</div></div>'
+
+  // ── Insurance ──
+  +'<div class="adm-detail-section"><h3>Insurance & Compliance</h3>'
+    +'<div class="adm-detail-grid">'
+      +field('Provider',app.insProvider)+field('Policy Number',app.insPolicy)
+      +field('Public Liability Coverage',app.insCoverage)+field('Expiry Date',app.insExpiry)
+      +'<div class="adm-detail-field"><label>Professional Indemnity</label><p>'+boolBadge(app.profIndemnity)+'</p></div>'
+      +(isCo?'<div class="adm-detail-field"><label>Employers Liability</label><p>'+boolBadge(app.employersLiability)+'</p></div>'
+        +'<div class="adm-detail-field"><label>All Workers Hold Valid Trade Licences</label><p>'+boolBadge(app.allWorkersValidCerts)+'</p></div>':'')
+    +'</div>'
+    +(app.tradeCerts&&app.tradeCerts.length?'<div style="margin-top:12px;"><label style="font-size:11px;font-weight:600;color:#94a3b8;display:block;margin-bottom:6px;">TRADE CERTIFICATIONS</label>'+chips(app.tradeCerts)+'</div>':'')
+  +'</div>'
+
+  // ── Background ──
+  +'<div class="adm-detail-section"><h3>Background & Right to Work</h3>'
+    +'<div class="adm-detail-grid">'
+    +(isCo
+      ? field('Team Size',app.teamSize)
+        +'<div class="adm-detail-field"><label>Company Has DBS Policy</label><p>'+_admEsc(app.companyDbsDecl||'—')+'</p></div>'
+        +(app.companyDbsDecl==='Yes'?field('Company DBS Level',app.companyDbsLevel):'')
+        +'<div class="adm-detail-field"><label>Right to Work (All Staff)</label><p>'+_admEsc(app.rightToWork||'—')+'</p></div>'
+      : '<div class="adm-detail-field"><label>DBS Check Declared</label><p>'+_admEsc(app.dbsDeclared||'—')+'</p></div>'
+        +(app.dbsDeclared==='Yes'?field('DBS Level',app.dbsLevel):'')
+        +'<div class="adm-detail-field"><label>Right to Work</label><p>'+_admEsc(app.rightToWork||'—')+'</p></div>'
+    )
+    +'</div></div>'
+
+  // ── Profile ──
+  +'<div class="adm-detail-section"><h3>Profile</h3>'
+    +'<div class="adm-detail-grid" style="margin-bottom:12px;">'
+      +field('Experience',app.experience)+field('Jobs Completed',app.jobsCompleted)
+      +'<div class="adm-detail-field"><label>Emergency Callouts</label><p>'+_admEsc(app.emergencyCallouts||'—')+'</p></div>'
+    +'</div>'
+    +(app.secondaryTrades&&app.secondaryTrades.length?'<div style="margin-bottom:10px;"><label style="font-size:11px;font-weight:600;color:#94a3b8;display:block;margin-bottom:6px;">SECONDARY TRADES</label>'+chips(app.secondaryTrades)+'</div>':'')
+    +(app.pricingModels&&app.pricingModels.length?'<div style="margin-bottom:10px;"><label style="font-size:11px;font-weight:600;color:#94a3b8;display:block;margin-bottom:6px;">PRICING MODELS</label>'+chips(app.pricingModels)+'</div>':'')
+    +(app.workDays&&app.workDays.length?'<div style="margin-bottom:10px;"><label style="font-size:11px;font-weight:600;color:#94a3b8;display:block;margin-bottom:6px;">WORKING DAYS</label>'+chips(app.workDays)+'</div>':'')
+    +(app.bio?'<div><label style="font-size:11px;font-weight:600;color:#94a3b8;display:block;margin-bottom:6px;">BIO</label><p style="font-size:13.5px;color:#374151;line-height:1.6;margin:0;">'+_admEsc(app.bio)+'</p></div>':'')
+  +'</div>';
+
+  return html;
+}
+
+function _admSearchApplicants(q) { _admRenderApplicants(); }
 function _admToggleSb() {
   var sb = document.getElementById('admSidebar');
   var logo = document.getElementById('admLogoImg');
@@ -7438,7 +7701,12 @@ function _admNav(el, page) {
     var pg = document.getElementById('admPage-'+k);
     if(pg) pg.style.display = k===page?'':'none';
   });
-  // close mobile sidebar after navigation
+  if(page==='applicants') {
+    // ensure list view is shown, then render
+    var v=document.getElementById('admApplicantsView'); var d=document.getElementById('admApplicantDetail');
+    if(v) v.style.display=''; if(d) d.style.display='none';
+    setTimeout(_admRenderApplicants,0);
+  }
   _admCloseMobile();
 }
 function showAdminLogin() {
@@ -14495,9 +14763,76 @@ function _suppOnboardFinish(){
     });
     if(typeof _updateUser==='function')_updateUser({});
   }
+  // ── Save full onboarding data to admin applicants store ──
+  try {
+    var apps = JSON.parse(localStorage.getItem('keylr_applicants')||'[]');
+    var ob = _suppOnboard;
+    var existing = apps.findIndex(function(a){ return a.email===(_user&&_user.email); });
+    var entry = {
+      id: existing>=0 ? apps[existing].id : 'app_'+Date.now(),
+      submittedAt: existing>=0 ? apps[existing].submittedAt : new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      status: 'pending',
+      name: _user ? (_user.name||'') : '',
+      email: _user ? (_user.email||'') : '',
+      phone: _user ? (_user.phone||'') : '',
+      // Setup
+      operationType: ob.operationType,
+      sector: ob.sector,
+      sectorSubRes: ob.sectorSubRes,
+      sectorSubCom: ob.sectorSubCom,
+      // Identity (sole trader)
+      fullLegalName: ob.fullLegalName,
+      dob: ob.dob,
+      niNumber: ob.niNumber,
+      homeAddress: ob.homeAddress,
+      // Identity (company)
+      tradingName: ob.tradingName,
+      regCompanyName: ob.regCompanyName,
+      companyRegNum: ob.companyRegNum,
+      regOfficeAddr: ob.regOfficeAddr,
+      pscFullName: ob.pscFullName,
+      pscDob: ob.pscDob,
+      tinNum: ob.tinNum,
+      // Payment
+      vatRegistered: ob.vatRegistered,
+      vatNumber: ob.vatNumber,
+      accountHolder: ob.accountHolder,
+      sortCode: ob.sortCode,
+      accountNumber: ob.accountNumber,
+      bankName: ob.bankName,
+      businessAccount: ob.businessAccount,
+      // Insurance
+      insProvider: ob.insProvider,
+      insPolicy: ob.insPolicy,
+      insCoverage: ob.insCoverage,
+      insExpiry: ob.insExpiry,
+      profIndemnity: ob.profIndemnity,
+      tradeCerts: ob.tradeCerts||[],
+      employersLiability: ob.employersLiability||false,
+      allWorkersValidCerts: ob.allWorkersValidCerts||false,
+      // Background
+      teamSize: ob.teamSize,
+      dbsDeclared: ob.dbsDeclared,
+      dbsLevel: ob.dbsLevel,
+      companyDbsDecl: ob.companyDbsDecl,
+      companyDbsLevel: ob.companyDbsLevel,
+      rightToWork: ob.rightToWork,
+      // Profile
+      primaryTrade: ob.primaryTrade,
+      secondaryTrades: ob.secondaryTrades||[],
+      pricingModels: ob.pricingModels||[],
+      experience: ob.experience,
+      jobsCompleted: ob.jobsCompleted,
+      bio: ob.bio,
+      workDays: ob.workDays||[],
+      emergencyCallouts: ob.emergencyCallouts
+    };
+    if(existing>=0) apps[existing]=entry; else apps.push(entry);
+    localStorage.setItem('keylr_applicants', JSON.stringify(apps));
+  } catch(e){}
   var screen=document.getElementById('supplierOnboardingScreen');
   if(screen)screen.remove();
-  // Show supplier dashboard
   _showSupplierDashboard();
 }
 
