@@ -7031,6 +7031,15 @@ function renderExploreProviders(cat, minRating) {
 }
 
 
+
+function _svcRowHTML(s) {
+  var chk = '<svg class="svc-chk" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="1.8"><circle cx="7" cy="7" r="6"/><path d="M4.5 7l2 2 3-3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var tags = (s.tags||[]).map(function(t){ return '<span class="svc-tag">' + t + '</span>'; }).join('');
+  var budgetBadge = s.budget ? '<span class="svc-budget">Budget</span>' : '';
+  var priceEl = s.quote ? '<span class="svc-quote">Quote</span>' : '<span class="svc-price">' + s.price + '</span>';
+  return '<div class="exp-svc-row">' + chk + '<span class="svc-name">' + s.name + '</span> ' + tags + ' ' + budgetBadge + priceEl + '</div>';
+}
+
 function toggleSvcs(pid) { pid = String(pid);
   var more = document.getElementById('svcs_more_'+pid);
   var btn = document.getElementById('svcs_btn_'+pid);
