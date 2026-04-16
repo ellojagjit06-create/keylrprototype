@@ -2606,9 +2606,10 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .exp-filter-panel.open{display:block;}
 .exp-filter-label{font-size:12px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:8px;}
 .exp-filter-close{float:right;background:none;border:none;cursor:pointer;color:#94a3b8;font-size:20px;line-height:1;padding:0;}
-.exp-provider-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-@media(max-width:700px){.exp-provider-grid{grid-template-columns:1fr;}}
-@media(min-width:1440px){.exp-provider-grid{grid-template-columns:1fr 1fr 1fr;}}
+.exp-provider-grid{display:grid;grid-template-columns:repeat(3,minmax(0,340px));gap:16px;justify-content:start;}
+@media(max-width:1100px){.exp-provider-grid{grid-template-columns:repeat(2,minmax(0,340px));}}
+@media(max-width:680px){.exp-provider-grid{grid-template-columns:1fr;}}
+
 /* ── Provider Card — pixel-perfect ── */
 .exp-pcard{background:#fff;border:1.5px solid #e8edf2;border-radius:16px;overflow:hidden;transition:box-shadow .18s,transform .15s,border-color .15s;display:flex;flex-direction:column;}
 .exp-pcard:hover{box-shadow:0 8px 32px rgba(26,95,200,.13);border-color:#bfdbfe;transform:translateY(-2px);}
@@ -2664,9 +2665,9 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .exp-pcard-meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:8px 16px 10px;border-top:1px solid #f1f5f9;}
 /* CTA row: "Book now" full-width + "Profile →" text link */
 .exp-pcard-footer{display:flex;align-items:center;gap:12px;padding:12px 16px 16px;border-top:1px solid #f1f5f9;}
-.exp-book-btn{flex:1;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px 16px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s;}
+.exp-book-btn{flex:1;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:999px;padding:13px 16px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s;}
 .exp-book-btn:hover{opacity:.9;}
-.exp-profile-btn{background:transparent;border:1.5px solid #e2e8f0;color:#374151;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;white-space:nowrap;padding:10px 14px;border-radius:12px;transition:background .15s,border-color .15s,color .15s;flex-shrink:0;}
+.exp-profile-btn{background:transparent;border:1.5px solid #e2e8f0;color:#374151;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;white-space:nowrap;padding:10px 16px;border-radius:999px;transition:background .15s,border-color .15s,color .15s;flex-shrink:0;}
 .exp-profile-btn:hover{background:#f1f5f9;border-color:#cbd5e1;color:#0f172a;}
 
 /* ── Explore dark mode ── */
