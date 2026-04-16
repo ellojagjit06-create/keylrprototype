@@ -2645,16 +2645,18 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .exp-avail-card-lbl{font-size:10px;color:#94a3b8;font-family:Inter,sans-serif;font-weight:500;}
 .exp-avail-card.emg .exp-avail-card-lbl{color:#d97706;}
 /* Services */
-.exp-pcard-services{padding:0 16px;border-top:1px solid #f1f5f9;}
-.exp-pcard-services-title{font-size:10px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:.08em;padding:10px 0 5px;}
-.exp-svc-row{display:flex;align-items:center;gap:6px;font-size:13px;font-family:Inter,sans-serif;color:#374151;padding:6px 0;border-bottom:1px solid #f8fafc;font-weight:500;}
-.exp-svc-row .svc-chk{flex-shrink:0;}
-.exp-svc-row .svc-name{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.exp-svc-row .svc-tag{font-size:9.5px;font-weight:600;padding:1px 6px;border-radius:4px;background:#eff6ff;color:#1d4ed8;white-space:nowrap;border:1px solid #bfdbfe;}
-.exp-svc-row .svc-budget{font-size:9.5px;font-weight:600;padding:1px 6px;border-radius:4px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;white-space:nowrap;}
-.exp-svc-row .svc-price{font-weight:700;color:#0f172a;font-size:13px;white-space:nowrap;margin-left:4px;}
-.exp-svc-row .svc-quote{font-size:12px;color:#94a3b8;margin-left:auto;}
+/* Services — rounded grey container like reference */
+.exp-pcard-services{padding:0 14px 12px;}
+.exp-pcard-svc-box{background:#f8f9fa;border-radius:10px;padding:4px 12px 0;margin-top:2px;}
+.exp-pcard-services-title{font-size:10px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:.08em;padding:9px 0 5px;}
+.exp-svc-row{display:flex;align-items:center;gap:5px;font-size:12px;font-family:Inter,sans-serif;color:#374151;padding:7px 0;border-bottom:1px solid #e8ecf0;font-weight:500;}
 .exp-svc-row:last-child{border-bottom:none;}
+.exp-svc-row .svc-chk{flex-shrink:0;}
+.exp-svc-row .svc-name{flex:1;min-width:0;font-size:12px;font-weight:500;}
+.exp-svc-row .svc-tag{font-size:9.5px;font-weight:700;padding:2px 5px;border-radius:4px;background:#eff6ff;color:#1d4ed8;white-space:nowrap;}
+.exp-svc-row .svc-budget{font-size:9.5px;font-weight:700;padding:2px 6px;border-radius:4px;background:#f0fdf4;color:#15803d;white-space:nowrap;}
+.exp-svc-row .svc-price{font-weight:700;color:#0f172a;font-size:12.5px;white-space:nowrap;margin-left:2px;}
+.exp-svc-row .svc-quote{font-size:11.5px;color:#94a3b8;margin-left:auto;}
 /* Show more */
 .exp-show-more{background:none;border:none;color:#1A5FC8;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:6px 0 4px;display:flex;align-items:center;gap:4px;}
 .exp-show-more:hover{opacity:.75;}
@@ -2678,6 +2680,9 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .dash-dark .exp-cert-chip{background:#1c2433;border-color:#30363d;color:#c9d1d9;}
 .dash-dark .exp-avail-card{background:#1c2433;border-color:#30363d;}
 .dash-dark .exp-avail-card-val{color:#e6edf3;}
+.dash-dark .exp-pcard-svc-box{background:#1c2433;}
+.dash-dark .exp-svc-row{color:#c9d1d9;border-color:#2d3748;}
+.dash-dark .exp-svc-row .svc-price{color:#e6edf3;}
 .dash-dark .exp-avail-card-lbl{color:#6e7681;}
 .dash-dark .exp-avail-card-icon{color:#8b949e;}
 .dash-dark .exp-pcard-services{border-color:#30363d;}
@@ -6978,10 +6983,14 @@ function renderExploreProviders(cat, minRating) {
     var svcsDefaultHTML = svcsDefault.map(function(s){ return _svcRowHTML(s); }).join('');
     var svcsMoreHTML = svcsAll.slice(2).map(function(s){ return _svcRowHTML(s); }).join('');
     var svcsSection = '<div class="exp-pcard-services-title">SERVICES (' + svcsAll.length + ')</div>'
+      + '<div class="exp-pcard-svc-box">'
       + svcsDefaultHTML
       + (extraCount > 0
         ? '<div id="svcs_more_'+p.id+'" style="display:none;">' + svcsMoreHTML + '</div>'
-          + '<button data-pid="'+p.id+'" onclick="toggleSvcs(this.getAttribute(\'data-pid\'))" id="svcs_btn_'+p.id+'" class="exp-show-more">+' + extraCount + ' more <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4l2 2 2-2"/></svg></button>'
+        : '')
+      + '</div>'
+      + (extraCount > 0
+        ? '<button data-pid="'+p.id+'" onclick="toggleSvcs(this.getAttribute(\'data-pid\'))" id="svcs_btn_'+p.id+'" class="exp-show-more">+' + extraCount + ' more <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4l2 2 2-2"/></svg></button>'
         : '');
     var footer = '';
     if (p.areas) footer += '<span style="font-size:11px;color:#64748b;font-family:Inter,sans-serif;display:flex;align-items:center;gap:3px;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#94a3b8" stroke-width="1.5"><circle cx="6" cy="5" r="2.5"/><path d="M6 11C6 11 1 7.5 1 5a5 5 0 0110 0c0 2.5-5 6-5 6z"/></svg>' + p.areas + '</span>';
