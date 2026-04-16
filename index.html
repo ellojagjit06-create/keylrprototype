@@ -6930,7 +6930,7 @@ function _daysLabel(days) {
   return m[days] || days;
 }
 function _svcRowHTML(s) {
-  var chk = '<svg class="svc-chk" width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="7" cy="7" r="6"/><path d="M4.5 7l2 2 3-3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var chk = '<svg class="svc-chk" width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2" style="flex-shrink:0;"><circle cx="7" cy="7" r="6"/><path d="M4.5 7l2 2 3-3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   // RES=blue, COM=purple/indigo
   var tags = (s.tags||[]).map(function(t){
     var isRes = t === 'RES';
@@ -7008,7 +7008,7 @@ function renderExploreProviders(cat, minRating) {
     if (comSvcs.length===0 && resSvcs.length>0) comSvcs = resSvcs;
     var hasTabs = resSvcs.length>0 || comSvcs.length>0;
     function _svcRowNoTag(s){
-      var chk='<svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="7" cy="7" r="6"/><path d="M4.5 7l2 2 3-3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      var chk='<svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2" style="flex-shrink:0;"><circle cx="7" cy="7" r="6"/><path d="M4.5 7l2 2 3-3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
       var b=s.budget?'<span class="svc-budget">Budget</span>':'';
       var pr=s.quote?'<span class="svc-quote">Quote</span>':'<span class="svc-price">'+s.price+'</span>';
       return '<div class="exp-svc-row">'+chk+'<span class="svc-name">'+s.name+'</span><span style="flex:1;"></span>'+b+' '+pr+'</div>';
@@ -9715,7 +9715,7 @@ function showTierStep() {
             '<div style="font-size:14.5px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">'+t.name+'</div>' +
             '<div style="font-size:18px;font-weight:800;color:#1A5FC8;font-family:Fraunces,serif;margin-bottom:8px;">'+t.price+'</div>' +
             '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:10px;line-height:1.4;">'+t.desc+'</div>' +
-            t.features.map(function(f){ return '<div style="font-size:11.5px;color:#374151;font-family:Inter,sans-serif;display:flex;align-items:flex-start;gap:6px;margin-bottom:4px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#1A5FC8" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path d="M1.5 5.5l3 3 5-5"/></svg>'+f+'</div>'; }).join('') +
+            t.features.map(function(f){ return '<div style="font-size:11.5px;color:#374151;font-family:Inter,sans-serif;display:flex;align-items:flex-start;gap:6px;margin-bottom:4px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#1A5FC8" stroke-width="2" style="flex-shrink:0;"><path d="M1.5 5.5l3 3 5-5"/></svg>'+f+'</div>'; }).join('') +
           '</div>';
         }).join('') +
       '</div>' +
@@ -13189,7 +13189,7 @@ function _buildSuppOnboardStep(step) {
           + '<span style="font-size:11px;color:#64748b;background:#f1f5f9;border-radius:4px;padding:1px 7px;font-family:Inter,sans-serif;">Optional</span>'
         + '</div>'
         + _suppInfoBox('You can skip this for now. Bank details must be provided before your first job payout — you\'ll be prompted to add them once your first job is completed and payment is ready to be processed.')
-        + '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:16px;padding:10px 14px;background:#fffbeb;border:1px solid #fde68a;border-radius:9px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#b45309" stroke-width="1.6" style="flex-shrink:0;margin-top:1px;"><path d="M7 1l6 11H1L7 1z"/><path d="M7 5.5v3M7 10v.5"/></svg><span style="font-size:12.5px;color:#92400e;font-family:Inter,sans-serif;line-height:1.5;"><strong>Note:</strong> You are responsible for providing accurate details, and any errors may result in delays or failed payments.</span></div>'
+        + '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:16px;padding:10px 14px;background:#fffbeb;border:1px solid #fde68a;border-radius:9px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#b45309" stroke-width="1.6" style="flex-shrink:0;"><path d="M7 1l6 11H1L7 1z"/><path d="M7 5.5v3M7 10v.5"/></svg><span style="font-size:12.5px;color:#92400e;font-family:Inter,sans-serif;line-height:1.5;"><strong>Note:</strong> You are responsible for providing accurate details, and any errors may result in delays or failed payments.</span></div>'
         + _suppField('Account holder name','','pm-acc-holder','text','Must match your registered business name','','<div style="font-size:11.5px;color:#64748b;margin-top:4px;font-family:Inter,sans-serif;">The name on your bank account — must match your legal name for verification.</div>')
         + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">'
           + '<div>'+_suppField('Sort code','','pm-sort','text','12-34-56')+'</div>'
@@ -13445,7 +13445,7 @@ function _buildSuppOnboardStep(step) {
         + '</div>'
         + (_suppOnboard.companyDbsDecl === 'No'
             ? '<div style="display:flex;align-items:flex-start;gap:10px;background:#fff7ed;border:1.5px solid #fed7aa;border-radius:10px;padding:12px 14px;margin-bottom:14px;">'
-                + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#c2410c" stroke-width="1.6" style="flex-shrink:0;margin-top:1px;"><path d="M7.5 1.5l6 11H1.5l6-11z"/><path d="M7.5 6v3M7.5 10.5v.5"/></svg>'
+                + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#c2410c" stroke-width="1.6" style="flex-shrink:0;"><path d="M7.5 1.5l6 11H1.5l6-11z"/><path d="M7.5 6v3M7.5 10.5v.5"/></svg>'
                 + '<span style="font-size:12.5px;color:#9a3412;font-family:Inter,sans-serif;line-height:1.55;">Some property managers require DBS-checked operatives. You can still list on the platform, but your profile will indicate that not all staff are DBS verified.</span>'
               + '</div>'
             : '')
@@ -13513,13 +13513,13 @@ function _buildSuppOnboardStep(step) {
         + '</div>'
         + (_suppOnboard.rightToWork === 'No' && isCompany
             ? '<div style="display:flex;align-items:flex-start;gap:10px;background:#fff7ed;border:1.5px solid #fed7aa;border-radius:10px;padding:12px 14px;margin-bottom:12px;">'
-                + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#c2410c" stroke-width="1.6" style="flex-shrink:0;margin-top:1px;"><path d="M7.5 1.5l6 11H1.5l6-11z"/><path d="M7.5 6v3M7.5 10.5v.5"/></svg>'
+                + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#c2410c" stroke-width="1.6" style="flex-shrink:0;"><path d="M7.5 1.5l6 11H1.5l6-11z"/><path d="M7.5 6v3M7.5 10.5v.5"/></svg>'
                 + '<span style="font-size:12.5px;color:#9a3412;font-family:Inter,sans-serif;line-height:1.55;">You are legally required to verify Right to Work for all operatives before dispatching them. Please resolve this before completing onboarding.</span>'
               + '</div>'
             : '')
         + (_suppOnboard.rightToWork === 'No' && !isCompany
             ? '<div style="display:flex;align-items:flex-start;gap:10px;background:#fff7ed;border:1.5px solid #fed7aa;border-radius:10px;padding:12px 14px;margin-bottom:12px;">'
-                + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#c2410c" stroke-width="1.6" style="flex-shrink:0;margin-top:1px;"><path d="M7.5 1.5l6 11H1.5l6-11z"/><path d="M7.5 6v3M7.5 10.5v.5"/></svg>'
+                + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#c2410c" stroke-width="1.6" style="flex-shrink:0;"><path d="M7.5 1.5l6 11H1.5l6-11z"/><path d="M7.5 6v3M7.5 10.5v.5"/></svg>'
                 + '<span style="font-size:12.5px;color:#9a3412;font-family:Inter,sans-serif;line-height:1.55;">You cannot list services on the marketplace without the legal right to work in the UK. Please contact our support team if you need guidance.</span>'
               + '</div>'
             : '')
@@ -13729,7 +13729,7 @@ function _suppInfoBox(text, isList) {
     ? '<div style="font-size:12.5px;color:#1e40af;font-family:Inter,sans-serif;">' + text.replace(/\n/g,'<br>') + '</div>'
     : '<div style="font-size:12.5px;color:#1e40af;font-family:Inter,sans-serif;">'+text+'</div>';
   return '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 14px;margin-bottom:16px;display:flex;gap:10px;">'
-    + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#3b82f6" stroke-width="1.6" style="flex-shrink:0;margin-top:1px;"><circle cx="7.5" cy="7.5" r="6"/><path d="M7.5 5v.5M7 7.5c0-1.5 2-1.5 2 0s-1 .8-1 1.8M7.5 11v.5"/></svg>'
+    + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#3b82f6" stroke-width="1.6" style="flex-shrink:0;"><circle cx="7.5" cy="7.5" r="6"/><path d="M7.5 5v.5M7 7.5c0-1.5 2-1.5 2 0s-1 .8-1 1.8M7.5 11v.5"/></svg>'
     + content + '</div>';
 }
 
