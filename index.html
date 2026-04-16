@@ -3127,9 +3127,9 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     <div class="nav-btns" id="navBtns">
       <!-- Auth buttons (logged out) -->
       <div id="navAuthBtns" style="display:flex;align-items:center;gap:8px;">
+        <button onclick="showAdminLogin()" class="btn-ghost-light" style="display:flex;align-items:center;gap:6px;"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 1l4 2v4c0 2.5-4 5-4 5S3 9.5 3 7V3z"/></svg>Admin</button>
         <button class="btn-ghost-light" id="navLoginBtn" onclick="showAuthPage('login')">Log in</button>
         <button class="btn-teal" onclick="showAuthPage('signup')">Sign Up <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M8 4l3 2.5-3 2.5"/></svg></button>
-        <button onclick="showAdminLogin()" style="background:transparent;border:1.5px solid rgba(255,255,255,0.35);color:#fff;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;transition:background .15s,border-color .15s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 1l4 2v4c0 2.5-4 5-4 5S3 9.5 3 7V3z"/></svg>Admin</button>
       </div>
 
     </div>
@@ -3380,7 +3380,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
       Back to home
     </a>
     <!-- Card -->
-    <div style="background:#fff;border-radius:16px;padding:40px 36px;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+    <div style="padding:40px 0;">
       <!-- Shield icon -->
       <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:24px;">
         <div style="width:56px;height:56px;background:#fef2f2;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
@@ -3392,11 +3392,11 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
       <!-- Form -->
       <div style="margin-bottom:16px;">
         <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">Email</label>
-        <input id="adminEmail" type="email" value="" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color .15s;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'">
+        <input id="adminEmail" type="email" value="admin@keylr.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color .15s;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'">
       </div>
       <div style="margin-bottom:24px;">
         <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">Password</label>
-        <input id="adminPassword" type="password" value="" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color .15s;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'" onkeydown="if(event.key==='Enter') _adminSignIn()">
+        <input id="adminPassword" type="password" value="admin123" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color .15s;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'" onkeydown="if(event.key==='Enter') _adminSignIn()">
       </div>
       <div id="adminLoginErr" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;font-size:13px;color:#dc2626;margin-bottom:16px;"></div>
       <button onclick="_adminSignIn()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#1d4ed8);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;transition:opacity .15s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Sign in</button>
