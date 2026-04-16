@@ -2632,7 +2632,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .exp-pcard-price strong{font-size:20px;font-weight:800;color:#0f172a;display:block;font-family:Fraunces,serif;line-height:1.05;letter-spacing:-.5px;}
 /* Cert chips — pill with colored dot */
 .exp-pcard-badges{display:flex;gap:4px;flex-wrap:wrap;padding:0 14px 8px;}
-.exp-cert-chip{font-size:9.5px;font-weight:600;padding:2px 7px 2px 5px;border-radius:20px;background:#fff;border:1px solid #d1d5db;font-family:Inter,sans-serif;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;color:#374151;}
+.exp-cert-chip{font-size:9.5px;font-weight:600;padding:2px 8px 2px 5px;border-radius:20px;background:#fff8ed;border:1.5px solid #fed7aa;font-family:Inter,sans-serif;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;color:#92400e;}
 .exp-cert-chip-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
 /* Availability 3-card row */
 .exp-pcard-avail{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:0 14px 10px;}
@@ -2648,8 +2648,12 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 /* Services */
 /* Services — rounded grey container like reference */
 .exp-pcard-services{padding:0 12px 8px;}
-.exp-pcard-svc-box{background:#f8f9fa;border:1px solid #e8ecf0;border-radius:8px;padding:2px 10px 6px;margin-top:0;}
-.exp-pcard-services-title{font-size:10px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:.08em;padding:8px 0 6px;border-bottom:1px solid #e8ecf0;margin-bottom:2px;}
+.exp-pcard-svc-box{background:#f8f9fa;border:1px solid #e8ecf0;border-radius:8px;padding:0 10px 6px;margin-top:0;}
+.exp-svc-tabs{display:flex;gap:0;border-bottom:1.5px solid #e8ecf0;margin-bottom:2px;}
+.exp-svc-tab{flex:1;text-align:center;font-size:10px;font-weight:600;color:#94a3b8;font-family:Inter,sans-serif;padding:7px 4px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1.5px;transition:color .12s,border-color .12s;}
+.exp-svc-tab.active{color:#1A5FC8;border-bottom-color:#1A5FC8;}
+.exp-svc-tab:hover:not(.active){color:#374151;}
+
 .exp-svc-row{display:flex;align-items:center;gap:5px;font-size:11px;font-family:Inter,sans-serif;color:#374151;padding:5px 0;border-bottom:1px solid #eef0f3;font-weight:500;}
 .exp-svc-row:last-child{border-bottom:none;}
 .exp-svc-row .svc-chk{flex-shrink:0;}
@@ -6996,26 +7000,51 @@ function renderExploreProviders(cat, minRating) {
     avail += '<div class="exp-avail-card"><div class="exp-avail-card-icon">' + _calIco + '</div><div class="exp-avail-card-val">' + _daysLabel(p.days) + '</div><div class="exp-avail-card-lbl">' + p.hours + '</div></div>';
     if (p.emergency) avail += '<div class="exp-avail-card emg"><div class="exp-avail-card-icon">' + _emgIco + '</div><div class="exp-avail-card-val">24/7</div><div class="exp-avail-card-lbl">Emergency</div></div>';
     // Services — collapsible (show 2 default)
+    // ── Tabbed services: Residential / Commercial ──
     var svcsAll = p.services;
-    var svcsDefault = svcsAll.slice(0,2);
-    var extraCount = svcsAll.length - 2;
-    var svcsDefaultHTML = svcsDefault.map(function(s){ return _svcRowHTML(s); }).join('');
-    var svcsMoreHTML = svcsAll.slice(2).map(function(s){ return _svcRowHTML(s); }).join('');
-    var svcsSection = '<div class="exp-pcard-svc-box">'
-      + '<div class="exp-pcard-services-title">SERVICES (' + svcsAll.length + ')</div>'
-      + svcsDefaultHTML
-      + (extraCount > 0
-        ? '<div id="svcs_more_'+p.id+'" style="display:none;">' + svcsMoreHTML + '</div>'
-          + '<button data-pid="'+p.id+'" onclick="toggleSvcs(this.getAttribute(\'data-pid\'))" id="svcs_btn_'+p.id+'" class="exp-show-more">+' + extraCount + ' more <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4l2 2 2-2"/></svg></button>'
-        : '')
-      + '</div>';
-    // Role display: first segment + '+N' extra
-    var roleParts = p.role.split(' · ');
-    var roleDisplay = roleParts[0] + (roleParts.length > 1 ? ' <span style="font-size:11px;font-weight:600;color:#64748b;"> +' + (roleParts.length-1) + '</span>' : '');
-    // Cert chips with type-matched dot colors
-    var _certDotColor = {'Gas Safe':'#ea580c','CIPHE':'#1d4ed8','WaterSafe':'#0369a1','NICEIC':'#7c3aed','NAPIT':'#dc2626','Part P':'#0891b2','BAFE':'#dc2626','ARLA':'#0891b2','RICS':'#1d4ed8'};
-    var certsHTMLv2 = p.certs.map(function(c){ var dot=_certDotColor[c]||'#64748b'; return '<span class="exp-cert-chip"><span class="exp-cert-chip-dot" style="background:'+dot+';"></span>'+c+'</span>'; }).join('');
-    var footer = '';
+    var resSvcs = svcsAll.filter(function(s){ return (s.tags||[]).indexOf('RES')>=0; });
+    var comSvcs = svcsAll.filter(function(s){ return (s.tags||[]).indexOf('COM')>=0; });
+    if (resSvcs.length===0 && comSvcs.length>0) resSvcs = comSvcs;
+    if (comSvcs.length===0 && resSvcs.length>0) comSvcs = resSvcs;
+    var hasTabs = resSvcs.length>0 || comSvcs.length>0;
+    function _svcRowNoTag(s){
+      var chk='<svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="7" cy="7" r="6"/><path d="M4.5 7l2 2 3-3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      var b=s.budget?'<span class="svc-budget">Budget</span>':'';
+      var pr=s.quote?'<span class="svc-quote">Quote</span>':'<span class="svc-price">'+s.price+'</span>';
+      return '<div class="exp-svc-row">'+chk+'<span class="svc-name">'+s.name+'</span><span style="flex:1;"></span>'+b+' '+pr+'</div>';
+    }
+    function _tabRows(svcs, tabId){
+      var shown=svcs.slice(0,2); var extra=svcs.slice(2);
+      var h=shown.map(_svcRowNoTag).join('');
+      if(extra.length>0){
+        h+='<div id="svcs_more_'+tabId+'" style="display:none;">'+extra.map(_svcRowNoTag).join('')+'</div>';
+        h+='<button data-pid="'+p.id+'" data-tab="'+tabId+'" onclick="_toggleTabSvcs(this)" id="svcs_btn_'+tabId+'" class="exp-show-more">+'+extra.length+' more <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4l2 2 2-2"/></svg></button>';
+      }
+      return h;
+    }
+    var svcsSection='<div class="exp-pcard-svc-box">';
+    if(hasTabs){
+      svcsSection+='<div class="exp-svc-tabs">'
+        +'<div class="exp-svc-tab active" id="stab_res_'+p.id+'" onclick="_switchSvcTab(\''+p.id+'\',\'res\')">Residential ('+resSvcs.length+')</div>'
+        +'<div class="exp-svc-tab" id="stab_com_'+p.id+'" onclick="_switchSvcTab(\''+p.id+'\',\'com\')">Commercial ('+comSvcs.length+')</div>'
+      +'</div>'
+      +'<div id="svcpane_res_'+p.id+'">'+_tabRows(resSvcs,'res_'+p.id)+'</div>'
+      +'<div id="svcpane_com_'+p.id+'" style="display:none;">'+_tabRows(comSvcs,'com_'+p.id)+'</div>';
+    } else {
+      var extraCount=svcsAll.length-2;
+      svcsSection+=svcsAll.slice(0,2).map(_svcRowNoTag).join('');
+      if(extraCount>0){
+        svcsSection+='<div id="svcs_more_'+p.id+'" style="display:none;">'+svcsAll.slice(2).map(_svcRowNoTag).join('')+'</div>';
+        svcsSection+='<button data-pid="'+p.id+'" onclick="toggleSvcs(this.getAttribute(\'data-pid\'))" id="svcs_btn_'+p.id+'" class="exp-show-more">+'+extraCount+' more <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4l2 2 2-2"/></svg></button>';
+      }
+    }
+    svcsSection+='</div>';
+    // Role display
+    var roleParts=p.role.split(' · ');
+    var roleDisplay=roleParts[0]+(roleParts.length>1?' <span style="font-size:11px;font-weight:600;color:#64748b;"> +'+(roleParts.length-1)+'</span>':'');
+    // Cert chips — colored per type
+    var _certStyle={'Gas Safe':{bg:'#fff7ed',bd:'#fed7aa',tx:'#92400e',dot:'#ea580c'},'CIPHE':{bg:'#eff6ff',bd:'#bfdbfe',tx:'#1d4ed8',dot:'#1d4ed8'},'WaterSafe':{bg:'#f0f9ff',bd:'#bae6fd',tx:'#0369a1',dot:'#0369a1'},'NICEIC':{bg:'#f5f3ff',bd:'#ddd6fe',tx:'#6d28d9',dot:'#7c3aed'},'NAPIT':{bg:'#fef2f2',bd:'#fecaca',tx:'#dc2626',dot:'#dc2626'},'Part P':{bg:'#f0fdfa',bd:'#99f6e4',tx:'#0f766e',dot:'#0f766e'},'BAFE':{bg:'#fef2f2',bd:'#fecaca',tx:'#dc2626',dot:'#dc2626'}};
+    var certsHTMLv2=p.certs.map(function(cert){var cs=_certStyle[cert]||{bg:'#f8fafc',bd:'#e2e8f0',tx:'#374151',dot:'#94a3b8'};return '<span style="font-size:9.5px;font-weight:600;padding:2px 8px 2px 6px;border-radius:20px;background:'+cs.bg+';border:1.5px solid '+cs.bd+';font-family:Inter,sans-serif;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;color:'+cs.tx+'"><span style="width:5px;height:5px;border-radius:50%;background:'+cs.dot+';flex-shrink:0;"></span>'+cert+'</span>';}).join('');
     if (p.areas) footer += '<span style="font-size:11px;color:#64748b;font-family:Inter,sans-serif;display:flex;align-items:center;gap:3px;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#94a3b8" stroke-width="1.5"><circle cx="6" cy="5" r="2.5"/><path d="M6 11C6 11 1 7.5 1 5a5 5 0 0110 0c0 2.5-5 6-5 6z"/></svg>' + p.areas + '</span>';
     if (p.insured) footer += '<span style="font-size:11px;color:#10b981;font-family:Inter,sans-serif;display:flex;align-items:center;gap:2px;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#10b981" stroke-width="1.5"><path d="M6 1l4 2v4c0 2.5-4 5-4 5S2 9.5 2 7V3z"/></svg> Insured</span>';
     if (p.dbs) footer += '<span style="font-size:11px;color:#1A5FC8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:2px;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#1A5FC8" stroke-width="1.5"><path d="M2 6l3 3 5-5"/></svg> DBS</span>';
@@ -7064,6 +7093,31 @@ function renderExploreProviders(cat, minRating) {
 
 
 
+function _switchSvcTab(pid, tab) {
+  ['res','com'].forEach(function(t){
+    var pane = document.getElementById('svcpane_'+t+'_'+pid);
+    var stab = document.getElementById('stab_'+t+'_'+pid);
+    if (pane) pane.style.display = t===tab ? '' : 'none';
+    if (stab) { stab.classList.toggle('active', t===tab); }
+  });
+}
+function _toggleTabSvcs(btn) {
+  var pid  = btn.getAttribute('data-pid');
+  var tab  = btn.getAttribute('data-tab');
+  var more = document.getElementById('svcs_more_'+tab);
+  if (!more) return;
+  var open = more.style.display !== 'none';
+  more.style.display = open ? 'none' : 'block';
+  // count remaining
+  var pId  = tab.replace(/^(res|com)_/,'');
+  var tKey = tab.replace('_'+pId,'');
+  var prov = _exploreProviders.find(function(p){ return p.id===pId; });
+  var filt = (prov ? prov.services : []).filter(function(s){ return (s.tags||[]).indexOf(tKey==='res'?'RES':'COM')>=0; });
+  var extra = Math.max(0, filt.length-2);
+  btn.innerHTML = open
+    ? '+'+extra+' more <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4l2 2 2-2"/></svg>'
+    : 'Show less <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 6l-2-2-2 2"/></svg>';
+}
 function toggleSvcs(pid) { pid = String(pid);
   var more = document.getElementById('svcs_more_'+pid);
   var btn = document.getElementById('svcs_btn_'+pid);
