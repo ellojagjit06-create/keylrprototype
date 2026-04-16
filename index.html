@@ -3441,10 +3441,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
         <div class="adm-sb-logo">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#ef4444" stroke-width="1.8"><path d="M9 1l6 2.5v5C15 13 9 17 9 17S3 13 3 8.5v-5L9 1z"/></svg>
         </div>
-        <div class="adm-sb-brand" id="admBrand">
-          <div class="adm-sb-brand-name">Keylr Admin</div>
-          <div class="adm-sb-brand-sub">Back Office</div>
-        </div>
+        <img id="admLogoImg" alt="Keylr" style="height:26px;object-fit:contain;max-width:110px;flex-shrink:0;">
       </div>
       <!-- Nav -->
       <div class="adm-sb-nav">
@@ -7288,7 +7285,7 @@ function _toggleTabSvcs(btn) {
 var _admCollapsed = false;
 function _admToggleSb() {
   var sb = document.getElementById('admSidebar');
-  var brand = document.getElementById('admBrand');
+  var logo = document.getElementById('admLogoImg');
   var ico = document.getElementById('admCollapseIco');
   var ctxt = document.getElementById('admCollapseTxt');
   var stxt = document.getElementById('admSignoutTxt');
@@ -7301,7 +7298,7 @@ function _admToggleSb() {
     var l=document.getElementById('admLbl-'+k); if(l) l.style.display=_admCollapsed?'none':'';
     var b=document.getElementById('admBadge-'+k); if(b) b.style.display=_admCollapsed?'none':'';
   });
-  if(brand) brand.style.display = _admCollapsed?'none':'';
+  if(logo) logo.style.display = _admCollapsed?'none':'';
   if(ctxt) ctxt.style.display = _admCollapsed?'none':'';
   if(stxt) stxt.style.display = _admCollapsed?'none':'';
   if(secMain) secMain.style.display = _admCollapsed?'none':'';
@@ -7318,6 +7315,10 @@ function _admNav(el, page) {
   });
 }
 function showAdminLogin() {
+  // seed sidebar logo from the existing dark logo asset
+  var darkLogo = document.getElementById('navLogoImgDark');
+  var admLogo = document.getElementById('admLogoImg');
+  if(darkLogo && admLogo && !admLogo.src) admLogo.src = darkLogo.src;
   document.getElementById('pg-landing').style.display = 'none';
   var pg = document.getElementById('pg-admin-login');
   pg.style.display = 'flex';
