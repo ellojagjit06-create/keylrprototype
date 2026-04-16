@@ -3407,8 +3407,11 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
 <!-- ADMIN DASHBOARD PAGE -->
 <style>
+/* ── Admin layout ── */
 .adm-layout{display:flex;min-height:100vh;font-family:Inter,sans-serif;background:#f5f6f8;}
-.adm-sb{width:240px;min-width:240px;background:#fff;border-right:1px solid #e8edf2;display:flex;flex-direction:column;transition:width .2s,min-width .2s;overflow:hidden;position:relative;}
+
+/* ── Sidebar ── */
+.adm-sb{width:240px;min-width:240px;background:#fff;border-right:1px solid #e8edf2;display:flex;flex-direction:column;transition:width .22s,min-width .22s;overflow:hidden;position:relative;z-index:100;}
 .adm-sb.collapsed{width:64px;min-width:64px;}
 .adm-sb-head{padding:20px 16px 16px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:10px;min-height:72px;}
 .adm-sb-logo{width:36px;height:36px;border-radius:10px;background:#fef2f2;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -3428,11 +3431,53 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .adm-sb-footer-btn:hover{background:#f8fafc;color:#0f172a;}
 .adm-sb-footer-btn.signout{color:#ef4444;}
 .adm-sb-footer-btn.signout:hover{background:#fef2f2;color:#dc2626;}
-.adm-main{flex:1;display:flex;flex-direction:column;overflow:auto;}
-.adm-content{padding:32px 32px;flex:1;}
-.adm-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:400px;color:#94a3b8;}
+
+/* ── Main content ── */
+.adm-main{flex:1;display:flex;flex-direction:column;overflow:auto;min-width:0;}
+.adm-content{padding:28px 28px;flex:1;}
+.adm-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:320px;color:#94a3b8;}
+
+/* ── Mobile top bar ── */
+.adm-mobile-bar{display:none;align-items:center;gap:12px;padding:14px 16px;background:#fff;border-bottom:1px solid #e8edf2;position:sticky;top:0;z-index:200;}
+.adm-mob-menu-btn{width:36px;height:36px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+
+/* ── Mobile sidebar overlay ── */
+.adm-sb.adm-mob-open{position:fixed !important;inset:0 auto 0 0 !important;width:260px !important;min-width:260px !important;z-index:9999 !important;box-shadow:4px 0 24px rgba(0,0,0,0.16) !important;display:flex !important;}
+.adm-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.32);z-index:9998;}
+.adm-backdrop.show{display:block;}
+
+/* ── Responsive ── */
+@media(max-width:840px){
+  .adm-sb{display:none;}
+  .adm-mobile-bar{display:flex;}
+  .adm-sb.adm-mob-open{display:flex;}
+  .adm-content{padding:20px 16px;}
+  #admCollapseBtn{display:none;}
+}
+@media(min-width:841px){
+  .adm-mobile-bar{display:none !important;}
+  .adm-backdrop{display:none !important;}
+  .adm-sb{display:flex !important;}
+}
+
+/* ── Applicants / zero-state ── */
+.adm-stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.adm-stat-card{background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;}
+.adm-stat-num{font-size:26px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;}
+.adm-stat-lbl{font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.adm-search-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+.adm-search-input{flex:1;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 14px;font-size:13.5px;font-family:Inter,sans-serif;color:#0f172a;outline:none;transition:border-color .15s;background:#fff;}
+.adm-search-input:focus{border-color:#1A5FC8;}
+.adm-zero-card{background:#fff;border:1.5px dashed #e2e8f0;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:52px 24px;text-align:center;}
+
+@media(max-width:600px){
+  .adm-stat-row{grid-template-columns:repeat(2,1fr);}
+}
 </style>
 <div id="pg-admin-dash" style="display:none;">
+  <!-- Mobile backdrop -->
+  <div class="adm-backdrop" id="admBackdrop" onclick="_admCloseMobile()"></div>
+
   <div class="adm-layout">
     <!-- SIDEBAR -->
     <div class="adm-sb" id="admSidebar">
@@ -3454,17 +3499,14 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
         <div class="adm-nav-item" onclick="_admNav(this,'clients')">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
           <span id="admLbl-clients">Clients</span>
-          <span class="adm-nav-badge" id="admBadge-clients">24</span>
         </div>
         <div class="adm-nav-item" onclick="_admNav(this,'applicants')">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="6" cy="5" r="3"/><path d="M1 14c0-2.8 2.2-5 5-5"/><path d="M11 9l3 3-3 3"/><line x1="10" y1="12" x2="16" y2="12"/></svg>
           <span id="admLbl-applicants">Applicants</span>
-          <span class="adm-nav-badge" id="admBadge-applicants">5</span>
         </div>
         <div class="adm-nav-item" onclick="_admNav(this,'suppliers')">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 13l1-5h10l1 5H2z"/><path d="M5 8V5a3 3 0 016 0v3"/><path d="M2 8h12"/></svg>
           <span id="admLbl-suppliers">Active Suppliers</span>
-          <span class="adm-nav-badge blue" id="admBadge-suppliers">12</span>
         </div>
         <div class="adm-sb-section" id="admSecSystem">SYSTEM</div>
         <div class="adm-nav-item" onclick="_admNav(this,'settings')">
@@ -3484,10 +3526,20 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
         </div>
       </div>
     </div>
+
     <!-- MAIN CONTENT -->
     <div class="adm-main">
+      <!-- Mobile top bar -->
+      <div class="adm-mobile-bar">
+        <button class="adm-mob-menu-btn" onclick="_admOpenMobile()">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#374151" stroke-width="1.8"><line x1="2" y1="4" x2="14" y2="4"/><line x1="2" y1="8" x2="14" y2="8"/><line x1="2" y1="12" x2="14" y2="12"/></svg>
+        </button>
+        <img id="admLogoImgMob" alt="Keylr" style="height:22px;object-fit:contain;">
+      </div>
+
       <div class="adm-content" id="admContent">
-        <!-- Overview page (default) -->
+
+        <!-- ── OVERVIEW ── -->
         <div id="admPage-overview">
           <div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">Overview</div>
           <div style="font-size:13px;color:#94a3b8;margin-bottom:28px;">Welcome to the Keylr Back Office</div>
@@ -3496,30 +3548,85 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             <div style="font-size:14px;font-weight:600;color:#cbd5e1;margin-top:12px;">Dashboard coming soon</div>
           </div>
         </div>
+
+        <!-- ── CLIENTS ── -->
         <div id="admPage-clients" style="display:none;">
           <div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">Clients</div>
-          <div style="font-size:13px;color:#94a3b8;margin-bottom:28px;">Manage property manager accounts</div>
+          <div style="font-size:13px;color:#94a3b8;margin-bottom:24px;">Manage property manager accounts</div>
           <div class="adm-empty">
             <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#e2e8f0" stroke-width="1.5"><circle cx="24" cy="16" r="10"/><path d="M6 42c0-10 8-18 18-18s18 8 18 18"/></svg>
             <div style="font-size:14px;font-weight:600;color:#cbd5e1;margin-top:12px;">Client management coming soon</div>
           </div>
         </div>
+
+        <!-- ── APPLICANTS ── -->
         <div id="admPage-applicants" style="display:none;">
           <div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">Applicants</div>
-          <div style="font-size:13px;color:#94a3b8;margin-bottom:28px;">Review supplier applications</div>
-          <div class="adm-empty">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#e2e8f0" stroke-width="1.5"><circle cx="18" cy="16" r="8"/><path d="M3 42c0-8.3 6.7-15 15-15"/><path d="M34 28l8 8-8 8"/><line x1="30" y1="36" x2="44" y2="36"/></svg>
-            <div style="font-size:14px;font-weight:600;color:#cbd5e1;margin-top:12px;">Applicant review coming soon</div>
+          <div style="font-size:13px;color:#94a3b8;margin-bottom:20px;">Supplier onboarding applications</div>
+          <!-- Stats row -->
+          <div class="adm-stat-row">
+            <div class="adm-stat-card">
+              <div class="adm-stat-lbl">Total Applications</div>
+              <div class="adm-stat-num">0</div>
+            </div>
+            <div class="adm-stat-card">
+              <div class="adm-stat-lbl">Pending Review</div>
+              <div class="adm-stat-num" style="color:#f59e0b;">0</div>
+            </div>
+            <div class="adm-stat-card">
+              <div class="adm-stat-lbl">Approved</div>
+              <div class="adm-stat-num" style="color:#10b981;">0</div>
+            </div>
+            <div class="adm-stat-card">
+              <div class="adm-stat-lbl">Rejected</div>
+              <div class="adm-stat-num" style="color:#ef4444;">0</div>
+            </div>
           </div>
+          <!-- Search -->
+          <div class="adm-search-row">
+            <div style="position:relative;flex:1;">
+              <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.7"><circle cx="6" cy="6" r="4.5"/><path d="M10 10l2.5 2.5"/></svg>
+              <input class="adm-search-input" style="padding-left:34px;" placeholder="Search applicants by name, company or email…" oninput="_admSearchApplicants(this.value)">
+            </div>
+            <select style="border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:13px;font-family:Inter,sans-serif;color:#374151;background:#fff;outline:none;cursor:pointer;">
+              <option>All statuses</option>
+              <option>Pending</option>
+              <option>Approved</option>
+              <option>Rejected</option>
+            </select>
+          </div>
+          <!-- Empty state -->
+          <div class="adm-zero-card" id="admApplicantsEmpty">
+            <div style="width:60px;height:60px;background:#f8fafc;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;border:1.5px solid #e2e8f0;">
+              <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#94a3b8" stroke-width="1.5"><circle cx="10" cy="8" r="5"/><path d="M2 22c0-4.4 3.6-8 8-8"/><path d="M18 14l5 5-5 5"/><line x1="17" y1="19" x2="24" y2="19"/></svg>
+            </div>
+            <div style="font-size:15px;font-weight:700;color:#374151;margin-bottom:6px;">No applicants yet</div>
+            <div style="font-size:13px;color:#94a3b8;max-width:300px;line-height:1.6;">When suppliers start the onboarding process, their applications will appear here for review.</div>
+          </div>
+          <!-- List (hidden until data) -->
+          <div id="admApplicantsList" style="display:none;"></div>
         </div>
+
+        <!-- ── ACTIVE SUPPLIERS ── -->
         <div id="admPage-suppliers" style="display:none;">
           <div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">Active Suppliers</div>
-          <div style="font-size:13px;color:#94a3b8;margin-bottom:28px;">View and manage verified suppliers</div>
-          <div class="adm-empty">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#e2e8f0" stroke-width="1.5"><path d="M6 38l3-14h30l3 14H6z"/><path d="M16 24V14a8 8 0 0116 0v10"/></svg>
-            <div style="font-size:14px;font-weight:600;color:#cbd5e1;margin-top:12px;">Supplier management coming soon</div>
+          <div style="font-size:13px;color:#94a3b8;margin-bottom:20px;">Suppliers who have completed onboarding</div>
+          <div class="adm-search-row">
+            <div style="position:relative;flex:1;">
+              <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.7"><circle cx="6" cy="6" r="4.5"/><path d="M10 10l2.5 2.5"/></svg>
+              <input class="adm-search-input" style="padding-left:34px;" placeholder="Search suppliers…">
+            </div>
+          </div>
+          <div class="adm-zero-card">
+            <div style="width:60px;height:60px;background:#f8fafc;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;border:1.5px solid #e2e8f0;">
+              <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#94a3b8" stroke-width="1.5"><path d="M3 20l2-8h16l2 8H3z"/><path d="M8 12V8a5 5 0 0110 0v4"/><path d="M3 12h20"/></svg>
+            </div>
+            <div style="font-size:15px;font-weight:700;color:#374151;margin-bottom:6px;">No active suppliers yet</div>
+            <div style="font-size:13px;color:#94a3b8;max-width:320px;line-height:1.6;">Suppliers will appear here once they complete all onboarding steps and are approved by the back-office team.</div>
           </div>
         </div>
+
+        <!-- ── SETTINGS ── -->
         <div id="admPage-settings" style="display:none;">
           <div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:4px;">Settings</div>
           <div style="font-size:13px;color:#94a3b8;margin-bottom:28px;">Platform configuration</div>
@@ -3528,9 +3635,10 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
             <div style="font-size:14px;font-weight:600;color:#cbd5e1;margin-top:12px;">Settings coming soon</div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
+
+      </div><!-- /adm-content -->
+    </div><!-- /adm-main -->
+  </div><!-- /adm-layout -->
 </div>
 
 <!-- =============================================
@@ -7283,6 +7391,23 @@ function _toggleTabSvcs(btn) {
     : 'Show less <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 6l-2-2-2 2"/></svg>';
 }
 var _admCollapsed = false;
+function _admOpenMobile() {
+  var sb = document.getElementById('admSidebar');
+  var bd = document.getElementById('admBackdrop');
+  if(sb){ sb.classList.add('adm-mob-open'); }
+  if(bd){ bd.classList.add('show'); }
+  document.body.style.overflow = 'hidden';
+}
+function _admCloseMobile() {
+  var sb = document.getElementById('admSidebar');
+  var bd = document.getElementById('admBackdrop');
+  if(sb){ sb.classList.remove('adm-mob-open'); }
+  if(bd){ bd.classList.remove('show'); }
+  document.body.style.overflow = '';
+}
+function _admSearchApplicants(q) {
+  // placeholder — will filter list when data exists
+}
 function _admToggleSb() {
   var sb = document.getElementById('admSidebar');
   var logo = document.getElementById('admLogoImg');
@@ -7313,12 +7438,16 @@ function _admNav(el, page) {
     var pg = document.getElementById('admPage-'+k);
     if(pg) pg.style.display = k===page?'':'none';
   });
+  // close mobile sidebar after navigation
+  _admCloseMobile();
 }
 function showAdminLogin() {
   // seed sidebar logo from the existing dark logo asset
   var darkLogo = document.getElementById('navLogoImgDark');
   var admLogo = document.getElementById('admLogoImg');
+  var admLogoMob = document.getElementById('admLogoImgMob');
   if(darkLogo && admLogo && !admLogo.src) admLogo.src = darkLogo.src;
+  if(darkLogo && admLogoMob && !admLogoMob.src) admLogoMob.src = darkLogo.src;
   document.getElementById('pg-landing').style.display = 'none';
   var pg = document.getElementById('pg-admin-login');
   pg.style.display = 'flex';
