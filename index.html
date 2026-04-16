@@ -2617,7 +2617,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .exp-pcard-head{display:flex;align-items:flex-start;gap:10px;padding:14px 14px 8px;}
 .exp-pcard-header{display:flex;align-items:flex-start;gap:10px;padding:14px 14px 8px;}
 /* Avatar — circular with person silhouette bg */
-.exp-pcard-avatar{width:56px;height:56px;border-radius:10px;flex-shrink:0;background:linear-gradient(145deg,#1A5FC8,#0FA3D0);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:800;font-family:Inter,sans-serif;overflow:hidden;position:relative;}
+.exp-pcard-avatar{width:56px;height:56px;border-radius:10px;flex-shrink:0;background:linear-gradient(145deg,#1A5FC8,#0FA3D0);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:800;font-family:Inter,sans-serif;overflow:visible;position:relative;}
 .exp-pcard-avatar img{width:100%;height:100%;object-fit:cover;}
 /* Name + meta */
 .exp-pcard-info{flex:1;min-width:0;}
@@ -2641,7 +2641,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .exp-avail-card.emg{background:#fffbeb;border-color:#fde68a;}
 .exp-avail-card-icon{display:flex;align-items:center;justify-content:center;color:#64748b;margin-bottom:1px;}
 .exp-avail-card.emg .exp-avail-card-icon{color:#d97706;}
-.exp-avail-card-val{font-size:11px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;line-height:1.2;}
+.exp-avail-card-val{font-size:10.5px;font-weight:500;color:#0f172a;font-family:Inter,sans-serif;line-height:1.2;}
 .exp-avail-card.emg .exp-avail-card-val{color:#b45309;}
 .exp-avail-card-lbl{font-size:9px;color:#94a3b8;font-family:Inter,sans-serif;font-weight:500;}
 .exp-avail-card.emg .exp-avail-card-lbl{color:#d97706;}
@@ -2650,7 +2650,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .exp-pcard-services{padding:0 12px 8px;}
 .exp-pcard-svc-box{background:#f8f9fa;border:1px solid #e8ecf0;border-radius:8px;padding:2px 10px 6px;margin-top:0;}
 .exp-pcard-services-title{font-size:10px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:.08em;padding:8px 0 6px;border-bottom:1px solid #e8ecf0;margin-bottom:2px;}
-.exp-svc-row{display:flex;align-items:center;gap:4px;font-size:11px;font-family:Inter,sans-serif;color:#374151;padding:5px 0;border-bottom:1px solid #eef0f3;font-weight:500;}
+.exp-svc-row{display:flex;align-items:center;gap:5px;font-size:11px;font-family:Inter,sans-serif;color:#374151;padding:5px 0;border-bottom:1px solid #eef0f3;font-weight:500;}
 .exp-svc-row:last-child{border-bottom:none;}
 .exp-svc-row .svc-chk{flex-shrink:0;}
 .exp-svc-row .svc-name{min-width:0;font-size:11.5px;font-weight:500;}
@@ -2659,7 +2659,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .exp-svc-row .svc-price{font-weight:700;color:#0f172a;font-size:11.5px;white-space:nowrap;margin-left:auto;}
 .exp-svc-row .svc-quote{font-size:11.5px;color:#94a3b8;margin-left:auto;}
 /* Show more */
-.exp-show-more{background:none;border:none;color:#1A5FC8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:6px 14px;display:flex;align-items:center;justify-content:center;gap:4px;width:100%;border-radius:999px;transition:background .15s;margin-top:4px;}
+.exp-show-more{background:none;border:none;color:#1A5FC8;font-size:11px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:5px 14px;display:flex;align-items:center;justify-content:center;gap:4px;width:100%;border-radius:999px;transition:background .15s;margin-top:3px;}
 .exp-show-more:hover{background:#eff6ff;}
 /* Meta footer: location, insured */
 .exp-pcard-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:6px 14px 8px;border-top:1px solid #f1f5f9;}
@@ -6926,11 +6926,16 @@ function _daysLabel(days) {
   return m[days] || days;
 }
 function _svcRowHTML(s) {
-  var chk = '<svg class="svc-chk" width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="1.8" style="flex-shrink:0;"><circle cx="7" cy="7" r="6"/><path d="M4.5 7l2 2 3-3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  var tags = (s.tags||[]).map(function(t){ return '<span class="svc-tag">' + t + '</span>'; }).join('');
+  var chk = '<svg class="svc-chk" width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="7" cy="7" r="6"/><path d="M4.5 7l2 2 3-3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  // RES=blue, COM=purple/indigo
+  var tags = (s.tags||[]).map(function(t){
+    var isRes = t === 'RES';
+    var bg  = isRes ? '#eff6ff' : '#f5f3ff';
+    var col = isRes ? '#1d4ed8' : '#6d28d9';
+    return '<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:'+bg+';color:'+col+';white-space:nowrap;">' + t + '</span>';
+  }).join('');
   var budgetBadge = s.budget ? '<span class="svc-budget">Budget</span>' : '';
   var priceEl = s.quote ? '<span class="svc-quote">Quote</span>' : '<span class="svc-price">' + s.price + '</span>';
-  // Left: chk + name + tags  |  Right: budget + price
   return '<div class="exp-svc-row">'
     + chk
     + '<span class="svc-name">' + s.name + '</span>'
@@ -6983,9 +6988,9 @@ function renderExploreProviders(cat, minRating) {
     // Single star icon only (like reference)
     var stars = '<svg width="13" height="13" viewBox="0 0 12 12" fill="#f59e0b" stroke="#f59e0b" stroke-width="0"><path d="M6 1l1.2 3.6H11L8.2 7l1.1 3.6L6 8.8 2.7 10.6 3.8 7 1 4.6h3.8z"/></svg>';
     var certsHTML = p.certs.map(function(c){ return '<span class="exp-cert-chip">' + c + '</span>'; }).join('');
-    var _slaIco = '<svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l1.5 1.5"/></svg>';
-    var _calIco = '<svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="2" width="10" height="9" rx="1.5"/><path d="M1 5h10M4 1v2M8 1v2"/></svg>';
-    var _emgIco = '<svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 1L4 7h4l-3 4 7-7H8z" stroke-linejoin="round"/></svg>';
+    var _slaIco = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l1.5 1.5"/></svg>';
+    var _calIco = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="2" width="10" height="9" rx="1.5"/><path d="M1 5h10M4 1v2M8 1v2"/></svg>';
+    var _emgIco = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 1L4 7h4l-3 4 7-7H8z" stroke-linejoin="round"/></svg>';
     var _availClass = p.emergency ? 'exp-pcard-avail' : 'exp-pcard-avail two-col';
     var avail = '<div class="exp-avail-card"><div class="exp-avail-card-icon">' + _slaIco + '</div><div class="exp-avail-card-val">' + p.sla + '</div><div class="exp-avail-card-lbl">SLA</div></div>';
     avail += '<div class="exp-avail-card"><div class="exp-avail-card-icon">' + _calIco + '</div><div class="exp-avail-card-val">' + _daysLabel(p.days) + '</div><div class="exp-avail-card-lbl">' + p.hours + '</div></div>';
@@ -7016,8 +7021,11 @@ function renderExploreProviders(cat, minRating) {
     if (p.dbs) footer += '<span style="font-size:11px;color:#1A5FC8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:2px;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#1A5FC8" stroke-width="1.5"><path d="M2 6l3 3 5-5"/></svg> DBS</span>';
     gridHTML += '<div class="exp-pcard">'
       + '<div class="exp-pcard-head">'
-        + '<div class="exp-pcard-avatar" style="background:linear-gradient(145deg,#1A5FC8,#0FA3D0);">'
-          + '<img src="' + (_avatarUrls[_pi % _avatarUrls.length]) + '" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display=\'none\'">'
+        + '<div style="position:relative;flex-shrink:0;">'
+          + '<div class="exp-pcard-avatar" style="background:linear-gradient(145deg,#1A5FC8,#0FA3D0);overflow:hidden;">'
+            + '<img src="' + (_avatarUrls[_pi % _avatarUrls.length]) + '" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display=\'none\'">'
+          + '</div>'
+          + '<div style="position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;border-radius:50%;background:#10b981;border:2px solid #fff;"></div>'
         + '</div>'
         + '<div class="exp-pcard-info">'
           + '<div class="exp-pcard-name">' + p.name
