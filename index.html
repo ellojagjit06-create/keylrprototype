@@ -2609,45 +2609,48 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .exp-provider-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 @media(max-width:700px){.exp-provider-grid{grid-template-columns:1fr;}}
 @media(min-width:1440px){.exp-provider-grid{grid-template-columns:1fr 1fr 1fr;}}
-.exp-pcard{background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;overflow:hidden;transition:box-shadow .15s,border-color .15s;}
-.exp-pcard:hover{box-shadow:0 6px 24px rgba(26,95,200,.1);border-color:#93c5fd;}
-.exp-pcard-head{display:flex;align-items:flex-start;gap:12px;padding:16px 16px 0;}
-.exp-pcard-header{display:flex;align-items:flex-start;gap:12px;padding:16px 16px 0;}
+/* ── Provider Card redesigned ── */
+.exp-pcard{background:#fff;border:1.5px solid #e8edf2;border-radius:16px;overflow:hidden;transition:box-shadow .18s,transform .15s,border-color .15s;display:flex;flex-direction:column;}
+.exp-pcard:hover{box-shadow:0 8px 28px rgba(26,95,200,.12);border-color:#bfdbfe;transform:translateY(-2px);}
+.exp-pcard-head{display:flex;align-items:flex-start;gap:12px;padding:16px 16px 12px;}
+.exp-pcard-header{display:flex;align-items:flex-start;gap:12px;padding:16px 16px 12px;}
 .exp-pcard-certs{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;}
-.exp-cert-chip{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:5px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;font-family:Inter,sans-serif;white-space:nowrap;}
-.exp-pcard-avatar{width:46px;height:46px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:700;font-family:Inter,sans-serif;}
+.exp-pcard-avatar{width:52px;height:52px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px;font-weight:700;font-family:Inter,sans-serif;border:2.5px solid #fff;box-shadow:0 0 0 1.5px #e2e8f0;}
 .exp-pcard-info{flex:1;min-width:0;}
-.exp-pcard-name{font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;}
-.exp-pcard-sub{font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;}
-.exp-pcard-rating{display:flex;align-items:center;gap:4px;font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:3px;}
-.exp-pcard-price{font-size:12px;color:#64748b;font-family:Inter,sans-serif;text-align:right;flex-shrink:0;}
-.exp-pcard-price strong{font-size:18px;font-weight:800;color:#0f172a;display:block;font-family:Fraunces,serif;}
-.exp-pcard-badges{display:flex;gap:6px;flex-wrap:wrap;padding:10px 16px 0;}
-.exp-badge{font-size:10.5px;font-weight:600;font-family:Inter,sans-serif;padding:3px 8px;border-radius:5px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;}
-.exp-badge.blue{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;}
-.exp-pcard-avail{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:12px 16px 0;}
+.exp-pcard-name{font-size:15px;font-weight:800;color:#0f172a;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;line-height:1.2;}
+.exp-pcard-sub{font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:3px;}
+.exp-pcard-rating{display:flex;align-items:center;gap:3px;margin-top:4px;}
+.exp-pcard-price{font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;text-align:right;flex-shrink:0;line-height:1.3;}
+.exp-pcard-price strong{font-size:20px;font-weight:800;color:#0f172a;display:block;font-family:Fraunces,serif;line-height:1.1;}
+.exp-pcard-badges{display:flex;gap:5px;flex-wrap:wrap;padding:0 16px 12px;}
+.exp-cert-chip{font-size:10.5px;font-weight:600;padding:3px 10px;border-radius:20px;background:#f0f9ff;color:#0369a1;border:1px solid #bae6fd;font-family:Inter,sans-serif;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;}
+.exp-cert-chip::before{content:"";width:5px;height:5px;border-radius:50%;background:#0ea5e9;flex-shrink:0;}
+.exp-pcard-avail{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px 12px;}
 .exp-pcard-avail.two-col{grid-template-columns:repeat(2,1fr);}
-.exp-avail-card{background:#f8fafc;border:1px solid #e8edf2;border-radius:10px;padding:10px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;}
+.exp-avail-card{background:#f8fafc;border:1px solid #e8edf2;border-radius:10px;padding:10px 8px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;}
 .exp-avail-card.emg{background:#fff7ed;border-color:#fed7aa;}
 .exp-avail-card-icon{display:flex;align-items:center;justify-content:center;color:#64748b;margin-bottom:2px;}
 .exp-avail-card.emg .exp-avail-card-icon{color:#ea580c;}
 .exp-avail-card-val{font-size:12.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;line-height:1.2;}
 .exp-avail-card.emg .exp-avail-card-val{color:#c2410c;}
 .exp-avail-card-lbl{font-size:10px;color:#94a3b8;font-family:Inter,sans-serif;}
-.exp-avail-card.emg .exp-avail-card-lbl{color:#ea580c;opacity:.75;}
-.exp-pcard-services{padding:10px 16px 0;}
-.exp-pcard-services-title{font-size:10.5px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
-.exp-svc-row{display:flex;align-items:center;gap:6px;font-size:12.5px;font-family:Inter,sans-serif;color:#374151;padding:8px 0;border-bottom:1px solid #f1f5f9;}
-.exp-svc-row .svc-tag{font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px;background:#eff6ff;color:#1d4ed8;}
-.exp-svc-row .svc-price{margin-left:auto;font-weight:700;color:#0f172a;font-size:12.5px;}
-.exp-svc-row .svc-quote{margin-left:auto;font-size:12px;color:#94a3b8;background:#f8fafc;border:1px solid #e2e8f0;border-radius:5px;padding:1px 7px;}
+.exp-avail-card.emg .exp-avail-card-lbl{color:#ea580c;opacity:.8;}
+.exp-pcard-services{padding:0 16px;border-top:1px solid #f1f5f9;}
+.exp-pcard-services-title{font-size:10.5px;font-weight:700;color:#94a3b8;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:.07em;padding-top:10px;margin-bottom:4px;}
+.exp-svc-row{display:flex;align-items:center;gap:6px;font-size:12.5px;font-family:Inter,sans-serif;color:#374151;padding:7px 0;border-bottom:1px solid #f8fafc;}
+.exp-svc-row .svc-tag{font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px;background:#eff6ff;color:#1d4ed8;white-space:nowrap;}
+.exp-svc-row .svc-budget{font-size:10px;font-weight:600;padding:1px 7px;border-radius:4px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;white-space:nowrap;}
+.exp-svc-row .svc-price{font-weight:700;color:#0f172a;font-size:13px;white-space:nowrap;margin-left:auto;}
+.exp-svc-row .svc-quote{font-size:11.5px;color:#94a3b8;margin-left:auto;}
 .exp-svc-row:last-child{border-bottom:none;}
-.exp-show-more{margin-top:4px;}
-.exp-pcard-footer{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 16px 16px;}
-.exp-book-btn{background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:opacity .15s;}
-.exp-book-btn:hover{opacity:.88;}
-.exp-profile-btn{background:transparent;border:1.5px solid #e2e8f0;color:#374151;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;transition:border-color .15s;}
-.exp-profile-btn:hover{border-color:#94a3b8;}
+.exp-show-more{background:none;border:none;color:#1A5FC8;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:6px 0 4px;display:flex;align-items:center;gap:4px;transition:opacity .15s;}
+.exp-show-more:hover{opacity:.7;}
+.exp-pcard-meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 16px;border-top:1px solid #f1f5f9;}
+.exp-pcard-footer{display:grid;grid-template-columns:2fr 1fr;gap:8px;padding:12px 16px 16px;}
+.exp-book-btn{background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:12px 16px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s;width:100%;}
+.exp-book-btn:hover{opacity:.9;}
+.exp-profile-btn{background:transparent;border:1.5px solid #e2e8f0;color:#374151;border-radius:12px;padding:12px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:5px;transition:border-color .15s,color .15s;white-space:nowrap;}
+.exp-profile-btn:hover{border-color:#1A5FC8;color:#1A5FC8;}
 .exp-show-more{background:none;border:none;color:#1A5FC8;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:4px 0 2px;display:flex;align-items:center;gap:4px;}
 /* ── Explore dark mode ── */
 .dash-dark .exp-pcard{background:#161b22;border-color:#30363d;}
@@ -6927,7 +6930,12 @@ function renderExploreProviders(cat, minRating) {
   window._expProviders = _exploreProviders;
   filtered.forEach(function(p, _pi) {
     var stars = '';
-    for (var i=1;i<=5;i++) stars += '<svg width="11" height="11" viewBox="0 0 11 11" fill="'+(i<=Math.floor(p.rating)?'#f59e0b':'none')+'" stroke="#f59e0b" stroke-width="1.4"><path d="M5.5 1l1.1 3.4H10L7.3 6.6l1.1 3.4-2.9-2-2.9 2 1.1-3.4L1 4.4h3.4z"/></svg>';
+    var fullStars = Math.floor(p.rating);
+    var hasHalf = (p.rating - fullStars) >= 0.5;
+    for (var i=1;i<=5;i++) {
+      var fill = i<=fullStars ? '#f59e0b' : (i===fullStars+1&&hasHalf ? 'url(#half'+_pi+')' : 'none');
+      stars += '<svg width="13" height="13" viewBox="0 0 12 12" fill="'+fill+'" stroke="#f59e0b" stroke-width="1.2"><path d="M6 1l1.2 3.6H11L8.2 7l1.1 3.6L6 8.8 2.7 10.6 3.8 7 1 4.6h3.8z"/></svg>';
+    }
     var certsHTML = p.certs.map(function(c){ return '<span class="exp-cert-chip">' + c + '</span>'; }).join('');
     var _slaIco = '<svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l1.5 1.5"/></svg>';
     var _calIco = '<svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="2" width="10" height="9" rx="1.5"/><path d="M1 5h10M4 1v2M8 1v2"/></svg>';
@@ -6953,22 +6961,38 @@ function renderExploreProviders(cat, minRating) {
     if (p.insured) footer += '<span style="font-size:11px;color:#10b981;font-family:Inter,sans-serif;display:flex;align-items:center;gap:2px;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#10b981" stroke-width="1.5"><path d="M6 1l4 2v4c0 2.5-4 5-4 5S2 9.5 2 7V3z"/></svg> Insured</span>';
     if (p.dbs) footer += '<span style="font-size:11px;color:#1A5FC8;font-family:Inter,sans-serif;display:flex;align-items:center;gap:2px;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#1A5FC8" stroke-width="1.5"><path d="M2 6l3 3 5-5"/></svg> DBS</span>';
     gridHTML += '<div class="exp-pcard">'
+      // ── Header: avatar + name/meta + price ──
       + '<div class="exp-pcard-head">'
         + '<div class="exp-pcard-avatar">' + p.initials + '</div>'
         + '<div class="exp-pcard-info">'
-          + '<div class="exp-pcard-name">' + p.name + ' <svg width="13" height="13" viewBox="0 0 13 13" fill="#10b981" stroke="none"><circle cx="6.5" cy="6.5" r="6"/><path d="M3.5 6.5l2.5 2.5 3.5-3.5" stroke="#fff" stroke-width="1.5" fill="none"/></svg></div>'
-          + '<div class="exp-pcard-sub">' + p.role + ' · ' + p.jobs + ' jobs</div>'
-          + '<div class="exp-pcard-rating">' + stars + ' <span style="font-weight:700;color:#0f172a;font-size:12px;">' + p.rating + '</span> <span style="color:#94a3b8;">(' + p.reviews + ')</span></div>'
+          + '<div class="exp-pcard-name">' + p.name
+            + ' <svg width="14" height="14" viewBox="0 0 14 14" fill="#10b981"><circle cx="7" cy="7" r="7"/><path d="M4 7l2.5 2.5 3.5-3.5" stroke="#fff" stroke-width="1.6" fill="none"/></svg>'
+          + '</div>'
+          + '<div class="exp-pcard-sub">' + p.role + ' · ' + p.jobs.toLocaleString() + ' jobs</div>'
+          + '<div class="exp-pcard-rating">'
+            + stars
+            + ' <span style="font-size:12.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;"> ' + p.rating + '</span>'
+            + ' <span style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;">(' + p.reviews + ')</span>'
+          + '</div>'
         + '</div>'
         + '<div class="exp-pcard-price">from<strong>£' + p.price + '</strong></div>'
       + '</div>'
+      // ── Cert chips ──
       + '<div class="exp-pcard-badges">' + certsHTML + '</div>'
+      // ── Availability cards ──
       + '<div class="' + _availClass + '">' + avail + '</div>'
+      // ── Services list ──
       + '<div class="exp-pcard-services">' + svcsSection + '</div>'
-      + '<div style="display:flex;gap:10px;align-items:center;padding:10px 16px 0;flex-wrap:wrap;">' + footer + '</div>'
+      // ── Footer meta: location + insured + DBS ──
+      + (footer ? '<div class="exp-pcard-meta">' + footer + '</div>' : '')
+      // ── CTA footer ──
       + '<div class="exp-pcard-footer">'
-        + '<button class="exp-book-btn" onclick="openBookingFlow(_expProviders['+_pi+'].id)"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="11" height="9" rx="1.5"/><path d="M1 6h11M4 1v3M9 1v3"/></svg> Book now</button>'
-        + '<button class="exp-profile-btn" onclick="showProviderProfile(_expProviders['+_pi+'].id)">Profile <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h6M7 3l3 3-3 3"/></svg></button>'
+        + '<button class="exp-book-btn" onclick="openBookingFlow(_expProviders['+_pi+'].id)">'
+          + '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="12" height="10" rx="1.5"/><path d="M1 6.5h12M4.5 1.5v2M9.5 1.5v2"/></svg> Book now'
+        + '</button>'
+        + '<button class="exp-profile-btn" onclick="showProviderProfile(_expProviders['+_pi+'].id)">'
+          + 'Profile <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h6M7 3l3 3-3 3"/></svg>'
+        + '</button>'
       + '</div>'
     + '</div>';
   });
@@ -6981,10 +7005,11 @@ function renderExploreProviders(cat, minRating) {
 }
 
 function _svcRowHTML(s) {
+  var chk = '<svg class="svc-chk" width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#10b981" stroke-width="2"><circle cx="6.5" cy="6.5" r="5.5"/><path d="M4 6.5l2 2 3.5-3"/></svg>';
   var tags = (s.tags||[]).map(function(t){ return '<span class="svc-tag">' + t + '</span>'; }).join('');
-  var budgetBadge = s.budget ? '<span style="font-size:10px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:4px;padding:1px 6px;font-weight:600;font-family:Inter,sans-serif;">Budget</span>' : '';
+  var budgetBadge = s.budget ? '<span class="svc-budget">Budget</span>' : '';
   var priceEl = s.quote ? '<span class="svc-quote">Quote</span>' : '<span class="svc-price">' + s.price + '</span>';
-  return '<div class="exp-svc-row"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg>' + s.name + ' ' + tags + budgetBadge + priceEl + '</div>';
+  return '<div class="exp-svc-row">' + chk + '<span class="svc-name">' + s.name + '</span> ' + tags + ' ' + budgetBadge + ' ' + priceEl + '</div>';
 }
 
 function toggleSvcs(pid) { pid = String(pid);
