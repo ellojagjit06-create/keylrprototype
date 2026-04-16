@@ -3129,6 +3129,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
       <div id="navAuthBtns" style="display:flex;align-items:center;gap:8px;">
         <button class="btn-ghost-light" id="navLoginBtn" onclick="showAuthPage('login')">Log in</button>
         <button class="btn-teal" onclick="showAuthPage('signup')">Sign Up <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5h9M8 4l3 2.5-3 2.5"/></svg></button>
+        <button onclick="showAdminLogin()" style="background:transparent;border:1.5px solid rgba(255,255,255,0.35);color:#fff;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;transition:background .15s,border-color .15s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 1l4 2v4c0 2.5-4 5-4 5S3 9.5 3 7V3z"/></svg>Admin</button>
       </div>
 
     </div>
@@ -3369,6 +3370,115 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     </div>
   </div>
 </div><!-- /pg-landing -->
+
+<!-- ADMIN LOGIN PAGE -->
+<div id="pg-admin-login" style="display:none;min-height:100vh;background:#f3f4f6;display:none;align-items:center;justify-content:center;font-family:Inter,sans-serif;">
+  <div style="width:100%;max-width:420px;padding:0 16px;">
+    <!-- Back to home -->
+    <a href="javascript:void(0)" onclick="closeAdminLogin()" style="display:inline-flex;align-items:center;gap:6px;color:#6b7280;font-size:13px;font-weight:500;text-decoration:none;margin-bottom:32px;">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2L4 7l5 5"/></svg>
+      Back to home
+    </a>
+    <!-- Card -->
+    <div style="background:#fff;border-radius:16px;padding:40px 36px;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+      <!-- Shield icon -->
+      <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:24px;">
+        <div style="width:56px;height:56px;background:#fef2f2;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#ef4444" stroke-width="1.8"><path d="M13 2l8 3.5v6c0 5-8 11-8 11S5 16.5 5 11.5v-6L13 2z"/></svg>
+        </div>
+        <div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">Admin Portal</div>
+        <div style="font-size:13px;color:#94a3b8;margin-top:4px;">Keylr Connect — Back Office</div>
+      </div>
+      <!-- Form -->
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">Email</label>
+        <input id="adminEmail" type="email" value="admin@keylr.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color .15s;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'">
+      </div>
+      <div style="margin-bottom:24px;">
+        <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">Password</label>
+        <input id="adminPassword" type="password" value="admin123" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#0f172a;transition:border-color .15s;" onfocus="this.style.borderColor='#1A5FC8'" onblur="this.style.borderColor='#e2e8f0'" onkeydown="if(event.key==='Enter') _adminSignIn()">
+      </div>
+      <div id="adminLoginErr" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;font-size:13px;color:#dc2626;margin-bottom:16px;"></div>
+      <button onclick="_adminSignIn()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#1d4ed8);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;transition:opacity .15s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Sign in</button>
+      <div style="text-align:center;margin-top:14px;font-size:12px;color:#94a3b8;">Demo: pre-filled credentials</div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD PAGE -->
+<div id="pg-admin-dash" style="display:none;min-height:100vh;background:#f3f4f6;font-family:Inter,sans-serif;">
+  <!-- Admin top bar -->
+  <div style="background:#fff;border-bottom:1px solid #e2e8f0;padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:32px;height:32px;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.8"><path d="M8 1l5 2.2v4c0 3-5 6.8-5 6.8S3 10.2 3 7.2v-4L8 1z"/></svg>
+      </div>
+      <span style="font-size:15px;font-weight:700;color:#0f172a;">Keylr Admin</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="font-size:13px;color:#64748b;">admin@keylr.com</span>
+      <button onclick="closeAdminDash()" style="background:transparent;border:1.5px solid #e2e8f0;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;">Sign out</button>
+    </div>
+  </div>
+  <!-- Admin content -->
+  <div style="max-width:1200px;margin:0 auto;padding:32px 24px;">
+    <div style="font-size:24px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:6px;">Back Office</div>
+    <div style="font-size:14px;color:#94a3b8;margin-bottom:28px;">Keylr Connect Admin Portal</div>
+    <!-- Stats row -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;">
+      <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:20px;">
+        <div style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Total Users</div>
+        <div style="font-size:28px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">1,284</div>
+        <div style="font-size:12px;color:#10b981;margin-top:4px;">↑ 12% this month</div>
+      </div>
+      <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:20px;">
+        <div style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Active Suppliers</div>
+        <div style="font-size:28px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">342</div>
+        <div style="font-size:12px;color:#10b981;margin-top:4px;">↑ 8% this month</div>
+      </div>
+      <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:20px;">
+        <div style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Jobs This Month</div>
+        <div style="font-size:28px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">5,671</div>
+        <div style="font-size:12px;color:#10b981;margin-top:4px;">↑ 21% vs last month</div>
+      </div>
+      <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:20px;">
+        <div style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Revenue</div>
+        <div style="font-size:28px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">£284k</div>
+        <div style="font-size:12px;color:#10b981;margin-top:4px;">↑ 18% this month</div>
+      </div>
+    </div>
+    <!-- Quick actions -->
+    <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:24px;">
+      <div style="font-size:15px;font-weight:700;color:#0f172a;margin-bottom:16px;">Quick Actions</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+        <button style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px;text-align:left;cursor:pointer;font-family:Inter,sans-serif;">
+          <div style="font-size:13.5px;font-weight:600;color:#0f172a;margin-bottom:4px;">Manage Users</div>
+          <div style="font-size:12px;color:#94a3b8;">View and edit user accounts</div>
+        </button>
+        <button style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px;text-align:left;cursor:pointer;font-family:Inter,sans-serif;">
+          <div style="font-size:13.5px;font-weight:600;color:#0f172a;margin-bottom:4px;">Supplier Verification</div>
+          <div style="font-size:12px;color:#94a3b8;">Review pending suppliers</div>
+        </button>
+        <button style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px;text-align:left;cursor:pointer;font-family:Inter,sans-serif;">
+          <div style="font-size:13.5px;font-weight:600;color:#0f172a;margin-bottom:4px;">Job Bookings</div>
+          <div style="font-size:12px;color:#94a3b8;">Monitor all active jobs</div>
+        </button>
+        <button style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px;text-align:left;cursor:pointer;font-family:Inter,sans-serif;">
+          <div style="font-size:13.5px;font-weight:600;color:#0f172a;margin-bottom:4px;">Compliance Alerts</div>
+          <div style="font-size:12px;color:#94a3b8;">Check certificate status</div>
+        </button>
+        <button style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px;text-align:left;cursor:pointer;font-family:Inter,sans-serif;">
+          <div style="font-size:13.5px;font-weight:600;color:#0f172a;margin-bottom:4px;">Reports</div>
+          <div style="font-size:12px;color:#94a3b8;">Download analytics reports</div>
+        </button>
+        <button style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px;text-align:left;cursor:pointer;font-family:Inter,sans-serif;">
+          <div style="font-size:13.5px;font-weight:600;color:#0f172a;margin-bottom:4px;">Settings</div>
+          <div style="font-size:12px;color:#94a3b8;">Platform configuration</div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- =============================================
      DASHBOARD PAGE
@@ -7118,6 +7228,33 @@ function _toggleTabSvcs(btn) {
   btn.innerHTML = open
     ? '+'+extra+' more <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4l2 2 2-2"/></svg>'
     : 'Show less <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 6l-2-2-2 2"/></svg>';
+}
+function showAdminLogin() {
+  document.getElementById('pg-landing').style.display = 'none';
+  var pg = document.getElementById('pg-admin-login');
+  pg.style.display = 'flex';
+  // Clear error
+  var err = document.getElementById('adminLoginErr');
+  if (err) err.style.display = 'none';
+}
+function closeAdminLogin() {
+  document.getElementById('pg-admin-login').style.display = 'none';
+  document.getElementById('pg-landing').style.display = 'block';
+}
+function _adminSignIn() {
+  var email = (document.getElementById('adminEmail') || {}).value || '';
+  var pass  = (document.getElementById('adminPassword') || {}).value || '';
+  var err   = document.getElementById('adminLoginErr');
+  if (email === 'admin@keylr.com' && pass === 'admin123') {
+    document.getElementById('pg-admin-login').style.display = 'none';
+    document.getElementById('pg-admin-dash').style.display = 'block';
+  } else {
+    if (err) { err.textContent = 'Invalid email or password. Try admin@keylr.com / admin123'; err.style.display = 'block'; }
+  }
+}
+function closeAdminDash() {
+  document.getElementById('pg-admin-dash').style.display = 'none';
+  document.getElementById('pg-landing').style.display = 'block';
 }
 function toggleSvcs(pid) { pid = String(pid);
   var more = document.getElementById('svcs_more_'+pid);
