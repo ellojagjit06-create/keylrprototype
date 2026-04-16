@@ -8084,7 +8084,7 @@ function showProviderProfile(pid) {
   el.innerHTML = '';
 
   var wrap = document.createElement('div');
-  wrap.style.cssText = 'display:grid;grid-template-columns:1fr 280px;gap:20px;align-items:start;';
+  wrap.className = 'pp-layout';
 
   // LEFT COLUMN
   var left = document.createElement('div');
@@ -8256,7 +8256,8 @@ function showProviderProfile(pid) {
 
   // RIGHT SIDEBAR
   var right = document.createElement('div');
-    right.innerHTML = '';
+  right.className = 'pp-sidebar';
+  right.innerHTML = '';
 
   // Verification status card
   var vCard = document.createElement('div');
@@ -14793,6 +14794,10 @@ document.addEventListener('click', function(e){
 
 <style>
 @keyframes modalPop{from{opacity:0;transform:scale(0.96) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}
+/* Provider profile responsive layout */
+.pp-layout{display:grid;grid-template-columns:1fr 280px;gap:20px;align-items:start;}
+@media(max-width:960px){.pp-layout{grid-template-columns:1fr;}.pp-sidebar{order:2;display:grid !important;grid-template-columns:1fr 1fr;gap:12px;}.pp-sidebar>div{margin-bottom:0 !important;}}
+@media(max-width:600px){.pp-sidebar{grid-template-columns:1fr;}}
 @keyframes keylrSpin{to{transform:rotate(360deg);}}
 @keyframes keylrFadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 @keyframes keylrShimmer{0%{background-position:-400px 0;}100%{background-position:400px 0;}}
