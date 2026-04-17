@@ -15945,8 +15945,11 @@ function _suppServicesStats(){
 function _suppEsc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function _suppBuildServicesPage(){
   var st=window._suppState;
+  // Ensure active trade is valid
+  if(!window._suppActiveTrade||!st.trades.find(function(t){return t.id===window._suppActiveTrade;})){
+    window._suppActiveTrade=st.trades.length?st.trades[0].id:'';
+  }
   var stats=_suppServicesStats();
-  // Stats cards
   var compDotsC=stats.compDocs>0?'#f97316':'#94a3b8';
   var awaitC=stats.awaitUp>0?'#ef4444':'#94a3b8';
   var statCards=[
@@ -15964,7 +15967,6 @@ function _suppBuildServicesPage(){
     }).join('')+'</div>';
 
   // Compliance alert
-  var compAlert='';
   var pendingCerts=[];
   Object.keys(st.services).forEach(function(tid){
     var tr=_suppFindTrade(tid); if(!tr) return;
@@ -15975,138 +15977,207 @@ function _suppBuildServicesPage(){
       }
     });
   });
-  if(pendingCerts.length){
-    compAlert='<div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;gap:14px;align-items:flex-start;">'
-      +'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#f97316" stroke-width="1.8" style="flex-shrink:0;margin-top:1px;"><path d="M9 2L16 14H2z"/><line x1="9" y1="7" x2="9" y2="10.5"/><circle cx="9" cy="12.5" r=".7" fill="#f97316" stroke="none"/></svg>'
-      +'<div><div style="font-size:14px;font-weight:700;color:#c2410c;margin-bottom:4px;">Documents required for activation</div>'
-        +'<div style="font-size:13px;color:#9a3412;margin-bottom:10px;">You have selected services that legally require proof of qualification. Upload each one — admin will review within 1 business day.</div>'
-        +'<div style="display:flex;flex-wrap:wrap;gap:8px;">'
-          +pendingCerts.map(function(cert){
-            return '<button class="supp-cert-upload-btn" data-cert="'+_suppEsc(cert)+'" style="background:#fff;border:1.5px solid #fed7aa;border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;color:#c2410c;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:5px;">'
-              +'<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5.5 7.5V2M3.5 4L5.5 2l2 2"/><path d="M1.5 9v1a.5.5 0 00.5.5h7a.5.5 0 00.5-.5V9"/></svg>'+cert+'</button>';
-          }).join('')
-        +'</div>'
-      +'</div>'
-    +'</div>';
-  }
+  var compAlert=pendingCerts.length?'<div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;gap:14px;align-items:flex-start;">'
+    +'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#f97316" stroke-width="1.8" style="flex-shrink:0;margin-top:1px;"><path d="M9 2L16 14H2z"/><line x1="9" y1="7" x2="9" y2="10.5"/><circle cx="9" cy="12.5" r=".7" fill="#f97316" stroke="none"/></svg>'
+    +'<div><div style="font-size:14px;font-weight:700;color:#c2410c;margin-bottom:4px;">Documents required for activation</div>'
+      +'<div style="font-size:13px;color:#9a3412;margin-bottom:10px;">You have selected services that legally require proof of qualification. Upload each one — admin will review within 1 business day.</div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:8px;">'
+        +pendingCerts.map(function(cert){
+          return '<button class="supp-cert-upload-btn" data-cert="'+_suppEsc(cert)+'" style="background:#fff;border:1.5px solid #fed7aa;border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;color:#c2410c;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:5px;">'
+            +'<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5.5 7.5V2M3.5 4L5.5 2l2 2"/><path d="M1.5 9v1a.5.5 0 00.5.5h7a.5.5 0 00.5-.5V9"/></svg>'+cert+'</button>';
+        }).join('')
+      +'</div></div></div>':'';
 
-  // Trades row
+  // Trades row — chips act as tabs
+  var activeTrade=window._suppActiveTrade||'';
+  var tradeChips=!st.trades.length
+    ?'<p style="color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;margin:0;">No trades selected yet. Click "Add trade" to get started.</p>'
+    :'<div style="display:flex;flex-wrap:wrap;gap:8px;">'
+      +st.trades.map(function(t){
+        var isPri=t.isPrimary;
+        var isActive=t.id===activeTrade;
+        var svcCnt=(st.services[t.id]||[]).length;
+        return '<div class="supp-trade-tab" data-tradeid="'+t.id+'" style="display:inline-flex;align-items:center;gap:6px;background:'+(isActive?'#1A5FC8':isPri?'#1A5FC8':'#f1f5f9')+';color:'+(isActive||isPri?'#fff':'#374151')+';border-radius:999px;padding:5px 10px 5px 8px;font-size:12.5px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer;opacity:'+(isActive?'1':isPri?'0.7':'1')+';transition:all .15s;">'
+          +(isPri?'<span style="font-size:10px;font-weight:700;background:rgba(255,255,255,0.25);border-radius:4px;padding:1px 5px;">PRIMARY</span>':'')
+          +'<span>'+t.label+'</span>'
+          +'<span style="font-size:11px;background:'+(isActive||isPri?'rgba(255,255,255,0.2)':'#e2e8f0')+';border-radius:999px;padding:1px 6px;">'+svcCnt+'</span>'
+          +'<button class="supp-trade-remove" data-tradeid="'+t.id+'" style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;color:'+(isActive||isPri?'rgba(255,255,255,0.7)':'#94a3b8')+';margin-left:2px;" title="Remove">×</button>'
+        +'</div>';
+      }).join('')
+    +'</div>';
+
   var tradesRow='<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:18px 20px;margin-bottom:20px;">'
     +'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;">'
       +'<div>'
         +'<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Your trades</div>'
-        +'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">Set one primary trade and any number of secondary trades.</div>'
+        +'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">Click a trade to view and select its services.</div>'
       +'</div>'
-      +'<button onclick="_suppOpenTradeModal()" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:9px;padding:8px 14px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;">'
+      +'<button class="supp-add-trade-btn" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:9px;padding:8px 14px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;">'
         +'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 1v10M1 6h10"/></svg>Add trade'
       +'</button>'
     +'</div>'
-    +(st.trades.length?'<div style="display:flex;flex-wrap:wrap;gap:8px;">'
-      +st.trades.map(function(t){
-        var isPri=t.isPrimary;
-        return '<div style="display:inline-flex;align-items:center;gap:6px;background:'+(isPri?'#1A5FC8':'#f1f5f9')+';color:'+(isPri?'#fff':'#374151')+';border-radius:999px;padding:5px 10px 5px 8px;font-size:12.5px;font-weight:600;font-family:Inter,sans-serif;">'
-          +(isPri?'<span style="font-size:10px;font-weight:700;background:rgba(255,255,255,0.25);border-radius:4px;padding:1px 5px;">PRIMARY</span>':'')
-          +'<span>'+t.label+'</span>'
-          +'<span style="font-size:11px;background:'+(isPri?'rgba(255,255,255,0.2)':'#e2e8f0')+';border-radius:999px;padding:1px 6px;">'+((window._suppState.services[t.id]||[]).length)+'</span>'
-          +'<button class="supp-trade-remove" data-tradeid="'+t.id+'" style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;color:'+(isPri?'rgba(255,255,255,0.7)':'#94a3b8')+';margin-left:2px;" title="Remove">×</button>'
-        +'</div>';
-      }).join('')
-      +'</div>'
-    :'<p style="color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;margin:0;">No trades selected yet. Click "Add trade" to get started.</p>')
+    +tradeChips
   +'</div>';
 
-  // Service panels per trade
-  var servicePanels=st.trades.map(function(t){
-    var tr=_suppFindTrade(t.id); if(!tr) return '';
-    var selSvcs=st.services[t.id]||[];
-    var searchId='svcSearch_'+t.id;
-    return '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:20px;margin-bottom:16px;">'
-      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px;">'
-        +'<div>'
-          +'<div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;">'
-            +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M2 10l2-6h6l2 6H2z"/><path d="M5 4V3a2 2 0 014 0v1"/></svg>'
-            +t.label
+  // Active service panel (only the selected trade)
+  var servicePanel='';
+  if(activeTrade&&st.trades.length){
+    var t=st.trades.find(function(x){return x.id===activeTrade;});
+    if(t){
+      var tr=_suppFindTrade(t.id);
+      if(tr){
+        var selSvcs=st.services[t.id]||[];
+        servicePanel='<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:20px;margin-bottom:16px;">'
+          +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">'
+            +'<div>'
+              +'<div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;">'
+                +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M2 10l2-6h6l2 6H2z"/><path d="M5 4V3a2 2 0 014 0v1"/></svg>'
+                +t.label
+              +'</div>'
+              +'<div style="font-size:12.5px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:2px;">'+selSvcs.length+' of '+tr.svcs.length+' services selected</div>'
+            +'</div>'
+            +'<input id="svcSearch_'+t.id+'" class="supp-svc-search" data-tradeid="'+t.id+'" placeholder="Search services..." style="border:1.5px solid #e2e8f0;border-radius:9px;padding:7px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;width:200px;">'
           +'</div>'
-          +'<div style="font-size:12.5px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:2px;">'+selSvcs.length+' of '+tr.svcs.length+' services selected</div>'
-        +'</div>'
-        +'<input id="'+searchId+'" class="supp-svc-search" data-tradeid="'+t.id+'" placeholder="Search services..." style="border:1.5px solid #e2e8f0;border-radius:9px;padding:7px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;width:200px;">'
-      +'</div>'
-      // Legend
-      +'<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;">'
-        +[{c:'mandatory',l:'Mandatory'},{c:'certified',l:'Certified'},{c:'recommended',l:'Recommended'},{c:'none',l:'No cert'}].map(function(lg){
-          return '<span style="display:flex;align-items:center;gap:5px;font-size:12px;color:#374151;font-family:Inter,sans-serif;">'
-            +'<span style="width:8px;height:8px;border-radius:50%;background:'+_suppCompColor(lg.c)+';flex-shrink:0;"></span>'+lg.l+'</span>';
-        }).join('')
-      +'</div>'
-      // Group services
-      +'<div id="svcList_'+t.id+'">'
-        +_suppBuildSvcGroup(t.id, tr, selSvcs, '')
-      +'</div>'
-      // Go to pricing CTA if services selected
-      +(selSvcs.length?'<div style="margin-top:16px;background:#f0f7ff;border:1.5px solid #bfdbfe;border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">'
-        +'<span style="font-size:13px;font-weight:600;color:#1e40af;font-family:Inter,sans-serif;">Ready to set your prices?</span>'
-        +'<button class="supp-goto-pricing" style="background:#1A5FC8;color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;">Go to pricing <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6h8M7 3l3 3-3 3"/></svg></button>'
-        +'</div>':'')
-    +'</div>';
-  }).join('');
+          +'<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;">'
+            +[{c:'mandatory',l:'Mandatory'},{c:'certified',l:'Certified'},{c:'recommended',l:'Recommended'},{c:'none',l:'No cert'}].map(function(lg){
+              return '<span style="display:flex;align-items:center;gap:5px;font-size:12px;color:#374151;font-family:Inter,sans-serif;">'
+                +'<span style="width:8px;height:8px;border-radius:50%;background:'+_suppCompColor(lg.c)+';flex-shrink:0;"></span>'+lg.l+'</span>';
+            }).join('')
+          +'</div>'
+          +'<div id="svcList_'+t.id+'">'
+            +_suppBuildSvcGroup(t.id, tr, selSvcs, '')
+          +'</div>'
+        +'</div>';
+      }
+    }
+  }
 
-  // Save button top right
+  // "Ready to set your prices?" — standalone independent card
+  var totalSvcs=0; Object.keys(st.services).forEach(function(k){totalSvcs+=(st.services[k]||[]).length;});
+  var pricingCta=totalSvcs?'<div style="background:#f0f7ff;border:1.5px solid #bfdbfe;border-radius:14px;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">'
+    +'<div style="display:flex;align-items:center;gap:12px;">'
+      +'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1A5FC8" stroke-width="1.6"><circle cx="11" cy="11" r="9"/><path d="M11 6v1.5a3.5 3.5 0 010 7V16M8 8.5a3.5 3.5 0 017 0c0 1.5-1.5 2.5-3.5 3s-3.5.5-3.5 3a3.5 3.5 0 007 0"/></svg>'
+      +'<div>'
+        +'<div style="font-size:14px;font-weight:700;color:#1e40af;font-family:Inter,sans-serif;">Ready to set your prices?</div>'
+        +'<div style="font-size:12.5px;color:#3b82f6;font-family:Inter,sans-serif;margin-top:1px;">Configure pricing models, time slots, and day-of-week rates for each service.</div>'
+      +'</div>'
+    +'</div>'
+    +'<button class="supp-goto-pricing" style="background:#1A5FC8;color:#fff;border:none;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;flex-shrink:0;">Go to pricing <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6h8M7 3l3 3-3 3"/></svg></button>'
+  +'</div>':'';
+
   return '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">'
       +'<div><div style="font-size:11px;font-weight:700;color:#1A5FC8;letter-spacing:.06em;font-family:Inter,sans-serif;margin-bottom:4px;">CONFIGURE</div>'
         +'<h1 style="font-size:26px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin:0 0 6px;">Trades &amp; Services</h1>'
         +'<p style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 20px;max-width:560px;">Pick the trades you operate in, then tick every job you actually do. Compliance flags appear automatically — you will be asked to upload proof for anything regulated.</p>'
       +'</div>'
-      +'<button onclick="_suppSaveServices()" style="background:#1A5FC8;color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:7px;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Save changes</button>'
+      +'<button class="supp-save-svc-btn" style="background:#1A5FC8;color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:7px;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Save changes</button>'
     +'</div>'
-    +statsHTML+compAlert+tradesRow+servicePanels;
+    +statsHTML+compAlert+tradesRow+servicePanel+pricingCta;
 }
 
 function _suppBuildSvcGroup(tid, tr, selSvcs, query){
   var q=(query||'').toLowerCase();
   var items=tr.svcs.filter(function(s){ return !q||s.l.toLowerCase().indexOf(q)>=0; });
-  if(!items.length) return '<p style="color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;">No services match your search.</p>';
-  // Group by first letter/category — for now flat list in a 1-col card list
-  return '<div style="display:flex;flex-direction:column;gap:6px;">'
-    +items.map(function(svc){
-      var sel=selSvcs.indexOf(svc.id)>=0;
-      var dotCol=_suppCompColor(svc.comp);
-      return '<div class="supp-svc-card" data-tid="'+tid+'" data-sid="'+svc.id+'" id="svcCard_'+tid+'_'+svc.id+'" style="display:flex;align-items:center;gap:12px;padding:11px 14px;border:1.5px solid '+(sel?'#bfdbfe':'#f1f5f9')+';border-radius:10px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all .12s;">'
-        +'<div style="width:22px;height:22px;border-radius:6px;border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';background:'+(sel?'#1A5FC8':'#fff')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
-          +(sel?'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 6l3 3 5-5"/></svg>':'')
-        +'</div>'
-        +'<div style="flex:1;"><span style="font-size:13.5px;font-weight:500;color:#0f172a;font-family:Inter,sans-serif;">'+svc.l+'</span>'
-          +(svc.cert?'<span style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-left:8px;">'+svc.cert+'</span>':'')
-        +'</div>'
-        +'<span style="width:8px;height:8px;border-radius:50%;background:'+dotCol+';flex-shrink:0;"></span>'
-        +(svc.comp!=='none'?'<span style="font-size:11px;font-weight:600;color:#fff;background:'+dotCol+';border-radius:6px;padding:2px 8px;font-family:Inter,sans-serif;">'+svc.comp.charAt(0).toUpperCase()+svc.comp.slice(1)+'</span>':'')
-      +'</div>';
-    }).join('')
+  if(!items.length) return '<p style="color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;padding:8px 0;">No services match your search.</p>';
+
+  // Build 2-col card grid with group label + Select All
+  var groupLabel=tr.label.toUpperCase()+' SERVICES';
+  var allSel=items.every(function(s){return selSvcs.indexOf(s.id)>=0;});
+  return '<div>'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+      +'<span style="font-size:10.5px;font-weight:700;color:#94a3b8;letter-spacing:.07em;font-family:Inter,sans-serif;">'+groupLabel+'</span>'
+      +'<button class="supp-select-all" data-tid="'+tid+'" data-allsel="'+(allSel?'1':'0')+'" style="font-size:13px;font-weight:600;color:#1A5FC8;background:none;border:none;cursor:pointer;font-family:Inter,sans-serif;">'+(allSel?'Deselect all':'Select all')+'</button>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+      +items.map(function(svc){
+        var sel=selSvcs.indexOf(svc.id)>=0;
+        var dotCol=_suppCompColor(svc.comp);
+        var compLabel=svc.comp!=='none'?svc.comp.charAt(0).toUpperCase()+svc.comp.slice(1):'';
+        return '<div class="supp-svc-card" data-tid="'+tid+'" data-sid="'+svc.id+'" id="svcCard_'+tid+'_'+svc.id+'" style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1.5px solid '+(sel?'#bfdbfe':'#e8edf2')+';border-radius:10px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all .12s;">'
+          +'<div style="width:20px;height:20px;border-radius:50%;border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">'
+            +(sel?'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2.2"><path d="M1.5 5l2.5 2.5 4.5-4.5"/></svg>':'')
+          +'</div>'
+          +'<div style="flex:1;min-width:0;">'
+            +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;">'
+              +'<span style="font-size:13px;font-weight:500;color:#0f172a;font-family:Inter,sans-serif;line-height:1.3;">'+svc.l+'</span>'
+              +'<span style="width:7px;height:7px;border-radius:50%;background:'+dotCol+';flex-shrink:0;margin-top:4px;"></span>'
+            +'</div>'
+            +(svc.cert||compLabel?'<div style="display:flex;align-items:center;gap:6px;margin-top:5px;flex-wrap:wrap;">'
+              +(compLabel?'<span style="font-size:11px;font-weight:600;background:'+(svc.comp==='mandatory'?'#fee2e2':svc.comp==='certified'?'#fff7ed':svc.comp==='recommended'?'#fefce8':'#f0fdf4')+';color:'+(svc.comp==='mandatory'?'#dc2626':svc.comp==='certified'?'#ea580c':svc.comp==='recommended'?'#ca8a04':'#16a34a')+';border-radius:5px;padding:1px 7px;font-family:Inter,sans-serif;">'+compLabel+'</span>':'')
+              +(svc.cert?'<span style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;">'+svc.cert+'</span>':'')
+            +'</div>':'')
+          +'</div>'
+        +'</div>';
+      }).join('')
+    +'</div>'
   +'</div>';
 }
 
 function _suppWireServicesPage(){
   var mainEl=document.getElementById('suppMain');
   if(!mainEl) return;
+  // Remove old listeners by replacing node (clone trick)
+  var fresh=mainEl.cloneNode(false);
+  while(mainEl.firstChild) fresh.appendChild(mainEl.firstChild);
+  mainEl.parentNode.replaceChild(fresh,mainEl);
+  mainEl=fresh;
+  // Re-point global so later calls find it
+  window._suppMain=mainEl;
+
   mainEl.addEventListener('click',function(e){
-    var certBtn=e.target.closest('.supp-cert-upload-btn');
-    if(certBtn){ _suppUploadCert(certBtn.dataset.cert); return; }
+    // Save btn
+    if(e.target.closest('.supp-save-svc-btn')){ _suppSaveServices(); return; }
+    // Add trade btn
+    if(e.target.closest('.supp-add-trade-btn')){ _suppOpenTradeModal(); return; }
+    // Trade tab chip — switch active trade
+    var tabChip=e.target.closest('.supp-trade-tab');
+    if(tabChip&&!e.target.closest('.supp-trade-remove')){
+      window._suppActiveTrade=tabChip.dataset.tradeid;
+      _suppRefreshServices(); return;
+    }
+    // Remove trade
     var rmBtn=e.target.closest('.supp-trade-remove');
     if(rmBtn){ _suppRemoveTrade(rmBtn.dataset.tradeid); return; }
-    var gtpBtn=e.target.closest('.supp-goto-pricing');
-    if(gtpBtn){ _suppNavTo('price'); return; }
+    // Cert upload
+    var certBtn=e.target.closest('.supp-cert-upload-btn');
+    if(certBtn){ _suppUploadCert(certBtn.dataset.cert); return; }
+    // Go to pricing
+    if(e.target.closest('.supp-goto-pricing')){ _suppNavTo('price'); return; }
+    // Svc card toggle
     var svcCard=e.target.closest('.supp-svc-card');
     if(svcCard){ _suppToggleSvc(svcCard.dataset.tid, svcCard.dataset.sid); return; }
-    var closeBtn=e.target.closest('.supp-modal-close');
-    if(closeBtn){ var m=document.getElementById(closeBtn.dataset.modal); if(m) m.remove(); return; }
-    var doneBtn=e.target.closest('.supp-trade-modal-done');
-    if(doneBtn){ _suppCloseTradeModal(); return; }
-    var gsvBtn=e.target.closest('.supp-goto-svcs');
-    if(gsvBtn){ _suppNavTo('svcs'); return; }
+    // Select all / deselect all
+    var selAll=e.target.closest('.supp-select-all');
+    if(selAll){
+      var tid=selAll.dataset.tid; var tr=_suppFindTrade(tid);
+      var allSel=selAll.dataset.allsel==='1';
+      if(tr){ window._suppState.services[tid]=allSel?[]:tr.svcs.map(function(s){return s.id;}); }
+      _suppRefreshServices(); return;
+    }
   });
   mainEl.addEventListener('input',function(e){
     var el=e.target.closest('.supp-svc-search');
     if(el) _suppFilterSvcs(el.dataset.tradeid, el.value);
   });
+  // Body-level: modal close/done (modal is in body, not mainEl)
+  if(!document._suppModalHandlerAttached){
+    document._suppModalHandlerAttached=true;
+    document.addEventListener('click',function(e){
+      var closeBtn=e.target.closest('.supp-modal-close');
+      if(closeBtn){ var m=document.getElementById(closeBtn.dataset.modal); if(m)m.remove(); return; }
+      var doneBtn=e.target.closest('.supp-trade-modal-done');
+      if(doneBtn){ if(window._suppCloseTradeModal) window._suppCloseTradeModal(); return; }
+    });
+  }
+}
+
+// Re-render just the services page content without rebuilding the whole layout
+function _suppRefreshServices(){
+  var mainEl=document.getElementById('suppMain')||window._suppMain;
+  if(!mainEl) return;
+  var pad='padding:24px clamp(20px,5vw,80px) 48px;width:100%;box-sizing:border-box;';
+  mainEl.innerHTML='<div style="'+pad+'">'+_suppBuildServicesPage()+'</div>';
+  _suppWireServicesPage();
 }
 
 function _suppToggleSvc(tid, sid){
@@ -16117,7 +16188,7 @@ function _suppToggleSvc(tid, sid){
   else st.services[tid].push(sid);
   // Re-render services page
   var mainEl=document.getElementById('suppMain');
-  if(mainEl){ mainEl.innerHTML='<div style="padding:24px clamp(20px,5vw,80px) 48px;width:100%;box-sizing:border-box;">'+_suppBuildServicesPage()+'</div>'; }
+  _suppRefreshServices();
 }
 
 function _suppFilterSvcs(tid,q){
@@ -16134,7 +16205,7 @@ function _suppRemoveTrade(tid){
   var hasPrimary=st.trades.some(function(t){return t.isPrimary;});
   if(!hasPrimary&&st.trades.length) st.trades[0].isPrimary=true;
   var mainEl=document.getElementById('suppMain');
-  if(mainEl){ mainEl.innerHTML='<div style="padding:24px clamp(20px,5vw,80px) 48px;width:100%;box-sizing:border-box;">'+_suppBuildServicesPage()+'</div>'; }
+  _suppRefreshServices();
 }
 
 function _suppSaveServices(){
@@ -16288,7 +16359,7 @@ function _suppOpenTradeModal(){
   window._suppSetTradePrimary=function(id,label){ var st=window._suppState; st.trades.forEach(function(t){t.isPrimary=false;}); var ex=st.trades.find(function(t){return t.id===id;}); if(ex){ex.isPrimary=true;}else{st.trades.unshift({id:id,label:label,isPrimary:true});} if(!st.services[id]) st.services[id]=[]; window._suppModalSearch(window._suppMQ||''); };
   window._suppAddSecondaryTrade=function(id,label){ var st=window._suppState; if(!st.trades.find(function(t){return t.id===id;})){st.trades.push({id:id,label:label,isPrimary:false});if(!st.services[id])st.services[id]=[];} window._suppModalSearch(window._suppMQ||''); };
   window._suppRemoveTrade2=function(id){ var st=window._suppState; st.trades=st.trades.filter(function(t){return t.id!==id;}); delete st.services[id]; var has=st.trades.some(function(t){return t.isPrimary;}); if(!has&&st.trades.length)st.trades[0].isPrimary=true; window._suppModalSearch(window._suppMQ||''); };
-  window._suppCloseTradeModal=function(){ var m=document.getElementById('suppTradeModal'); if(m) m.remove(); var mainEl=document.getElementById('suppMain'); if(mainEl){mainEl.innerHTML='<div style="padding:24px clamp(20px,5vw,80px) 48px;width:100%;box-sizing:border-box;">'+_suppBuildServicesPage()+'</div>';} };
+  window._suppCloseTradeModal=function(){ var m=document.getElementById('suppTradeModal'); if(m) m.remove(); _suppRefreshServices(); };
   var modal=buildModal();
   overlay.onclick=function(e){if(e.target===overlay)overlay.remove();};
   overlay.addEventListener('click',function(e){
