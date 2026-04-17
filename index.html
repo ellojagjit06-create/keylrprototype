@@ -15815,11 +15815,13 @@ function _showSupplierDashboard(){
     var w = (isMobile && !_mobileOpen) ? '0px' : (collapsed ? '64px' : '240px');
     var sb = document.createElement('div');
     sb.id = 'suppSidebar';
-    sb.style.cssText = 'width:'+w+';min-width:'+w+';background:'+(window._suppDark?'#1e293b':'#fff')+';border-right:1px solid '+(window._suppDark?'#334155':'#e2e8f0')+';display:flex;flex-direction:column;flex-shrink:0;transition:width 0.25s ease,min-width 0.25s ease;overflow:hidden;height:100%;'+(isMobile?'position:fixed;top:0;left:0;z-index:100;box-shadow:4px 0 24px rgba(0,0,0,0.12);':'');
+    var sbBg = window._suppDark ? '#1C2438' : '#F7FBFC';
+    var sbBorder = window._suppDark ? '#2A3450' : '#E0E2E8';
+    sb.style.cssText = 'width:'+w+';min-width:'+w+';background:'+sbBg+';border-right:1px solid '+sbBorder+';display:flex;flex-direction:column;flex-shrink:0;transition:width 0.25s ease,min-width 0.25s ease;overflow:hidden;height:100%;'+(isMobile?'position:fixed;top:0;left:0;z-index:100;box-shadow:4px 0 24px rgba(0,0,0,0.12);':'');
 
     // Logo row
     var logoRow = document.createElement('div');
-    logoRow.style.cssText = 'padding:0 12px;height:56px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f1f5f9;flex-shrink:0;';
+    logoRow.style.cssText = 'padding:0 12px;height:56px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid '+(window._suppDark?'#2A3450':'#E0E2E8')+';flex-shrink:0;';
     if (!collapsed) {
       var logoWrap = document.createElement('div');
       logoWrap.style.cssText = 'display:flex;align-items:center;gap:8px;overflow:hidden;min-width:0;';
@@ -15839,12 +15841,15 @@ function _showSupplierDashboard(){
     // Nav
     var nav = document.createElement('nav');
     nav.style.cssText = 'flex:1;padding:10px 8px;overflow:hidden;';
+    var _isDark=window._suppDark||false;
     navItems.forEach(function(n) {
       var d = document.createElement('div');
-      d.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:2px;cursor:pointer;'+(n.active?'background:#eff6ff;color:#1A5FC8;':'color:#64748b;')+'white-space:nowrap;transition:background 0.1s;';
-      d.innerHTML = '<span style="flex-shrink:0;">'+n.svg+'</span>'
-        +(!collapsed?'<span style="font-size:13.5px;font-weight:'+(n.active?'700':'500')+';">'+n.label+'</span>':'');
-      d.onmouseover = function(){ if(!n.active) this.style.background='#f8fafc'; };
+      d.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;margin-bottom:2px;cursor:pointer;font-size:13.5px;font-weight:'+(n.active?'600':'500')+';'
+        +(n.active?'background:#E6EEFB;color:#1A5FC8;':'color:'+(_isDark?'#8b949e':'#5E6674')+';')
+        +'white-space:nowrap;transition:background 0.12s,color 0.12s;';
+      d.innerHTML = '<span style="flex-shrink:0;color:'+(n.active?'#1A5FC8':(_isDark?'#8b949e':'#5E6674'))+';">'+n.svg+'</span>'
+        +(!collapsed?'<span>'+n.label+'</span>':'');
+      d.onmouseover = function(){ if(!n.active) this.style.background=_isDark?'rgba(255,255,255,0.06)':'#EDEEF1'; };
       d.onmouseout  = function(){ if(!n.active) this.style.background=''; };
       nav.appendChild(d);
     });
@@ -15852,7 +15857,7 @@ function _showSupplierDashboard(){
 
     // Bottom section
     var bot = document.createElement('div');
-    bot.style.cssText = 'padding:10px 8px 12px;border-top:1px solid #f1f5f9;flex-shrink:0;';
+    bot.style.cssText = 'padding:10px 8px 12px;border-top:1px solid '+(window._suppDark?'#2A3450':'#E0E2E8')+';flex-shrink:0;';
 
     // Pending approval
     if (!collapsed) {
@@ -15894,7 +15899,7 @@ function _showSupplierDashboard(){
             +'<div style="font-size:11px;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+email+'</div></div>'
             +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.6" style="flex-shrink:0;"><path d="M9 7H3M11 5l2 2-2 2"/><path d="M11 1H3a2 2 0 00-2 2v6a2 2 0 002 2h8"/></svg>'
           : '');
-    userRow.onmouseover = function(){ this.style.background='#f8fafc'; };
+    userRow.onmouseover = function(){ this.style.background=window._suppDark?'rgba(255,255,255,0.06)':'#EDEEF1'; };
     userRow.onmouseout  = function(){ this.style.background=''; };
     userRow.onclick = showSuppUserPopover;
     bot.appendChild(userRow);
