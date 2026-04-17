@@ -3479,9 +3479,10 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   .adm-tab-btn{padding:10px 10px;font-size:12px;}
 }
 /* Applicant cards */
-/* ── Applicant list rows ── */
-.adm-app-row{background:#fff;border:1.5px solid #e8edf2;border-radius:14px;padding:16px 20px;cursor:pointer;transition:box-shadow .15s,border-color .15s;margin-bottom:10px;overflow:hidden;position:relative;}
-.adm-app-row:hover{box-shadow:0 4px 18px rgba(0,0,0,0.07);border-color:#c7d2de;}
+/* ── Applicant list cards ── */
+.adm-app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
+.adm-app-row{background:#fff;border:1.5px solid #e8edf2;border-radius:14px;padding:16px 18px;cursor:pointer;transition:box-shadow .15s,border-color .15s;overflow:hidden;position:relative;display:flex;flex-direction:column;gap:10px;}
+.adm-app-row:hover{box-shadow:0 4px 18px rgba(0,0,0,0.08);border-color:#c7d2de;}
 .adm-app-row .adm-prog-bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:#e8edf2;}
 .adm-app-row .adm-prog-fill{height:100%;background:linear-gradient(90deg,#1A5FC8,#10b981);transition:width .3s;}
 .adm-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0;font-family:Inter,sans-serif;}
@@ -3521,6 +3522,12 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .adm-comp-status.na{background:#f1f5f9;color:#94a3b8;}
 /* Float action bar */
 .adm-float-bar{position:fixed;bottom:0;right:0;left:0;background:#fff;border-top:1px solid #e8edf2;padding:12px 24px;display:flex;align-items:center;justify-content:flex-end;gap:10px;z-index:500;box-shadow:0 -4px 20px rgba(0,0,0,0.06);}
+/* Detail top bar */
+.adm-detail-topbar{background:#fff;border-bottom:1.5px solid #e8edf2;padding:0 24px;height:52px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:200;margin:-28px -28px 24px;}
+.adm-detail-topbar-back{display:flex;align-items:center;gap:6px;color:#64748b;font-size:13px;font-weight:500;cursor:pointer;padding:6px 10px;border-radius:7px;transition:background .12s,color .12s;border:none;background:none;font-family:Inter,sans-serif;}
+.adm-detail-topbar-back:hover{background:#f1f5f9;color:#0f172a;}
+.adm-detail-topbar-sep{color:#d1d5db;font-size:14px;line-height:1;}
+.adm-detail-topbar-title{font-size:14px;font-weight:600;color:#0f172a;}
 </style>
 <div id="pg-admin-dash" style="display:none;">
   <!-- Mobile backdrop -->
@@ -7530,7 +7537,7 @@ function _admRenderApplicants() {
   var empty=document.getElementById('admApplicantsEmpty');
   if(!list||!empty) return;
   if(!filtered.length){empty.style.display='flex';list.style.display='none';list.innerHTML='';return;}
-  empty.style.display='none';list.style.display='block';
+  empty.style.display='none';list.style.display='grid';
   list.innerHTML=filtered.map(function(app){
     var isCo=app.operationType==='company';
     var dispName=isCo?(app.tradingName||app.regCompanyName||app.name):(app.tradingName||app.name);
@@ -7549,23 +7556,25 @@ function _admRenderApplicants() {
     var issuesBadge=stats.issues>0?'<span style="background:#fee2e2;color:#dc2626;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:20px;margin-left:6px;">'+stats.issues+' issue'+(stats.issues>1?'s':'')+'</span>':'';
     var pct=stats.total>0?Math.round((stats.pending/stats.total)*100):0;
     return '<div class="adm-app-row" onclick="_admOpenApplicant(\''+app.id+'\')">'
-      +'<div style="display:flex;align-items:center;gap:14px;padding-bottom:10px;">'
-        +'<div class="adm-avatar" style="background:'+avColor+'">'+initial+'</div>'
+      // top row: avatar + name + status badge
+      +'<div style="display:flex;align-items:flex-start;gap:12px;">'
+        +'<div class="adm-avatar" style="background:'+avColor+';width:38px;height:38px;font-size:15px;flex-shrink:0;">'+initial+'</div>'
         +'<div style="flex:1;min-width:0;">'
-          +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
-            +'<span style="font-size:14.5px;font-weight:700;color:#0f172a;">'+_admEsc(dispName)+'</span>'
-            +'<span class="adm-status-badge '+stCls+'">'+stLabel+'</span>'+issuesBadge
+          +'<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px;">'
+            +'<span style="font-size:14px;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+_admEsc(dispName)+'</span>'
           +'</div>'
-          +'<div style="font-size:12px;color:#64748b;margin-top:2px;">'+_admEsc(contact)+' · '+type+' · '+_admEsc(trade)+'</div>'
+          +'<div style="font-size:11.5px;color:#64748b;">'+_admEsc(contact)+' · '+type+'</div>'
         +'</div>'
-        +'<div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">'
-          +'<div style="display:flex;align-items:center;gap:3px;">'+dots+extra+'</div>'
-          +'<div style="text-align:right;">'
-            +'<div style="font-size:14px;font-weight:800;color:#0f172a;line-height:1.2;">'+stats.passed+'/'+stats.total+'</div>'
-            +'<div style="font-size:10.5px;color:#94a3b8;">checks passed</div>'
-          +'</div>'
-          +'<button onclick="event.stopPropagation();_admOpenApplicant(\''+app.id+'\')" style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-size:12.5px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;white-space:nowrap;">'
-            +'<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="6.5" cy="6.5" rx="5.5" ry="3.5"/><circle cx="6.5" cy="6.5" r="1.5"/></svg>Review</button>'
+        +'<span class="adm-status-badge '+stCls+'" style="flex-shrink:0;">'+stLabel+'</span>'
+      +'</div>'
+      // trade + checks row
+      +'<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">'
+        +'<span class="adm-chip" style="font-size:11.5px;">'+_admEsc(trade)+'</span>'
+        +(issuesBadge||'')
+        +'<div style="display:flex;align-items:center;gap:6px;margin-left:auto;">'
+          +'<div style="display:flex;align-items:center;gap:2px;">'+dots+extra+'</div>'
+          +'<span style="font-size:12px;font-weight:700;color:#0f172a;white-space:nowrap;">'+stats.passed+'/'+stats.total+'</span>'
+          +'<span style="font-size:10.5px;color:#94a3b8;white-space:nowrap;">checks</span>'
         +'</div>'
       +'</div>'
       +'<div class="adm-prog-bar"><div class="adm-prog-fill" style="width:'+pct+'%"></div></div>'
@@ -7723,17 +7732,27 @@ function _admBuildDetail(app) {
     +(app.bio?'<div class="adm-field-group"><div class="adm-field-label">Bio</div><div class="adm-field-value" style="line-height:1.6;">'+_admEsc(app.bio)+'</div></div>':'');
 
   var html=''
-  // ── Header ──
-  +'<div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap;">'
-    +'<button onclick="_admBackToApplicants()" style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;">'
-      +'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2L4 6l4 4"/></svg>Applicants</button>'
-    +'<div class="adm-avatar" style="background:'+avColor+';width:48px;height:48px;font-size:20px;">'+initial+'</div>'
-    +'<div style="flex:1;min-width:0;">'
-      +'<div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;line-height:1.2;">'+_admEsc(dispName)+'</div>'
-      +'<div style="font-size:12.5px;color:#64748b;margin-top:2px;">'+_admEsc(contact)+' · '+type+' · '+_admEsc(trade)+' · Applied '+date+'</div>'
+  // ── Sticky top bar ──
+  +'<div class="adm-detail-topbar">'
+    +'<button class="adm-detail-topbar-back" onclick="_admBackToApplicants()">'
+      +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2L5 7l4 5"/></svg>Applicants'
+    +'</button>'
+    +'<span class="adm-detail-topbar-sep">/</span>'
+    +'<span class="adm-detail-topbar-title">'+_admEsc(dispName)+'</span>'
+    +'<div style="flex:1;"></div>'
+    +'<button style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;">'
+      +'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polygon points="4,2 10,6 4,10"/></svg>Run Verification</button>'
+  +'</div>'
+  // ── Applicant identity block ──
+  +'<div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">'
+    +'<div class="adm-avatar" style="background:'+avColor+';width:52px;height:52px;font-size:22px;flex-shrink:0;">'+initial+'</div>'
+    +'<div>'
+      +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+        +'<span style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;line-height:1.2;">'+_admEsc(dispName)+'</span>'
+        +'<span class="adm-status-badge '+stCls+'">'+stLabel+'</span>'
+      +'</div>'
+      +'<div style="font-size:12.5px;color:#64748b;margin-top:3px;">'+_admEsc(contact)+' · '+type+' · '+_admEsc(trade)+' · Applied '+date+'</div>'
     +'</div>'
-    +'<button style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;">'
-      +'<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 11,6.5 5,10"/></svg>Run Verification</button>'
   +'</div>'
 
   // ── 50/50 body ──
