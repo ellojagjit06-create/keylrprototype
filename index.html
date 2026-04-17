@@ -7777,7 +7777,10 @@ function _admBuildDetail(app) {
           +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#f59e0b" stroke-width="1.8"><polygon points="7,1 9,5.5 14,6.2 10.5,9.5 11.4,14 7,11.6 2.6,14 3.5,9.5 0,6.2 5,5.5"/></svg>'
           +'<span style="font-size:13.5px;font-weight:700;color:#0f172a;">Compliance Score</span>'
         +'</div>'
-        +'<span style="font-size:16px;font-weight:800;color:'+scoreColor+';">'+stats.pct+'%</span>'
+        +'<span style="font-size:15px;font-weight:800;color:'+scoreColor+';">'+stats.pct+'%</span>'
+        +'<button style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;white-space:nowrap;flex-shrink:0;">'
+          +'<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3,1.5 9.5,5.5 3,9.5"/></svg>Run Verification'
+        +'</button>'
       +'</div>'
       // Progress bar
       +'<div style="height:5px;background:#f1f5f9;border-radius:3px;margin-bottom:12px;">'
@@ -7790,12 +7793,6 @@ function _admBuildDetail(app) {
         +'<span style="font-size:11.5px;color:#374151;display:flex;align-items:center;gap:4px;"><span class="adm-dot" style="background:#ef4444;"></span>'+stats.issues+' Issues</span>'
         +'<span style="font-size:11.5px;color:#374151;display:flex;align-items:center;gap:4px;"><span class="adm-dot" style="background:#d1d5db;"></span>'+stats.na+' N/A</span>'
       +'</div>'
-      // ── Run Verification CTA ──
-      +'<button style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:16px;letter-spacing:.01em;">'
-        +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><polygon points="4,2 12,7 4,12"/></svg>'
-        +'Run Verification'
-      +'</button>'
-      // Divider
       +'<div style="border-top:1px solid #f1f5f9;margin-bottom:14px;"></div>'
       // Check items
       +compHTML
