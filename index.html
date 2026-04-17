@@ -15814,22 +15814,124 @@ window._SUPP_TRADES=[
   ]}
 ],svcs:[]},
     {id:'heat-pump',label:'Heat Pump Engineer',svcs:[{id:'ashp-install',l:'Air Source Heat Pump Install',comp:'certified',cert:'MCS Certified'},{id:'gshp-install',l:'Ground Source Heat Pump Install',comp:'certified',cert:'MCS Certified'}]},
-    {id:'plumber',label:'Plumber',svcs:[{id:'leak-repair',l:'Leak Repair',comp:'none'},{id:'bathroom-fit',l:'Bathroom Fitting',comp:'none'},{id:'radiator',l:'Radiator Install / Replace',comp:'recommended'},{id:'unvented',l:'Unvented Cylinder',comp:'certified',cert:'G3 Qualification'}]},
-    {id:'drainage',label:'Drainage Engineer',svcs:[{id:'drain-clear',l:'Drain Clearance',comp:'none'},{id:'cctv-drain',l:'CCTV Drain Survey',comp:'none'},{id:'drain-repair',l:'Drain Repair',comp:'none'}]},
+    {id:'plumber',label:'Plumber',groups:[
+  {g:'Emergency Repairs',svcs:[
+    {id:'burst-pipe',l:'Burst Pipe — Emergency / Repair',desc:'',comp:'none',cert:''},
+    {id:'leak-detect',l:'Water Leak Detection',desc:'',comp:'none',cert:''}
+  ]},
+  {g:'Blockages',svcs:[
+    {id:'blockage',l:'Blocked Toilet / Basin / Bath / Sink / Shower',desc:'',comp:'none',cert:''}
+  ]},
+  {g:'Leak Repairs',svcs:[
+    {id:'leak-under',l:'Leak Under Sink / Behind Toilet / Radiator Valve / Pipework',desc:'',comp:'none',cert:''}
+  ]},
+  {g:'Toilet Repairs',svcs:[
+    {id:'cistern-rep',l:'Cistern / Flush Valve / Fill Valve / Syphon Repair',desc:'',comp:'none',cert:''},
+    {id:'toilet-pan',l:'Toilet Seat / Pan / Full Suite Replacement',desc:'',comp:'none',cert:''},
+    {id:'concealed-cist',l:'Concealed Cistern / Macerator (Saniflo) Repair',desc:'',comp:'none',cert:''}
+  ]},
+  {g:'Taps & Basins',svcs:[
+    {id:'tap-rep',l:'Tap Repair / Cartridge / Replacement (all types)',desc:'',comp:'none',cert:''},
+    {id:'basin-waste',l:'Basin Waste / Trap / Full Basin Replacement',desc:'',comp:'none',cert:''}
+  ]},
+  {g:'Showers',svcs:[
+    {id:'shower-rep',l:'Shower Valve / Head / Tray Repair or Replacement',desc:'',comp:'none',cert:''},
+    {id:'shower-install',l:'New Shower Installation (Electric / Mixer / Enclosure)',desc:'',comp:'none',cert:''}
+  ]},
+  {g:'Bath',svcs:[
+    {id:'bath-rep',l:'Bath Tap / Waste / Panel / Re-seal / Full Replacement',desc:'',comp:'none',cert:''}
+  ]},
+  {g:'Bathroom Installations',svcs:[
+    {id:'bathroom-full',l:'Full Bathroom / En Suite / Wet Room / Cloakroom',desc:'',comp:'none',cert:''}
+  ]},
+  {g:'Water & Heating',svcs:[
+    {id:'water-soft',l:'Water Softener / Mains Pressure Booster / Outside Tap',desc:'',comp:'none',cert:''},
+    {id:'tmv-install',l:'TMV Installation',desc:'',comp:'certified',cert:'WRAS / Watersafe Approved'},
+    {id:'boiler-drain',l:'Boiler Drain-Down & Refill',desc:'Gas work = criminal offence without Gas Safe',comp:'mandatory',cert:'Gas Safe Register'}
+  ]},
+  {g:'Compliance',svcs:[
+    {id:'water-regs-cert',l:'Water Regulations Compliance Certificate',desc:'',comp:'certified',cert:'WRAS / Watersafe Approved'},
+    {id:'tmv-cert',l:'TMV Commissioning Certificate',desc:'',comp:'certified',cert:'WRAS / Watersafe Approved'},
+    {id:'g3-cert',l:'Unvented Hot Water Certificate (G3)',desc:'',comp:'certified',cert:'G3 Unvented Qualification'}
+  ]}
+],svcs:[]},
+    {id:'drainage',label:'Drainage Engineer',groups:[
+  {g:'Drainage',svcs:[
+    {id:'drain-jet',l:'Drain Clearance / Jetting / CCTV Survey',desc:'',comp:'none',cert:''},
+    {id:'rat-survey',l:'Rat Ingress Drain Survey / Soakaway Investigation',desc:'',comp:'none',cert:''}
+  ]}
+],svcs:[]},
   ]},
   {cat:'ELECTRICAL',trades:[
-    {id:'electrician',label:'Electrician',svcs:[{id:'rewire',l:'Full Rewire',comp:'mandatory',cert:'NICEIC / NAPIT'},{id:'eicr',l:'EICR Inspection',comp:'mandatory',cert:'Part P Registered'},{id:'consumer-unit',l:'Consumer Unit Upgrade',comp:'mandatory',cert:'Part P Registered'},{id:'socket-install',l:'Socket / Switch Install',comp:'mandatory',cert:'Part P Registered'},{id:'outdoor-elec',l:'Outdoor Electrics',comp:'mandatory',cert:'Part P Registered'},{id:'smart-elec',l:'Smart Electrics',comp:'recommended'}]},
+    {id:'electrician',label:'Electrician',groups:[
+  {g:'Compliance',svcs:[
+    {id:'eicr',l:'EICR — Electrical Inspection Report',desc:'Required every 5 years for rentals',comp:'certified',cert:'NICEIC / NAPIT / ELECSA'},
+    {id:'elec-cert',l:'Electrical Installation Certificate',desc:'',comp:'certified',cert:'NICEIC / NAPIT / ELECSA'},
+    {id:'minor-works',l:'Minor Works Certificate',desc:'',comp:'certified',cert:'NICEIC / NAPIT / ELECSA'},
+    {id:'smoke-alarm',l:'Smoke Alarm Installation / Inspection',desc:'Legal requirement but no cert needed to install',comp:'none',cert:''},
+    {id:'co-alarm',l:'Carbon Monoxide Alarm Installation / Inspection',desc:'Legal requirement but no cert needed to install',comp:'none',cert:''},
+    {id:'pat-test',l:'PAT Testing',desc:'',comp:'recommended',cert:'Competent Person'},
+    {id:'rcd-upgrade',l:'RCD Protection Upgrade',desc:'',comp:'certified',cert:'NICEIC / NAPIT'},
+    {id:'emerg-light',l:'Emergency Lighting Installation / Annual Test',desc:'',comp:'certified',cert:'NICEIC / NAPIT'}
+  ]},
+  {g:'Repairs',svcs:[
+    {id:'fault-find',l:'Fault Finding — Power / Lighting Circuit',desc:'',comp:'none',cert:'NICEIC / NAPIT (recommended)'},
+    {id:'cu-replace',l:'Consumer Unit Replacement',desc:'Building regs notification required',comp:'certified',cert:'NICEIC / NAPIT (notifiable work)'},
+    {id:'mcb-replace',l:'MCB / Trip Switch Replacement',desc:'',comp:'none',cert:'NICEIC / NAPIT (recommended)'},
+    {id:'circuit-repair',l:'Power / Lighting Circuit Repair',desc:'',comp:'none',cert:'NICEIC / NAPIT (recommended)'},
+    {id:'spark-socket',l:'Sparking Socket — Emergency',desc:'',comp:'none',cert:'NICEIC / NAPIT (recommended)'},
+    {id:'dead-socket',l:'Dead Socket / Flickering Lights Repair',desc:'',comp:'none',cert:'NICEIC / NAPIT (recommended)'}
+  ]},
+  {g:'Installations',svcs:[
+    {id:'full-rewire',l:'Full / Partial Rewire',desc:'Building regs notification required',comp:'certified',cert:'NICEIC / NAPIT (notifiable work)'},
+    {id:'extra-socket',l:'Extra Socket / New Lighting Point',desc:'',comp:'none',cert:'NICEIC / NAPIT (recommended)'},
+    {id:'ceiling-light',l:'Ceiling / Security Light Installation',desc:'',comp:'none',cert:'NICEIC / NAPIT (recommended)'},
+    {id:'smoke-heat',l:'Smoke / Heat Detector Upgrade',desc:'',comp:'none',cert:'NICEIC / NAPIT (recommended)'},
+    {id:'door-entry',l:'Door Entry / Intercom / Smart Doorbell',desc:'',comp:'none',cert:'NICEIC / NAPIT (recommended)'},
+    {id:'smart-light',l:'Smart Lighting / IoT Sensor Installation',desc:'',comp:'none',cert:'NICEIC / NAPIT (recommended)'}
+  ]}
+],svcs:[]},
     {id:'ev-charger',label:'EV Charger Installer',svcs:[{id:'ev-install',l:'EV Charger Installation',comp:'certified',cert:'OZEV Approved Installer'}]},
     {id:'solar-panel',label:'Solar Panel Installer',svcs:[{id:'solar-pv',l:'Solar PV Installation',comp:'certified',cert:'MCS Certified Installer'}]},
     {id:'battery-storage',label:'Battery Storage Installer',svcs:[{id:'battery-install',l:'Battery Storage System',comp:'certified',cert:'MCS Certified'}]},
-    {id:'dno',label:'Energy Supplier (DNO)',svcs:[{id:'grid-connect',l:'Grid Connection Work',comp:'certified',cert:'DNO Accredited'}]},
+    {id:'dno',label:'Energy Supplier (DNO)',groups:[
+  {g:'Installations',svcs:[
+    {id:'smart-meter',l:'Smart Meter Installation',desc:'',comp:'mandatory',cert:'DNO / Energy Supplier Licence'}
+  ]}
+],svcs:[]},
   ]},
   {cat:'FIRE SAFETY',trades:[
-    {id:'fire-safety-assessor',label:'Fire Safety Assessor',svcs:[{id:'fra',l:'Fire Risk Assessment',comp:'mandatory',cert:'IFE / IFSM Member'},{id:'fra-review',l:'FRA Review & Update',comp:'mandatory',cert:'IFE / IFSM Member'}]},
-    {id:'fire-alarm',label:'Fire Alarm Engineer',svcs:[{id:'alarm-install',l:'Fire Alarm Installation',comp:'mandatory',cert:'FIA Certified'},{id:'alarm-service',l:'Fire Alarm Service',comp:'mandatory',cert:'FIA Certified'}]},
-    {id:'fire-door',label:'Fire Door Inspector',svcs:[{id:'door-inspect',l:'Fire Door Inspection',comp:'mandatory',cert:'FDIS Certified'},{id:'door-install',l:'Fire Door Installation',comp:'certified',cert:'BM TRADA Q-Mark'}]},
-    {id:'fire-safety-contractor',label:'Fire Safety Contractor',svcs:[{id:'suppression',l:'Suppression System',comp:'certified',cert:'LPS 1048'}]},
-    {id:'fire-stopping',label:'Fire Stopping Contractor',svcs:[{id:'passive-fire',l:'Passive Fire Protection',comp:'certified',cert:'FIRAS Certified'}]},
+    {id:'fire-safety-assessor',label:'Fire Safety Assessor',groups:[
+  {g:'Assessments',svcs:[
+    {id:'fra',l:'Fire Risk Assessment',desc:'Legal requirement for HMOs / communal areas',comp:'certified',cert:'Competent Person — IFE / IFSM'},
+    {id:'fra-review',l:'Fire Risk Assessment — Review',desc:'',comp:'certified',cert:'Competent Person — IFE / IFSM'},
+    {id:'fire-comp-survey',l:'Fire Compartmentation Survey',desc:'',comp:'recommended',cert:'Competent Person — IFE / IFSM'}
+  ]}
+],svcs:[]},
+    {id:'fire-alarm',label:'Fire Alarm Engineer',groups:[
+  {g:'Alarms',svcs:[
+    {id:'alarm-install',l:'Fire Alarm Installation',desc:'',comp:'certified',cert:'FIA / BAFE SP203'},
+    {id:'alarm-service',l:'Fire Alarm Annual Service',desc:'',comp:'certified',cert:'FIA / BAFE SP203'},
+    {id:'alarm-fault',l:'Fire Alarm Fault Finding',desc:'',comp:'certified',cert:'FIA / BAFE SP203'}
+  ]}
+],svcs:[]},
+    {id:'fire-door',label:'Fire Door Inspector',groups:[
+  {g:'Fire Door Inspector Services',svcs:[
+    {id:'door-inspect',l:'Fire Door Inspection',desc:'',comp:'mandatory',cert:'FDIS Certified'},
+    {id:'door-install',l:'Fire Door Installation',desc:'',comp:'certified',cert:'BM TRADA Q-Mark'}
+  ]}
+],svcs:[]},
+    {id:'fire-safety-contractor',label:'Fire Safety Contractor',groups:[
+  {g:'Equipment',svcs:[
+    {id:'fire-ext',l:'Fire Extinguisher Supply, Fit & Annual Service',desc:'',comp:'recommended',cert:'BAFE / FIA'}
+  ]}
+],svcs:[]},
+    {id:'fire-stopping',label:'Fire Stopping Contractor',groups:[
+  {g:'Fire Stopping',svcs:[
+    {id:'pipe-penetration',l:'Fire Stopping — Pipe / Cable Penetration',desc:'',comp:'recommended',cert:'IFC SDI 05 / Third-Party Certified'},
+    {id:'intumescent',l:'Intumescent Sealing',desc:'',comp:'recommended',cert:'IFC SDI 05 / Third-Party Certified'}
+  ]}
+],svcs:[]},
   ]},
   {cat:'COMPLIANCE & LEGAL',trades:[
     {id:'energy-assessor',label:'Energy Assessor',svcs:[{id:'epc',l:'Energy Performance Certificate',comp:'mandatory',cert:'DEA Accredited'}]},
