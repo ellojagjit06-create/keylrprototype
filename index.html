@@ -971,16 +971,24 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 /* ── Nav item hover ── */
 .supp-nav-item{transition:background .14s,color .14s;}
 .supp-nav-item:hover{background:rgba(26,95,200,.07);}
-/* ── Collapse button visible in both modes ── */
+/* ── Collapse button — always dark/visible ── */
 .supp-collapse-btn{
-  background:none;border:1.5px solid #e2e8f0;cursor:pointer;
-  padding:5px;border-radius:7px;display:flex;align-items:center;
-  color:#374151;transition:background .14s,color .14s,border-color .14s;
+  background:none;
+  border:1.5px solid #c8cdd6;
+  cursor:pointer;
+  padding:5px;border-radius:7px;
+  display:flex;align-items:center;
+  color:#1a1f2e;
+  transition:background .14s,color .14s,border-color .14s,transform .2s;
   flex-shrink:0;
 }
-.supp-collapse-btn:hover{background:#e8edf5;border-color:#c7d2e0;color:#0f172a;}
-.supp-dark .supp-collapse-btn{color:#c9d1d9;border-color:#30363d;}
-.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#4b5563;color:#e2e8f0;}
+.supp-collapse-btn:hover{background:#e2e6ef;border-color:#a0a8b8;color:#0f172a;}
+.supp-dark .supp-collapse-btn{color:#d1d9e0;border-color:#3d4452;}
+.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#5a6475;color:#f0f4f8;}
+/* ── Sidebar slide animation ── */
+#suppSidebar{transition:width .22s cubic-bezier(.4,0,.2,1);}
+#suppSidebar .sb-label{transition:opacity .15s ease,max-width .22s ease;overflow:hidden;white-space:nowrap;}
+#suppSidebar.supp-collapsed .sb-label{opacity:0;max-width:0;}
 /* ── Q wizard card no background ── */
 .supp-q-card{background:transparent;border:none;}
 
@@ -1021,16 +1029,24 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 /* ── Nav item hover ── */
 .supp-nav-item{transition:background .14s,color .14s;}
 .supp-nav-item:hover{background:rgba(26,95,200,.07);}
-/* ── Collapse button visible in both modes ── */
+/* ── Collapse button — always dark/visible ── */
 .supp-collapse-btn{
-  background:none;border:1.5px solid #e2e8f0;cursor:pointer;
-  padding:5px;border-radius:7px;display:flex;align-items:center;
-  color:#374151;transition:background .14s,color .14s,border-color .14s;
+  background:none;
+  border:1.5px solid #c8cdd6;
+  cursor:pointer;
+  padding:5px;border-radius:7px;
+  display:flex;align-items:center;
+  color:#1a1f2e;
+  transition:background .14s,color .14s,border-color .14s,transform .2s;
   flex-shrink:0;
 }
-.supp-collapse-btn:hover{background:#e8edf5;border-color:#c7d2e0;color:#0f172a;}
-.supp-dark .supp-collapse-btn{color:#c9d1d9;border-color:#30363d;}
-.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#4b5563;color:#e2e8f0;}
+.supp-collapse-btn:hover{background:#e2e6ef;border-color:#a0a8b8;color:#0f172a;}
+.supp-dark .supp-collapse-btn{color:#d1d9e0;border-color:#3d4452;}
+.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#5a6475;color:#f0f4f8;}
+/* ── Sidebar slide animation ── */
+#suppSidebar{transition:width .22s cubic-bezier(.4,0,.2,1);}
+#suppSidebar .sb-label{transition:opacity .15s ease,max-width .22s ease;overflow:hidden;white-space:nowrap;}
+#suppSidebar.supp-collapsed .sb-label{opacity:0;max-width:0;}
 /* ── Q wizard card no background ── */
 .supp-q-card{background:transparent;border:none;}
 
@@ -1064,16 +1080,24 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 /* ── Nav item hover ── */
 .supp-nav-item{transition:background .14s,color .14s;}
 .supp-nav-item:hover{background:rgba(26,95,200,.07);}
-/* ── Collapse button visible in both modes ── */
+/* ── Collapse button — always dark/visible ── */
 .supp-collapse-btn{
-  background:none;border:1.5px solid #e2e8f0;cursor:pointer;
-  padding:5px;border-radius:7px;display:flex;align-items:center;
-  color:#374151;transition:background .14s,color .14s,border-color .14s;
+  background:none;
+  border:1.5px solid #c8cdd6;
+  cursor:pointer;
+  padding:5px;border-radius:7px;
+  display:flex;align-items:center;
+  color:#1a1f2e;
+  transition:background .14s,color .14s,border-color .14s,transform .2s;
   flex-shrink:0;
 }
-.supp-collapse-btn:hover{background:#e8edf5;border-color:#c7d2e0;color:#0f172a;}
-.supp-dark .supp-collapse-btn{color:#c9d1d9;border-color:#30363d;}
-.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#4b5563;color:#e2e8f0;}
+.supp-collapse-btn:hover{background:#e2e6ef;border-color:#a0a8b8;color:#0f172a;}
+.supp-dark .supp-collapse-btn{color:#d1d9e0;border-color:#3d4452;}
+.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#5a6475;color:#f0f4f8;}
+/* ── Sidebar slide animation ── */
+#suppSidebar{transition:width .22s cubic-bezier(.4,0,.2,1);}
+#suppSidebar .sb-label{transition:opacity .15s ease,max-width .22s ease;overflow:hidden;white-space:nowrap;}
+#suppSidebar.supp-collapsed .sb-label{opacity:0;max-width:0;}
 /* ── Q wizard card no background ── */
 .supp-q-card{background:transparent;border:none;}
 
@@ -1107,16 +1131,24 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 /* ── Nav item hover ── */
 .supp-nav-item{transition:background .14s,color .14s;}
 .supp-nav-item:hover{background:rgba(26,95,200,.07);}
-/* ── Collapse button visible in both modes ── */
+/* ── Collapse button — always dark/visible ── */
 .supp-collapse-btn{
-  background:none;border:1.5px solid #e2e8f0;cursor:pointer;
-  padding:5px;border-radius:7px;display:flex;align-items:center;
-  color:#374151;transition:background .14s,color .14s,border-color .14s;
+  background:none;
+  border:1.5px solid #c8cdd6;
+  cursor:pointer;
+  padding:5px;border-radius:7px;
+  display:flex;align-items:center;
+  color:#1a1f2e;
+  transition:background .14s,color .14s,border-color .14s,transform .2s;
   flex-shrink:0;
 }
-.supp-collapse-btn:hover{background:#e8edf5;border-color:#c7d2e0;color:#0f172a;}
-.supp-dark .supp-collapse-btn{color:#c9d1d9;border-color:#30363d;}
-.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#4b5563;color:#e2e8f0;}
+.supp-collapse-btn:hover{background:#e2e6ef;border-color:#a0a8b8;color:#0f172a;}
+.supp-dark .supp-collapse-btn{color:#d1d9e0;border-color:#3d4452;}
+.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#5a6475;color:#f0f4f8;}
+/* ── Sidebar slide animation ── */
+#suppSidebar{transition:width .22s cubic-bezier(.4,0,.2,1);}
+#suppSidebar .sb-label{transition:opacity .15s ease,max-width .22s ease;overflow:hidden;white-space:nowrap;}
+#suppSidebar.supp-collapsed .sb-label{opacity:0;max-width:0;}
 /* ── Q wizard card no background ── */
 .supp-q-card{background:transparent;border:none;}
 
@@ -1150,16 +1182,24 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 /* ── Nav item hover ── */
 .supp-nav-item{transition:background .14s,color .14s;}
 .supp-nav-item:hover{background:rgba(26,95,200,.07);}
-/* ── Collapse button visible in both modes ── */
+/* ── Collapse button — always dark/visible ── */
 .supp-collapse-btn{
-  background:none;border:1.5px solid #e2e8f0;cursor:pointer;
-  padding:5px;border-radius:7px;display:flex;align-items:center;
-  color:#374151;transition:background .14s,color .14s,border-color .14s;
+  background:none;
+  border:1.5px solid #c8cdd6;
+  cursor:pointer;
+  padding:5px;border-radius:7px;
+  display:flex;align-items:center;
+  color:#1a1f2e;
+  transition:background .14s,color .14s,border-color .14s,transform .2s;
   flex-shrink:0;
 }
-.supp-collapse-btn:hover{background:#e8edf5;border-color:#c7d2e0;color:#0f172a;}
-.supp-dark .supp-collapse-btn{color:#c9d1d9;border-color:#30363d;}
-.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#4b5563;color:#e2e8f0;}
+.supp-collapse-btn:hover{background:#e2e6ef;border-color:#a0a8b8;color:#0f172a;}
+.supp-dark .supp-collapse-btn{color:#d1d9e0;border-color:#3d4452;}
+.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#5a6475;color:#f0f4f8;}
+/* ── Sidebar slide animation ── */
+#suppSidebar{transition:width .22s cubic-bezier(.4,0,.2,1);}
+#suppSidebar .sb-label{transition:opacity .15s ease,max-width .22s ease;overflow:hidden;white-space:nowrap;}
+#suppSidebar.supp-collapsed .sb-label{opacity:0;max-width:0;}
 /* ── Q wizard card no background ── */
 .supp-q-card{background:transparent;border:none;}
 
@@ -14597,7 +14637,9 @@ function _safeRemove(id) {
 // Full 13-step onboarding matching design specs
 // ═══════════════════════════════════════════════════════════
 
-var _suppOnboard = {
+var _suppOnboard = (function(){
+  try{var s=localStorage.getItem('keylr_supp_onboard');if(s){var d=JSON.parse(s);d.step=0;return d;}}catch(e){}
+  return {
   step: 0,
   // Verification phase
   operationType: '',   // 'sole_trader' | 'company'
@@ -14623,7 +14665,7 @@ var _suppOnboard = {
   // Profile
   primaryTrade: '', secondaryTrades: [], pricingModels: [],
   experience: '', jobsCompleted: '', bio: ''
-};
+};})();
 
 // Phase labels for top nav
 var _suppPhases = ['Verification','Verification','Verification','Verification','Availability','Profile','Profile','Profile','Profile','Profile','Profile','Profile'];
@@ -15106,12 +15148,12 @@ function _buildSuppOnboardStep(step) {
           + (function(){
               var ysel = _suppOnboard.companyDbsDecl === 'Yes';
               var nsel = _suppOnboard.companyDbsDecl === 'No';
-              var yCard = '<div onclick="_suppOnboard.companyDbsDecl=\'Yes\';_renderSuppOnboard();" style="border:1.5px solid '+(ysel?'#10b981':'#e2e8f0')+';border-radius:10px;padding:16px 14px;text-align:center;cursor:pointer;background:'+(ysel?'#f0fdf4':'#fff')+';transition:all 0.15s;">'
+              var yCard = '<div onclick="_suppSaveCurrentStep();_suppOnboard.companyDbsDecl=\'Yes\';_renderSuppOnboard();" style="border:1.5px solid '+(ysel?'#10b981':'#e2e8f0')+';border-radius:10px;padding:16px 14px;text-align:center;cursor:pointer;background:'+(ysel?'#f0fdf4':'#fff')+';transition:all 0.15s;">'
                 + (ysel?'<div style="color:#10b981;margin-bottom:4px;"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#10b981" stroke-width="1.8"><circle cx="10" cy="10" r="8"/><path d="M6 10l3 3 5-5"/></svg></div>':'')
                 + '<div style="font-size:14px;font-weight:700;color:'+(ysel?'#065f46':'#0f172a')+';margin-bottom:3px;font-family:Inter,sans-serif;">Yes</div>'
                 + '<div style="font-size:12px;color:'+(ysel?'#059669':'#64748b')+';font-family:Inter,sans-serif;">All operatives are DBS checked</div>'
               + '</div>';
-              var nCard = '<div onclick="_suppOnboard.companyDbsDecl=\'No\';_renderSuppOnboard();" style="border:1.5px solid '+(nsel?'#ef4444':'#e2e8f0')+';border-radius:10px;padding:16px 14px;text-align:center;cursor:pointer;background:'+(nsel?'#fef2f2':'#fff')+';transition:all 0.15s;">'
+              var nCard = '<div onclick="_suppSaveCurrentStep();_suppOnboard.companyDbsDecl=\'No\';_renderSuppOnboard();" style="border:1.5px solid '+(nsel?'#ef4444':'#e2e8f0')+';border-radius:10px;padding:16px 14px;text-align:center;cursor:pointer;background:'+(nsel?'#fef2f2':'#fff')+';transition:all 0.15s;">'
                 + (nsel?'<div style="color:#ef4444;margin-bottom:4px;"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#ef4444" stroke-width="1.8"><circle cx="10" cy="10" r="8"/><path d="M10 6v4M10 13v.5"/></svg></div>':'')
                 + '<div style="font-size:14px;font-weight:700;color:'+(nsel?'#991b1b':'#0f172a')+';margin-bottom:3px;font-family:Inter,sans-serif;">No</div>'
                 + '<div style="font-size:12px;color:'+(nsel?'#dc2626':'#64748b')+';font-family:Inter,sans-serif;">Not all operatives have DBS checks</div>'
@@ -15131,7 +15173,7 @@ function _buildSuppOnboardStep(step) {
                 + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
                   + [['Basic DBS','Shows unspent convictions only. Suitable for most trades.'],['Enhanced DBS','Includes spent & unspent convictions, cautions, and barred list checks.']].map(function(d){
                       var lsel = _suppOnboard.companyDbsLevel === d[0];
-                      return '<div onclick="_suppOnboard.companyDbsLevel=\''+d[0]+'\';_renderSuppOnboard();" style="border:1.5px solid '+(lsel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;padding:14px;cursor:pointer;background:'+(lsel?'#eff6ff':'#fff')+';display:flex;align-items:flex-start;gap:10px;transition:all 0.15s;">'
+                      return '<div onclick="_suppSaveCurrentStep();_suppOnboard.companyDbsLevel=\''+d[0]+'\';_renderSuppOnboard();" style="border:1.5px solid '+(lsel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;padding:14px;cursor:pointer;background:'+(lsel?'#eff6ff':'#fff')+';display:flex;align-items:flex-start;gap:10px;transition:all 0.15s;">'
                         + '<div style="width:18px;height:18px;border-radius:50%;border:1.5px solid '+(lsel?'#1A5FC8':'#d1d5db')+';background:'+(lsel?'#1A5FC8':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">'
                           + (lsel?'<div style="width:6px;height:6px;border-radius:50%;background:#fff;"></div>':'')
                         + '</div>'
@@ -15452,9 +15494,11 @@ function _suppToggleSectorSub(group,sub,el){
   el.style.borderColor=sel?'#1A5FC8':'#d1d5db'; el.style.background=sel?'#eff6ff':'#fff'; el.style.color=sel?'#1e3a5f':'#374151';
 }
 function _suppVatToggle(){
+  _suppSaveCurrentStep();
   _suppOnboard.vatRegistered=!_suppOnboard.vatRegistered; _renderSuppOnboard();
 }
 function _suppToggleCert(cert,el){
+  _suppSaveCurrentStep();
   var idx=_suppOnboard.tradeCerts.indexOf(cert);
   if(idx>=0)_suppOnboard.tradeCerts.splice(idx,1);else _suppOnboard.tradeCerts.push(cert);
   var sel=_suppOnboard.tradeCerts.indexOf(cert)>=0;
@@ -15551,9 +15595,9 @@ function _suppRemoveCustomCert(idx) {
 
 function _suppToggleCheck(id) {
   // Toggle state
-  if (id === 'comp-pi')  { _suppOnboard.profIndemnity       = !(_suppOnboard.profIndemnity||false);       _renderSuppOnboard(); return; }
-  if (id === 'comp-psc-confirm') { _suppOnboard.pscConfirmed = !(_suppOnboard.pscConfirmed||false); _renderSuppOnboard(); return; }
-  if (id === 'comp-el')  { _suppOnboard.employersLiability  = !(_suppOnboard.employersLiability||false);  _renderSuppOnboard(); return; }
+  if (id === 'comp-pi')  { _suppSaveCurrentStep(); _suppOnboard.profIndemnity       = !(_suppOnboard.profIndemnity||false);       _renderSuppOnboard(); return; }
+  if (id === 'comp-psc-confirm') { _suppSaveCurrentStep(); _suppOnboard.pscConfirmed = !(_suppOnboard.pscConfirmed||false); _renderSuppOnboard(); return; }
+  if (id === 'comp-el')  { _suppSaveCurrentStep(); _suppOnboard.employersLiability  = !(_suppOnboard.employersLiability||false);  _renderSuppOnboard(); return; }
   if (id === 'comp-insurance') _suppOnboard.insurance = !_suppOnboard.insurance;
   if (id === 'comp-dbs')       _suppOnboard.dbs       = !_suppOnboard.dbs;
   // Map id → current value
@@ -15814,6 +15858,8 @@ function _suppOnboardFinish(){
       profileComplete:true
     });
     if(typeof _updateUser==='function')_updateUser({});
+    // Persist onboarding data for Account Settings
+    try { localStorage.setItem('keylr_supp_onboard', JSON.stringify(_suppOnboard)); } catch(e){}
   }
   // ── Save full onboarding data to admin applicants store ──
   try {
@@ -17659,8 +17705,9 @@ function _showSupplierDashboard(){
       logoRow.appendChild(document.createElement('div'));
     }
     var toggleBtn = document.createElement('button');
-    toggleBtn.className = 'supp-collapse-btn'+(window._suppDark?' supp-dark':'');
-    toggleBtn.style.cssText = '';
+    toggleBtn.className = 'supp-collapse-btn';
+    toggleBtn.style.color = window._suppDark ? '#d1d9e0' : '#1a1f2e';
+    toggleBtn.style.borderColor = window._suppDark ? '#3d4452' : '#c8cdd6';
     toggleBtn.title = collapsed ? 'Expand' : 'Collapse';
     toggleBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="'+(collapsed?'5 2l4 5-4 5':'9 2L5 7l4 5')+'"/></svg>';
     toggleBtn.onclick = toggleSidebar;
@@ -17759,30 +17806,44 @@ function _showSupplierDashboard(){
     var isMobile = window.innerWidth < 768;
     if (isMobile) {
       _mobileOpen = !_mobileOpen;
-      // Handle overlay backdrop
       var overlay = document.getElementById('suppSbOverlay');
       if (_mobileOpen) {
         if (!overlay) {
           overlay = document.createElement('div');
           overlay.id = 'suppSbOverlay';
-          overlay.style.cssText = 'position:fixed;inset:0;z-index:99;background:rgba(0,0,0,0.4);';
+          overlay.style.cssText = 'position:fixed;inset:0;z-index:99;background:rgba(0,0,0,0.4);transition:opacity .22s;opacity:0;';
           overlay.onclick = toggleSidebar;
           document.getElementById('suppDashScreen').appendChild(overlay);
+          requestAnimationFrame(function(){ overlay.style.opacity='1'; });
         }
       } else {
-        if (overlay) overlay.remove();
+        if (overlay) { overlay.style.opacity='0'; setTimeout(function(){overlay.remove();},220); }
       }
     } else {
       _sbCollapsed = !_sbCollapsed;
     }
+    // Animate out
     var old = document.getElementById('suppSidebar');
     if (!old) return;
+    old.style.transition = 'opacity .15s ease, transform .18s ease';
+    old.style.opacity = '0';
+    old.style.transform = 'translateX(-4px)';
     var parent = old.parentNode;
     var next   = old.nextSibling;
-    old.remove();
-    var newSb = buildSidebar(_sbCollapsed);
-    if (next) parent.insertBefore(newSb, next);
-    else      parent.appendChild(newSb);
+    setTimeout(function(){
+      old.remove();
+      var newSb = buildSidebar(_sbCollapsed);
+      newSb.style.opacity = '0';
+      newSb.style.transform = 'translateX(-4px)';
+      if (next) parent.insertBefore(newSb, next);
+      else      parent.appendChild(newSb);
+      requestAnimationFrame(function(){
+        newSb.style.transition = 'opacity .18s ease, transform .2s ease';
+        newSb.style.opacity = '1';
+        newSb.style.transform = 'translateX(0)';
+        setTimeout(function(){ newSb.style.transition=''; newSb.style.transform=''; newSb.style.opacity=''; }, 200);
+      });
+    }, 150);
   }
 
   // Responsive: auto-collapse on resize
