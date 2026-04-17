@@ -17088,35 +17088,32 @@ function _suppBuildProfilePage(){
 }
 function _suppWireProfilePage(){
   var mainEl=document.getElementById('suppMain')||window._suppMain;
-  if(!mainEl) return;
+  if(!mainEl||mainEl._profWired) return;
+  mainEl._profWired=true;
+
   mainEl.addEventListener('click',function(e){
-    // Tab switch
+    // ── Tab switch ──
     var tabBtn=e.target.closest('.supp-prof-tab');
     if(tabBtn){ window._suppProfileTab=tabBtn.dataset.tabid; _suppNavTo('profile'); return; }
 
-    // Sector card click
-    var secCardEl=e.target.closest('.prof-sec-card');
-    if(secCardEl){
-      var newSec=secCardEl.dataset.sector;
+    // ── Sector card click ──
+    var secCard=e.target.closest('.prof-sec-card');
+    if(secCard){
+      var newSec=secCard.dataset.sector;
       var cardsWrap=document.getElementById('profSecCards');
       if(cardsWrap){
         cardsWrap.dataset.sector=newSec;
         cardsWrap.querySelectorAll('.prof-sec-card').forEach(function(card){
-          var s=card.dataset.sector; var isSel=s===newSec;
+          var isSel=card.dataset.sector===newSec;
           card.style.border='1.5px solid '+(isSel?'#1A5FC8':'#e2e8f0');
           card.style.background=isSel?'#eff6ff':'#fff';
-          // icon colour
-          var iconDiv=card.querySelector('div:first-child');
-          if(iconDiv) iconDiv.style.color=isSel?'#1A5FC8':'#94a3b8';
-          // label
-          var lblDivs=card.querySelectorAll('div');
-          var lbl=lblDivs[1]; if(lbl){lbl.style.color=isSel?'#1A5FC8':'#374151';lbl.style.fontWeight=isSel?'700':'500';}
-          // badge
+          var iconEl=card.children[0]; if(iconEl) iconEl.style.color=isSel?'#1A5FC8':'#94a3b8';
+          var lblEl=card.children[1]; if(lblEl){lblEl.style.color=isSel?'#1A5FC8':'#374151';lblEl.style.fontWeight=isSel?'700':'500';}
           var badge=card.querySelector('.sec-badge'); if(badge) badge.remove();
           if(isSel){
-            var b=document.createElement('div');b.className='sec-badge';
-            b.style.cssText='position:absolute;top:8px;right:8px;pointer-events:none;';
-            b.innerHTML='<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#1A5FC8"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.8"/></svg>';
+            var b=document.createElement('div'); b.className='sec-badge';
+            b.style.cssText='position:absolute;top:8px;right:8px;pointer-events:none;line-height:0;';
+            b.innerHTML='<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#1A5FC8"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.8" fill="none"/></svg>';
             card.appendChild(b);
           }
         });
@@ -17128,104 +17125,76 @@ function _suppWireProfilePage(){
       return;
     }
 
-    // Sector chip click
-    var chipBtn=e.target.closest('.prof-sector-chip');
-    if(chipBtn){
-      var isSel=chipBtn.hasAttribute('data-sel');
-      if(isSel){chipBtn.removeAttribute('data-sel');chipBtn.style.border='1.5px solid #d1d5db';chipBtn.style.background='#fff';chipBtn.style.color='#374151';}
-      else{chipBtn.setAttribute('data-sel','1');chipBtn.style.border='1.5px solid #1A5FC8';chipBtn.style.background='#eff6ff';chipBtn.style.color='#1e3a5f';}
+    // ── Sector chip toggle ──
+    var chip=e.target.closest('.prof-sector-chip');
+    if(chip){
+      var on=chip.hasAttribute('data-sel');
+      if(on){ chip.removeAttribute('data-sel'); chip.style.border='1.5px solid #d1d5db'; chip.style.background='#fff'; chip.style.color='#374151'; }
+      else  { chip.setAttribute('data-sel','1'); chip.style.border='1.5px solid #1A5FC8'; chip.style.background='#eff6ff'; chip.style.color='#1e3a5f'; }
       return;
     }
 
-    // Toggle
+    // ── Toggle ──
     var togBtn=e.target.closest('.prof-tog');
     if(togBtn){
-      var isOn=togBtn.hasAttribute('data-on');
-      var sp=togBtn.querySelector('span');
-      if(isOn){
-        togBtn.removeAttribute('data-on');
-        togBtn.style.background='#d1d5db';
-        if(sp){sp.style.left='2px';sp.style.right='';}
-      } else {
-        togBtn.setAttribute('data-on','1');
-        togBtn.style.background='#1A5FC8';
-        if(sp){sp.style.right='2px';sp.style.left='';}
-      }
-      // VAT number show/hide
-      if(togBtn.dataset.pfield==='vatRegistered'){
-        var vr=document.getElementById('profVatNumRow');
-        if(vr) vr.style.display=!isOn?'block':'none';
-      }
+      var isOn=togBtn.hasAttribute('data-on'); var sp=togBtn.querySelector('span');
+      if(isOn){ togBtn.removeAttribute('data-on'); togBtn.style.background='#d1d5db'; if(sp){sp.style.left='2px';sp.style.right='';} }
+      else    { togBtn.setAttribute('data-on','1'); togBtn.style.background='#1A5FC8'; if(sp){sp.style.right='2px';sp.style.left='';} }
+      if(togBtn.dataset.pfield==='vatRegistered'){ var vr=document.getElementById('profVatNumRow'); if(vr) vr.style.display=!isOn?'block':'none'; }
       return;
     }
 
-    // Upload doc button
+    // ── Upload doc ──
     var upBtn=e.target.closest('.prof-doc-upload');
     if(upBtn){
       var box=upBtn.closest('.prof-upload-box'); if(!box) return;
       var inp=document.createElement('input'); inp.type='file'; inp.accept='.pdf,.jpg,.jpeg,.png';
       inp.onchange=function(){
         var f=inp.files&&inp.files[0]; if(!f) return;
-        box.classList.add('has-file');
-        box.style.border='1.5px solid #e2e8f0';
-        box.style.background='#f8fafc';
-        box.innerHTML=''
-          +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.6"><rect x="2" y="1" width="10" height="12" rx="1.5"/><path d="M4 4h6M4 6.5h6M4 9h4"/></svg>'
+        box.style.border='1.5px solid #e2e8f0'; box.style.background='#f8fafc';
+        box.innerHTML='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.6"><rect x="2" y="1" width="10" height="12" rx="1.5"/><path d="M4 4h6M4 6.5h6M4 9h4"/></svg>'
           +'<span style="font-size:13px;color:#374151;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+f.name+'</span>'
           +'<div style="display:flex;gap:4px;flex-shrink:0;">'
-            +'<button class="prof-doc-view" title="View" style="width:26px;height:26px;border:1.5px solid #e2e8f0;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#374151" stroke-width="1.7"><ellipse cx="6" cy="6" rx="5" ry="3.5"/><circle cx="6" cy="6" r="1.5"/></svg></button>'
-            +'<button class="prof-doc-del" title="Delete" style="width:26px;height:26px;border:1.5px solid #fecaca;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#dc2626" stroke-width="1.8"><path d="M2 3h7M4.5 3V2h2v1M3.5 3v6a.5.5 0 00.5.5h3a.5.5 0 00.5-.5V3"/></svg></button>'
+            +'<button class="prof-doc-view" style="width:26px;height:26px;border:1.5px solid #e2e8f0;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#374151" stroke-width="1.7"><ellipse cx="6" cy="6" rx="5" ry="3.5"/><circle cx="6" cy="6" r="1.5"/></svg></button>'
+            +'<button class="prof-doc-del" style="width:26px;height:26px;border:1.5px solid #fecaca;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#dc2626" stroke-width="1.8"><path d="M2 3h7M4.5 3V2h2v1M3.5 3v6a.5.5 0 00.5.5h3a.5.5 0 00.5-.5V3"/></svg></button>'
           +'</div>';
       };
       inp.click();
       return;
     }
 
-    // Delete doc
+    // ── Delete doc ──
     var delBtn=e.target.closest('.prof-doc-del');
     if(delBtn){
       var box=delBtn.closest('.prof-upload-box'); if(!box) return;
       var hint=box.dataset.hint||'Upload document (PDF or image)';
-      box.classList.remove('has-file');
-      box.style.border='1.5px dashed #d1d5db';
-      box.style.background='#fafafa';
-      box.innerHTML=''
-        +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.6"><path d="M2 10v1.5a.5.5 0 00.5.5h9a.5.5 0 00.5-.5V10"/><path d="M7 2v7M4.5 4.5L7 2l2.5 2.5"/></svg>'
+      box.style.border='1.5px dashed #d1d5db'; box.style.background='#fafafa';
+      box.innerHTML='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.6"><path d="M2 10v1.5a.5.5 0 00.5.5h9a.5.5 0 00.5-.5V10"/><path d="M7 2v7M4.5 4.5L7 2l2.5 2.5"/></svg>'
         +'<span style="font-size:12.5px;color:#94a3b8;flex:1;">'+hint+'</span>'
         +'<button class="prof-doc-upload" style="background:#1A5FC8;color:#fff;border:none;border-radius:7px;padding:5px 12px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;flex-shrink:0;">Upload</button>';
       return;
     }
 
-    // Save
+    // ── Save ──
     if(e.target.closest('.supp-prof-save')){
       var wrap=document.getElementById('suppProfPanelWrap'); if(!wrap) return;
       var so=window._suppOnboard=window._suppOnboard||{};
-      // Text fields
       wrap.querySelectorAll('[data-pfield]').forEach(function(el){
         var k=el.dataset.pfield; if(!k||k==='_email') return;
         so[k]=el.tagName==='TEXTAREA'?el.value:(el.value||'');
       });
-      // Toggles
-      wrap.querySelectorAll('.prof-tog').forEach(function(btn){
-        var k=btn.dataset.pfield; if(!k) return;
-        so[k]=btn.hasAttribute('data-on');
+      wrap.querySelectorAll('.prof-tog').forEach(function(btn){ var k=btn.dataset.pfield; if(k) so[k]=btn.hasAttribute('data-on'); });
+      var cw=document.getElementById('profSecCards'); if(cw) so.sector=cw.dataset.sector||so.sector||'';
+      var resArr=[],comArr=[];
+      wrap.querySelectorAll('.prof-sector-chip').forEach(function(ch){
+        if(!ch.hasAttribute('data-sel')) return;
+        if(ch.dataset.type==='res') resArr.push(ch.dataset.val); else comArr.push(ch.dataset.val);
       });
-      // Sector
-      var cardsWrap=document.getElementById('profSecCards');
-      if(cardsWrap) so.sector=cardsWrap.dataset.sector||so.sector||'';
-      // Sub-type chips
-      var resChips=[],comChips=[];
-      wrap.querySelectorAll('.prof-sector-chip').forEach(function(c){
-        if(!c.hasAttribute('data-sel')) return;
-        if(c.dataset.type==='res') resChips.push(c.dataset.val);
-        else comChips.push(c.dataset.val);
-      });
-      if(resChips.length||document.getElementById('profResGroup')) so.sectorSubRes=resChips;
-      if(comChips.length||document.getElementById('profComGroup')) so.sectorSubCom=comChips;
-      // Snackbar
-      var sb=document.getElementById('admSnackbar'); var sm=document.getElementById('admSnackbarMsg');
+      if(document.getElementById('profResGroup')) so.sectorSubRes=resArr;
+      if(document.getElementById('profComGroup')) so.sectorSubCom=comArr;
+      var sb=document.getElementById('admSnackbar'),sm=document.getElementById('admSnackbarMsg');
       if(sm) sm.textContent='Changes saved successfully';
-      if(sb){ sb.classList.add('show'); clearTimeout(sb._t); sb._t=setTimeout(function(){sb.classList.remove('show');},2800); }
+      if(sb){sb.classList.add('show');clearTimeout(sb._t);sb._t=setTimeout(function(){sb.classList.remove('show');},2800);}
       return;
     }
   });
