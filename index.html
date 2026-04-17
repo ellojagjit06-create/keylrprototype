@@ -5338,7 +5338,7 @@ chips: []
 
 STEP 5 — USER DETAILS:
 Ask the user to provide their contact details for quotes. Use this exact format in your message:
-"To send you the best quotes, I just need a few contact details.\n\nIt's secure and your details won't be passed on.\n\nIf you already have a Keylr account, select **Log in** below."
+"To send you the best quotes, I just need a few contact details.\n\nIt's secure and your details will not be passed on.\n\nIf you already have a Keylr account, select **Log in** below."
 chips: []
 IMPORTANT: After this message, the system will automatically show "Enter details" and "Log in" buttons. Do NOT ask for details in chat.
 
@@ -5534,7 +5534,7 @@ function goToDashboard(query, autoSend = false, isAuthenticated = false) {
         showPage('chat', null);
         setTimeout(() => sendFromSuggestion(query), 400);
       } else {
-        // Show home page content but don't activate any nav tab
+        // Show home page content but do not activate any nav tab
         pages.forEach(p => {
           const el = document.getElementById('page-' + p);
           if (el) el.style.display = p === 'home' ? 'flex' : 'none';
@@ -5669,7 +5669,7 @@ function sendFromSuggestion(text) {
   var services = ['Plumbing','Electrical','Cleaning','Gas Safety','Fire Risk','Boiler','EICR','EPC','Lock','Gardening','Pest'];
   services.forEach(function(s){ if(text.toLowerCase().indexOf(s.toLowerCase())>=0) _bookingSession.service = s; });
 
-  // Disable all existing chip buttons so they can't be clicked again
+  // Disable all existing chip buttons so they cannot be clicked again
   document.querySelectorAll('.ai-chip-btn').forEach(btn => {
     btn.disabled = true;
     btn.style.opacity = '0.4';
@@ -5807,7 +5807,7 @@ function addMessage(role, text, chips = []) {
           // Put chip text in input and fill chat input visually
           chatInputEl.value = chipText;
           sendBtnEl.disabled = false;
-          // Disable all chips so they can't be clicked again
+          // Disable all chips so they cannot be clicked again
           document.querySelectorAll('.ai-chip-btn').forEach(b => {
             b.disabled = true; b.style.opacity = '0.45'; b.style.cursor = 'not-allowed';
           });
@@ -7080,7 +7080,7 @@ function addJobFromBooking(data) {
     timeline: [{ date: new Date().toISOString().split('T')[0], label: 'Job created', desc: data.bookingType==='quote' ? 'Quote request submitted' : 'Direct booking placed' }]
   });
 }
-var _confirmedJobs = []; // kept so legacy references don't throw
+var _confirmedJobs = []; // kept so legacy references do not throw
 
 function renderJobs(filter) { if(typeof renderBookingsPage==='function') renderBookingsPage(); return;
   var list = document.getElementById('bkJobList');
@@ -7566,7 +7566,7 @@ var _DEMO_APPLICANTS = [
 function _admLoadApplicants() {
   try {
     var stored = JSON.parse(localStorage.getItem('keylr_applicants')||'[]');
-    // Merge demos (don't duplicate by id)
+    // Merge demos (do not duplicate by id)
     var ids = stored.map(function(a){ return a.id; });
     _DEMO_APPLICANTS.forEach(function(d){ if(ids.indexOf(d.id)<0) stored.unshift(d); });
     return stored;
@@ -11751,7 +11751,7 @@ function _renderPmActionChips() {
   var defs = _pmActionChipDefs;
   var topDefs = defs.slice(0, 3);
   var botDefs = defs.slice(3, 6);
-  // Hide top chip if dismissed OR if its badge is 100% OR if it's marked done
+  // Hide top chip if dismissed OR if its badge is 100% OR if it is marked done
   var topVisible = topDefs.filter(function(c) {
     if (_pmChipsDismissed[c.id]) return false;
     if (c.done) return false;
@@ -15774,6 +15774,691 @@ function _suppResumeOnboarding() {
   showSupplierOnboarding();
 }
 
+// ── Supplier state (services + pricing) ──
+if(!window._suppState){
+  window._suppState={
+    trades:[], // [{id,label,cat,isPrimary}]
+    services:{}, // {tradeId:[serviceId,...]}
+    pricing:{}, // {serviceId:{model,price,...}}
+    uploads:{} // {certName: File}
+  };
+}
+
+// ── Full trade taxonomy ──
+window._SUPP_TRADES=[
+  {cat:'GAS & HEATING',trades:[
+    {id:'gas-engineer',label:'Gas Engineer',svcs:[{id:'boiler-install',l:'Boiler Installation',comp:'mandatory',cert:'Gas Safe Registered'},{id:'boiler-service',l:'Boiler Service',comp:'mandatory',cert:'Gas Safe Registered'},{id:'gas-safety',l:'Gas Safety Certificate (CP12)',comp:'mandatory',cert:'Gas Safe Registered'},{id:'boiler-repair',l:'Boiler Repair',comp:'mandatory',cert:'Gas Safe Registered'},{id:'central-heat',l:'Central Heating System',comp:'mandatory',cert:'Gas Safe Registered'},{id:'gas-fire',l:'Gas Fire Install',comp:'mandatory',cert:'Gas Safe Registered'}]},
+    {id:'heat-pump',label:'Heat Pump Engineer',svcs:[{id:'ashp-install',l:'Air Source Heat Pump Install',comp:'certified',cert:'MCS Certified'},{id:'gshp-install',l:'Ground Source Heat Pump Install',comp:'certified',cert:'MCS Certified'}]},
+    {id:'plumber',label:'Plumber',svcs:[{id:'leak-repair',l:'Leak Repair',comp:'none'},{id:'bathroom-fit',l:'Bathroom Fitting',comp:'none'},{id:'radiator',l:'Radiator Install / Replace',comp:'recommended'},{id:'unvented',l:'Unvented Cylinder',comp:'certified',cert:'G3 Qualification'}]},
+    {id:'drainage',label:'Drainage Engineer',svcs:[{id:'drain-clear',l:'Drain Clearance',comp:'none'},{id:'cctv-drain',l:'CCTV Drain Survey',comp:'none'},{id:'drain-repair',l:'Drain Repair',comp:'none'}]},
+  ]},
+  {cat:'ELECTRICAL',trades:[
+    {id:'electrician',label:'Electrician',svcs:[{id:'rewire',l:'Full Rewire',comp:'mandatory',cert:'NICEIC / NAPIT'},{id:'eicr',l:'EICR Inspection',comp:'mandatory',cert:'Part P Registered'},{id:'consumer-unit',l:'Consumer Unit Upgrade',comp:'mandatory',cert:'Part P Registered'},{id:'socket-install',l:'Socket / Switch Install',comp:'mandatory',cert:'Part P Registered'},{id:'outdoor-elec',l:'Outdoor Electrics',comp:'mandatory',cert:'Part P Registered'},{id:'smart-elec',l:'Smart Electrics',comp:'recommended'}]},
+    {id:'ev-charger',label:'EV Charger Installer',svcs:[{id:'ev-install',l:'EV Charger Installation',comp:'certified',cert:'OZEV Approved Installer'}]},
+    {id:'solar-panel',label:'Solar Panel Installer',svcs:[{id:'solar-pv',l:'Solar PV Installation',comp:'certified',cert:'MCS Certified Installer'}]},
+    {id:'battery-storage',label:'Battery Storage Installer',svcs:[{id:'battery-install',l:'Battery Storage System',comp:'certified',cert:'MCS Certified'}]},
+    {id:'dno',label:'Energy Supplier (DNO)',svcs:[{id:'grid-connect',l:'Grid Connection Work',comp:'certified',cert:'DNO Accredited'}]},
+  ]},
+  {cat:'FIRE SAFETY',trades:[
+    {id:'fire-safety-assessor',label:'Fire Safety Assessor',svcs:[{id:'fra',l:'Fire Risk Assessment',comp:'mandatory',cert:'IFE / IFSM Member'},{id:'fra-review',l:'FRA Review & Update',comp:'mandatory',cert:'IFE / IFSM Member'}]},
+    {id:'fire-alarm',label:'Fire Alarm Engineer',svcs:[{id:'alarm-install',l:'Fire Alarm Installation',comp:'mandatory',cert:'FIA Certified'},{id:'alarm-service',l:'Fire Alarm Service',comp:'mandatory',cert:'FIA Certified'}]},
+    {id:'fire-door',label:'Fire Door Inspector',svcs:[{id:'door-inspect',l:'Fire Door Inspection',comp:'mandatory',cert:'FDIS Certified'},{id:'door-install',l:'Fire Door Installation',comp:'certified',cert:'BM TRADA Q-Mark'}]},
+    {id:'fire-safety-contractor',label:'Fire Safety Contractor',svcs:[{id:'suppression',l:'Suppression System',comp:'certified',cert:'LPS 1048'}]},
+    {id:'fire-stopping',label:'Fire Stopping Contractor',svcs:[{id:'passive-fire',l:'Passive Fire Protection',comp:'certified',cert:'FIRAS Certified'}]},
+  ]},
+  {cat:'COMPLIANCE & LEGAL',trades:[
+    {id:'energy-assessor',label:'Energy Assessor',svcs:[{id:'epc',l:'Energy Performance Certificate',comp:'mandatory',cert:'DEA Accredited'}]},
+    {id:'retrofit-assessor',label:'Retrofit Assessor',svcs:[{id:'retrofit-assess',l:'Retrofit Assessment',comp:'certified',cert:'TrustMark Registered'}]},
+    {id:'retrofit-coord',label:'Retrofit Coordinator',svcs:[{id:'retrofit-coord-svc',l:'Retrofit Coordination',comp:'certified',cert:'TrustMark Registered'}]},
+    {id:'thermal-imaging',label:'Thermal Imaging Surveyor',svcs:[{id:'thermal-survey',l:'Thermal Imaging Survey',comp:'recommended'}]},
+    {id:'legionella',label:'Legionella Specialist',svcs:[{id:'leg-risk',l:'Legionella Risk Assessment',comp:'mandatory',cert:'UKAS Accredited'},{id:'leg-treat',l:'Legionella Treatment',comp:'mandatory',cert:'UKAS Accredited'}]},
+    {id:'asbestos',label:'Asbestos Surveyor',svcs:[{id:'asbestos-survey',l:'Asbestos Survey',comp:'mandatory',cert:'UKAS P402 Licensed'},{id:'asbestos-remove',l:'Asbestos Removal',comp:'mandatory',cert:'HSE Licensed Contractor'}]},
+    {id:'hmo-inspector',label:'HMO Inspector',svcs:[{id:'hmo-inspect',l:'HMO Inspection Report',comp:'recommended'}]},
+    {id:'property-inspector',label:'Property Inspector',svcs:[{id:'prop-inspect',l:'Property Inspection',comp:'none'}]},
+    {id:'rics',label:'RICS Surveyor',svcs:[{id:'rics-valuation',l:'RICS Valuation',comp:'mandatory',cert:'RICS Qualified'},{id:'rics-survey',l:'HomeBuyer Survey',comp:'mandatory',cert:'RICS Qualified'}]},
+    {id:'structural',label:'Structural Engineer',svcs:[{id:'struct-report',l:'Structural Report',comp:'mandatory',cert:'IStructE / ICE'},{id:'calcs',l:'Structural Calculations',comp:'mandatory',cert:'IStructE / ICE'}]},
+    {id:'lift-engineer',label:'Lift Engineer',svcs:[{id:'lift-service',l:'Lift Service & Inspection',comp:'mandatory',cert:'LOLER Competent Person'},{id:'lift-repair',l:'Lift Repair',comp:'mandatory',cert:'LOLER Competent Person'}]},
+    {id:'insulation-cert',label:'Insulation Contractor',svcs:[{id:'loft-insulation',l:'Loft Insulation',comp:'recommended'},{id:'cavity-wall',l:'Cavity Wall Insulation',comp:'certified',cert:'CIGA Guarantee'}]},
+  ]},
+  {cat:'PROPERTY MARKETING',trades:[
+    {id:'property-agent',label:'Property Agent',svcs:[{id:'lettings',l:'Lettings',comp:'mandatory',cert:'CMP Scheme Member'},{id:'sales',l:'Sales',comp:'mandatory',cert:'CMP Scheme Member'}]},
+    {id:'photographer',label:'Property Photographer',svcs:[{id:'photos',l:'Professional Photography',comp:'none'},{id:'virtual-tour',l:'Virtual Tour',comp:'none'}]},
+    {id:'videographer',label:'Property Videographer',svcs:[{id:'video',l:'Property Video',comp:'none'}]},
+    {id:'floor-plan',label:'Floor Plan Draughtsman',svcs:[{id:'floor-plan-svc',l:'Floor Plans',comp:'none'},{id:'3d-plan',l:'3D Floor Plans',comp:'none'}]},
+    {id:'interior-stylist',label:'Interior Stylist',svcs:[{id:'staging',l:'Property Staging',comp:'none'},{id:'styling',l:'Interior Styling',comp:'none'}]},
+    {id:'signage',label:'Signage Contractor',svcs:[{id:'boards',l:'For Sale / To Let Boards',comp:'none'}]},
+  ]},
+  {cat:'DAMP, MOULD & STRUCTURAL',trades:[
+    {id:'damp-specialist',label:'Damp Specialist',svcs:[{id:'damp-survey',l:'Damp Survey',comp:'recommended'},{id:'damp-treatment',l:'Damp Treatment',comp:'none'}]},
+    {id:'roofer',label:'Roofer',svcs:[{id:'roof-repair',l:'Roof Repair',comp:'none'},{id:'roof-replace',l:'Roof Replacement',comp:'none'},{id:'gutter',l:'Gutter Repair / Clean',comp:'none'}]},
+    {id:'builder',label:'Builder',svcs:[{id:'extension',l:'Extension',comp:'recommended'},{id:'conversion',l:'Loft Conversion',comp:'recommended'},{id:'brickwork',l:'Brickwork Repair',comp:'none'}]},
+    {id:'plasterer',label:'Plasterer',svcs:[{id:'skim',l:'Skim Plaster',comp:'none'},{id:'dot-dab',l:'Dot & Dab',comp:'none'}]},
+    {id:'ventilation',label:'Ventilation Engineer',svcs:[{id:'mvhr',l:'MVHR System',comp:'recommended'},{id:'extractor',l:'Extractor Fan',comp:'none'}]},
+    {id:'glazier',label:'Glazier',svcs:[{id:'window-replace',l:'Window Replacement',comp:'none'},{id:'glass-repair',l:'Glass Repair',comp:'none'}]},
+  ]},
+  {cat:'SECURITY & ACCESS',trades:[
+    {id:'locksmith',label:'Locksmith',svcs:[{id:'lock-change',l:'Lock Change',comp:'none'},{id:'lock-out',l:'Lockout Service',comp:'none'},{id:'access-ctrl',l:'Access Control Install',comp:'none'}]},
+    {id:'security-engineer',label:'Security Engineer',svcs:[{id:'cctv',l:'CCTV Installation',comp:'none'},{id:'alarm-security',l:'Intruder Alarm',comp:'none'}]},
+    {id:'boarding',label:'Boarding Contractor',svcs:[{id:'boarding-up',l:'Boarding Up',comp:'none'}]},
+  ]},
+  {cat:'GENERAL MAINTENANCE',trades:[
+    {id:'handyman',label:'Handyman',svcs:[{id:'general-repairs',l:'General Repairs',comp:'none'},{id:'flat-pack',l:'Flat Pack Assembly',comp:'none'},{id:'painting',l:'Painting & Decorating',comp:'none'}]},
+    {id:'decorator',label:'Decorator',svcs:[{id:'interior-paint',l:'Interior Painting',comp:'none'},{id:'wallpaper',l:'Wallpapering',comp:'none'}]},
+    {id:'joiner',label:'Joiner / Carpenter',svcs:[{id:'door-fit',l:'Door Fitting',comp:'none'},{id:'kitchen-fit',l:'Kitchen Fitting',comp:'none'},{id:'flooring-fit',l:'Flooring Install',comp:'none'}]},
+    {id:'flooring',label:'Flooring Fitter',svcs:[{id:'carpet',l:'Carpet Fitting',comp:'none'},{id:'laminate',l:'Laminate / LVT',comp:'none'},{id:'hardwood',l:'Hardwood Flooring',comp:'none'}]},
+    {id:'tiler',label:'Tiler',svcs:[{id:'wall-tile',l:'Wall Tiling',comp:'none'},{id:'floor-tile',l:'Floor Tiling',comp:'none'}]},
+  ]},
+  {cat:'GROUNDS & OUTDOOR',trades:[
+    {id:'gardener',label:'Gardener',svcs:[{id:'garden-maintain',l:'Garden Maintenance',comp:'none'},{id:'lawn',l:'Lawn Care',comp:'none'}]},
+    {id:'tree-surgeon',label:'Tree Surgeon',svcs:[{id:'tree-work',l:'Tree Surgery / Felling',comp:'recommended'},{id:'hedge',l:'Hedge Trimming',comp:'none'}]},
+    {id:'fencing',label:'Fencing Contractor',svcs:[{id:'fence-install',l:'Fence Installation',comp:'none'},{id:'gate',l:'Gate Installation',comp:'none'}]},
+    {id:'grounds',label:'Grounds Contractor',svcs:[{id:'grounds-maint',l:'Grounds Maintenance',comp:'none'}]},
+    {id:'landscaper',label:'Landscaper',svcs:[{id:'paving',l:'Paving',comp:'none'},{id:'landscaping',l:'Full Landscaping',comp:'none'}]},
+  ]},
+  {cat:'CLEANING',trades:[
+    {id:'cleaner',label:'Cleaner',svcs:[{id:'end-tenancy',l:'End of Tenancy Clean',comp:'none'},{id:'regular-clean',l:'Regular Cleaning',comp:'none'},{id:'deep-clean',l:'Deep Clean',comp:'none'}]},
+    {id:'carpet-cleaner',label:'Carpet Cleaner',svcs:[{id:'carpet-clean',l:'Carpet Cleaning',comp:'none'},{id:'upholstery',l:'Upholstery Cleaning',comp:'none'}]},
+    {id:'specialist-cleaner',label:'Specialist Cleaner',svcs:[{id:'biohazard',l:'Biohazard Clean',comp:'certified',cert:'BICSc Qualified'},{id:'graffiti',l:'Graffiti Removal',comp:'none'}]},
+  ]},
+  {cat:'PEST CONTROL',trades:[
+    {id:'pest-control',label:'Pest Controller',svcs:[{id:'rodent',l:'Rodent Control',comp:'none'},{id:'insects',l:'Insect Treatment',comp:'none'},{id:'birds',l:'Bird Deterrent',comp:'none'}]},
+  ]},
+  {cat:'APPLIANCES',trades:[
+    {id:'appliance-engineer',label:'Appliance Engineer',svcs:[{id:'appliance-repair',l:'Appliance Repair',comp:'none'},{id:'appliance-install',l:'Appliance Installation',comp:'none'}]},
+  ]},
+  {cat:'SMART HOME & TECH',trades:[
+    {id:'smart-home',label:'Smart Home Installer',svcs:[{id:'smart-lights',l:'Smart Lighting',comp:'none'},{id:'smart-security',l:'Smart Security',comp:'none'},{id:'smart-heating',l:'Smart Thermostat',comp:'none'}]},
+    {id:'it-network',label:'IT / Network Engineer',svcs:[{id:'networking',l:'Network Installation',comp:'none'},{id:'wifi',l:'Wi-Fi Setup',comp:'none'}]},
+  ]},
+  {cat:'LIFTS & ACCESSIBILITY',trades:[
+    {id:'lift-install',label:'Lift Engineer',svcs:[{id:'lift-install-svc',l:'Lift Installation',comp:'mandatory',cert:'LOLER Competent Person'}]},
+    {id:'stairlift',label:'Stairlift Engineer',svcs:[{id:'stairlift-install',l:'Stairlift Installation',comp:'none'},{id:'stairlift-service',l:'Stairlift Service',comp:'none'}]},
+    {id:'accessibility',label:'Accessibility Contractor',svcs:[{id:'ramp',l:'Access Ramp',comp:'none'},{id:'grab-rail',l:'Grab Rails',comp:'none'}]},
+  ]},
+];
+
+function _suppNavTo(pageId){
+  // Update state
+  window._suppState = window._suppState || {trades:[],services:{},pricing:{},uploads:{}};
+  // Rebuild sidebar with new active
+  var screen = document.getElementById('suppDashScreen'); if(!screen) return;
+  var mainEl = document.getElementById('suppMain');
+  // Find and rebuild sidebar with active page
+  var oldSb = document.getElementById('suppSidebar');
+  if(oldSb){
+    var p=oldSb.parentNode, nx=oldSb.nextSibling;
+    // We need the navItems to be correct; just rebuild via _showSupplierDashboard is too heavy
+    // Instead just update active styles manually
+    oldSb.querySelectorAll('div[data-navid]').forEach(function(d){
+      var isActive = d.dataset.navid === pageId;
+      d.style.background = isActive ? '#E6EEFB' : '';
+      d.style.color = isActive ? '#1A5FC8' : (window._suppDark?'#8b949e':'#5E6674');
+      d.style.fontWeight = isActive ? '600' : '500';
+    });
+  }
+  // Render page content
+  if(!mainEl) return;
+  var pad = 'padding:24px clamp(20px,5vw,80px) 48px;width:100%;box-sizing:border-box;';
+  if(pageId==='svcs'){
+    mainEl.innerHTML = '<div style="'+pad+'">'+_suppBuildServicesPage()+'</div>';
+    _suppWireServicesPage();
+  } else if(pageId==='price'){
+    mainEl.innerHTML = '<div style="'+pad+'">'+_suppBuildPricingPage()+'</div>';
+    _suppWirePricingPage();
+  } else {
+    // placeholder for other pages
+    mainEl.innerHTML = '<div style="'+pad+'"><p style="color:#94a3b8;font-family:Inter,sans-serif;">'+pageId+' coming soon</p></div>';
+  }
+}
+
+function _suppFindTrade(id){
+  for(var i=0;i<_SUPP_TRADES.length;i++){
+    for(var j=0;j<_SUPP_TRADES[i].trades.length;j++){
+      if(_SUPP_TRADES[i].trades[j].id===id) return _SUPP_TRADES[i].trades[j];
+    }
+  }
+  return null;
+}
+
+function _suppCompColor(comp){
+  return comp==='mandatory'?'#ef4444':comp==='certified'?'#f97316':comp==='recommended'?'#eab308':'#22c55e';
+}
+
+function _suppServicesStats(){
+  var st=window._suppState;
+  var tradeCount=st.trades.length;
+  var svcCount=0; Object.keys(st.services).forEach(function(k){svcCount+=(st.services[k]||[]).length;});
+  var compDocs=0; var awaitUp=0;
+  Object.keys(st.services).forEach(function(tid){
+    var tr=_suppFindTrade(tid); if(!tr) return;
+    (st.services[tid]||[]).forEach(function(sid){
+      var svc=tr.svcs.find(function(s){return s.id===sid;});
+      if(svc&&(svc.comp==='mandatory'||svc.comp==='certified')){
+        compDocs++;
+        if(!st.uploads[svc.cert]) awaitUp++;
+      }
+    });
+  });
+  return {trades:tradeCount,svcs:svcCount,compDocs:compDocs,awaitUp:awaitUp};
+}
+
+function _suppEsc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function _suppBuildServicesPage(){
+  var st=window._suppState;
+  var stats=_suppServicesStats();
+  // Stats cards
+  var compDotsC=stats.compDocs>0?'#f97316':'#94a3b8';
+  var awaitC=stats.awaitUp>0?'#ef4444':'#94a3b8';
+  var statCards=[
+    {l:'TRADES',v:stats.trades,svg:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#94a3b8" stroke-width="1.6"><path d="M2 12l2-6h8l2 6H2z"/><path d="M6 6V4a2 2 0 014 0v2"/></svg>'},
+    {l:'SERVICES OFFERED',v:stats.svcs,svg:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#94a3b8" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><path d="M5.5 8l2 2 3.5-3.5"/></svg>'},
+    {l:'COMPLIANCE DOCS NEEDED',v:stats.compDocs,svg:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="'+compDotsC+'" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><path d="M8 4v4M8 11v.5"/></svg>'},
+    {l:'AWAITING UPLOAD',v:stats.awaitUp,svg:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="'+awaitC+'" stroke-width="1.6"><path d="M8 1L13 5v7a1 1 0 01-1 1H4a1 1 0 01-1-1V5z"/><path d="M6 1v4h4"/></svg>'}
+  ];
+  var statsHTML='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;">'
+    +statCards.map(function(s){
+      return '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;"><span style="font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:.06em;font-family:Inter,sans-serif;">'+s.l+'</span>'+s.svg+'</div>'
+        +'<div style="font-size:26px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+s.v+'</div>'
+      +'</div>';
+    }).join('')+'</div>';
+
+  // Compliance alert
+  var compAlert='';
+  var pendingCerts=[];
+  Object.keys(st.services).forEach(function(tid){
+    var tr=_suppFindTrade(tid); if(!tr) return;
+    (st.services[tid]||[]).forEach(function(sid){
+      var svc=tr.svcs.find(function(s){return s.id===sid;});
+      if(svc&&(svc.comp==='mandatory'||svc.comp==='certified')&&svc.cert&&!st.uploads[svc.cert]){
+        if(pendingCerts.indexOf(svc.cert)<0) pendingCerts.push(svc.cert);
+      }
+    });
+  });
+  if(pendingCerts.length){
+    compAlert='<div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;gap:14px;align-items:flex-start;">'
+      +'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#f97316" stroke-width="1.8" style="flex-shrink:0;margin-top:1px;"><path d="M9 2L16 14H2z"/><line x1="9" y1="7" x2="9" y2="10.5"/><circle cx="9" cy="12.5" r=".7" fill="#f97316" stroke="none"/></svg>'
+      +'<div><div style="font-size:14px;font-weight:700;color:#c2410c;margin-bottom:4px;">Documents required for activation</div>'
+        +'<div style="font-size:13px;color:#9a3412;margin-bottom:10px;">You have selected services that legally require proof of qualification. Upload each one — admin will review within 1 business day.</div>'
+        +'<div style="display:flex;flex-wrap:wrap;gap:8px;">'
+          +pendingCerts.map(function(cert){
+            return '<button class="supp-cert-upload-btn" data-cert="'+_suppEsc(cert)+'" style="background:#fff;border:1.5px solid #fed7aa;border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;color:#c2410c;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:5px;">'
+              +'<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5.5 7.5V2M3.5 4L5.5 2l2 2"/><path d="M1.5 9v1a.5.5 0 00.5.5h7a.5.5 0 00.5-.5V9"/></svg>'+cert+'</button>';
+          }).join('')
+        +'</div>'
+      +'</div>'
+    +'</div>';
+  }
+
+  // Trades row
+  var tradesRow='<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:18px 20px;margin-bottom:20px;">'
+    +'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;">'
+      +'<div>'
+        +'<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Your trades</div>'
+        +'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">Set one primary trade and any number of secondary trades.</div>'
+      +'</div>'
+      +'<button onclick="_suppOpenTradeModal()" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:9px;padding:8px 14px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;">'
+        +'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 1v10M1 6h10"/></svg>Add trade'
+      +'</button>'
+    +'</div>'
+    +(st.trades.length?'<div style="display:flex;flex-wrap:wrap;gap:8px;">'
+      +st.trades.map(function(t){
+        var isPri=t.isPrimary;
+        return '<div style="display:inline-flex;align-items:center;gap:6px;background:'+(isPri?'#1A5FC8':'#f1f5f9')+';color:'+(isPri?'#fff':'#374151')+';border-radius:999px;padding:5px 10px 5px 8px;font-size:12.5px;font-weight:600;font-family:Inter,sans-serif;">'
+          +(isPri?'<span style="font-size:10px;font-weight:700;background:rgba(255,255,255,0.25);border-radius:4px;padding:1px 5px;">PRIMARY</span>':'')
+          +'<span>'+t.label+'</span>'
+          +'<span style="font-size:11px;background:'+(isPri?'rgba(255,255,255,0.2)':'#e2e8f0')+';border-radius:999px;padding:1px 6px;">'+((window._suppState.services[t.id]||[]).length)+'</span>'
+          +'<button class="supp-trade-remove" data-tradeid="'+t.id+'" style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;color:'+(isPri?'rgba(255,255,255,0.7)':'#94a3b8')+';margin-left:2px;" title="Remove">×</button>'
+        +'</div>';
+      }).join('')
+      +'</div>'
+    :'<p style="color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;margin:0;">No trades selected yet. Click "Add trade" to get started.</p>')
+  +'</div>';
+
+  // Service panels per trade
+  var servicePanels=st.trades.map(function(t){
+    var tr=_suppFindTrade(t.id); if(!tr) return '';
+    var selSvcs=st.services[t.id]||[];
+    var searchId='svcSearch_'+t.id;
+    return '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:20px;margin-bottom:16px;">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px;">'
+        +'<div>'
+          +'<div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;">'
+            +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M2 10l2-6h6l2 6H2z"/><path d="M5 4V3a2 2 0 014 0v1"/></svg>'
+            +t.label
+          +'</div>'
+          +'<div style="font-size:12.5px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:2px;">'+selSvcs.length+' of '+tr.svcs.length+' services selected</div>'
+        +'</div>'
+        +'<input id="'+searchId+'" class="supp-svc-search" data-tradeid="'+t.id+'" placeholder="Search services..." style="border:1.5px solid #e2e8f0;border-radius:9px;padding:7px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;width:200px;">'
+      +'</div>'
+      // Legend
+      +'<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;">'
+        +[{c:'mandatory',l:'Mandatory'},{c:'certified',l:'Certified'},{c:'recommended',l:'Recommended'},{c:'none',l:'No cert'}].map(function(lg){
+          return '<span style="display:flex;align-items:center;gap:5px;font-size:12px;color:#374151;font-family:Inter,sans-serif;">'
+            +'<span style="width:8px;height:8px;border-radius:50%;background:'+_suppCompColor(lg.c)+';flex-shrink:0;"></span>'+lg.l+'</span>';
+        }).join('')
+      +'</div>'
+      // Group services
+      +'<div id="svcList_'+t.id+'">'
+        +_suppBuildSvcGroup(t.id, tr, selSvcs, '')
+      +'</div>'
+      // Go to pricing CTA if services selected
+      +(selSvcs.length?'<div style="margin-top:16px;background:#f0f7ff;border:1.5px solid #bfdbfe;border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">'
+        +'<span style="font-size:13px;font-weight:600;color:#1e40af;font-family:Inter,sans-serif;">Ready to set your prices?</span>'
+        +'<button class="supp-goto-pricing" style="background:#1A5FC8;color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;">Go to pricing <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6h8M7 3l3 3-3 3"/></svg></button>'
+        +'</div>':'')
+    +'</div>';
+  }).join('');
+
+  // Save button top right
+  return '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">'
+      +'<div><div style="font-size:11px;font-weight:700;color:#1A5FC8;letter-spacing:.06em;font-family:Inter,sans-serif;margin-bottom:4px;">CONFIGURE</div>'
+        +'<h1 style="font-size:26px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin:0 0 6px;">Trades &amp; Services</h1>'
+        +'<p style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 20px;max-width:560px;">Pick the trades you operate in, then tick every job you actually do. Compliance flags appear automatically — you will be asked to upload proof for anything regulated.</p>'
+      +'</div>'
+      +'<button onclick="_suppSaveServices()" style="background:#1A5FC8;color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:7px;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Save changes</button>'
+    +'</div>'
+    +statsHTML+compAlert+tradesRow+servicePanels;
+}
+
+function _suppBuildSvcGroup(tid, tr, selSvcs, query){
+  var q=(query||'').toLowerCase();
+  var items=tr.svcs.filter(function(s){ return !q||s.l.toLowerCase().indexOf(q)>=0; });
+  if(!items.length) return '<p style="color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;">No services match your search.</p>';
+  // Group by first letter/category — for now flat list in a 1-col card list
+  return '<div style="display:flex;flex-direction:column;gap:6px;">'
+    +items.map(function(svc){
+      var sel=selSvcs.indexOf(svc.id)>=0;
+      var dotCol=_suppCompColor(svc.comp);
+      return '<div class="supp-svc-card" data-tid="'+tid+'" data-sid="'+svc.id+'" id="svcCard_'+tid+'_'+svc.id+'" style="display:flex;align-items:center;gap:12px;padding:11px 14px;border:1.5px solid '+(sel?'#bfdbfe':'#f1f5f9')+';border-radius:10px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all .12s;">'
+        +'<div style="width:22px;height:22px;border-radius:6px;border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';background:'+(sel?'#1A5FC8':'#fff')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          +(sel?'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 6l3 3 5-5"/></svg>':'')
+        +'</div>'
+        +'<div style="flex:1;"><span style="font-size:13.5px;font-weight:500;color:#0f172a;font-family:Inter,sans-serif;">'+svc.l+'</span>'
+          +(svc.cert?'<span style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-left:8px;">'+svc.cert+'</span>':'')
+        +'</div>'
+        +'<span style="width:8px;height:8px;border-radius:50%;background:'+dotCol+';flex-shrink:0;"></span>'
+        +(svc.comp!=='none'?'<span style="font-size:11px;font-weight:600;color:#fff;background:'+dotCol+';border-radius:6px;padding:2px 8px;font-family:Inter,sans-serif;">'+svc.comp.charAt(0).toUpperCase()+svc.comp.slice(1)+'</span>':'')
+      +'</div>';
+    }).join('')
+  +'</div>';
+}
+
+function _suppWireServicesPage(){
+  var mainEl=document.getElementById('suppMain');
+  if(!mainEl) return;
+  mainEl.addEventListener('click',function(e){
+    var certBtn=e.target.closest('.supp-cert-upload-btn');
+    if(certBtn){ _suppUploadCert(certBtn.dataset.cert); return; }
+    var rmBtn=e.target.closest('.supp-trade-remove');
+    if(rmBtn){ _suppRemoveTrade(rmBtn.dataset.tradeid); return; }
+    var gtpBtn=e.target.closest('.supp-goto-pricing');
+    if(gtpBtn){ _suppNavTo('price'); return; }
+    var svcCard=e.target.closest('.supp-svc-card');
+    if(svcCard){ _suppToggleSvc(svcCard.dataset.tid, svcCard.dataset.sid); return; }
+    var closeBtn=e.target.closest('.supp-modal-close');
+    if(closeBtn){ var m=document.getElementById(closeBtn.dataset.modal); if(m) m.remove(); return; }
+    var doneBtn=e.target.closest('.supp-trade-modal-done');
+    if(doneBtn){ _suppCloseTradeModal(); return; }
+    var gsvBtn=e.target.closest('.supp-goto-svcs');
+    if(gsvBtn){ _suppNavTo('svcs'); return; }
+  });
+  mainEl.addEventListener('input',function(e){
+    var el=e.target.closest('.supp-svc-search');
+    if(el) _suppFilterSvcs(el.dataset.tradeid, el.value);
+  });
+}
+
+function _suppToggleSvc(tid, sid){
+  var st=window._suppState;
+  if(!st.services[tid]) st.services[tid]=[];
+  var idx=st.services[tid].indexOf(sid);
+  if(idx>=0) st.services[tid].splice(idx,1);
+  else st.services[tid].push(sid);
+  // Re-render services page
+  var mainEl=document.getElementById('suppMain');
+  if(mainEl){ mainEl.innerHTML='<div style="padding:24px clamp(20px,5vw,80px) 48px;width:100%;box-sizing:border-box;">'+_suppBuildServicesPage()+'</div>'; }
+}
+
+function _suppFilterSvcs(tid,q){
+  var tr=_suppFindTrade(tid); if(!tr) return;
+  var listEl=document.getElementById('svcList_'+tid); if(!listEl) return;
+  listEl.innerHTML=_suppBuildSvcGroup(tid,tr,window._suppState.services[tid]||[],q||'');
+}
+
+function _suppRemoveTrade(tid){
+  var st=window._suppState;
+  st.trades=st.trades.filter(function(t){return t.id!==tid;});
+  delete st.services[tid];
+  // If removed primary, promote first remaining
+  var hasPrimary=st.trades.some(function(t){return t.isPrimary;});
+  if(!hasPrimary&&st.trades.length) st.trades[0].isPrimary=true;
+  var mainEl=document.getElementById('suppMain');
+  if(mainEl){ mainEl.innerHTML='<div style="padding:24px clamp(20px,5vw,80px) 48px;width:100%;box-sizing:border-box;">'+_suppBuildServicesPage()+'</div>'; }
+}
+
+function _suppSaveServices(){
+  // Show snackbar
+  var sb=document.getElementById('admSnackbar'); var sm=document.getElementById('admSnackbarMsg');
+  if(sm) sm.textContent='Services saved successfully';
+  if(sb){ sb.classList.add('show'); clearTimeout(sb._t); sb._t=setTimeout(function(){sb.classList.remove('show');},2800); }
+}
+
+function _suppUploadCert(cert){
+  var inp=document.createElement('input'); inp.type='file'; inp.accept='.pdf,.jpg,.jpeg,.png';
+  inp.onchange=function(){
+    var f=inp.files&&inp.files[0]; if(!f) return;
+    window._suppState.uploads[cert]=f.name;
+    var mainEl=document.getElementById('suppMain');
+    if(mainEl){ mainEl.innerHTML='<div style="padding:24px clamp(20px,5vw,80px) 48px;width:100%;box-sizing:border-box;">'+_suppBuildServicesPage()+'</div>'; }
+  };
+  inp.click();
+}
+
+function _suppOpenTradeModal(){
+  var existing=document.getElementById('suppTradeModal'); if(existing) existing.remove();
+  var overlay=document.createElement('div');
+  overlay.id='suppTradeModal';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  var searchQuery='';
+  function buildModal(){
+    var q=searchQuery.toLowerCase();
+    var filtered=_SUPP_TRADES.map(function(cat){
+      return {cat:cat.cat,trades:cat.trades.filter(function(t){
+        return !q||t.label.toLowerCase().indexOf(q)>=0||cat.cat.toLowerCase().indexOf(q)>=0;
+      })};
+    }).filter(function(c){return c.trades.length>0;});
+    var modal=document.createElement('div');
+    modal.style.cssText='background:#fff;border-radius:16px;width:100%;max-width:760px;max-height:90vh;display:flex;flex-direction:column;font-family:Inter,sans-serif;';
+    modal.innerHTML=''
+      +'<div style="padding:20px 24px 14px;border-bottom:1px solid #f1f5f9;flex-shrink:0;">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">'
+          +'<div><div style="font-size:17px;font-weight:700;color:#0f172a;">Choose your trades</div>'
+            +'<div style="font-size:13px;color:#64748b;margin-top:2px;">Pick one primary trade and as many secondary trades as you need.</div></div>'
+          +'<button class="supp-modal-close" data-modal="suppTradeModal" style="background:none;border:1.5px solid #e2e8f0;border-radius:8px;width:30px;height:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:18px;">&times;</button>'
+        +'</div>'
+        +'<div style="position:relative;">'
+          +'<svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.7"><circle cx="6" cy="6" r="4.5"/><path d="M10 10l2.5 2.5"/></svg>'
+          +'<input id="tradeSearchInput" placeholder="Search trades..." style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:10px;padding:9px 12px 9px 34px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;" oninput="window._suppModalSearch(this.value)">'
+        +'</div>'
+      +'</div>'
+      +'<div style="overflow-y:auto;padding:16px 24px;flex:1;" id="tradeModalGrid">'
+        +filtered.map(function(cat){
+          return '<div style="margin-bottom:20px;">'
+            +'<div style="font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:.08em;margin-bottom:10px;">'+cat.cat+'</div>'
+            +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
+              +cat.trades.map(function(t){
+                var st=window._suppState;
+                var isPri=st.trades.some(function(x){return x.id===t.id&&x.isPrimary;});
+                var isSec=st.trades.some(function(x){return x.id===t.id&&!x.isPrimary;});
+                return '<div style="border:1.5px solid '+(isPri?'#1A5FC8':isSec?'#e2e8f0':'#e2e8f0')+';border-radius:10px;padding:14px;background:'+(isPri?'#eff6ff':'#fff')+'">'
+                  +'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">'
+                    +'<div style="font-size:13.5px;font-weight:600;color:#0f172a;">'+t.label+'</div>'
+                    +(isPri?'<span style="font-size:10px;font-weight:700;background:#1A5FC8;color:#fff;border-radius:6px;padding:2px 7px;">PRIMARY</span>':'')
+                  +'</div>'
+                  +'<div style="font-size:12px;color:#94a3b8;margin-bottom:10px;">'+t.svcs.length+' service'+(t.svcs.length!==1?'s':'')+'</div>'
+                  +'<div style="display:flex;gap:7px;">'
+                    +(isPri
+                      ?'<button style="flex:1;padding:6px;border-radius:8px;border:none;background:#1A5FC8;color:#fff;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 5l3 3 5-5"/></svg>Primary</button>'
+                      +'<button class="tm-rm" data-id="'+t.id+'" style="flex:1;padding:6px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;color:#374151;font-size:12px;font-weight:600;cursor:pointer;">Remove</button>'
+                      :isSec
+                        ?'<button class="tm-pri" data-id="'+t.id+'" data-lbl="'+t.label+'" style="flex:1;padding:6px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;color:#374151;font-size:12px;font-weight:600;cursor:pointer;">Set primary</button>'
+                        +'<button class="tm-rm" data-id="'+t.id+'" style="flex:1;padding:6px;border-radius:8px;border:1.5px solid #e2e8f0;background:#f1f5f9;color:#374151;font-size:12px;font-weight:600;cursor:pointer;">Remove</button>'
+                        :'<button class="tm-pri" data-id="'+t.id+'" data-lbl="'+t.label+'" style="flex:1;padding:6px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;color:#374151;font-size:12px;font-weight:600;cursor:pointer;">Set primary</button>'
+                        +'<button class="tm-sec" data-id="'+t.id+'" data-lbl="'+t.label+'" style="flex:1;padding:6px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;color:#374151;font-size:12px;font-weight:600;cursor:pointer;">Add secondary</button>'
+                    )
+                  +'</div>'
+                +'</div>';
+              }).join('')
+            +'</div>'
+          +'</div>';
+        }).join('')
+      +'</div>'
+      +'<div style="padding:14px 24px;border-top:1px solid #f1f5f9;display:flex;justify-content:flex-end;flex-shrink:0;">'
+        +'<button class="supp-trade-modal-done" style="background:#1A5FC8;color:#fff;border:none;border-radius:10px;padding:10px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Done</button>'
+      +'</div>';
+    return modal;
+  }
+  window._suppModalSearch=function(q){
+    searchQuery=q; window._suppMQ=q;
+    var g=document.getElementById('tradeModalGrid'); if(!g) return;
+    var ql=q.toLowerCase();
+    var filtered=_SUPP_TRADES.map(function(cat){
+      return {cat:cat.cat,trades:cat.trades.filter(function(t){
+        return !ql||t.label.toLowerCase().indexOf(ql)>=0||cat.cat.toLowerCase().indexOf(ql)>=0;
+      })};
+    }).filter(function(c){return c.trades.length>0;});
+    g.innerHTML='';
+    filtered.forEach(function(cat){
+      var catDiv=document.createElement('div');
+      catDiv.style.marginBottom='20px';
+      var catHdr=document.createElement('div');
+      catHdr.style.cssText='font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:.08em;margin-bottom:10px;';
+      catHdr.textContent=cat.cat;
+      catDiv.appendChild(catHdr);
+      var grid=document.createElement('div');
+      grid.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:10px;';
+      cat.trades.forEach(function(t){
+        var st=window._suppState;
+        var isPri=st.trades.some(function(x){return x.id===t.id&&x.isPrimary;});
+        var isSec=st.trades.some(function(x){return x.id===t.id&&!x.isPrimary;});
+        var card=document.createElement('div');
+        card.style.cssText='border:1.5px solid '+(isPri?'#1A5FC8':isSec?'#bfdbfe':'#e2e8f0')+';border-radius:10px;padding:14px;background:'+(isPri?'#eff6ff':'#fff')+';';
+        var titleRow=document.createElement('div');
+        titleRow.style.cssText='font-size:13.5px;font-weight:600;color:#0f172a;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;';
+        titleRow.textContent=t.label;
+        if(isPri){var badge=document.createElement('span');badge.style.cssText='font-size:10px;font-weight:700;background:#1A5FC8;color:#fff;border-radius:6px;padding:2px 7px;';badge.textContent='PRIMARY';titleRow.appendChild(badge);}
+        card.appendChild(titleRow);
+        var countDiv=document.createElement('div');
+        countDiv.style.cssText='font-size:12px;color:#94a3b8;margin-bottom:10px;';
+        countDiv.textContent=t.svcs.length+' services';
+        card.appendChild(countDiv);
+        var btnRow=document.createElement('div');
+        btnRow.style.cssText='display:flex;gap:7px;';
+        function mkBtn(lbl,cls,extra){var b=document.createElement('button');b.textContent=lbl;b.className=cls;b.dataset.id=t.id;b.dataset.lbl=t.label;b.style.cssText='flex:1;padding:6px;border-radius:8px;font-size:12px;cursor:pointer;font-family:Inter,sans-serif;'+extra;return b;}
+        if(isPri){
+          var pb=mkBtn('✓ Primary','',  'border:none;background:#1A5FC8;color:#fff;font-weight:700;');
+          var rb=mkBtn('Remove','tm-rm2','border:1.5px solid #e2e8f0;background:#fff;color:#374151;font-weight:600;');
+          btnRow.appendChild(pb);btnRow.appendChild(rb);
+        } else if(isSec){
+          var pb=mkBtn('Set primary','tm-pri2','border:1.5px solid #e2e8f0;background:#fff;color:#374151;font-weight:600;');
+          var rb=mkBtn('Remove','tm-rm2','border:1.5px solid #e2e8f0;background:#f1f5f9;color:#374151;font-weight:600;');
+          btnRow.appendChild(pb);btnRow.appendChild(rb);
+        } else {
+          var pb=mkBtn('Set primary','tm-pri2','border:1.5px solid #e2e8f0;background:#fff;color:#374151;font-weight:600;');
+          var sb=mkBtn('Add secondary','tm-sec2','border:1.5px solid #e2e8f0;background:#fff;color:#374151;font-weight:600;');
+          btnRow.appendChild(pb);btnRow.appendChild(sb);
+        }
+        card.appendChild(btnRow);
+        grid.appendChild(card);
+      });
+      catDiv.appendChild(grid);
+      g.appendChild(catDiv);
+    });
+    // Wire delegated clicks inside grid
+    g.onclick=function(e){
+      var pri=e.target.closest('.tm-pri2');
+      if(pri){window._suppSetTradePrimary(pri.dataset.id,pri.dataset.lbl);return;}
+      var sec=e.target.closest('.tm-sec2');
+      if(sec){window._suppAddSecondaryTrade(sec.dataset.id,sec.dataset.lbl);return;}
+      var rm=e.target.closest('.tm-rm2');
+      if(rm){window._suppRemoveTrade2(rm.dataset.id);return;}
+    };
+  };
+  window._suppSetTradePrimary=function(id,label){ var st=window._suppState; st.trades.forEach(function(t){t.isPrimary=false;}); var ex=st.trades.find(function(t){return t.id===id;}); if(ex){ex.isPrimary=true;}else{st.trades.unshift({id:id,label:label,isPrimary:true});} if(!st.services[id]) st.services[id]=[]; window._suppModalSearch(window._suppMQ||''); };
+  window._suppAddSecondaryTrade=function(id,label){ var st=window._suppState; if(!st.trades.find(function(t){return t.id===id;})){st.trades.push({id:id,label:label,isPrimary:false});if(!st.services[id])st.services[id]=[];} window._suppModalSearch(window._suppMQ||''); };
+  window._suppRemoveTrade2=function(id){ var st=window._suppState; st.trades=st.trades.filter(function(t){return t.id!==id;}); delete st.services[id]; var has=st.trades.some(function(t){return t.isPrimary;}); if(!has&&st.trades.length)st.trades[0].isPrimary=true; window._suppModalSearch(window._suppMQ||''); };
+  window._suppCloseTradeModal=function(){ var m=document.getElementById('suppTradeModal'); if(m) m.remove(); var mainEl=document.getElementById('suppMain'); if(mainEl){mainEl.innerHTML='<div style="padding:24px clamp(20px,5vw,80px) 48px;width:100%;box-sizing:border-box;">'+_suppBuildServicesPage()+'</div>';} };
+  var modal=buildModal();
+  overlay.onclick=function(e){if(e.target===overlay)overlay.remove();};
+  overlay.addEventListener('click',function(e){
+    var pri=e.target.closest('.tm-pri');
+    if(pri){window._suppSetTradePrimary(pri.dataset.id,pri.dataset.lbl);return;}
+    var sec=e.target.closest('.tm-sec');
+    if(sec){window._suppAddSecondaryTrade(sec.dataset.id,sec.dataset.lbl);return;}
+    var rm=e.target.closest('.tm-rm');
+    if(rm){window._suppRemoveTrade2(rm.dataset.id);return;}
+  });
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+}
+
+// ── Pricing page ──
+function _suppBuildPricingPage(){
+  var st=window._suppState;
+  var trades=st.trades;
+  var totalSvcs=0; Object.keys(st.services).forEach(function(k){totalSvcs+=(st.services[k]||[]).length;});
+  var pricedSvcs=Object.keys(st.pricing).length;
+  var activeTrade=(window._suppPricingTrade||(trades.length?trades[0].id:''));
+  var tr=_suppFindTrade(activeTrade);
+  var selSvcs=tr?(st.services[activeTrade]||[]).map(function(sid){return tr.svcs.find(function(s){return s.id===sid;});}).filter(Boolean):[];
+  return '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">'
+      +'<div><div style="font-size:11px;font-weight:700;color:#1A5FC8;letter-spacing:.06em;font-family:Inter,sans-serif;margin-bottom:4px;">CONFIGURE</div>'
+        +'<h1 style="font-size:26px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin:0 0 6px;">Pricing</h1>'
+        +'<p style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 20px;max-width:560px;">Set one definitive price for every service. Choose a model, configure time slots and day-of-week rates, and add global surcharges.</p>'
+      +'</div>'
+      +'<button onclick="_suppSaveServices()" style="background:#1A5FC8;color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:7px;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 2h8l2 2v8a1 1 0 01-1 1H3a1 1 0 01-1-1V2z"/><path d="M4 2v4h5V2M3 8h8"/></svg>Save all pricing</button>'
+    +'</div>'
+    // Stats
+    +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;">'
+      +[{l:'SERVICES',v:String(totalSvcs)},
+        {l:'MOST COMMON MODEL',v:pricedSvcs?'Model A':'—'},
+        {l:'CHEAPEST SERVICE',v:'—'},
+        {l:'MIN CALL-OUT',v:'—'}
+      ].map(function(s){
+        return '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;">'
+          +'<div style="font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:.06em;font-family:Inter,sans-serif;margin-bottom:10px;">'+s.l+'</div>'
+          +'<div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+s.v+'</div>'
+        +'</div>';
+      }).join('')
+    +'</div>'
+    // No services prompt
+    +(!totalSvcs?'<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:40px;text-align:center;">'
+      +'<div style="font-size:32px;margin-bottom:12px;">💰</div>'
+      +'<div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:6px;">No services selected yet</div>'
+      +'<div style="font-size:13px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:16px;">Go to Services first to choose your trades and tick the services you offer.</div>'
+      +'<button class="supp-goto-svcs" style="background:#1A5FC8;color:#fff;border:none;border-radius:9px;padding:10px 20px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Go to Services</button>'
+    +'</div>'
+    // Trade tabs + service list
+    :'<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;overflow:hidden;">'
+      // Tab bar
+      +'<div style="display:flex;gap:0;border-bottom:1.5px solid #e8edf2;padding:0 20px;">'
+        +(trades.length?trades.map(function(t){
+          var isAct=t.id===activeTrade;
+          var cnt=(st.services[t.id]||[]).length;
+          return '<button class="supp-price-tab" data-tradeid="'+t.id+'" style="padding:12px 16px;border:none;border-bottom:2.5px solid '+(isAct?'#1A5FC8':'transparent')+';font-size:13px;font-weight:'+(isAct?'700':'500')+';color:'+(isAct?'#1A5FC8':'#64748b')+';cursor:pointer;background:none;font-family:Inter,sans-serif;display:flex;align-items:center;gap:7px;white-space:nowrap;">'
+            +t.label
+            +(cnt?'<span style="background:#1A5FC8;color:#fff;border-radius:999px;padding:1px 7px;font-size:11px;font-weight:700;">'+cnt+'</span>':'')
+          +'</button>';
+        }).join(''):'')
+      +'</div>'
+      // Search bar
+      +'<div style="padding:14px 20px;border-bottom:1px solid #f1f5f9;">'
+        +'<div style="position:relative;max-width:400px;">'
+          +'<svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);" width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.8"><circle cx="6" cy="6" r="4.5"/><path d="M10 10l2.5 2.5"/></svg>'
+          +'<input placeholder="Search services in this trade..." style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:9px;padding:8px 12px 8px 30px;font-size:13px;font-family:Inter,sans-serif;outline:none;">'
+        +'</div>'
+      +'</div>'
+      // Service rows
+      +(selSvcs.length
+        ?'<div style="padding:0 20px 16px;">'
+          +selSvcs.map(function(svc){
+            var pricing=st.pricing[svc.id]||{};
+            var model=pricing.model||''; var price=pricing.price||'';
+            return '<div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #f8fafc;">'
+              +'<div style="width:36px;height:36px;border-radius:10px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+                +'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1A5FC8" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5v1M8 10v.5M5.5 7a2.5 2.5 0 015 0c0 1-1 1.5-2.5 2s-2.5.5-2.5 2a2.5 2.5 0 005 0"/></svg>'
+              +'</div>'
+              +'<div style="flex:1;min-width:0;">'
+                +'<div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">'+svc.l+'</div>'
+                +'<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:1px;">'
+                  +(svc.cert?'<span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:'+_suppCompColor(svc.comp)+';"></span>'+svc.comp.charAt(0).toUpperCase()+svc.comp.slice(1)+'</span>  ':'')
+                  +(model?'  '+model:'')
+                  +(price?'  •  £'+price:'')
+                +'</div>'
+              +'</div>'
+              +'<button class="supp-cfg-btn" data-sid="'+svc.id+'" data-slbl="'+svc.l+'" style="border:1.5px solid #e2e8f0;border-radius:9px;padding:7px 14px;font-size:12.5px;font-weight:600;color:#374151;cursor:pointer;background:#fff;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;">'
+                +'Configure <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.5 5.5h4M6.5 3.5l2 2-2 2"/></svg>'
+              +'</button>'
+            +'</div>';
+          }).join('')
+        +'</div>'
+        :'<div style="padding:32px 20px;text-align:center;color:#94a3b8;font-family:Inter,sans-serif;font-size:13px;">No services selected for this trade yet. <button class="supp-goto-svcs" style="background:none;border:none;color:#1A5FC8;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;font-weight:600;text-decoration:underline;">Go to Services</button></div>'
+      )
+    +'</div>');
+}
+
+function _suppWirePricingPage(){
+  var mainEl=document.getElementById('suppMain');
+  if(!mainEl) return;
+  mainEl.addEventListener('click',function(e){
+    var tab=e.target.closest('.supp-price-tab');
+    if(tab){ window._suppPricingTrade=tab.dataset.tradeid; mainEl.innerHTML='<div style="padding:24px clamp(20px,5vw,80px) 48px;width:100%;box-sizing:border-box;">'+_suppBuildPricingPage()+'</div>'; _suppWirePricingPage(); return; }
+    var cfgBtn=e.target.closest('.supp-cfg-btn');
+    if(cfgBtn){ _suppOpenPricingModal(cfgBtn.dataset.sid,cfgBtn.dataset.slbl); return; }
+    var gsvBtn=e.target.closest('.supp-goto-svcs');
+    if(gsvBtn){ _suppNavTo('svcs'); return; }
+  });
+}
+
+function _suppOpenPricingModal(svcId, svcLabel){
+  var existing=document.getElementById('suppPricingModal'); if(existing) existing.remove();
+  var st=window._suppState;
+  var pricing=st.pricing[svcId]||{model:'Model A - Fixed',price:''};
+  var overlay=document.createElement('div');
+  overlay.id='suppPricingModal';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  var modal=document.createElement('div');
+  modal.style.cssText='background:#fff;border-radius:16px;width:100%;max-width:560px;max-height:88vh;overflow-y:auto;font-family:Inter,sans-serif;padding:24px;';
+  modal.innerHTML=''
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">'
+      +'<div><div style="font-size:16px;font-weight:700;color:#0f172a;">Configure pricing</div>'
+        +'<div style="font-size:13px;color:#64748b;margin-top:2px;">'+svcLabel+'</div></div>'
+      +'<button class="supp-modal-close" data-modal="suppPricingModal" style="background:none;border:1.5px solid #e2e8f0;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:18px;color:#64748b;">&times;</button>'
+    +'</div>'
+    +'<div style="margin-bottom:16px;">'
+      +'<div style="font-size:12px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Pricing Model</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="pricingModelGrid">'
+        +['Model A — Fixed price','Model B — Hourly rate','Model C — Banded price','Model D — Estimated range','Model E — Quote required','Model F — Subscription'].map(function(m){
+          var isAct=pricing.model===m;
+          return '<div class="supp-model-card" data-svcid="'+svcId+'" data-model="'+m+'" style="border:1.5px solid '+(isAct?'#1A5FC8':'#e2e8f0')+';border-radius:9px;padding:10px 12px;cursor:pointer;background:'+(isAct?'#eff6ff':'#fff')+';font-size:12.5px;font-weight:'+(isAct?'700':'500')+';color:'+(isAct?'#1A5FC8':'#374151')+';transition:all .12s;">'+m+'</div>';
+        }).join('')
+      +'</div>'
+    +'</div>'
+    +'<div style="margin-bottom:16px;">'
+      +'<div style="font-size:12px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Base Price</div>'
+      +'<div style="position:relative;">'
+        +'<span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#64748b;font-weight:600;">£</span>'
+        +'<input id="pricingPriceInput" value="'+(pricing.price||'')+'" placeholder="0.00" style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:9px;padding:10px 12px 10px 26px;font-size:14px;font-family:Inter,sans-serif;outline:none;">'
+      +'</div>'
+    +'</div>'
+    +'<div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">'
+      +'<button class="supp-modal-close" data-modal="suppPricingModal" style="border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 18px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer;background:#fff;">Cancel</button>'
+      +'<button class="supp-save-pricing-btn" style="background:#1A5FC8;color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13.5px;font-weight:700;cursor:pointer;">Save pricing</button>'
+    +'</div>';
+  window._suppSelectPModel=function(sid,m){
+    if(!st.pricing[sid]) st.pricing[sid]={};
+    st.pricing[sid].model=m;
+    modal.querySelectorAll('#pricingModelGrid > div').forEach(function(d){ var isA=d.textContent.trim()===m; d.style.border='1.5px solid '+(isA?'#1A5FC8':'#e2e8f0'); d.style.background=isA?'#eff6ff':'#fff'; d.style.color=isA?'#1A5FC8':'#374151'; d.style.fontWeight=isA?'700':'500'; });
+  };
+  window._suppSavePricing=function(sid){
+    var inp=document.getElementById('pricingPriceInput');
+    if(!st.pricing[sid]) st.pricing[sid]={};
+    st.pricing[sid].price=inp?inp.value:'';
+    document.getElementById('suppPricingModal').remove();
+    var mainEl=document.getElementById('suppMain'); if(mainEl){mainEl.innerHTML='<div style="padding:24px clamp(20px,5vw,80px) 48px;width:100%;box-sizing:border-box;">'+_suppBuildPricingPage()+'</div>';}
+  };
+  overlay.onclick=function(e){if(e.target===overlay)overlay.remove();};
+  modal.addEventListener('click',function(e){
+    var mc=e.target.closest('.supp-model-card');
+    if(mc){window._suppSelectPModel(mc.dataset.svcid,mc.dataset.model);return;}
+    var sp=e.target.closest('.supp-save-pricing-btn');
+    if(sp){window._suppSavePricing(svcId);return;}
+  });
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+}
+
 function _showSupplierDashboard(){
   ['pg-landing','pg-dashboard'].forEach(function(id){
     var el=document.getElementById(id);if(el)el.style.display='none';
@@ -15803,8 +16488,10 @@ function _showSupplierDashboard(){
      svg:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="2.5" width="13" height="12" rx="1.5"/><path d="M5 1v3M11 1v3M1.5 7h13"/></svg>'},
     {id:'area',  label:'Service Area',
      svg:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="7" r="3"/><path d="M8 1a6 6 0 010 12c0 0-5-4.5-5-6a5 5 0 0110 0z"/></svg>'},
+    {id:'svcs',  label:'Services',
+     svg:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 3h12M2 7h8M2 11h5"/><circle cx="12.5" cy="10.5" r="2.5"/><path d="M14.5 12.5l1.5 1.5"/></svg>'},
     {id:'price', label:'Pricing',
-     svg:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="4" width="14" height="10" rx="2"/><path d="M1 8h14"/><path d="M5 1v3M11 1v3"/></svg>'},
+     svg:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5v1.2a2.3 2.3 0 010 4.6V11.5M6 6.5h3a1 1 0 010 2H7a1 1 0 000 2h3"/></svg>'},
     {id:'set',   label:'Settings',
      svg:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v1.5M8 13.5V15M15 8h-1.5M2.5 8H1M12.2 3.8l-1.1 1.1M4.9 11.1l-1.1 1.1M12.2 12.2l-1.1-1.1M4.9 4.9L3.8 3.8"/></svg>'},
   ];
@@ -15851,6 +16538,8 @@ function _showSupplierDashboard(){
         +(!collapsed?'<span>'+n.label+'</span>':'');
       d.onmouseover = function(){ if(!n.active) this.style.background=_isDark?'rgba(255,255,255,0.06)':'#EDEEF1'; };
       d.onmouseout  = function(){ if(!n.active) this.style.background=''; };
+      d.dataset.navid = n.id;
+      (function(pageId){ d.onclick = function(){ _suppNavTo(pageId); }; })(n.id);
       nav.appendChild(d);
     });
     sb.appendChild(nav);
@@ -16002,7 +16691,7 @@ function _showSupplierDashboard(){
           +'</div>'
           +'<div style="flex:1;">'
             +'<div style="font-size:14.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">Complete your onboarding details</div>'
-            +'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:12px;line-height:1.5;">Your account can\'t be reviewed until all verification details are submitted.</div>'
+            +'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:12px;line-height:1.5;">Your account cannot be reviewed until all verification details are submitted.</div>'
             +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">'
               +'<div style="flex:1;height:4px;background:#e2e8f0;border-radius:2px;overflow:hidden;"><div style="width:'+_suppCalcProgress()+'%;height:100%;background:linear-gradient(90deg,#f59e0b,#fbbf24);border-radius:2px;"></div></div>'
               +'<span style="font-size:12px;font-weight:600;color:#92400e;font-family:Inter,sans-serif;">'+_suppCalcProgress()+'% verified</span>'
@@ -16729,7 +17418,7 @@ button:active { transform: scale(0.98); }
   background:rgba(255,255,255,0.08) !important;
   border-color:rgba(255,255,255,0.15) !important;
 }
-/* Start a chat gradient button — keep as is (it's already styled correctly) */
+/* Start a chat gradient button — keep as is (it is already styled correctly) */
 
 /* ── "Your active jobs" section header ── */
 .dash-dark #page-home [style*="font-size:18px;font-weight:700;color:#0f172a;"] { color:#e6edf3 !important; }
