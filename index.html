@@ -942,6 +942,48 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 @media(max-width:768px){ .pm-page-inner{ padding-left:32px;padding-right:32px; } }
 
 /* ── Supplier dashboard main content — responsive padding matching PM ── */
+/* ── Supplier profile tabs — no scrollbar, drag-scroll ── */
+.supp-prof-tabs-bar{
+  display:flex;
+  gap:0;
+  border-bottom:2px solid #e8ecf3;
+  margin-bottom:24px;
+  overflow-x:auto;
+  height:46px;
+  align-items:flex-end;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  cursor:grab;
+  user-select:none;
+}
+.supp-prof-tabs-bar::-webkit-scrollbar{display:none;}
+.supp-prof-tabs-bar.dragging{cursor:grabbing;}
+/* ── Supplier micro-animations ── */
+@keyframes suppFadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes suppSlideIn{from{opacity:0;transform:translateX(-12px);}to{opacity:1;transform:translateX(0);}}
+@keyframes suppScaleIn{from{opacity:0;transform:scale(0.95);}to{opacity:1;transform:scale(1);}}
+@keyframes suppPop{0%{transform:scale(1);}50%{transform:scale(1.04);}100%{transform:scale(1);}}
+.supp-anim-up{animation:suppFadeUp .28s ease both;}
+.supp-anim-in{animation:suppSlideIn .22s ease both;}
+.supp-anim-scale{animation:suppScaleIn .25s ease both;}
+.supp-card-hover{transition:box-shadow .18s,transform .18s;}
+.supp-card-hover:hover{box-shadow:0 4px 16px rgba(26,95,200,.10);transform:translateY(-1px);}
+/* ── Nav item hover ── */
+.supp-nav-item{transition:background .14s,color .14s;}
+.supp-nav-item:hover{background:rgba(26,95,200,.07);}
+/* ── Collapse button visible in both modes ── */
+.supp-collapse-btn{
+  background:none;border:1.5px solid #e2e8f0;cursor:pointer;
+  padding:5px;border-radius:7px;display:flex;align-items:center;
+  color:#374151;transition:background .14s,color .14s,border-color .14s;
+  flex-shrink:0;
+}
+.supp-collapse-btn:hover{background:#e8edf5;border-color:#c7d2e0;color:#0f172a;}
+.supp-dark .supp-collapse-btn{color:#c9d1d9;border-color:#30363d;}
+.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#4b5563;color:#e2e8f0;}
+/* ── Q wizard card no background ── */
+.supp-q-card{background:transparent;border:none;}
+
 .supp-main-inner{
   flex:1;
   overflow-y:auto;
@@ -950,10 +992,178 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   padding-right:clamp(24px,6vw,120px);
   box-sizing:border-box;
 }
-@media(min-width:1441px){ .supp-main-inner{ padding-left:120px;padding-right:120px; } }
-@media(min-width:1600px){ .supp-main-inner{ padding-left:200px;padding-right:200px; } }
-@media(max-width:900px)  { .supp-main-inner{ padding-left:32px; padding-right:32px; } }
-@media(max-width:600px)  { .supp-main-inner{ padding-left:16px; padding-right:16px; } }
+@media(min-width:1441px){ /* ── Supplier profile tabs — no scrollbar, drag-scroll ── */
+.supp-prof-tabs-bar{
+  display:flex;
+  gap:0;
+  border-bottom:2px solid #e8ecf3;
+  margin-bottom:24px;
+  overflow-x:auto;
+  height:46px;
+  align-items:flex-end;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  cursor:grab;
+  user-select:none;
+}
+.supp-prof-tabs-bar::-webkit-scrollbar{display:none;}
+.supp-prof-tabs-bar.dragging{cursor:grabbing;}
+/* ── Supplier micro-animations ── */
+@keyframes suppFadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes suppSlideIn{from{opacity:0;transform:translateX(-12px);}to{opacity:1;transform:translateX(0);}}
+@keyframes suppScaleIn{from{opacity:0;transform:scale(0.95);}to{opacity:1;transform:scale(1);}}
+@keyframes suppPop{0%{transform:scale(1);}50%{transform:scale(1.04);}100%{transform:scale(1);}}
+.supp-anim-up{animation:suppFadeUp .28s ease both;}
+.supp-anim-in{animation:suppSlideIn .22s ease both;}
+.supp-anim-scale{animation:suppScaleIn .25s ease both;}
+.supp-card-hover{transition:box-shadow .18s,transform .18s;}
+.supp-card-hover:hover{box-shadow:0 4px 16px rgba(26,95,200,.10);transform:translateY(-1px);}
+/* ── Nav item hover ── */
+.supp-nav-item{transition:background .14s,color .14s;}
+.supp-nav-item:hover{background:rgba(26,95,200,.07);}
+/* ── Collapse button visible in both modes ── */
+.supp-collapse-btn{
+  background:none;border:1.5px solid #e2e8f0;cursor:pointer;
+  padding:5px;border-radius:7px;display:flex;align-items:center;
+  color:#374151;transition:background .14s,color .14s,border-color .14s;
+  flex-shrink:0;
+}
+.supp-collapse-btn:hover{background:#e8edf5;border-color:#c7d2e0;color:#0f172a;}
+.supp-dark .supp-collapse-btn{color:#c9d1d9;border-color:#30363d;}
+.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#4b5563;color:#e2e8f0;}
+/* ── Q wizard card no background ── */
+.supp-q-card{background:transparent;border:none;}
+
+.supp-main-inner{ padding-left:120px;padding-right:120px; } }
+@media(min-width:1600px){ /* ── Supplier profile tabs — no scrollbar, drag-scroll ── */
+.supp-prof-tabs-bar{
+  display:flex;
+  gap:0;
+  border-bottom:2px solid #e8ecf3;
+  margin-bottom:24px;
+  overflow-x:auto;
+  height:46px;
+  align-items:flex-end;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  cursor:grab;
+  user-select:none;
+}
+.supp-prof-tabs-bar::-webkit-scrollbar{display:none;}
+.supp-prof-tabs-bar.dragging{cursor:grabbing;}
+/* ── Supplier micro-animations ── */
+@keyframes suppFadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes suppSlideIn{from{opacity:0;transform:translateX(-12px);}to{opacity:1;transform:translateX(0);}}
+@keyframes suppScaleIn{from{opacity:0;transform:scale(0.95);}to{opacity:1;transform:scale(1);}}
+@keyframes suppPop{0%{transform:scale(1);}50%{transform:scale(1.04);}100%{transform:scale(1);}}
+.supp-anim-up{animation:suppFadeUp .28s ease both;}
+.supp-anim-in{animation:suppSlideIn .22s ease both;}
+.supp-anim-scale{animation:suppScaleIn .25s ease both;}
+.supp-card-hover{transition:box-shadow .18s,transform .18s;}
+.supp-card-hover:hover{box-shadow:0 4px 16px rgba(26,95,200,.10);transform:translateY(-1px);}
+/* ── Nav item hover ── */
+.supp-nav-item{transition:background .14s,color .14s;}
+.supp-nav-item:hover{background:rgba(26,95,200,.07);}
+/* ── Collapse button visible in both modes ── */
+.supp-collapse-btn{
+  background:none;border:1.5px solid #e2e8f0;cursor:pointer;
+  padding:5px;border-radius:7px;display:flex;align-items:center;
+  color:#374151;transition:background .14s,color .14s,border-color .14s;
+  flex-shrink:0;
+}
+.supp-collapse-btn:hover{background:#e8edf5;border-color:#c7d2e0;color:#0f172a;}
+.supp-dark .supp-collapse-btn{color:#c9d1d9;border-color:#30363d;}
+.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#4b5563;color:#e2e8f0;}
+/* ── Q wizard card no background ── */
+.supp-q-card{background:transparent;border:none;}
+
+.supp-main-inner{ padding-left:200px;padding-right:200px; } }
+@media(max-width:900px)  { /* ── Supplier profile tabs — no scrollbar, drag-scroll ── */
+.supp-prof-tabs-bar{
+  display:flex;
+  gap:0;
+  border-bottom:2px solid #e8ecf3;
+  margin-bottom:24px;
+  overflow-x:auto;
+  height:46px;
+  align-items:flex-end;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  cursor:grab;
+  user-select:none;
+}
+.supp-prof-tabs-bar::-webkit-scrollbar{display:none;}
+.supp-prof-tabs-bar.dragging{cursor:grabbing;}
+/* ── Supplier micro-animations ── */
+@keyframes suppFadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes suppSlideIn{from{opacity:0;transform:translateX(-12px);}to{opacity:1;transform:translateX(0);}}
+@keyframes suppScaleIn{from{opacity:0;transform:scale(0.95);}to{opacity:1;transform:scale(1);}}
+@keyframes suppPop{0%{transform:scale(1);}50%{transform:scale(1.04);}100%{transform:scale(1);}}
+.supp-anim-up{animation:suppFadeUp .28s ease both;}
+.supp-anim-in{animation:suppSlideIn .22s ease both;}
+.supp-anim-scale{animation:suppScaleIn .25s ease both;}
+.supp-card-hover{transition:box-shadow .18s,transform .18s;}
+.supp-card-hover:hover{box-shadow:0 4px 16px rgba(26,95,200,.10);transform:translateY(-1px);}
+/* ── Nav item hover ── */
+.supp-nav-item{transition:background .14s,color .14s;}
+.supp-nav-item:hover{background:rgba(26,95,200,.07);}
+/* ── Collapse button visible in both modes ── */
+.supp-collapse-btn{
+  background:none;border:1.5px solid #e2e8f0;cursor:pointer;
+  padding:5px;border-radius:7px;display:flex;align-items:center;
+  color:#374151;transition:background .14s,color .14s,border-color .14s;
+  flex-shrink:0;
+}
+.supp-collapse-btn:hover{background:#e8edf5;border-color:#c7d2e0;color:#0f172a;}
+.supp-dark .supp-collapse-btn{color:#c9d1d9;border-color:#30363d;}
+.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#4b5563;color:#e2e8f0;}
+/* ── Q wizard card no background ── */
+.supp-q-card{background:transparent;border:none;}
+
+.supp-main-inner{ padding-left:32px; padding-right:32px; } }
+@media(max-width:600px)  { /* ── Supplier profile tabs — no scrollbar, drag-scroll ── */
+.supp-prof-tabs-bar{
+  display:flex;
+  gap:0;
+  border-bottom:2px solid #e8ecf3;
+  margin-bottom:24px;
+  overflow-x:auto;
+  height:46px;
+  align-items:flex-end;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  cursor:grab;
+  user-select:none;
+}
+.supp-prof-tabs-bar::-webkit-scrollbar{display:none;}
+.supp-prof-tabs-bar.dragging{cursor:grabbing;}
+/* ── Supplier micro-animations ── */
+@keyframes suppFadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes suppSlideIn{from{opacity:0;transform:translateX(-12px);}to{opacity:1;transform:translateX(0);}}
+@keyframes suppScaleIn{from{opacity:0;transform:scale(0.95);}to{opacity:1;transform:scale(1);}}
+@keyframes suppPop{0%{transform:scale(1);}50%{transform:scale(1.04);}100%{transform:scale(1);}}
+.supp-anim-up{animation:suppFadeUp .28s ease both;}
+.supp-anim-in{animation:suppSlideIn .22s ease both;}
+.supp-anim-scale{animation:suppScaleIn .25s ease both;}
+.supp-card-hover{transition:box-shadow .18s,transform .18s;}
+.supp-card-hover:hover{box-shadow:0 4px 16px rgba(26,95,200,.10);transform:translateY(-1px);}
+/* ── Nav item hover ── */
+.supp-nav-item{transition:background .14s,color .14s;}
+.supp-nav-item:hover{background:rgba(26,95,200,.07);}
+/* ── Collapse button visible in both modes ── */
+.supp-collapse-btn{
+  background:none;border:1.5px solid #e2e8f0;cursor:pointer;
+  padding:5px;border-radius:7px;display:flex;align-items:center;
+  color:#374151;transition:background .14s,color .14s,border-color .14s;
+  flex-shrink:0;
+}
+.supp-collapse-btn:hover{background:#e8edf5;border-color:#c7d2e0;color:#0f172a;}
+.supp-dark .supp-collapse-btn{color:#c9d1d9;border-color:#30363d;}
+.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#4b5563;color:#e2e8f0;}
+/* ── Q wizard card no background ── */
+.supp-q-card{background:transparent;border:none;}
+
+.supp-main-inner{ padding-left:16px; padding-right:16px; } }
 
 /* Stats bar at top */
 .dh-stats-bar{
@@ -16043,12 +16253,16 @@ function _suppNavTo(pageId){
   if(pageId==='svcs'){
     mainEl.innerHTML = '<div style="'+pad+'">'+_suppBuildServicesPage()+'</div>';
     _suppWireServicesPage();
+    _suppAnimatePanel();
   } else if(pageId==='profile'){
     mainEl.innerHTML = '<div style="'+pad+'">'+_suppBuildProfilePage()+'</div>';
     _suppWireProfilePage();
+    _suppInitTabsDrag();
+    _suppAnimatePanel();
   } else if(pageId==='price'){
     mainEl.innerHTML = '<div style="'+pad+'">'+_suppBuildPricingPage()+'</div>';
     _suppWirePricingPage();
+    _suppAnimatePanel();
   } else {
     // placeholder for other pages
     mainEl.innerHTML = '<div style="'+pad+'"><p style="color:#94a3b8;font-family:Inter,sans-serif;">'+pageId+' coming soon</p></div>';
@@ -16357,6 +16571,26 @@ function _suppWireServicesPage(){
 }
 
 // Re-render just the services page content without rebuilding the whole layout
+function _suppInitTabsDrag(){
+  var bar=document.getElementById('suppProfTabsBar'); if(!bar) return;
+  var isDown=false,startX=0,scrollLeft=0;
+  bar.addEventListener('mousedown',function(e){isDown=true;bar.classList.add('dragging');startX=e.pageX-bar.offsetLeft;scrollLeft=bar.scrollLeft;});
+  bar.addEventListener('mouseleave',function(){isDown=false;bar.classList.remove('dragging');});
+  bar.addEventListener('mouseup',function(){isDown=false;bar.classList.remove('dragging');});
+  bar.addEventListener('mousemove',function(e){if(!isDown)return;e.preventDefault();var x=e.pageX-bar.offsetLeft;var walk=(x-startX)*1.4;bar.scrollLeft=scrollLeft-walk;});
+  // Scroll active tab into view
+  var active=bar.querySelector('.supp-prof-tab[style*="#1A5FC8"]');
+  if(active) setTimeout(function(){active.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});},80);
+}
+
+// Animate panel content in
+function _suppAnimatePanel(){
+  var wrap=document.getElementById('suppProfPanelWrap'); if(!wrap) return;
+  wrap.style.opacity='0'; wrap.style.transform='translateY(10px)';
+  wrap.style.transition='opacity .22s ease, transform .22s ease';
+  requestAnimationFrame(function(){wrap.style.opacity='1';wrap.style.transform='translateY(0)';});
+}
+
 function _suppRefreshServices(){
   var mainEl=document.getElementById('suppMain')||window._suppMain;
   if(!mainEl) return;
@@ -17154,21 +17388,21 @@ function _suppBuildProfilePage(){
       }).join('')
     +'</div>'
     // Question card
-    +'<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;overflow:hidden;">'
+    +'<div>'
       // Header row
-      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;padding:18px 20px 16px;border-bottom:1px solid #f1f5f9;gap:16px;">'
+      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:16px;">'
         +'<div>'
           +'<div style="font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:.07em;text-transform:uppercase;font-family:Inter,sans-serif;margin-bottom:4px;">'+(curQStep+1)+' of '+qSteps.length+'</div>'
-          +'<div style="font-size:17px;font-weight:700;color:#0f172a;font-family:Fraunces,serif;">'+qs.title+'</div>'
-          +'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-top:4px;">'+qs.sub+'</div>'
+          +'<div style="font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+qs.title+'</div>'
+          +'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-top:3px;">'+qs.sub+'</div>'
         +'</div>'
-        +'<div style="display:flex;gap:8px;flex-shrink:0;align-items:center;">'
+        +'<div style="display:flex;gap:8px;flex-shrink:0;align-items:flex-start;padding-top:4px;">'
           +(curQStep>0?'<button class="q-prev" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:9px;padding:8px 16px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;">← Back</button>':'')
-          +'<button class="q-next supp-prof-save" data-msg="'+(isLast?'Questionnaire saved':'Saved')+'" style="background:'+(isLast?'linear-gradient(90deg,#1A5FC8,#0FA3D0)':'#1A5FC8')+'  ;color:#fff;border:none;border-radius:9px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">'+(isLast?'Save ✓':'Update & Next →')+'</button>'
+          +'<button class="q-next supp-prof-save" data-msg="'+(isLast?'Questionnaire saved':'Saved')+'" style="background:#1A5FC8;color:#fff;border:none;border-radius:9px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">'+(isLast?'Save':'Next →')+'</button>'
         +'</div>'
       +'</div>'
       // Options area
-      +'<div style="padding:20px;" id="qOptsWrap">'+qs.html()+'</div>'
+      +'<div id="qOptsWrap">'+qs.html()+'</div>'
     +'</div>';
 
   var panels={profile:panelProfile,sectors:panelSectors,identity:panelIdentity,bank:panelBank,insurance:panelInsurance,background:panelBg,availability:panelAvailability,questionnaire:panelQ};
@@ -17200,8 +17434,8 @@ function _suppBuildProfilePage(){
         +'<span style="font-size:11px;color:#64748b;font-family:Inter,sans-serif;font-weight:500;white-space:nowrap;">Profile complete</span>'
       +'</div>'
     +'</div>'
-    +'<div style="display:flex;gap:0;border-bottom:2px solid #e8ecf3;margin-bottom:24px;overflow-x:auto;height:44px;align-items:flex-end;">'
-      +tabs.map(function(t){var isAct=t.id===activeTab;return '<button class="supp-prof-tab" data-tabid="'+t.id+'" style="padding:10px 16px;border:none;border-bottom:2px solid '+(isAct?'#1A5FC8':'transparent')+';margin-bottom:-2px;font-size:13px;font-weight:'+(isAct?'700':'500')+';color:'+(isAct?'#1A5FC8':'#64748b')+';cursor:pointer;background:none;font-family:Inter,sans-serif;white-space:nowrap;">'+t.label+'</button>';}).join('')
+    +'<div class="supp-prof-tabs-bar" id="suppProfTabsBar">'
+      +tabs.map(function(t){var isAct=t.id===activeTab;return '<button class="supp-prof-tab" data-tabid="'+t.id+'" style="padding:10px 16px;border:none;border-bottom:2.5px solid '+(isAct?'#1A5FC8':'transparent')+';margin-bottom:-2px;font-size:13px;font-weight:'+(isAct?'700':'500')+';color:'+(isAct?'#1A5FC8':'#64748b')+';cursor:pointer;background:none;font-family:Inter,sans-serif;white-space:nowrap;height:44px;flex-shrink:0;transition:color .15s;">'+t.label+'</button>';}).join('')
     +'</div>'
     +'<div id="suppProfPanelWrap">'+(panels[activeTab]||'')+'</div>'
   +'</div>';
@@ -17358,6 +17592,7 @@ function _suppWireProfilePage(){
       if(isQNext){
         var steps=6; var cur=window._suppQStep||0;
         if(cur<steps-1){window._suppQStep=cur+1;_suppNavTo('profile');}
+        else{window._suppQStep=0;window._suppProfileTab='profile';_suppNavTo('profile');}
       }
       return;
     }
@@ -17424,7 +17659,8 @@ function _showSupplierDashboard(){
       logoRow.appendChild(document.createElement('div'));
     }
     var toggleBtn = document.createElement('button');
-    toggleBtn.style.cssText = 'background:none;border:none;cursor:pointer;color:'+(window._suppDark?'#8b949e':'#374151')+';padding:4px;border-radius:6px;display:flex;align-items:center;flex-shrink:0;';
+    toggleBtn.className = 'supp-collapse-btn'+(window._suppDark?' supp-dark':'');
+    toggleBtn.style.cssText = '';
     toggleBtn.title = collapsed ? 'Expand' : 'Collapse';
     toggleBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="'+(collapsed?'5 2l4 5-4 5':'9 2L5 7l4 5')+'"/></svg>';
     toggleBtn.onclick = toggleSidebar;
