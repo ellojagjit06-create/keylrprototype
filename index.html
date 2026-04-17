@@ -3541,8 +3541,8 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .adm-form-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:9px;}
 .adm-form-toggle-label{font-size:13px;font-weight:500;color:#374151;}
 .adm-form-toggle{width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
-.adm-form-section-head{font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;padding:12px 20px 6px;background:#f8fafc;border-top:1px solid #f1f5f9;border-bottom:1px solid #f1f5f9;}
-.adm-form-section-head:first-child{border-top:none;}
+.adm-form-section-head{font-size:10.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;padding:16px 20px 4px;background:transparent;border:none;}
+.adm-form-section-head:first-child{padding-top:12px;}
 .adm-save-row{padding:14px 20px;border-top:1px solid #f1f5f9;display:flex;justify-content:flex-end;align-items:center;gap:12px;}
 .adm-save-btn{background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;}
 /* Sector selector chips in identity tab */
@@ -3550,7 +3550,13 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .adm-sector-card.selected{border-color:#1A5FC8;background:#eff6ff;}
 .adm-sector-card-name{font-size:13px;font-weight:600;color:#0f172a;margin-top:4px;}
 /* Upload field in identity tab */
-.adm-upload-field{border:1.5px dashed #d1d5db;border-radius:9px;padding:14px 16px;display:flex;align-items:center;gap:10px;background:#f8fafc;cursor:pointer;transition:border-color .15s;}
+.adm-upload-field{border:1.5px dashed #d1d5db;border-radius:9px;padding:12px 14px;display:flex;align-items:center;gap:10px;background:#f8fafc;cursor:pointer;transition:border-color .15s;}
+.adm-upload-field.has-file{border-style:solid;border-color:#10b981;background:#f0fdf4;}
+.adm-upload-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 20px 4px;}
+/* Compliance item — clean card matching screenshots */
+.adm-comp-item{border:1px solid #e8edf2;border-radius:10px;margin-bottom:6px;overflow:hidden;background:#fff;}
+.adm-comp-item.flagged{border-color:#fca5a5;background:#fff8f8;}
+.adm-comp-item.verified{border-color:#d1fae5;background:#f0fdf4;}
 .adm-upload-field:hover{border-color:#1A5FC8;background:#f0f7ff;}
 .adm-upload-field.has-file{border-style:solid;border-color:#10b981;background:#f0fdf4;}
 /* Compliance item expandable */
@@ -3568,9 +3574,9 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .adm-comp-item.flagged .adm-comp-item-expand{border-top-color:#fca5a5;}
 .adm-comp-item.verified .adm-comp-item-expand{border-top-color:#a7f3d0;}
 .adm-comp-issue-banner{background:#fff1f2;border:1px solid #fecaca;border-radius:8px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px;}
-.adm-comp-expand-meta{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
-.adm-comp-meta-lbl{font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;}
-.adm-comp-meta-val{font-size:13px;font-weight:600;color:#0f172a;}
+.adm-comp-expand-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:14px;}
+.adm-comp-meta-lbl{font-size:11px;font-weight:400;color:#94a3b8;margin-bottom:2px;}
+.adm-comp-meta-val{font-size:13px;font-weight:700;color:#0f172a;}
 .adm-comp-action-row{display:flex;gap:8px;flex-wrap:wrap;}
 .adm-comp-btn{border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;border:none;}
 .adm-comp-btn.approve{background:#059669;color:#fff;}
@@ -7783,19 +7789,11 @@ function _admBuildDetail(app) {
       var ck=_admEsc(ch.key||ch.name.replace(/[^a-z0-9]/gi,'_')); var aid=app.id;
       var expandPanel=''
         +issueBanner
-        +'<div class="adm-comp-expand-meta">'
-          +'<div style="display:flex;align-items:center;justify-content:space-between;">'
-            +'<span class="adm-comp-meta-lbl">Method</span>'
-            +'<span class="adm-comp-meta-val">'+_admEsc(ch.method||'—')+'</span>'
-          +'</div>'
-          +(ch.expiry?'<div style="display:flex;align-items:center;justify-content:space-between;">'
-            +'<span class="adm-comp-meta-lbl">Expiry</span>'
-            +'<span class="adm-comp-meta-val">'+_admEsc(ch.expiry)+'</span>'
-          +'</div>':'')
-          +'<div style="display:flex;align-items:center;justify-content:space-between;">'
-            +'<span class="adm-comp-meta-lbl">Type</span>'
-            +'<span class="adm-comp-meta-val">'+_admEsc(ch.type||'—')+'</span>'
-          +'</div>'
+        // ── Meta: horizontal columns matching screenshot ──
+        +'<div style="display:grid;grid-template-columns:1fr'+(ch.expiry?' 1fr':'')+' 1fr;gap:24px;margin-bottom:'+((!isNA&&!isVerified)?'14px':'0')+'px;">'
+          +'<div><div class="adm-comp-meta-lbl">Method</div><div class="adm-comp-meta-val">'+_admEsc(ch.method||'—')+'</div></div>'
+          +(ch.expiry?'<div><div class="adm-comp-meta-lbl">Expiry</div><div class="adm-comp-meta-val">'+_admEsc(ch.expiry)+'</div></div>':'')
+          +'<div><div class="adm-comp-meta-lbl">Type</div><div class="adm-comp-meta-val">'+_admEsc(ch.type||'—')+'</div></div>'
         +'</div>'
         +(!isNA&&!isVerified?'<div class="adm-comp-action-row">'
           +'<button class="adm-comp-btn approve adm-ci-approve" data-app="'+aid+'" data-key="'+ck+'">'
@@ -7805,25 +7803,33 @@ function _admBuildDetail(app) {
           +'<button class="adm-comp-btn reupload">'
             +'<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5.5 7V2M3 4l2.5-2.5L8 4"/><path d="M2 8.5v1a.5.5 0 00.5.5h6a.5.5 0 00.5-.5v-1"/></svg>Request Re-upload</button>'
         +'</div>':'');
+      // Status badge colour
+      var statusBg=isVerified?'#dcfce7':isFlagged?'#fee2e2':'#fef3c7';
+      var statusClr=isVerified?'#166534':isFlagged?'#dc2626':'#d97706';
+      var statusTxt=isVerified?'Verified':isFlagged?'Flagged':'Pending';
       return '<div class="'+rowCls+' adm-ci-row" id="'+cid+'" data-cid="'+cid+'">'
-        +'<div class="adm-comp-item-row">'
-          +'<div class="adm-comp-item-icon" style="background:'+icoBg+';">'
-            +'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="'+icoClr+'" stroke-width="2">'+icoPath+'</svg>'
+        // ── Main row (matching screenshot: icon | name+sub | [badge + chevron] ) ──
+        +'<div class="adm-comp-item-row" style="display:flex;align-items:center;gap:12px;padding:13px 16px;">'
+          +'<div style="width:30px;height:30px;border-radius:50%;background:'+icoBg+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+            +'<svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="'+icoClr+'" stroke-width="2">'+icoPath+'</svg>'
           +'</div>'
-          +'<div class="adm-comp-item-body">'
+          +'<div class="adm-comp-item-body" style="flex:1;min-width:0;">'
             +'<div style="display:flex;align-items:center;gap:6px;">'
-              +'<div class="adm-comp-item-name">'+_admEsc(ch.name)+'</div>'
-              +(isVerified?'<span style="font-size:10px;font-weight:700;background:#dcfce7;color:#166534;padding:1px 7px;border-radius:10px;">Auto</span>':'')
+              +'<span style="font-size:13px;font-weight:600;color:#0f172a;">'+_admEsc(ch.name)+'</span>'
+              +(isVerified?'<span style="font-size:10px;font-weight:600;background:#e7f3ff;color:#1A5FC8;padding:1px 7px;border-radius:10px;display:inline-flex;align-items:center;gap:3px;"><svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M1.5 4.5C1.5 2.8 2.8 1.5 4.5 1.5s3 1.3 3 3-1.3 3-3 3-3-1.3-3-3z"/><path d="M3 4.5l1 1 2-2"/></svg>Auto</span>':'')
             +'</div>'
-            +(ch.sub?'<div class="adm-comp-item-sub">'+_admEsc(ch.sub)+'</div>':'')
+            +(ch.sub?'<div style="font-size:11.5px;color:#64748b;margin-top:1px;">'+_admEsc(ch.sub)+'</div>':'')
           +'</div>'
+          // Right side: ONLY badge + chevron (no expiry shown here)
           +'<div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">'
-            +(ch.expiry?'<span style="font-size:11px;color:#64748b;">🗓 '+_admEsc(ch.expiry)+'</span>':'')
-            +compStatusHtml(ch.status)
-            +'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#94a3b8" stroke-width="1.8" class="ci-chevron" style="transition:transform .2s;flex-shrink:0;"><path d="M3 4.5l3 3 3-3"/></svg>'
+            +'<span style="font-size:11.5px;font-weight:600;background:'+statusBg+';color:'+statusClr+';padding:3px 10px;border-radius:20px;">'+statusTxt+'</span>'
+            +'<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#94a3b8" stroke-width="1.8" class="ci-chevron" style="transition:transform .2s;flex-shrink:0;"><path d="M3.5 5l3 3 3-3"/></svg>'
           +'</div>'
         +'</div>'
-        +'<div class="adm-comp-item-expand">'+expandPanel+'</div>'
+        // ── Expand panel ──
+        +'<div class="adm-comp-item-expand" style="padding:14px 16px;background:'+(isVerified?'#f0fdf4':isFlagged?'#fff8f8':'#fafafa')+';border-top:1px solid '+(isVerified?'#d1fae5':isFlagged?'#fecaca':'#f1f5f9')+';">'
+          +expandPanel
+        +'</div>'
       +'</div>';
     }).join('');
   }).join('');
@@ -7856,22 +7862,52 @@ function _admBuildDetail(app) {
   // ── TAB: Sectors ──
   var tabSector = '<div class="adm-form-grid">'
     +fgHead('Sectors Served')
-    +'<div class="adm-form-field">'
-      +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:0 20px 12px;">'
+    +'<div style="padding:12px 20px;">'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">'
         +secCard('residential')+secCard('commercial')+secCard('both')
       +'</div>'
     +'</div>'
     +(sectorVal==='residential'||sectorVal==='both'
-      ?fgHead('Residential Sub-types')+fgChips('',app.sectorSubRes||[]):'')
+      ?fgHead('Residential Sub-types')
+        +'<div style="padding:8px 20px 4px;display:flex;flex-wrap:wrap;gap:8px;">'
+          +(app.sectorSubRes&&app.sectorSubRes.length
+            ?app.sectorSubRes.map(function(v){ return '<span style="border:1.5px solid #e2e8f0;border-radius:20px;padding:5px 14px;font-size:13px;color:#374151;background:#fff;">'+_admEsc(v)+'</span>'; }).join('')
+            :'<span style="color:#d1d5db;font-size:12.5px;font-style:italic;">None selected</span>'
+          )
+        +'</div>'
+      :'')
     +(sectorVal==='commercial'||sectorVal==='both'
-      ?fgHead('Commercial Sub-types')+fgChips('',app.sectorSubCom||[]):'')
+      ?fgHead('Commercial Sub-types')
+        +'<div style="padding:8px 20px 4px;display:flex;flex-wrap:wrap;gap:8px;">'
+          +(app.sectorSubCom&&app.sectorSubCom.length
+            ?app.sectorSubCom.map(function(v){ return '<span style="border:1.5px solid #e2e8f0;border-radius:20px;padding:5px 14px;font-size:13px;color:#374151;background:#fff;">'+_admEsc(v)+'</span>'; }).join('')
+            :'<span style="color:#d1d5db;font-size:12.5px;font-style:italic;">None selected</span>'
+          )
+        +'</div>'
+      :'')
   +'</div>'+saveBtn('sector');
+
+  // ── Upload field: shows as already-uploaded with remove option ──
+  function fgUploadFilled(label, filename, hint){
+    var hasFile=!!filename;
+    return '<div class="adm-form-field"><div class="adm-form-label">'+label+'</div>'
+      +'<div class="adm-upload-field'+(hasFile?' has-file':'')+'">'
+        +(hasFile
+          ?'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="1.8"><path d="M2 7l4 4 6-6"/></svg>'
+          +'<span style="font-size:12.5px;color:#0f172a;font-weight:500;">'+_admEsc(filename)+'</span>'
+          +'<button style="margin-left:auto;background:none;border:1.5px solid #fca5a5;color:#dc2626;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Remove</button>'
+          :'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.6"><path d="M2 10v1.5a.5.5 0 00.5.5h9a.5.5 0 00.5-.5V10"/><path d="M7 2v7M4.5 4.5L7 2l2.5 2.5"/></svg>'
+          +'<span style="font-size:12.5px;color:#94a3b8;">'+_admEsc(hint||'No file uploaded')+'</span>'
+          +'<button style="margin-left:auto;background:#1A5FC8;color:#fff;border:none;border-radius:6px;padding:4px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Upload</button>'
+        )
+      +'</div></div>';
+  }
 
   // ── TAB: Identity ──
   var tabIdentity = '<div class="adm-form-grid">'
-    +fgHead(isCo?'Company Details':'Personal Details')
     +(isCo
-      ? fg('Trading Name',app.tradingName,'tradingName')
+      ? fgHead('Company Details')
+        +fg('Trading Name',app.tradingName,'tradingName')
         +fg('Registered Company Name',app.regCompanyName,'regCompanyName')
         +fg('Company Reg Number',app.companyRegNum,'companyRegNum')
         +fg('Registered Office Address',app.regOfficeAddr,'regOfficeAddr')
@@ -7879,14 +7915,20 @@ function _admBuildDetail(app) {
         +fg('PSC Full Name',app.pscFullName,'pscFullName')
         +fg('PSC Date of Birth',app.pscDob,'pscDob')
         +fg('TIN / Tax ID',app.tinNum,'tinNum')
-      : fg('Full Legal Name',app.fullLegalName,'fullLegalName')
+      : fgHead('Personal Details')
+        +fg('Full Legal Name',app.fullLegalName,'fullLegalName')
         +fg('Date of Birth',app.dob,'dob')
         +fg('NI Number',app.niNumber,'niNumber')
         +fg('Home Address',app.homeAddress,'homeAddress')
         +fgHead('Identity Documents')
-        +fgUpload('Photo ID','Upload passport or driving licence (PDF or image)')
-        +fgUpload('Selfie Verification','Upload a selfie photo for biometric match')
-        +fgUpload('Proof of Address','Upload utility bill or bank statement (last 3 months)')
+        // Two upload fields per row
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 20px 4px;">'
+          +fgUploadFilled('Photo ID',app.fullLegalName?'passport_id.pdf':'','Upload passport or driving licence')
+          +fgUploadFilled('Selfie Verification',app.fullLegalName?'selfie_photo.jpg':'','Upload selfie for biometric match')
+        +'</div>'
+        +'<div style="padding:8px 20px 4px;">'
+          +fgUploadFilled('Proof of Address',app.homeAddress?'utility_bill.pdf':'','Upload utility bill or bank statement')
+        +'</div>'
     )
   +'</div>'+saveBtn('identity');
 
