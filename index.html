@@ -3523,7 +3523,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 /* Float action bar */
 .adm-float-bar{background:#fff;border-top:1px solid #e8edf2;padding:12px 24px;display:flex;align-items:center;justify-content:flex-end;gap:10px;box-shadow:0 -2px 12px rgba(0,0,0,0.05);flex-shrink:0;}
 /* Detail top bar */
-.adm-detail-topbar{background:#fff;border-bottom:1.5px solid #e8edf2;padding:0 24px;height:52px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:200;margin:0 -28px 20px;flex-shrink:0;}
+.adm-detail-topbar{background:#fff;border-bottom:1.5px solid #e8edf2;padding:0 24px;height:52px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:200;margin:-28px -28px 20px;flex-shrink:0;}
 .adm-detail-topbar-back{display:flex;align-items:center;gap:6px;color:#64748b;font-size:13px;font-weight:500;cursor:pointer;padding:6px 10px;border-radius:7px;transition:background .12s,color .12s;border:none;background:none;font-family:Inter,sans-serif;}
 .adm-detail-topbar-back:hover{background:#f1f5f9;color:#0f172a;}
 .adm-detail-topbar-sep{color:#d1d5db;font-size:14px;line-height:1;}
@@ -7848,7 +7848,7 @@ function _admBuildDetail(app) {
       +' style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;position:relative;cursor:pointer;">'
       +'<div style="color:'+(sel?'#1A5FC8':'#94a3b8')+';">'+ico+'</div>'
       +'<div style="font-size:13px;font-weight:'+(sel?'700':'600')+';color:'+(sel?'#1A5FC8':'#0f172a')+';">'+lbl+'</div>'
-      +(sel?'<div style="position:absolute;top:8px;right:8px;"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#1A5FC8"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.8"/></svg></div>':'')
+      +(sel?'<div class="adm-sec-check" style="position:absolute;top:8px;right:8px;"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#1A5FC8"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.8"/></svg></div>':'')
     +'</div>';
   }
   function fgUpload(label,hint){
