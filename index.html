@@ -941,6 +941,20 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 @media(min-width:1600px){ [style*='clamp(32px']{padding-left:240px !important;padding-right:240px !important;} }
 @media(max-width:768px){ .pm-page-inner{ padding-left:32px;padding-right:32px; } }
 
+/* ── Supplier dashboard main content — responsive padding matching PM ── */
+.supp-main-inner{
+  flex:1;
+  overflow-y:auto;
+  min-width:0;
+  padding-left:clamp(24px,6vw,120px);
+  padding-right:clamp(24px,6vw,120px);
+  box-sizing:border-box;
+}
+@media(min-width:1441px){ .supp-main-inner{ padding-left:120px;padding-right:120px; } }
+@media(min-width:1600px){ .supp-main-inner{ padding-left:200px;padding-right:200px; } }
+@media(max-width:900px)  { .supp-main-inner{ padding-left:32px; padding-right:32px; } }
+@media(max-width:600px)  { .supp-main-inner{ padding-left:16px; padding-right:16px; } }
+
 /* Stats bar at top */
 .dh-stats-bar{
   display:grid;grid-template-columns:repeat(4,1fr);gap:0;
@@ -16025,7 +16039,7 @@ function _suppNavTo(pageId){
   }
   // Render page content
   if(!mainEl) return;
-  var pad = 'padding:24px 0 48px;width:100%;box-sizing:border-box;';
+  var pad = 'padding:24px 0 48px;width:100%;';
   if(pageId==='svcs'){
     mainEl.innerHTML = '<div style="'+pad+'">'+_suppBuildServicesPage()+'</div>';
     _suppWireServicesPage();
@@ -16346,7 +16360,7 @@ function _suppWireServicesPage(){
 function _suppRefreshServices(){
   var mainEl=document.getElementById('suppMain')||window._suppMain;
   if(!mainEl) return;
-  var pad='padding:24px 0 48px;width:100%;box-sizing:border-box;';
+  var pad='padding:24px 0 48px;width:100%;';
   mainEl.innerHTML='<div style="'+pad+'">'+_suppBuildServicesPage()+'</div>';
   _suppWireServicesPage();
 }
@@ -17419,9 +17433,9 @@ function _showSupplierDashboard(){
   // ── Main content area ──
   var mainEl = document.createElement('div');
   mainEl.id  = 'suppMain';
-  mainEl.style.cssText = 'flex:1;overflow-y:auto;min-width:0;padding:0 clamp(20px,6vw,80px);box-sizing:border-box;';
+  mainEl.className = 'supp-main-inner';
 
-  mainEl.innerHTML = '<div style="padding:24px 0 48px;width:100%;box-sizing:border-box;">'
+  mainEl.innerHTML = '<div style="padding:24px 0 48px;width:100%;">'
     +'<div style="width:100%;">'
       +(window.innerWidth<768?'<button onclick="toggleSidebar()" style="position:fixed;top:12px;left:12px;z-index:98;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:6px 8px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#374151" stroke-width="2"><path d="M2 4h12M2 8h12M2 12h12"/></svg></button>':'')
       +'<h1 style="font-size:28px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin:0 0 4px;">Welcome, '+name+' 👋</h1>'
