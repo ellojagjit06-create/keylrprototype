@@ -3408,10 +3408,10 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 <!-- ADMIN DASHBOARD PAGE -->
 <style>
 /* ── Admin layout ── */
-.adm-layout{display:flex;min-height:100vh;font-family:Inter,sans-serif;background:#f5f6f8;}
+.adm-layout{display:flex;height:100vh;font-family:Inter,sans-serif;background:#f5f6f8;overflow:hidden;}
 
-/* ── Sidebar ── */
-.adm-sb{width:240px;min-width:240px;background:#fff;border-right:1px solid #e8edf2;display:flex;flex-direction:column;transition:width .22s,min-width .22s;overflow:hidden;position:relative;z-index:100;}
+/* ── Sidebar — fixed height, never scrolls ── */
+.adm-sb{width:240px;min-width:240px;background:#fff;border-right:1px solid #e8edf2;display:flex;flex-direction:column;transition:width .22s,min-width .22s;overflow:hidden;position:sticky;top:0;height:100vh;flex-shrink:0;z-index:100;}
 .adm-sb.collapsed{width:64px;min-width:64px;}
 .adm-sb-head{padding:20px 16px 16px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:10px;min-height:72px;}
 .adm-sb-logo{width:36px;height:36px;border-radius:10px;background:#fef2f2;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -3432,9 +3432,9 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .adm-sb-footer-btn.signout{color:#ef4444;}
 .adm-sb-footer-btn.signout:hover{background:#fef2f2;color:#dc2626;}
 
-/* ── Main content ── */
-.adm-main{flex:1;display:flex;flex-direction:column;overflow:auto;min-width:0;}
-.adm-content{padding:28px 28px;flex:1;}
+/* ── Main content — scrolls independently ── */
+.adm-main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;position:relative;}
+.adm-content{padding:28px 28px;flex:1;overflow-y:auto;min-height:0;}
 .adm-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:320px;color:#94a3b8;}
 
 /* ── Mobile top bar ── */
@@ -3521,13 +3521,30 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .adm-comp-status.not_submitted{background:#f1f5f9;color:#94a3b8;}
 .adm-comp-status.na{background:#f1f5f9;color:#94a3b8;}
 /* Float action bar */
-.adm-float-bar{position:sticky;bottom:0;background:#fff;border-top:1px solid #e8edf2;padding:12px 24px;display:flex;align-items:center;justify-content:flex-end;gap:10px;z-index:100;box-shadow:0 -2px 12px rgba(0,0,0,0.05);margin:0 -28px -28px;}
+.adm-float-bar{background:#fff;border-top:1px solid #e8edf2;padding:12px 24px;display:flex;align-items:center;justify-content:flex-end;gap:10px;box-shadow:0 -2px 12px rgba(0,0,0,0.05);flex-shrink:0;}
 /* Detail top bar */
-.adm-detail-topbar{background:#fff;border-bottom:1.5px solid #e8edf2;padding:0 24px;height:52px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:200;margin:-28px -28px 24px;}
+.adm-detail-topbar{background:#fff;border-bottom:1.5px solid #e8edf2;padding:0 24px;height:52px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:200;margin:-28px -28px 24px;flex-shrink:0;}
 .adm-detail-topbar-back{display:flex;align-items:center;gap:6px;color:#64748b;font-size:13px;font-weight:500;cursor:pointer;padding:6px 10px;border-radius:7px;transition:background .12s,color .12s;border:none;background:none;font-family:Inter,sans-serif;}
 .adm-detail-topbar-back:hover{background:#f1f5f9;color:#0f172a;}
 .adm-detail-topbar-sep{color:#d1d5db;font-size:14px;line-height:1;}
 .adm-detail-topbar-title{font-size:14px;font-weight:600;color:#0f172a;}
+/* Editable form fields inside detail tabs */
+.adm-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.adm-form-field{display:flex;flex-direction:column;gap:5px;}
+.adm-form-field.full{grid-column:1/-1;}
+.adm-form-label{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;}
+.adm-form-input{border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;color:#0f172a;background:#fff;outline:none;transition:border-color .15s;width:100%;box-sizing:border-box;}
+.adm-form-input:focus{border-color:#1A5FC8;box-shadow:0 0 0 3px rgba(26,95,200,0.08);}
+.adm-form-input:disabled{background:#f8fafc;color:#94a3b8;cursor:not-allowed;}
+.adm-form-select{border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:Inter,sans-serif;color:#0f172a;background:#fff;outline:none;width:100%;box-sizing:border-box;cursor:pointer;appearance:none;transition:border-color .15s;}
+.adm-form-select:focus{border-color:#1A5FC8;}
+.adm-form-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:9px;}
+.adm-form-toggle-label{font-size:13px;font-weight:500;color:#374151;}
+.adm-form-toggle{width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
+.adm-form-section-head{font-size:12px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;padding:14px 0 8px;border-top:1px solid #f1f5f9;margin-top:6px;}
+.adm-form-section-head:first-child{border-top:none;padding-top:0;margin-top:0;}
+.adm-save-row{padding:14px 20px;border-top:1px solid #f1f5f9;display:flex;justify-content:flex-end;}
+.adm-save-btn{background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;}
 </style>
 <div id="pg-admin-dash" style="display:none;">
   <!-- Mobile backdrop -->
@@ -3681,6 +3698,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
         </div>
 
       </div><!-- /adm-content -->
+      <div id="admFloatBarWrap" style="display:none;"></div>
     </div><!-- /adm-main -->
   </div><!-- /adm-layout -->
 </div>
@@ -7602,38 +7620,39 @@ function _admOpenApplicant(id) {
   if(!app) return;
   var view = document.getElementById('admApplicantsView');
   var detail = document.getElementById('admApplicantDetail');
+  var fbWrap = document.getElementById('admFloatBarWrap');
   if(view) view.style.display='none';
-  if(detail) {
-    detail.style.display='block';
-    detail.innerHTML = _admBuildDetail(app);
-    var ab = document.getElementById('admApprovBtn');
-    var rb = document.getElementById('admRejectBtn');
-    if(ab) ab.onclick = function(){ _admUpdateStatus(id,'approved'); };
-    if(rb) rb.onclick = function(){ _admUpdateStatus(id,'rejected'); };
-  }
+  if(detail){ detail.style.display='block'; detail.innerHTML=_admBuildDetail(app); }
+  if(fbWrap){ fbWrap.style.display=''; fbWrap.innerHTML=_admFloatBarHTML(app); }
+  var ab=document.getElementById('admApprovBtn');
+  var rb=document.getElementById('admRejectBtn');
+  if(ab) ab.onclick=function(){ _admUpdateStatus(id,'approved'); };
+  if(rb) rb.onclick=function(){ _admUpdateStatus(id,'rejected'); };
 }
 
 function _admBackToApplicants() {
-  var view = document.getElementById('admApplicantsView');
-  var detail = document.getElementById('admApplicantDetail');
+  var view=document.getElementById('admApplicantsView');
+  var detail=document.getElementById('admApplicantDetail');
+  var fbWrap=document.getElementById('admFloatBarWrap');
   if(view){ view.style.display=''; _admRenderApplicants(); }
   if(detail) detail.style.display='none';
+  if(fbWrap){ fbWrap.style.display='none'; fbWrap.innerHTML=''; }
 }
 
 function _admUpdateStatus(id, status) {
-  var apps = _admLoadApplicants();
-  var idx = apps.findIndex(function(a){ return a.id===id; });
+  var apps=_admLoadApplicants();
+  var idx=apps.findIndex(function(a){ return a.id===id; });
   if(idx>=0){ apps[idx].status=status; _admSaveApplicants(apps); }
-  var app = apps[idx];
+  var app=apps[idx];
   if(app) {
-    var detail = document.getElementById('admApplicantDetail');
-    if(detail) {
-      detail.innerHTML = _admBuildDetail(app);
-      var ab = document.getElementById('admApprovBtn');
-      var rb = document.getElementById('admRejectBtn');
-      if(ab) ab.onclick = function(){ _admUpdateStatus(id,'approved'); };
-      if(rb) rb.onclick = function(){ _admUpdateStatus(id,'rejected'); };
-    }
+    var detail=document.getElementById('admApplicantDetail');
+    var fbWrap=document.getElementById('admFloatBarWrap');
+    if(detail){ detail.innerHTML=_admBuildDetail(app); }
+    if(fbWrap){ fbWrap.innerHTML=_admFloatBarHTML(app); }
+    var ab=document.getElementById('admApprovBtn');
+    var rb=document.getElementById('admRejectBtn');
+    if(ab) ab.onclick=function(){ _admUpdateStatus(id,'approved'); };
+    if(rb) rb.onclick=function(){ _admUpdateStatus(id,'rejected'); };
   }
   _admRenderApplicants();
 }
@@ -7652,9 +7671,20 @@ function _admBuildDetail(app) {
   var scoreColor=stats.pct>=80?'#10b981':stats.pct>=40?'#f59e0b':'#94a3b8';
 
   function fv(val){ return val?_admEsc(val):'<span style="color:#d1d5db;font-style:italic;">Not provided</span>'; }
-  function fg(label,val){ return '<div class="adm-field-group"><div class="adm-field-label">'+label+'</div><div class="adm-field-value">'+fv(val)+'</div></div>'; }
-  function chips(arr){ if(!arr||!arr.length) return '<span class="adm-field-value empty">None</span>'; return arr.map(function(v){return '<span class="adm-chip">'+_admEsc(v)+'</span>';}).join(''); }
-  function bv(val,y,n){ return val?('<span style="color:#059669;font-weight:600;">✓ '+(y||'Yes')+'</span>'):('<span style="color:#94a3b8;">'+(n||'No')+'</span>'); }
+  function fg(label,val){ return '<div class="adm-form-field"><div class="adm-form-label">'+label+'</div><input class="adm-form-input" value="'+_admEsc(val||'')+'" placeholder="Not provided"></div>'; }
+  function fgFull(label,val){ return '<div class="adm-form-field full"><div class="adm-form-label">'+label+'</div><input class="adm-form-input" value="'+_admEsc(val||'')+'" placeholder="Not provided"></div>'; }
+  function fgText(label,val){ return '<div class="adm-form-field full"><div class="adm-form-label">'+label+'</div><textarea class="adm-form-input" rows="3" style="resize:vertical;">'+_admEsc(val||'')+'</textarea></div>'; }
+  function fgToggle(label,val){
+    var bg=val?'#1A5FC8':'#e2e8f0';
+    var onAttr=val?' data-on="1"':'';
+    return '<div class="adm-form-field full"><div class="adm-form-toggle-row">'
+      +'<span class="adm-form-toggle-label">'+label+'</span>'
+      +'<button class="adm-form-toggle adm-tog" style="background:'+bg+';"'+onAttr+'></button>'
+      +'</div></div>';
+  }
+  function fgHead(label){ return '<div class="adm-form-section-head">'+label+'</div>'; }
+  function fgChips(label,arr){ return '<div class="adm-form-field full"><div class="adm-form-label">'+label+'</div><div style="display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:9px;min-height:40px;">'+(arr&&arr.length?arr.map(function(v){return '<span class="adm-chip">'+_admEsc(v)+'</span>';}).join(''):'<span style="color:#d1d5db;font-size:12.5px;font-style:italic;">None</span>')+'</div></div>'; }
+  function saveBtn(){ return '<div class="adm-save-row"><button class="adm-save-btn">Save changes</button></div>'; }
 
   // ── Compliance section HTML builder ──
   function compIcon(ico){
@@ -7695,41 +7725,63 @@ function _admBuildDetail(app) {
     }).join('');
   }).join('');
 
-  // ── Tab content builders ──
-  var tabIdentity = isCo
-    ? fg('Trading Name',app.tradingName)+fg('Registered Company Name',app.regCompanyName)
-      +fg('Company Reg Number',app.companyRegNum)+fg('Registered Office',app.regOfficeAddr)
-      +fg('PSC Full Name',app.pscFullName)+fg('PSC Date of Birth',app.pscDob)+fg('TIN / Tax ID',app.tinNum)
-    : fg('Full Legal Name',app.fullLegalName)+fg('Date of Birth',app.dob)
-      +fg('NI Number',app.niNumber)+fg('Home Address',app.homeAddress);
-  // Add sector to identity tab
-  tabIdentity+='<div class="adm-field-group"><div class="adm-field-label">Sectors Served</div><div>'+chips((app.sectorSubRes||[]).concat(app.sectorSubCom||[])||[app.sector])+'</div></div>';
+  // ── Tab content builders (editable form fields) ──
+  var tabIdentity = '<div class="adm-form-grid">'
+    +fgHead(isCo?'Company Details':'Personal Details')
+    +(isCo
+      ? fg('Trading Name',app.tradingName)+fg('Registered Company Name',app.regCompanyName)
+        +fg('Company Reg Number',app.companyRegNum)+fgFull('Registered Office Address',app.regOfficeAddr)
+        +fgHead('Person of Significant Control (PSC)')
+        +fg('PSC Full Name',app.pscFullName)+fg('PSC Date of Birth',app.pscDob)
+        +fg('TIN / Tax ID',app.tinNum)
+      : fg('Full Legal Name',app.fullLegalName)+fg('Date of Birth',app.dob)
+        +fg('NI Number',app.niNumber)+fgFull('Home Address',app.homeAddress)
+    )
+    +fgHead('Sectors Served')
+    +fgChips('Sub-sectors',(app.sectorSubRes||[]).concat(app.sectorSubCom||[]))
+  +'</div>'+saveBtn();
 
-  var tabBank = fg('Account Holder',app.accountHolder)+fg('Bank Name',app.bankName)
-    +fg('Sort Code',app.sortCode)+fg('Account Number',app.accountNumber?'••••'+app.accountNumber.slice(-4):null)
-    +'<div class="adm-field-group"><div class="adm-field-label">VAT Registered</div><div class="adm-field-value">'+bv(app.vatRegistered,'Yes · VAT No. '+_admEsc(app.vatNumber||''))+'</div></div>'
-    +'<div class="adm-field-group"><div class="adm-field-label">Business Account</div><div class="adm-field-value">'+bv(app.businessAccount)+'</div></div>';
+  var tabBank = '<div class="adm-form-grid">'
+    +fgHead('Bank Account')
+    +fg('Account Holder Name',app.accountHolder)+fg('Bank Name',app.bankName)
+    +fg('Sort Code',app.sortCode)+fg('Account Number',app.accountNumber)
+    +fgHead('VAT & Business')
+    +fgToggle('VAT Registered',app.vatRegistered)
+    +(app.vatRegistered?fg('VAT Number',app.vatNumber):'')
+    +fgToggle('Business Bank Account',app.businessAccount)
+  +'</div>'+saveBtn();
 
-  var tabInsurance = fg('Insurance Provider',app.insProvider)+fg('Policy Number',app.insPolicy)
-    +fg('Public Liability Coverage',app.insCoverage)+fg('Policy Expiry',app.insExpiry)
-    +'<div class="adm-field-group"><div class="adm-field-label">Professional Indemnity</div><div class="adm-field-value">'+bv(app.profIndemnity)+'</div></div>'
-    +(isCo?'<div class="adm-field-group"><div class="adm-field-label">Employers\' Liability</div><div class="adm-field-value">'+bv(app.employersLiability)+'</div></div>'
-      +'<div class="adm-field-group"><div class="adm-field-label">All Workers Hold Valid Trade Licences</div><div class="adm-field-value">'+bv(app.allWorkersValidCerts)+'</div></div>':'')
-    +'<div class="adm-field-group"><div class="adm-field-label">Trade Certifications</div><div>'+chips(app.tradeCerts||[])+'</div></div>';
+  var tabInsurance = '<div class="adm-form-grid">'
+    +fgHead('Public Liability Insurance')
+    +fg('Insurance Provider',app.insProvider)+fg('Policy Number',app.insPolicy)
+    +fg('Coverage Amount',app.insCoverage)+fg('Policy Expiry Date',app.insExpiry)
+    +fgHead('Additional Cover')
+    +fgToggle('Professional Indemnity Insurance',app.profIndemnity)
+    +(isCo?fgToggle("Employers' Liability Insurance",app.employersLiability):'')
+    +(isCo?fgToggle('All Workers Hold Valid Trade Licences',app.allWorkersValidCerts):'')
+    +fgHead('Trade Certifications')
+    +fgChips('Certifications held',app.tradeCerts||[])
+  +'</div>'+saveBtn();
 
-  var tabBg = isCo
-    ? fg('Team Size',app.teamSize)
-      +'<div class="adm-field-group"><div class="adm-field-label">Company DBS Policy</div><div class="adm-field-value">'+fv(app.companyDbsDecl)+'</div></div>'
-      +(app.companyDbsDecl==='Yes'?fg('Company DBS Level',app.companyDbsLevel):'')
-      +'<div class="adm-field-group"><div class="adm-field-label">Right to Work (All Staff)</div><div class="adm-field-value">'+fv(app.rightToWork)+'</div></div>'
-    : '<div class="adm-field-group"><div class="adm-field-label">DBS Check Declared</div><div class="adm-field-value">'+fv(app.dbsDeclared)+'</div></div>'
-      +(app.dbsDeclared==='Yes'?fg('DBS Level',app.dbsLevel):'')
-      +'<div class="adm-field-group"><div class="adm-field-label">Right to Work</div><div class="adm-field-value">'+fv(app.rightToWork)+'</div></div>';
-  // Add profile fields to background tab
-  tabBg+=fg('Primary Trade',app.primaryTrade)
-    +'<div class="adm-field-group"><div class="adm-field-label">Secondary Trades</div><div>'+chips(app.secondaryTrades||[])+'</div></div>'
-    +fg('Experience',app.experience)+fg('Jobs Completed',app.jobsCompleted)
-    +(app.bio?'<div class="adm-field-group"><div class="adm-field-label">Bio</div><div class="adm-field-value" style="line-height:1.6;">'+_admEsc(app.bio)+'</div></div>':'');
+  var tabBg = '<div class="adm-form-grid">'
+    +(isCo
+      ? fgHead('Company DBS Policy')
+        +fg('Team Size',app.teamSize)+fg('Company Has a DBS Policy?',app.companyDbsDecl)
+        +(app.companyDbsDecl==='Yes'?fg('Company DBS Level',app.companyDbsLevel):'')
+        +fg('Right to Work — All Staff',app.rightToWork)
+      : fgHead('Personal DBS & Right to Work')
+        +fg('DBS Check Declared',app.dbsDeclared)
+        +(app.dbsDeclared==='Yes'?fg('DBS Level',app.dbsLevel):'')
+        +fg('Right to Work',app.rightToWork)
+    )
+    +fgHead('Profile & Experience')
+    +fg('Primary Trade',app.primaryTrade)+fg('Years of Experience',app.experience)
+    +fg('Jobs Completed',app.jobsCompleted)+fg('Emergency Callouts',app.emergencyCallouts)
+    +fgChips('Secondary Trades',app.secondaryTrades||[])
+    +fgChips('Pricing Models',app.pricingModels||[])
+    +fgChips('Working Days',app.workDays||[])
+    +fgText('Bio / Description',app.bio)
+  +'</div>'+saveBtn();
 
   var html=''
   // ── Sticky top bar ──
@@ -7800,8 +7852,12 @@ function _admBuildDetail(app) {
 
   +'</div>'
 
-  // ── Floating action bar ──
-  +'<div id="admDetailFloatBar" class="adm-float-bar">'
+  return html;
+}
+
+function _admFloatBarHTML(app) {
+  var st=app.status||'pending';
+  return '<div class="adm-float-bar">'
     +'<button style="background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;">'
       +'<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12l3-3 7-7 2 2-7 7z"/><path d="M9 3l1 1"/></svg>Request Changes</button>'
     +(st!=='rejected'?'<button id="admRejectBtn" style="background:#fff;color:#dc2626;border:1.5px solid #fecaca;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;">'
@@ -7809,8 +7865,6 @@ function _admBuildDetail(app) {
     +(st!=='approved'?'<button id="admApprovBtn" style="background:#059669;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;">'
       +'<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6.5" cy="6.5" r="5.5"/><path d="M4 6.5l2 2 3.5-3.5"/></svg>Approve Supplier</button>':'')
   +'</div>';
-
-  return html;
 }
 
 /* ── Avatar colour from first initial ── */
@@ -7879,6 +7933,13 @@ function _admCompStats(items){
 }
 
 function _admSearchApplicants(q) { _admRenderApplicants(); }
+function _admToggleHandler(e) {
+  var btn = e.target.closest('.adm-tog');
+  if(!btn) return;
+  var on = btn.hasAttribute('data-on');
+  if(on){ btn.removeAttribute('data-on'); btn.style.background='#e2e8f0'; }
+  else  { btn.setAttribute('data-on','1'); btn.style.background='#1A5FC8'; }
+}
 function _admToggleSb() {
   var sb = document.getElementById('admSidebar');
   var logo = document.getElementById('admLogoImg');
@@ -7924,6 +7985,9 @@ function showAdminLogin() {
   var admLogoMob = document.getElementById('admLogoImgMob');
   if(darkLogo && admLogo && !admLogo.src) admLogo.src = darkLogo.src;
   if(darkLogo && admLogoMob && !admLogoMob.src) admLogoMob.src = darkLogo.src;
+  // Delegated toggle handler for detail form toggles
+  document.removeEventListener('click', _admToggleHandler);
+  document.addEventListener('click', _admToggleHandler);
   document.getElementById('pg-landing').style.display = 'none';
   var pg = document.getElementById('pg-admin-login');
   pg.style.display = 'flex';
