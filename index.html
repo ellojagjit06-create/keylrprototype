@@ -16842,7 +16842,7 @@ function _suppBuildProfilePage(){
     var lbl={residential:'Residential',commercial:'Commercial',both:'Both'}[s];
     var ico={residential:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 19V10L11 3l8 7v9"/><path d="M8 19v-6h6v6"/></svg>',commercial:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="16" height="13" rx="1"/><path d="M3 11h16"/><path d="M8 7V5h6v2"/></svg>',both:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 18V11l7-6 7 6v7"/><rect x="13" y="9" width="8" height="9" rx="1"/></svg>'}[s];
     var sel=sectorVal===s;
-    return '<div style="border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:12px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:default;position:relative;background:'+(sel?'#eff6ff':'#fff')+'">'
+    return '<div data-sector="'+s+'" class="prof-sec-card" style="border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:12px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;position:relative;background:'+(sel?'#eff6ff':'#fff')+';transition:all .15s;">'
       +'<div style="color:'+(sel?'#1A5FC8':'#94a3b8')+';">'+ico+'</div>'
       +'<div style="font-size:13px;font-weight:'+(sel?'700':'500')+';color:'+(sel?'#1A5FC8':'#374151')+';font-family:Inter,sans-serif;">'+lbl+'</div>'
       +(sel?'<div style="position:absolute;top:8px;right:8px;"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#1A5FC8"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.8"/></svg></div>':'')
@@ -16876,7 +16876,7 @@ function _suppBuildProfilePage(){
     var hasFile=!!filename;
     return '<div>'
       +'<label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">'+label+'</label>'
-      +'<div class="prof-upload-box'+(hasFile?' has-file':'')+'" style="border:1.5px '+(hasFile?'solid #e2e8f0':'dashed #d1d5db')+';border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:8px;background:'+(hasFile?'#f8fafc':'#fafafa')+';cursor:pointer;">'
+      +'<div class="prof-upload-box'+(hasFile?' has-file':'')+'" data-hint="'+hint+'" style="border:1.5px '+(hasFile?'solid #e2e8f0':'dashed #d1d5db')+';border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:8px;background:'+(hasFile?'#f8fafc':'#fafafa')+';cursor:pointer;">'
         +(hasFile
           ?'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.6"><rect x="2" y="1" width="10" height="12" rx="1.5"/><path d="M4 4h6M4 6.5h6M4 9h4"/></svg>'
            +'<span style="font-size:13px;color:#374151;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+filename+'</span>'
@@ -16973,7 +16973,7 @@ function _suppBuildProfilePage(){
   var pct=Math.round(filledFields/6*100);
   var circ=Math.PI*2*32; var offset=circ-(pct/100*circ);
 
-  return '<div style="max-width:900px;">'
+  return '<div>'
     // Header + progress ring
     +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:20px;flex-wrap:wrap;">'
       +'<div>'
@@ -17016,23 +17016,30 @@ function _suppWireProfilePage(){
     if(tabBtn){ window._suppProfileTab=tabBtn.dataset.tabid; _suppNavTo('profile'); return; }
 
     // Sector card click
-    var secCardEl=e.target.closest('[data-sector]');
-    if(secCardEl&&secCardEl.closest('#profSecCards')){
+    var secCardEl=e.target.closest('.prof-sec-card');
+    if(secCardEl){
       var newSec=secCardEl.dataset.sector;
       var cardsWrap=document.getElementById('profSecCards');
       if(cardsWrap){
         cardsWrap.dataset.sector=newSec;
-        cardsWrap.querySelectorAll('[data-sector]').forEach(function(card){
-          var s=card.dataset.sector; var sel=s===newSec;
-          card.style.border='1.5px solid '+(sel?'#1A5FC8':'#e2e8f0');
-          card.style.background=sel?'#eff6ff':'#fff';
+        cardsWrap.querySelectorAll('.prof-sec-card').forEach(function(card){
+          var s=card.dataset.sector; var isSel=s===newSec;
+          card.style.border='1.5px solid '+(isSel?'#1A5FC8':'#e2e8f0');
+          card.style.background=isSel?'#eff6ff':'#fff';
+          // icon colour
           var iconDiv=card.querySelector('div:first-child');
-          if(iconDiv) iconDiv.style.color=sel?'#1A5FC8':'#94a3b8';
-          var lbl=card.querySelectorAll('div')[1];
-          if(lbl){lbl.style.color=sel?'#1A5FC8':'#374151';lbl.style.fontWeight=sel?'700':'500';}
+          if(iconDiv) iconDiv.style.color=isSel?'#1A5FC8':'#94a3b8';
+          // label
+          var lblDivs=card.querySelectorAll('div');
+          var lbl=lblDivs[1]; if(lbl){lbl.style.color=isSel?'#1A5FC8':'#374151';lbl.style.fontWeight=isSel?'700':'500';}
           // badge
           var badge=card.querySelector('.sec-badge'); if(badge) badge.remove();
-          if(sel){var b=document.createElement('div');b.className='sec-badge';b.style.cssText='position:absolute;top:8px;right:8px;';b.innerHTML='<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#1A5FC8"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.8"/></svg>';card.appendChild(b);}
+          if(isSel){
+            var b=document.createElement('div');b.className='sec-badge';
+            b.style.cssText='position:absolute;top:8px;right:8px;pointer-events:none;';
+            b.innerHTML='<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#1A5FC8"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.8"/></svg>';
+            card.appendChild(b);
+          }
         });
       }
       var showRes=newSec==='residential'||newSec==='both';
@@ -17051,14 +17058,24 @@ function _suppWireProfilePage(){
       return;
     }
 
-    // VAT toggle → show/hide VAT number
+    // Toggle
     var togBtn=e.target.closest('.prof-tog');
     if(togBtn){
-      var on=togBtn.hasAttribute('data-on');
-      if(on){togBtn.removeAttribute('data-on');togBtn.style.background='#d1d5db';var sp=togBtn.querySelector('span');if(sp){sp.style.left='2px';sp.style.right='';}}
-      else{togBtn.setAttribute('data-on','1');togBtn.style.background='#1A5FC8';var sp=togBtn.querySelector('span');if(sp){sp.style.right='2px';sp.style.left='';}}
+      var isOn=togBtn.hasAttribute('data-on');
+      var sp=togBtn.querySelector('span');
+      if(isOn){
+        togBtn.removeAttribute('data-on');
+        togBtn.style.background='#d1d5db';
+        if(sp){sp.style.left='2px';sp.style.right='';}
+      } else {
+        togBtn.setAttribute('data-on','1');
+        togBtn.style.background='#1A5FC8';
+        if(sp){sp.style.right='2px';sp.style.left='';}
+      }
+      // VAT number show/hide
       if(togBtn.dataset.pfield==='vatRegistered'){
-        var vr=document.getElementById('profVatNumRow'); if(vr) vr.style.display=togBtn.hasAttribute('data-on')?'block':'none';
+        var vr=document.getElementById('profVatNumRow');
+        if(vr) vr.style.display=!isOn?'block':'none';
       }
       return;
     }
@@ -17089,7 +17106,7 @@ function _suppWireProfilePage(){
     var delBtn=e.target.closest('.prof-doc-del');
     if(delBtn){
       var box=delBtn.closest('.prof-upload-box'); if(!box) return;
-      var hint=box.dataset.hint||'Upload document';
+      var hint=box.dataset.hint||'Upload document (PDF or image)';
       box.classList.remove('has-file');
       box.style.border='1.5px dashed #d1d5db';
       box.style.background='#fafafa';
