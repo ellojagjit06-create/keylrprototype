@@ -15787,7 +15787,32 @@ if(!window._suppState){
 // ── Full trade taxonomy ──
 window._SUPP_TRADES=[
   {cat:'GAS & HEATING',trades:[
-    {id:'gas-engineer',label:'Gas Engineer',svcs:[{id:'boiler-install',l:'Boiler Installation',comp:'mandatory',cert:'Gas Safe Registered'},{id:'boiler-service',l:'Boiler Service',comp:'mandatory',cert:'Gas Safe Registered'},{id:'gas-safety',l:'Gas Safety Certificate (CP12)',comp:'mandatory',cert:'Gas Safe Registered'},{id:'boiler-repair',l:'Boiler Repair',comp:'mandatory',cert:'Gas Safe Registered'},{id:'central-heat',l:'Central Heating System',comp:'mandatory',cert:'Gas Safe Registered'},{id:'gas-fire',l:'Gas Fire Install',comp:'mandatory',cert:'Gas Safe Registered'}]},
+    {id:'gas-engineer',label:'Gas Engineer',groups:[
+  {g:'Compliance',svcs:[
+    {id:'cp12',l:'Gas Safety Certificate (CP12)',desc:'Annual legal requirement for rental properties',comp:'mandatory',cert:'Gas Safe Register'},
+    {id:'boiler-service',l:'Boiler Service',desc:'Legal requirement for landlords',comp:'mandatory',cert:'Gas Safe Register'},
+    {id:'flue-inspect',l:'Flue & Ventilation Inspection',desc:'',comp:'recommended',cert:'Gas Safe Register'},
+    {id:'gas-tightness',l:'Gas Tightness Test',desc:'',comp:'mandatory',cert:'Gas Safe Register'}
+  ]},
+  {g:'Repairs & Emergency',svcs:[
+    {id:'boiler-repair',l:'Boiler Repair',desc:'',comp:'mandatory',cert:'Gas Safe Register'},
+    {id:'no-hot-water',l:'No Hot Water — Emergency',desc:'',comp:'mandatory',cert:'Gas Safe Register'},
+    {id:'gas-leak',l:'Gas Leak — Emergency',desc:'Immediate danger — legal duty',comp:'mandatory',cert:'Gas Safe Register'},
+    {id:'radiator-balance',l:'Radiator Cold Spots / Balancing',desc:'',comp:'mandatory',cert:'Gas Safe Register'},
+    {id:'prv-repair',l:'Pressure Relief Valve Repair',desc:'',comp:'mandatory',cert:'Gas Safe Register'},
+    {id:'thermostat-rep',l:'Thermostat / Timer Replacement',desc:'',comp:'mandatory',cert:'Gas Safe Register'},
+    {id:'boiler-noise',l:'Boiler Noise Investigation',desc:'',comp:'mandatory',cert:'Gas Safe Register'},
+    {id:'ufh-fault',l:'Underfloor Heating Fault',desc:'',comp:'mandatory',cert:'Gas Safe Register'}
+  ]},
+  {g:'Installations',svcs:[
+    {id:'boiler-replace',l:'Boiler Replacement (Combi / System / Regular)',desc:'',comp:'mandatory',cert:'Gas Safe Register'},
+    {id:'boiler-new',l:'New Boiler Installation',desc:'',comp:'mandatory',cert:'Gas Safe Register'},
+    {id:'ch-install',l:'Central Heating System Installation',desc:'',comp:'mandatory',cert:'Gas Safe Register'},
+    {id:'radiator-add',l:'Radiator Addition / Replacement',desc:'',comp:'mandatory',cert:'Gas Safe Register'},
+    {id:'ufh-install',l:'Underfloor Heating Installation',desc:'',comp:'mandatory',cert:'Gas Safe Register'},
+    {id:'smart-therm',l:'Smart Thermostat Installation',desc:'',comp:'mandatory',cert:'Gas Safe Register'}
+  ]}
+],svcs:[]},
     {id:'heat-pump',label:'Heat Pump Engineer',svcs:[{id:'ashp-install',l:'Air Source Heat Pump Install',comp:'certified',cert:'MCS Certified'},{id:'gshp-install',l:'Ground Source Heat Pump Install',comp:'certified',cert:'MCS Certified'}]},
     {id:'plumber',label:'Plumber',svcs:[{id:'leak-repair',l:'Leak Repair',comp:'none'},{id:'bathroom-fit',l:'Bathroom Fitting',comp:'none'},{id:'radiator',l:'Radiator Install / Replace',comp:'recommended'},{id:'unvented',l:'Unvented Cylinder',comp:'certified',cert:'G3 Qualification'}]},
     {id:'drainage',label:'Drainage Engineer',svcs:[{id:'drain-clear',l:'Drain Clearance',comp:'none'},{id:'cctv-drain',l:'CCTV Drain Survey',comp:'none'},{id:'drain-repair',l:'Drain Repair',comp:'none'}]},
@@ -15970,8 +15995,9 @@ function _suppBuildServicesPage(){
   var pendingCerts=[];
   Object.keys(st.services).forEach(function(tid){
     var tr=_suppFindTrade(tid); if(!tr) return;
+    var allSvcs=tr.groups?[].concat.apply([],tr.groups.map(function(g){return g.svcs;})):tr.svcs;
     (st.services[tid]||[]).forEach(function(sid){
-      var svc=tr.svcs.find(function(s){return s.id===sid;});
+      var svc=allSvcs.find(function(s){return s.id===sid;});
       if(svc&&(svc.comp==='mandatory'||svc.comp==='certified')&&svc.cert&&!st.uploads[svc.cert]){
         if(pendingCerts.indexOf(svc.cert)<0) pendingCerts.push(svc.cert);
       }
@@ -16053,8 +16079,7 @@ function _suppBuildServicesPage(){
   }
 
   // "Ready to set your prices?" — standalone independent card
-  var totalSvcs=0; Object.keys(st.services).forEach(function(k){totalSvcs+=(st.services[k]||[]).length;});
-  var pricingCta=totalSvcs?'<div style="background:#f0f7ff;border:1.5px solid #bfdbfe;border-radius:14px;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">'
+  var pricingCta='<div style="background:#f0f7ff;border:1.5px solid #bfdbfe;border-radius:14px;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">'
     +'<div style="display:flex;align-items:center;gap:12px;">'
       +'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1A5FC8" stroke-width="1.6"><circle cx="11" cy="11" r="9"/><path d="M11 6v1.5a3.5 3.5 0 010 7V16M8 8.5a3.5 3.5 0 017 0c0 1.5-1.5 2.5-3.5 3s-3.5.5-3.5 3a3.5 3.5 0 007 0"/></svg>'
       +'<div>'
@@ -16063,7 +16088,7 @@ function _suppBuildServicesPage(){
       +'</div>'
     +'</div>'
     +'<button class="supp-goto-pricing" style="background:#1A5FC8;color:#fff;border:none;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;flex-shrink:0;">Go to pricing <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6h8M7 3l3 3-3 3"/></svg></button>'
-  +'</div>':'';
+  +'</div>';
 
   return '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">'
       +'<div><div style="font-size:11px;font-weight:700;color:#1A5FC8;letter-spacing:.06em;font-family:Inter,sans-serif;margin-bottom:4px;">CONFIGURE</div>'
@@ -16075,42 +16100,69 @@ function _suppBuildServicesPage(){
     +statsHTML+compAlert+tradesRow+servicePanel+pricingCta;
 }
 
-function _suppBuildSvcGroup(tid, tr, selSvcs, query){
-  var q=(query||'').toLowerCase();
-  var items=tr.svcs.filter(function(s){ return !q||s.l.toLowerCase().indexOf(q)>=0; });
-  if(!items.length) return '<p style="color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;padding:8px 0;">No services match your search.</p>';
-
-  // Build 2-col card grid with group label + Select All
-  var groupLabel=tr.label.toUpperCase()+' SERVICES';
-  var allSel=items.every(function(s){return selSvcs.indexOf(s.id)>=0;});
-  return '<div>'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
-      +'<span style="font-size:10.5px;font-weight:700;color:#94a3b8;letter-spacing:.07em;font-family:Inter,sans-serif;">'+groupLabel+'</span>'
-      +'<button class="supp-select-all" data-tid="'+tid+'" data-allsel="'+(allSel?'1':'0')+'" style="font-size:13px;font-weight:600;color:#1A5FC8;background:none;border:none;cursor:pointer;font-family:Inter,sans-serif;">'+(allSel?'Deselect all':'Select all')+'</button>'
+function _suppSvcCardHTML(tid, svc, selSvcs){
+  var sel=selSvcs.indexOf(svc.id)>=0;
+  var dotCol=_suppCompColor(svc.comp);
+  var compLabel=svc.comp!=='none'?svc.comp.charAt(0).toUpperCase()+svc.comp.slice(1):'';
+  var needsProof=sel&&svc.cert&&(svc.comp==='mandatory'||svc.comp==='certified');
+  var uploads=window._suppState.uploads||{};
+  var proofDone=needsProof&&uploads[svc.cert];
+  return '<div class="supp-svc-card" data-tid="'+tid+'" data-sid="'+svc.id+'" id="svcCard_'+tid+'_'+svc.id+'" style="display:flex;align-items:flex-start;gap:10px;padding:13px 14px;border:1.5px solid '+(sel?'#bfdbfe':'#e8edf2')+';border-radius:10px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all .12s;">'
+    +'<div style="width:20px;height:20px;border-radius:50%;border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">'
+      +(sel?'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2.2"><path d="M1.5 5l2.5 2.5 4.5-4.5"/></svg>':'')
     +'</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
-      +items.map(function(svc){
-        var sel=selSvcs.indexOf(svc.id)>=0;
-        var dotCol=_suppCompColor(svc.comp);
-        var compLabel=svc.comp!=='none'?svc.comp.charAt(0).toUpperCase()+svc.comp.slice(1):'';
-        return '<div class="supp-svc-card" data-tid="'+tid+'" data-sid="'+svc.id+'" id="svcCard_'+tid+'_'+svc.id+'" style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1.5px solid '+(sel?'#bfdbfe':'#e8edf2')+';border-radius:10px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all .12s;">'
-          +'<div style="width:20px;height:20px;border-radius:50%;border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">'
-            +(sel?'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2.2"><path d="M1.5 5l2.5 2.5 4.5-4.5"/></svg>':'')
-          +'</div>'
-          +'<div style="flex:1;min-width:0;">'
-            +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;">'
-              +'<span style="font-size:13px;font-weight:500;color:#0f172a;font-family:Inter,sans-serif;line-height:1.3;">'+svc.l+'</span>'
-              +'<span style="width:7px;height:7px;border-radius:50%;background:'+dotCol+';flex-shrink:0;margin-top:4px;"></span>'
-            +'</div>'
-            +(svc.cert||compLabel?'<div style="display:flex;align-items:center;gap:6px;margin-top:5px;flex-wrap:wrap;">'
-              +(compLabel?'<span style="font-size:11px;font-weight:600;background:'+(svc.comp==='mandatory'?'#fee2e2':svc.comp==='certified'?'#fff7ed':svc.comp==='recommended'?'#fefce8':'#f0fdf4')+';color:'+(svc.comp==='mandatory'?'#dc2626':svc.comp==='certified'?'#ea580c':svc.comp==='recommended'?'#ca8a04':'#16a34a')+';border-radius:5px;padding:1px 7px;font-family:Inter,sans-serif;">'+compLabel+'</span>':'')
-              +(svc.cert?'<span style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;">'+svc.cert+'</span>':'')
-            +'</div>':'')
-          +'</div>'
-        +'</div>';
-      }).join('')
+    +'<div style="flex:1;min-width:0;">'
+      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;">'
+        +'<span style="font-size:13px;font-weight:500;color:#0f172a;font-family:Inter,sans-serif;line-height:1.3;">'+svc.l+'</span>'
+        +'<span style="width:7px;height:7px;border-radius:50%;background:'+dotCol+';flex-shrink:0;margin-top:5px;"></span>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:6px;margin-top:5px;flex-wrap:wrap;">'
+        +(compLabel?'<span style="font-size:11px;font-weight:600;background:'+(svc.comp==='mandatory'?'#fee2e2':svc.comp==='certified'?'#fff7ed':svc.comp==='recommended'?'#fefce8':'#f0fdf4')+';color:'+(svc.comp==='mandatory'?'#dc2626':svc.comp==='certified'?'#ea580c':svc.comp==='recommended'?'#ca8a04':'#16a34a')+';border-radius:5px;padding:1px 7px;font-family:Inter,sans-serif;">'+compLabel+'</span>':'')
+        +(svc.cert?'<span style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;">'+svc.cert+'</span>':'')
+        +(needsProof&&!proofDone?'<span style="font-size:11px;color:#f97316;font-family:Inter,sans-serif;display:flex;align-items:center;gap:3px;"><svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#f97316" stroke-width="1.6"><path d="M4.5 1v3.5"/><circle cx="4.5" cy="7" r=".6" fill="#f97316" stroke="none"/></svg>Proof needed</span>':'')
+        +(proofDone?'<span style="font-size:11px;color:#10b981;font-family:Inter,sans-serif;display:flex;align-items:center;gap:3px;"><svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#10b981" stroke-width="1.8"><path d="M1.5 4.5l2.5 2.5 4-4"/></svg>Uploaded</span>':'')
+      +'</div>'
+      +(svc.desc?'<div style="font-size:11px;color:#94a3b8;font-style:italic;margin-top:3px;font-family:Inter,sans-serif;">'+svc.desc+'</div>':'')
     +'</div>'
   +'</div>';
+}
+
+function _suppBuildSvcGroup(tid, tr, selSvcs, query){
+  var q=(query||'').toLowerCase();
+  // Support both grouped and flat svcs
+  var groups=tr.groups;
+  if(!groups){
+    var items=tr.svcs.filter(function(s){return !q||s.l.toLowerCase().indexOf(q)>=0;});
+    if(!items.length) return '<p style="color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;padding:8px 0;">No services match your search.</p>';
+    var allSel=items.every(function(s){return selSvcs.indexOf(s.id)>=0;});
+    return '<div>'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+        +'<span style="font-size:10.5px;font-weight:700;color:#94a3b8;letter-spacing:.07em;font-family:Inter,sans-serif;">'+tr.label.toUpperCase()+' SERVICES</span>'
+        +'<button class="supp-select-all" data-tid="'+tid+'" data-allsel="'+(allSel?'1':'0')+'" style="font-size:13px;font-weight:600;color:#1A5FC8;background:none;border:none;cursor:pointer;font-family:Inter,sans-serif;">'+(allSel?'Deselect all':'Select all')+'</button>'
+      +'</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+        +items.map(function(svc){return _suppSvcCardHTML(tid,svc,selSvcs);}).join('')
+      +'</div></div>';
+  }
+  // Grouped trade
+  var allItems=[];
+  groups.forEach(function(g){allItems=allItems.concat(g.svcs);});
+  if(q) allItems=allItems.filter(function(s){return s.l.toLowerCase().indexOf(q)>=0;});
+  if(!allItems.length) return '<p style="color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;padding:8px 0;">No services match your search.</p>';
+  return groups.map(function(grp){
+    var items=q?grp.svcs.filter(function(s){return s.l.toLowerCase().indexOf(q)>=0;}):grp.svcs;
+    if(!items.length) return '';
+    var allSel=items.every(function(s){return selSvcs.indexOf(s.id)>=0;});
+    return '<div style="margin-bottom:20px;">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+        +'<span style="font-size:10.5px;font-weight:700;color:#94a3b8;letter-spacing:.07em;font-family:Inter,sans-serif;">'+grp.g.toUpperCase()+'</span>'
+        +'<button class="supp-select-all" data-tid="'+tid+'" data-allsel="'+(allSel?'1':'0')+'" data-group="'+grp.g+'" style="font-size:13px;font-weight:600;color:#1A5FC8;background:none;border:none;cursor:pointer;font-family:Inter,sans-serif;">'+(allSel?'Deselect all':'Select all')+'</button>'
+      +'</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+        +items.map(function(svc){return _suppSvcCardHTML(tid,svc,selSvcs);}).join('')
+      +'</div>'
+    +'</div>';
+  }).join('');
 }
 
 function _suppWireServicesPage(){
@@ -16151,7 +16203,21 @@ function _suppWireServicesPage(){
     if(selAll){
       var tid=selAll.dataset.tid; var tr=_suppFindTrade(tid);
       var allSel=selAll.dataset.allsel==='1';
-      if(tr){ window._suppState.services[tid]=allSel?[]:tr.svcs.map(function(s){return s.id;}); }
+      var grpName=selAll.dataset.group;
+      if(tr){
+        if(grpName){
+          // Group-level select/deselect
+          var grp=tr.groups&&tr.groups.find(function(g){return g.g===grpName;});
+          if(grp){
+            var cur=window._suppState.services[tid]||[];
+            if(allSel){ window._suppState.services[tid]=cur.filter(function(id){return !grp.svcs.find(function(s){return s.id===id;});}); }
+            else{ grp.svcs.forEach(function(s){if(cur.indexOf(s.id)<0) cur.push(s.id);}); window._suppState.services[tid]=cur; }
+          }
+        } else {
+          var allSvcs=tr.groups?[].concat.apply([],tr.groups.map(function(g){return g.svcs;})):tr.svcs;
+          window._suppState.services[tid]=allSel?[]:allSvcs.map(function(s){return s.id;});
+        }
+      }
       _suppRefreshServices(); return;
     }
   });
