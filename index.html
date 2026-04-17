@@ -16758,46 +16758,13 @@ function _suppOpenPricingModal(svcId, svcLabel){
 // ══ SUPPLIER PROFILE PAGE ══
 function _suppBuildProfilePage(){
   var so=window._suppOnboard||{};
-  var st=window._suppState||{};
   var user=window._user||{};
+  var isCo=so.operationType==='company';
   var nm=so.fullLegalName||so.tradingName||user.name||'';
   var em=user.email||'';
-  var isCo=so.operationType==='company';
+  var initials=nm?nm.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase():'?';
   var activeTab=window._suppProfileTab||'profile';
 
-  // Tab builder helpers (reuse admin-style layout)
-  function field(label,val,key){
-    return '<div style="display:flex;flex-direction:column;gap:4px;margin-bottom:16px;">'
-      +'<label style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;font-family:Inter,sans-serif;">'+label+'</label>'
-      +'<input data-pfield="'+key+'" value="'+(val||'')+'" placeholder="Not provided" style="border:1.5px solid #e2e8f0;border-radius:9px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;color:#0f172a;background:#fff;outline:none;width:100%;box-sizing:border-box;">'
-    +'</div>';
-  }
-  function fieldRow(items){
-    return '<div style="display:grid;grid-template-columns:'+(items.length===2?'1fr 1fr':'1fr 1fr 1fr')+';gap:16px;">'
-      +items.map(function(f){return field(f.l,f.v,f.k);}).join('')
-    +'</div>';
-  }
-  function sectionHead(label){
-    return '<div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;font-family:Inter,sans-serif;margin:20px 0 12px;padding-top:16px;border-top:1px solid #f1f5f9;">'+label+'</div>';
-  }
-  function toggle(label,val,key){
-    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:9px;margin-bottom:12px;">'
-      +'<span style="font-size:13.5px;font-weight:500;color:#374151;font-family:Inter,sans-serif;">'+label+'</span>'
-      +'<button class="prof-tog" data-pfield="'+key+'" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(val?'#1A5FC8':'#d1d5db')+';transition:background .2s;"'+(val?' data-on="1"':'')+' >'
-        +'<span style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(val?'right:2px;':'left:2px;')+'transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,0.18);display:block;"></span>'
-      +'</button>'
-    +'</div>';
-  }
-  function chip(label,selected){
-    return '<span style="padding:6px 16px;border-radius:999px;border:1.5px solid '+(selected?'#1A5FC8':'#d1d5db')+';background:'+(selected?'#eff6ff':'#fff')+';color:'+(selected?'#1e3a5f':'#374151')+';font-size:13px;font-family:Inter,sans-serif;cursor:default;">'+label+'</span>';
-  }
-  function saveBtn(){
-    return '<div style="display:flex;justify-content:flex-end;margin-top:24px;">'
-      +'<button class="supp-prof-save" style="background:#1A5FC8;color:#fff;border:none;border-radius:9px;padding:10px 24px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save changes</button>'
-    +'</div>';
-  }
-
-  // ── Tab panels ──
   var tabs=[
     {id:'profile',label:'Profile'},
     {id:'sectors',label:'Sectors'},
@@ -16807,141 +16774,182 @@ function _suppBuildProfilePage(){
     {id:'background',label:'Background Checks'}
   ];
 
-  // Profile tab
-  var panelProfile=''
-    +'<div style="padding:8px 0;">'
-      +'<div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;padding:20px;background:#f8fafc;border-radius:12px;border:1.5px solid #e2e8f0;">'
-        +'<div style="width:60px;height:60px;background:#1A5FC8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;flex-shrink:0;">'+((nm||'?')[0].toUpperCase())+'</div>'
-        +'<div style="flex:1;">'
-          +'<div style="font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">'+(nm||'Your Name')+'</div>'
-          +'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">'+em+'</div>'
-          +(isCo?'<span style="font-size:11.5px;background:#eff6ff;color:#1A5FC8;border-radius:6px;padding:2px 8px;font-weight:600;margin-top:4px;display:inline-block;">Company</span>':'<span style="font-size:11.5px;background:#f0fdf4;color:#16a34a;border-radius:6px;padding:2px 8px;font-weight:600;margin-top:4px;display:inline-block;">Sole Trader</span>')
-        +'</div>'
-      +'</div>'
-      +fieldRow([{l:'Full name',v:nm,k:'fullLegalName'},{l:'Email address',v:em,k:'_email'}])
-      +'<div style="margin-bottom:16px;">'
-        +'<label style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;font-family:Inter,sans-serif;display:block;margin-bottom:4px;">Mobile number</label>'
-        +'<div style="display:flex;gap:8px;">'
-          +'<div style="border:1.5px solid #e2e8f0;border-radius:9px;padding:10px 12px;font-size:13px;font-family:Inter,sans-serif;background:#f8fafc;color:#374151;white-space:nowrap;">GB +44</div>'
-          +'<input data-pfield="phone" value="'+(so.phone||'')+'" placeholder="7700 000000" style="border:1.5px solid #e2e8f0;border-radius:9px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;color:#0f172a;outline:none;flex:1;">'
-        +'</div>'
-      +'</div>'
-      +'<div style="margin-bottom:16px;">'
-        +'<label style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;font-family:Inter,sans-serif;display:block;margin-bottom:4px;">Password</label>'
-        +'<div style="position:relative;">'
-          +'<input type="password" value="password" style="border:1.5px solid #e2e8f0;border-radius:9px;padding:10px 42px 10px 13px;font-size:13.5px;font-family:Inter,sans-serif;color:#0f172a;outline:none;width:100%;box-sizing:border-box;">'
-          +'<svg style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#94a3b8" stroke-width="1.6"><ellipse cx="8" cy="8" rx="7" ry="4.5"/><circle cx="8" cy="8" r="2"/></svg>'
-        +'</div>'
-        +'<div style="margin-top:6px;"><a href="javascript:void(0)" style="font-size:13px;color:#1A5FC8;font-family:Inter,sans-serif;text-decoration:none;">Change password</a></div>'
-      +'</div>'
-    +'</div>'
-    +saveBtn();
+  // ── Helpers ──
+  function field2(label,val,key,placeholder){
+    var ph=placeholder||'Not provided';
+    return '<div>'
+      +'<label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">'+label+'</label>'
+      +'<input data-pfield="'+key+'" value="'+(val||'')+'" placeholder="'+ph+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;transition:border-color .15s,background .15s;">'
+    +'</div>';
+  }
+  function row2(a,b){ return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">'+a+b+'</div>'; }
+  function row1(a){ return '<div style="margin-bottom:16px;">'+a+'</div>'; }
+  function secHdr(label){ return '<div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;font-family:Inter,sans-serif;margin:20px 0 14px;padding-top:16px;border-top:1px solid #f1f5f9;">'+label+'</div>'; }
+  function tog(label,val,key){
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;border:1.5px solid #e2e8f0;border-radius:10px;margin-bottom:12px;">'
+      +'<span style="font-size:14px;font-weight:500;color:#374151;font-family:Inter,sans-serif;">'+label+'</span>'
+      +'<button class="prof-tog" data-pfield="'+key+'" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(val?'#1A5FC8':'#d1d5db')+';transition:background .2s;flex-shrink:0;"'+(val?' data-on="1"':'')+' >'
+        +'<span style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(val?'right:2px;':'left:2px;')+'transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,0.18);display:block;"></span>'
+      +'</button>'
+    +'</div>';
+  }
+  function chip(label,sel){
+    return '<span style="padding:6px 16px;border-radius:999px;border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#eff6ff':'#fff')+';color:'+(sel?'#1e3a5f':'#374151')+';font-size:13px;font-family:Inter,sans-serif;">'+label+'</span>';
+  }
+  function saveBar(){
+    return '<div style="display:flex;justify-content:flex-end;padding-top:20px;border-top:1px solid #f1f5f9;margin-top:8px;">'
+      +'<button class="supp-prof-save" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save changes</button>'
+    +'</div>';
+  }
 
-  // Sectors tab
+  // ── Panel: Profile ──
+  var panelProfile=''
+    // Avatar + name row
+    +'<div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid #f1f5f9;flex-wrap:wrap;">'
+      +'<div style="position:relative;flex-shrink:0;">'
+        +'<div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;font-family:Inter,sans-serif;">'+initials+'</div>'
+        +'<div style="position:absolute;bottom:0;right:0;width:20px;height:20px;background:#1A5FC8;border:2px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;">'
+          +'<svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#fff" stroke-width="2"><path d="M1 6.5l1.5-1.5 3.5-3.5 1.5 1.5-3.5 3.5-1.5.5z"/></svg>'
+        +'</div>'
+      +'</div>'
+      +'<div style="flex:1;min-width:0;">'
+        +'<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">'+nm+'</div>'
+        +'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">'+em+'</div>'
+        +'<div style="margin-top:6px;display:inline-flex;align-items:center;gap:6px;background:#fefce8;border:1px solid #fde047;border-radius:999px;padding:3px 10px;">'
+          +'<span style="width:6px;height:6px;border-radius:50%;background:#eab308;"></span>'
+          +'<span style="font-size:11.5px;font-weight:600;color:#854d0e;font-family:Inter,sans-serif;">Email not verified</span>'
+          +'<a href="javascript:void(0)" style="font-size:11.5px;color:#1A5FC8;font-weight:600;font-family:Inter,sans-serif;text-decoration:none;">Verify now</a>'
+        +'</div>'
+      +'</div>'
+      +'<button class="supp-prof-save" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;flex-shrink:0;">Save changes</button>'
+    +'</div>'
+    // Row 1: Full name + Email
+    +row2(
+      field2('Full name',nm,'fullLegalName','Your full name'),
+      '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Email address</label><div style="position:relative;"><input data-pfield="_email" value="'+(em||'')+'" placeholder="your@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 100px 11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;"><span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10.5px;font-weight:700;background:#fef3c7;color:#b45309;border-radius:999px;padding:2px 9px;white-space:nowrap;">Unverified</span></div></div>'
+    )
+    // Row 2: Mobile + Password
+    +row2(
+      '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Mobile number</label><div style="display:flex;"><div style="padding:11px 10px;background:#f8fafc;border:1.5px solid #e2e8f0;border-right:none;border-radius:10px 0 0 10px;font-size:13px;font-family:Inter,sans-serif;color:#374151;white-space:nowrap;">GB +44</div><input data-pfield="phone" value="'+(so.phone||'')+'" placeholder="7700 000000" style="flex:1;border:1.5px solid #e2e8f0;border-radius:0 10px 10px 0;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;background:#fafafa;"></div></div>',
+      '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Password</label><div style="position:relative;"><input type="password" value="password" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 44px 11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;"><button type="button" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;display:flex;align-items:center;"><svg width="16" height="16" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg></button></div><div style="margin-top:6px;"><a href="javascript:void(0)" style="font-size:12.5px;color:#1A5FC8;font-weight:600;font-family:Inter,sans-serif;text-decoration:none;">Change password</a></div></div>'
+    );
+
+  // ── Panel: Sectors ──
   var sectorVal=so.sector||'';
   var resSubAll=['AST (Assured Shorthold)','HMO','STR / Short-let','Block management'];
   var comSubAll=['Offices','Retail','Industrial','Hospitality','Mixed use'];
-  function secCardP(s){
+  function secCard(s){
     var lbl={residential:'Residential',commercial:'Commercial',both:'Both'}[s];
-    var ico={
-      residential:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 19V10L11 3l8 7v9"/><path d="M8 19v-6h6v6"/></svg>',
-      commercial:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="16" height="13" rx="1"/><path d="M3 11h16"/><path d="M8 7V5h6v2"/></svg>',
-      both:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 18V11l7-6 7 6v7"/><rect x="13" y="9" width="8" height="9" rx="1"/></svg>'
-    }[s];
+    var ico={residential:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 19V10L11 3l8 7v9"/><path d="M8 19v-6h6v6"/></svg>',commercial:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="16" height="13" rx="1"/><path d="M3 11h16"/><path d="M8 7V5h6v2"/></svg>',both:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 18V11l7-6 7 6v7"/><rect x="13" y="9" width="8" height="9" rx="1"/></svg>'}[s];
     var sel=sectorVal===s;
-    return '<div style="border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:12px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:default;position:relative;background:'+(sel?'#eff6ff':'#fff')+'">'
+    return '<div style="border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:12px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:default;position:relative;background:'+(sel?'#eff6ff':'#fff')+'">'
       +'<div style="color:'+(sel?'#1A5FC8':'#94a3b8')+';">'+ico+'</div>'
       +'<div style="font-size:13px;font-weight:'+(sel?'700':'500')+';color:'+(sel?'#1A5FC8':'#374151')+';font-family:Inter,sans-serif;">'+lbl+'</div>'
       +(sel?'<div style="position:absolute;top:8px;right:8px;"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#1A5FC8"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.8"/></svg></div>':'')
     +'</div>';
   }
-  var panelSectors='<div style="padding:8px 0;">'
-    +'<div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;font-family:Inter,sans-serif;margin-bottom:10px;">Sectors Served</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;">'
-      +secCardP('residential')+secCardP('commercial')+secCardP('both')
+  var panelSectors=''
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;">'
+      +secCard('residential')+secCard('commercial')+secCard('both')
     +'</div>'
     +(sectorVal==='residential'||sectorVal==='both'?'<div style="margin-bottom:16px;"><div style="font-size:13px;color:#64748b;margin-bottom:8px;font-family:Inter,sans-serif;">Residential sub-types <span style="color:#94a3b8;font-size:12px;">(optional)</span></div><div style="display:flex;flex-wrap:wrap;gap:8px;">'+resSubAll.map(function(v){return chip(v,(so.sectorSubRes||[]).indexOf(v)>=0);}).join('')+'</div></div>':'')
     +(sectorVal==='commercial'||sectorVal==='both'?'<div style="margin-bottom:16px;"><div style="font-size:13px;color:#64748b;margin-bottom:8px;font-family:Inter,sans-serif;">Commercial sub-types <span style="color:#94a3b8;font-size:12px;">(optional)</span></div><div style="display:flex;flex-wrap:wrap;gap:8px;">'+comSubAll.map(function(v){return chip(v,(so.sectorSubCom||[]).indexOf(v)>=0);}).join('')+'</div></div>':'')
-  +'</div>'+saveBtn();
+    +saveBar();
 
-  // Identity tab
-  var panelIdentity='<div style="padding:8px 0;">'
-    +sectionHead(isCo?'Company Details':'Personal Details')
+  // ── Panel: Identity ──
+  var panelIdentity=''
     +(isCo
-      ?fieldRow([{l:'Trading Name',v:so.tradingName,k:'tradingName'},{l:'Registered Company Name',v:so.regCompanyName,k:'regCompanyName'}])
-       +fieldRow([{l:'Company Reg Number',v:so.companyRegNum,k:'companyRegNum'}])
-       +field('Registered Office Address',so.regOfficeAddr,'regOfficeAddr')
-       +sectionHead('Person of Significant Control (PSC)')
-       +fieldRow([{l:'PSC Full Name',v:so.pscFullName,k:'pscFullName'},{l:'PSC Date of Birth',v:so.pscDob,k:'pscDob'}])
-       +field('TIN / Tax ID',so.tinNum,'tinNum')
-      :fieldRow([{l:'Full Legal Name',v:so.fullLegalName,k:'fullLegalName'},{l:'Date of Birth',v:so.dob,k:'dob'}])
-       +fieldRow([{l:'NI Number',v:so.niNumber,k:'niNumber'},{l:'Home Address',v:so.homeAddress,k:'homeAddress'}])
+      ?secHdr('Company Details')
+       +row2(field2('Trading Name',so.tradingName,'tradingName'),field2('Registered Company Name',so.regCompanyName,'regCompanyName'))
+       +row1(field2('Registered Office Address',so.regOfficeAddr,'regOfficeAddr'))
+       +row2(field2('Company Reg Number',so.companyRegNum,'companyRegNum'),field2('TIN / Tax ID',so.tinNum,'tinNum'))
+       +secHdr('Person of Significant Control (PSC)')
+       +row2(field2('PSC Full Name',so.pscFullName,'pscFullName'),field2('PSC Date of Birth',so.pscDob,'pscDob'))
+      :secHdr('Personal Details')
+       +row2(field2('Full Legal Name',so.fullLegalName,'fullLegalName'),field2('Date of Birth',so.dob,'dob'))
+       +row2(field2('NI Number',so.niNumber,'niNumber'),field2('Home Address',so.homeAddress,'homeAddress'))
     )
-  +'</div>'+saveBtn();
+    +saveBar();
 
-  // Bank Details tab
-  var panelBank='<div style="padding:8px 0;">'
-    +sectionHead('Bank Account')
-    +fieldRow([{l:'Account Holder Name',v:so.accountHolder,k:'accountHolder'},{l:'Bank Name',v:so.bankName,k:'bankName'}])
-    +fieldRow([{l:'Sort Code',v:so.sortCode,k:'sortCode'},{l:'Account Number',v:so.accountNumber,k:'accountNumber'}])
-    +sectionHead('VAT & Business')
-    +toggle('VAT Registered',so.vatRegistered,'vatRegistered')
-    +(so.vatRegistered?field('VAT Number',so.vatNumber,'vatNumber'):'')
-    +toggle('Business Bank Account',so.businessAccount,'businessAccount')
-  +'</div>'+saveBtn();
+  // ── Panel: Bank Details ──
+  var panelBank=''
+    +secHdr('Bank Account')
+    +row2(field2('Account Holder Name',so.accountHolder,'accountHolder'),field2('Bank Name',so.bankName,'bankName'))
+    +row2(field2('Sort Code',so.sortCode,'sortCode'),field2('Account Number',so.accountNumber,'accountNumber'))
+    +secHdr('VAT & Business')
+    +tog('VAT Registered',so.vatRegistered,'vatRegistered')
+    +(so.vatRegistered?row1(field2('VAT Number',so.vatNumber,'vatNumber')):'')
+    +tog('Business Bank Account',so.businessAccount,'businessAccount')
+    +saveBar();
 
-  // Insurance tab
-  var panelInsurance='<div style="padding:8px 0;">'
-    +sectionHead('Public Liability Insurance')
-    +fieldRow([{l:'Insurance Provider',v:so.insProvider,k:'insProvider'},{l:'Policy Number',v:so.insPolicy,k:'insPolicy'}])
-    +fieldRow([{l:'Coverage Amount',v:so.insCoverage,k:'insCoverage'},{l:'Policy Expiry Date',v:so.insExpiry,k:'insExpiry'}])
-    +sectionHead('Additional Cover')
-    +toggle('Professional Indemnity Insurance',so.profIndemnity,'profIndemnity')
-    +(isCo?toggle("Employers' Liability Insurance",so.employersLiability,'employersLiability'):'')
-    +(isCo?toggle('All Workers Hold Valid Trade Licences',so.allWorkersValidCerts,'allWorkersValidCerts'):'')
-  +'</div>'+saveBtn();
+  // ── Panel: Insurance ──
+  var panelInsurance=''
+    +secHdr('Public Liability Insurance')
+    +row2(field2('Insurance Provider',so.insProvider,'insProvider'),field2('Policy Number',so.insPolicy,'insPolicy'))
+    +row2(field2('Coverage Amount',so.insCoverage,'insCoverage'),field2('Policy Expiry Date',so.insExpiry,'insExpiry'))
+    +secHdr('Additional Cover')
+    +tog('Professional Indemnity Insurance',so.profIndemnity,'profIndemnity')
+    +(isCo?tog("Employers' Liability Insurance",so.employersLiability,'employersLiability'):'')
+    +(isCo?tog('All Workers Hold Valid Trade Licences',so.allWorkersValidCerts,'allWorkersValidCerts'):'')
+    +saveBar();
 
-  // Background Checks tab
-  var panelBg='<div style="padding:8px 0;">'
+  // ── Panel: Background Checks ──
+  var panelBg=''
     +(isCo
-      ?sectionHead('Company DBS Policy')
-       +fieldRow([{l:'Team Size',v:so.teamSize,k:'teamSize'},{l:'Company Has a DBS Policy?',v:so.companyDbsDecl,k:'companyDbsDecl'}])
-       +field('Right to Work — All Staff',so.rightToWork,'rightToWork')
-      :sectionHead('Personal DBS & Right to Work')
-       +fieldRow([{l:'DBS Check Declared',v:so.dbsDeclared,k:'dbsDeclared'},{l:'DBS Level',v:so.dbsLevel,k:'dbsLevel'}])
-       +field('Right to Work',so.rightToWork,'rightToWork')
+      ?secHdr('Company DBS Policy')
+       +row2(field2('Team Size',so.teamSize,'teamSize'),field2('Company Has a DBS Policy?',so.companyDbsDecl,'companyDbsDecl'))
+       +row1(field2('Right to Work — All Staff',so.rightToWork,'rightToWork'))
+      :secHdr('Personal DBS & Right to Work')
+       +row2(field2('DBS Check Declared',so.dbsDeclared,'dbsDeclared'),field2('DBS Level',so.dbsLevel,'dbsLevel'))
+       +row1(field2('Right to Work',so.rightToWork,'rightToWork'))
     )
-    +sectionHead('Profile & Experience')
-    +fieldRow([{l:'Primary Trade',v:so.primaryTrade,k:'primaryTrade'},{l:'Years of Experience',v:so.experience,k:'experience'}])
-    +fieldRow([{l:'Jobs Completed',v:so.jobsCompleted,k:'jobsCompleted'},{l:'Emergency Callouts',v:so.emergencyCallouts,k:'emergencyCallouts'}])
-    +field('Bio / Description',so.bio,'bio')
-  +'</div>'+saveBtn();
+    +secHdr('Profile & Experience')
+    +row2(field2('Primary Trade',so.primaryTrade,'primaryTrade'),field2('Years of Experience',so.experience,'experience'))
+    +row2(field2('Jobs Completed',so.jobsCompleted,'jobsCompleted'),field2('Emergency Callouts',so.emergencyCallouts,'emergencyCallouts'))
+    +row1('<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Bio / Description</label><textarea data-pfield="bio" rows="3" placeholder="Tell clients about yourself..." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;resize:vertical;">'+(so.bio||'')+'</textarea></div>')
+    +saveBar();
 
   var panels={profile:panelProfile,sectors:panelSectors,identity:panelIdentity,bank:panelBank,insurance:panelInsurance,background:panelBg};
 
-  return '<div style="max-width:760px;">'
-    // Header row
-    +'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;">'
+  // Progress ring
+  var filledFields=[nm,em,so.phone,so.niNumber||so.companyRegNum,so.insProvider,so.bankName].filter(Boolean).length;
+  var pct=Math.round(filledFields/6*100);
+  var circ=Math.PI*2*32; var offset=circ-(pct/100*circ);
+
+  return '<div style="max-width:900px;">'
+    // Header + progress ring
+    +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:20px;flex-wrap:wrap;">'
       +'<div>'
-        +'<div style="font-size:11px;font-weight:700;color:#1A5FC8;letter-spacing:.06em;font-family:Inter,sans-serif;margin-bottom:4px;">ACCOUNT</div>'
-        +'<h1 style="font-size:26px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin:0;">My Profile</h1>'
+        +'<h1 style="font-size:28px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin:0 0 4px;">Account Settings</h1>'
+        +'<p style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin:0;">Manage your profile, business &amp; subscription.</p>'
+      +'</div>'
+      +'<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;">'
+        +'<div style="position:relative;width:74px;height:74px;">'
+          +'<svg width="74" height="74" viewBox="0 0 74 74" style="transform:rotate(-90deg);">'
+            +'<circle cx="37" cy="37" r="30" fill="none" stroke="#e2e8f0" stroke-width="7"/>'
+            +'<circle cx="37" cy="37" r="30" fill="none" stroke="#f59e0b" stroke-width="7" stroke-dasharray="188.5" stroke-dashoffset="'+(188.5-pct/100*188.5)+'" stroke-linecap="round"/>'
+          +'</svg>'
+          +'<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">'
+            +'<span style="font-size:14px;font-weight:800;color:#f59e0b;font-family:Inter,sans-serif;line-height:1;">'+pct+'%</span>'
+            +'<span style="font-size:9px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:1px;">done</span>'
+          +'</div>'
+        +'</div>'
+        +'<span style="font-size:11px;color:#64748b;font-family:Inter,sans-serif;font-weight:500;white-space:nowrap;">Profile complete</span>'
       +'</div>'
     +'</div>'
-    // Tab bar
-    +'<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;overflow:hidden;">'
-      +'<div style="display:flex;border-bottom:1.5px solid #e8edf2;overflow-x:auto;scrollbar-width:none;">'
-        +tabs.map(function(t){
-          var isAct=t.id===activeTab;
-          return '<button class="supp-prof-tab" data-tabid="'+t.id+'" style="padding:13px 18px;border:none;border-bottom:2.5px solid '+(isAct?'#1A5FC8':'transparent')+';font-size:13px;font-weight:'+(isAct?'700':'500')+';color:'+(isAct?'#1A5FC8':'#64748b')+';cursor:pointer;background:none;font-family:Inter,sans-serif;white-space:nowrap;">'+t.label+'</button>';
-        }).join('')
-      +'</div>'
-      +'<div style="padding:20px 24px;" id="suppProfPanelWrap">'
-        +(panels[activeTab]||'')
-      +'</div>'
+    // Tabs — PM style: underline only, no background
+    +'<div style="display:flex;gap:0;border-bottom:2px solid #e8ecf3;margin-bottom:24px;overflow-x:auto;height:44px;align-items:flex-end;">'
+      +tabs.map(function(t){
+        var isAct=t.id===activeTab;
+        return '<button class="supp-prof-tab" data-tabid="'+t.id+'" style="padding:10px 20px;border:none;border-bottom:2px solid '+(isAct?'#1A5FC8':'transparent')+';margin-bottom:-2px;font-size:13.5px;font-weight:'+(isAct?'700':'600')+';color:'+(isAct?'#1A5FC8':'#64748b')+';cursor:pointer;background:none;font-family:Inter,sans-serif;white-space:nowrap;transition:color .12s,border-color .12s;">'+t.label+'</button>';
+      }).join('')
+    +'</div>'
+    // Panel content
+    +'<div id="suppProfPanelWrap">'
+      +(panels[activeTab]||'')
     +'</div>'
   +'</div>';
 }
-
 function _suppWireProfilePage(){
   var mainEl=document.getElementById('suppMain')||window._suppMain;
   if(!mainEl) return;
@@ -17093,31 +17101,37 @@ function _showSupplierDashboard(){
     };
     bot.appendChild(dm);
 
-    // ── User row — click goes to Profile page ──
+    // ── User row: avatar+name+email (→ Profile) | logout icon ──
     var userRow = document.createElement('div');
     userRow.id  = 'suppUserRow';
-    userRow.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 6px;border-radius:8px;cursor:pointer;';
-    userRow.innerHTML = '<div style="width:28px;height:28px;background:#1A5FC8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;">'+initials+'</div>'
-      +(!collapsed
-          ? '<div style="flex:1;min-width:0;"><div style="font-size:12.5px;font-weight:600;color:'+(window._suppDark?'#e2e8f0':'#0f172a')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+name+'</div>'
-            +'<div style="font-size:11px;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+email+'</div></div>'
-          : '');
-    userRow.onmouseover = function(){ this.style.background=window._suppDark?'rgba(255,255,255,0.06)':'#EDEEF1'; };
-    userRow.onmouseout  = function(){ this.style.background=''; };
-    userRow.onclick = function(){ _suppNavTo('profile'); };
-    bot.appendChild(userRow);
+    userRow.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 6px;border-radius:8px;';
 
-    // ── Logout button — separate, independent ──
+    // Clickable left: avatar + info
+    var userLeft = document.createElement('div');
+    userLeft.style.cssText = 'display:flex;align-items:center;gap:8px;flex:1;min-width:0;cursor:pointer;border-radius:8px;padding:2px 4px;';
+    userLeft.innerHTML = '<div style="width:30px;height:30px;background:#1A5FC8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;">'+initials+'</div>'
+      +(!collapsed?'<div style="flex:1;min-width:0;">'
+        +'<div style="font-size:12.5px;font-weight:600;color:'+(window._suppDark?'#e2e8f0':'#0f172a')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+name+'</div>'
+        +'<div style="font-size:11px;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+email+'</div>'
+      +'</div>':'');
+    userLeft.onmouseover = function(){ this.style.background=window._suppDark?'rgba(255,255,255,0.06)':'#EDEEF1'; };
+    userLeft.onmouseout  = function(){ this.style.background=''; };
+    userLeft.onclick = function(){ _suppNavTo('profile'); };
+    userRow.appendChild(userLeft);
+
+    // Logout icon button (right side)
     if(!collapsed){
-      var logoutRow = document.createElement('button');
-      logoutRow.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;background:none;border:none;width:100%;margin-top:2px;font-family:Inter,sans-serif;color:#ef4444;font-size:13px;font-weight:500;';
-      logoutRow.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#ef4444" stroke-width="1.7" style="flex-shrink:0;"><path d="M8.5 6.5H3M10 4.5l2 2-2 2"/><path d="M10 1H4.5A1.5 1.5 0 003 2.5v1M3 9.5v1A1.5 1.5 0 004.5 12H10"/></svg>Log out';
-      logoutRow.onmouseover = function(){ this.style.background=window._suppDark?'rgba(239,68,68,0.1)':'#fef2f2'; };
-      logoutRow.onmouseout  = function(){ this.style.background=''; };
-      logoutRow.onclick = function(){ _doLogout(); };
-      bot.appendChild(logoutRow);
+      var logoutBtn = document.createElement('button');
+      logoutBtn.title = 'Log out';
+      logoutBtn.style.cssText = 'background:none;border:none;cursor:pointer;padding:6px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#94a3b8;transition:background .12s,color .12s;';
+      logoutBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 7.5H4M11.5 5.5l2 2-2 2"/><path d="M11 1.5H5A1.5 1.5 0 003.5 3v1.5M3.5 10.5V12A1.5 1.5 0 005 13.5H11"/></svg>';
+      logoutBtn.onmouseover = function(){ this.style.background=window._suppDark?'rgba(239,68,68,0.12)':'#fee2e2'; this.style.color='#ef4444'; };
+      logoutBtn.onmouseout  = function(){ this.style.background=''; this.style.color='#94a3b8'; };
+      logoutBtn.onclick = function(e){ e.stopPropagation(); _doLogout(); };
+      userRow.appendChild(logoutBtn);
     }
 
+    bot.appendChild(userRow);
     sb.appendChild(bot);
     return sb;
   }
