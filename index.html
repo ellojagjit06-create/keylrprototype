@@ -3545,6 +3545,40 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .adm-form-section-head:first-child{border-top:none;padding-top:0;margin-top:0;}
 .adm-save-row{padding:14px 20px;border-top:1px solid #f1f5f9;display:flex;justify-content:flex-end;}
 .adm-save-btn{background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;}
+/* Sector selector chips in identity tab */
+.adm-sector-card{border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 16px;cursor:default;text-align:center;background:#f8fafc;}
+.adm-sector-card.selected{border-color:#1A5FC8;background:#eff6ff;}
+.adm-sector-card-name{font-size:13px;font-weight:600;color:#0f172a;margin-top:4px;}
+/* Upload field in identity tab */
+.adm-upload-field{border:1.5px dashed #d1d5db;border-radius:9px;padding:14px 16px;display:flex;align-items:center;gap:10px;background:#f8fafc;cursor:pointer;transition:border-color .15s;}
+.adm-upload-field:hover{border-color:#1A5FC8;background:#f0f7ff;}
+.adm-upload-field.has-file{border-style:solid;border-color:#10b981;background:#f0fdf4;}
+/* Compliance item expandable */
+.adm-comp-item{border:1px solid #e8edf2;border-radius:10px;margin-bottom:6px;overflow:hidden;cursor:pointer;transition:box-shadow .12s;}
+.adm-comp-item:hover{box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.adm-comp-item.flagged{border-color:#fca5a5;background:#fff8f8;}
+.adm-comp-item.verified{border-color:#a7f3d0;background:#f0fdf4;}
+.adm-comp-item-row{display:flex;align-items:center;gap:12px;padding:12px 16px;}
+.adm-comp-item-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.adm-comp-item-body{flex:1;min-width:0;}
+.adm-comp-item-name{font-size:13px;font-weight:600;color:#0f172a;}
+.adm-comp-item-sub{font-size:11.5px;color:#64748b;margin-top:1px;}
+.adm-comp-item-expand{display:none;border-top:1px solid #e8edf2;padding:14px 16px;}
+.adm-comp-item.expanded .adm-comp-item-expand{display:block;}
+.adm-comp-item.flagged .adm-comp-item-expand{border-top-color:#fca5a5;}
+.adm-comp-item.verified .adm-comp-item-expand{border-top-color:#a7f3d0;}
+.adm-comp-issue-banner{background:#fff1f2;border:1px solid #fecaca;border-radius:8px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px;}
+.adm-comp-expand-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;}
+.adm-comp-meta-lbl{font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;}
+.adm-comp-meta-val{font-size:13px;font-weight:600;color:#0f172a;}
+.adm-comp-action-row{display:flex;gap:8px;flex-wrap:wrap;}
+.adm-comp-btn{border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;border:none;}
+.adm-comp-btn.approve{background:#059669;color:#fff;}
+.adm-comp-btn.reject{background:#fff;color:#dc2626;border:1.5px solid #fecaca;}
+.adm-comp-btn.reupload{background:#fff;color:#374151;border:1.5px solid #e2e8f0;}
+/* Verification running animation */
+@keyframes admVerifying{0%{opacity:1}50%{opacity:.4}100%{opacity:1}}
+.adm-verifying{animation:admVerifying 1.2s ease infinite;}
 </style>
 <div id="pg-admin-dash" style="display:none;">
   <!-- Mobile backdrop -->
@@ -7695,50 +7729,124 @@ function _admBuildDetail(app) {
       bg:'<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="1" width="9" height="11" rx="1"/><path d="M4 4h5M4 6.5h5M4 9h3"/></svg>'};
     return svgs[ico]||svgs.id;
   }
-  function compStatusHtml(s,expiry){
-    var extra=expiry&&s==='pending'?'<span style="font-size:10.5px;color:#64748b;margin-left:6px;">🗓 '+_admEsc(expiry)+'</span>':'';
-    if(s==='passed') return '<span class="adm-comp-status passed">Passed</span>'+extra;
-    if(s==='pending') return '<span class="adm-comp-status pending">Pending</span>'+extra;
+  function compStatusHtml(s){
+    if(s==='passed'||s==='verified') return '<span class="adm-comp-status passed">Verified</span>';
+    if(s==='issue'||s==='flagged') return '<span class="adm-comp-status" style="background:#fee2e2;color:#dc2626;">Flagged</span>';
+    if(s==='pending') return '<span class="adm-comp-status pending">Pending</span>';
     if(s==='na') return '<span class="adm-comp-status na">N/A</span>';
     return '<span class="adm-comp-status not_submitted">Not Submitted</span>';
   }
   var compHTML=compItems.map(function(sec){
-    var verified=sec.checks.filter(function(c){return c.status==='passed';}).length;
-    return '<div class="adm-comp-section-label">'
-      +'<div style="width:24px;height:24px;background:#f1f5f9;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#64748b;">'+compIcon(sec.icon)+'</div>'
+    var verified=sec.checks.filter(function(c){return c.status==='passed'||c.status==='verified';}).length;
+    var secIssue=sec.checks.some(function(c){return c.status==='issue'||c.status==='flagged';});
+    var secIcon='';
+    if(secIssue) secIcon='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#ef4444" stroke-width="1.8"><path d="M7 1L13 12H1z"/><line x1="7" y1="5" x2="7" y2="8"/><circle cx="7" cy="10.5" r=".7" fill="#ef4444" stroke="none"/></svg>';
+    else if(verified===sec.checks.length) secIcon='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><circle cx="7" cy="7" r="6"/><path d="M4 7l2.5 2.5 4-4"/></svg>';
+    else secIcon='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#f59e0b" stroke-width="1.8"><circle cx="7" cy="7" r="6"/></svg>';
+    return '<div class="adm-comp-section-label" style="margin-top:6px;">'
+      +'<div style="width:24px;height:24px;background:#f1f5f9;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#64748b;flex-shrink:0;">'+compIcon(sec.icon)+'</div>'
       +_admEsc(sec.section)
-      +'<span style="font-size:11px;color:#94a3b8;margin-left:auto;">'+verified+'/'+sec.checks.length+' verified</span>'
+      +'<span style="margin-left:auto;display:flex;align-items:center;gap:6px;">'
+        +secIcon
+        +'<span style="font-size:11px;color:#94a3b8;">'+verified+'/'+sec.checks.length+' verified</span>'
+      +'</span>'
     +'</div>'
     +sec.checks.map(function(ch){
-      return '<div class="adm-comp-item">'
-        +'<div class="adm-comp-item-icon" style="background:'+(ch.status==='pending'?'#fffbeb':ch.status==='passed'?'#f0fdf4':'#f8fafc')+';">'
-          +'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="'+(ch.status==='pending'?'#f59e0b':ch.status==='passed'?'#10b981':'#94a3b8')+'" stroke-width="2">'
-            +(ch.status==='passed'?'<path d="M2 6l3 3 5-5"/>':'<circle cx="6" cy="6" r="4.5"/>')
-          +'</svg>'
+      var isFlagged=ch.status==='issue'||ch.status==='flagged';
+      var isVerified=ch.status==='passed'||ch.status==='verified';
+      var isNA=ch.status==='na'||ch.status==='not_submitted';
+      var icoBg=isFlagged?'#fef2f2':isVerified?'#f0fdf4':'#fffbeb';
+      var icoClr=isFlagged?'#ef4444':isVerified?'#10b981':isNA?'#d1d5db':'#f59e0b';
+      var icoPath=isVerified?'<path d="M2 6l3 3 5-5"/>':isFlagged?'<path d="M3 3l6 6M9 3l-6 6"/>':'<circle cx="6" cy="6" r="4.5"/>';
+      var rowCls='adm-comp-item'+(isFlagged?' flagged':isVerified?' verified':'');
+      var cid='ci_'+app.id+'_'+(ch.key||ch.name).replace(/[^a-z0-9]/gi,'_');
+      // Expand panel content
+      var issueBanner=isFlagged?'<div class="adm-comp-issue-banner">'
+        +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#ef4444" stroke-width="1.8" style="flex-shrink:0;margin-top:1px;"><path d="M7 1L13 12H1z"/><line x1="7" y1="5" x2="7" y2="8"/></svg>'
+        +'<div><div style="font-size:12.5px;font-weight:700;color:#dc2626;margin-bottom:2px;">Issue Detected</div>'
+          +'<div style="font-size:12px;color:#dc2626;">Document flagged — admin review required</div></div></div>':'';
+      var ck=_admEsc(ch.key||ch.name.replace(/[^a-z0-9]/gi,'_')); var aid=app.id;
+      var expandPanel=''
+        +issueBanner
+        +'<div class="adm-comp-expand-meta">'
+          +'<div><div class="adm-comp-meta-lbl">Method</div><div class="adm-comp-meta-val">'+_admEsc(ch.method||'—')+'</div></div>'
+          +(ch.expiry?'<div><div class="adm-comp-meta-lbl">Expiry</div><div class="adm-comp-meta-val">'+_admEsc(ch.expiry)+'</div></div>':'<div></div>')
+          +'<div><div class="adm-comp-meta-lbl">Type</div><div class="adm-comp-meta-val">'+_admEsc(ch.type||'—')+'</div></div>'
         +'</div>'
-        +'<div class="adm-comp-item-body">'
-          +'<div class="adm-comp-item-name">'+_admEsc(ch.name)+'</div>'
-          +(ch.sub?'<div class="adm-comp-item-sub">'+_admEsc(ch.sub)+'</div>':'')
+        +(!isNA?'<div class="adm-comp-action-row">'
+          +'<button class="adm-comp-btn approve adm-ci-approve" data-app="'+aid+'" data-key="'+ck+'">'
+            +'<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5.5" cy="5.5" r="4.5"/><path d="M3 5.5l2 2 3-3"/></svg>Approve</button>'
+          +'<button class="adm-comp-btn reject adm-ci-reject" data-app="'+aid+'" data-key="'+ck+'">'
+            +'<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5.5" cy="5.5" r="4.5"/><path d="M3.5 3.5l4 4M7.5 3.5l-4 4"/></svg>Reject</button>'
+          +'<button class="adm-comp-btn reupload">'
+            +'<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5.5 7V2M3 4l2.5-2.5L8 4"/><path d="M2 8.5v1a.5.5 0 00.5.5h6a.5.5 0 00.5-.5v-1"/></svg>Request Re-upload</button>'
+        +'</div>':'');
+      return '<div class="'+rowCls+' adm-ci-row" id="'+cid+'" data-cid="'+cid+'">'
+        +'<div class="adm-comp-item-row">'
+          +'<div class="adm-comp-item-icon" style="background:'+icoBg+';">'
+            +'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="'+icoClr+'" stroke-width="2">'+icoPath+'</svg>'
+          +'</div>'
+          +'<div class="adm-comp-item-body">'
+            +'<div style="display:flex;align-items:center;gap:6px;">'
+              +'<div class="adm-comp-item-name">'+_admEsc(ch.name)+'</div>'
+              +(isVerified?'<span style="font-size:10px;font-weight:700;background:#dcfce7;color:#166534;padding:1px 7px;border-radius:10px;">Auto</span>':'')
+            +'</div>'
+            +(ch.sub?'<div class="adm-comp-item-sub">'+_admEsc(ch.sub)+'</div>':'')
+          +'</div>'
+          +'<div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">'
+            +(ch.expiry?'<span style="font-size:11px;color:#64748b;">🗓 '+_admEsc(ch.expiry)+'</span>':'')
+            +compStatusHtml(ch.status)
+            +'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#94a3b8" stroke-width="1.8" class="ci-chevron" style="transition:transform .2s;flex-shrink:0;"><path d="M3 4.5l3 3 3-3"/></svg>'
+          +'</div>'
         +'</div>'
-        +compStatusHtml(ch.status,ch.expiry)
+        +'<div class="adm-comp-item-expand">'+expandPanel+'</div>'
       +'</div>';
     }).join('');
   }).join('');
 
   // ── Tab content builders (editable form fields) ──
+  // Sector display
+  var sectorVal=app.sector||'';
+  var secCards=['residential','commercial','both'].map(function(s){
+    var labels={residential:'Residential',commercial:'Commercial',both:'Both'};
+    var icons={
+      residential:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 19V10L11 3l8 7v9"/><path d="M8 19v-6h6v6"/></svg>',
+      commercial:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="16" height="13" rx="1"/><path d="M3 11h16"/><path d="M8 7V5h6v2"/><path d="M8 15h2M14 15h2"/></svg>',
+      both:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 18V11l7-6 7 6v7"/><rect x="13" y="9" width="8" height="9" rx="1"/><path d="M13 14h8"/></svg>'
+    };
+    var sel=sectorVal===s;
+    return '<div class="adm-sector-card'+(sel?' selected':'')+'" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 10px;">'
+      +'<div style="color:'+(sel?'#1A5FC8':'#64748b')+';">'+icons[s]+'</div>'
+      +'<div class="adm-sector-card-name" style="color:'+(sel?'#1A5FC8':'#0f172a')+';font-weight:'+(sel?'700':'600')+';">'+labels[s]+'</div>'
+      +(sel?'<svg style="position:absolute;top:8px;right:8px;" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="#1A5FC8"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.8"/></svg>':'')
+    +'</div>';
+  }).join('');
+  function fgUpload(label,hint){
+    return '<div class="adm-form-field full"><div class="adm-form-label">'+label+'</div>'
+      +'<div class="adm-upload-field">'
+        +'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#94a3b8" stroke-width="1.6"><path d="M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2"/><path d="M8 2v8M5 5l3-3 3 3"/></svg>'
+        +'<span style="font-size:13px;color:#94a3b8;">'+_admEsc(hint)+'</span>'
+        +'<button style="margin-left:auto;background:#1A5FC8;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Upload</button>'
+      +'</div></div>';
+  }
   var tabIdentity = '<div class="adm-form-grid">'
     +fgHead(isCo?'Company Details':'Personal Details')
     +(isCo
       ? fg('Trading Name',app.tradingName)+fg('Registered Company Name',app.regCompanyName)
         +fg('Company Reg Number',app.companyRegNum)+fgFull('Registered Office Address',app.regOfficeAddr)
         +fgHead('Person of Significant Control (PSC)')
-        +fg('PSC Full Name',app.pscFullName)+fg('PSC Date of Birth',app.pscDob)
-        +fg('TIN / Tax ID',app.tinNum)
+        +fg('PSC Full Name',app.pscFullName)+fg('PSC Date of Birth',app.pscDob)+fg('TIN / Tax ID',app.tinNum)
       : fg('Full Legal Name',app.fullLegalName)+fg('Date of Birth',app.dob)
         +fg('NI Number',app.niNumber)+fgFull('Home Address',app.homeAddress)
+        +fgHead('Identity Documents')
+        +fgUpload('Photo ID','Upload passport or driving licence (PDF or image)')
+        +fgUpload('Selfie Verification','Upload a selfie photo for biometric match')
+        +fgUpload('Proof of Address','Upload utility bill or bank statement (last 3 months)')
     )
-    +fgHead('Sectors Served')
-    +fgChips('Sub-sectors',(app.sectorSubRes||[]).concat(app.sectorSubCom||[]))
+    +'<div class="adm-form-field full"><div class="adm-form-label">Sector</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;position:relative;">'+secCards+'</div></div>'
+    +(sectorVal==='residential'||sectorVal==='both'?fgChips('Residential Sub-types',app.sectorSubRes||[]):'')
+    +(sectorVal==='commercial'||sectorVal==='both'?fgChips('Commercial Sub-types',app.sectorSubCom||[]):'')
   +'</div>'+saveBtn();
 
   var tabBank = '<div class="adm-form-grid">'
@@ -7747,8 +7855,9 @@ function _admBuildDetail(app) {
     +fg('Sort Code',app.sortCode)+fg('Account Number',app.accountNumber)
     +fgHead('VAT & Business')
     +fgToggle('VAT Registered',app.vatRegistered)
-    +(app.vatRegistered?fg('VAT Number',app.vatNumber):'')
+    +fg('VAT Number',app.vatNumber||'')
     +fgToggle('Business Bank Account',app.businessAccount)
+    +'<div class="adm-form-field"></div>'
   +'</div>'+saveBtn();
 
   var tabInsurance = '<div class="adm-form-grid">'
@@ -7830,7 +7939,7 @@ function _admBuildDetail(app) {
           +'<span style="font-size:13.5px;font-weight:700;color:#0f172a;">Compliance Score</span>'
         +'</div>'
         +'<span style="font-size:15px;font-weight:800;color:'+scoreColor+';">'+stats.pct+'%</span>'
-        +'<button style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;white-space:nowrap;flex-shrink:0;">'
+        +'<button id="admRunVerBtn" data-appid="'+app.id+'" class="adm-run-ver-btn" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;white-space:nowrap;flex-shrink:0;">'
           +'<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3,1.5 9.5,5.5 3,9.5"/></svg>Run Verification'
         +'</button>'
       +'</div>'
@@ -7876,46 +7985,50 @@ function _admAvatarColor(name){
 
 /* ── Build compliance check items from onboarding data ── */
 function _admGetComplianceItems(app){
-  var isCo=app.operationType==='company'; var items=[];
-  // Identity & Address
-  var idChecks = isCo ? [
-    {name:'Company Registration', sub:app.companyRegNum||'', status:app.companyRegNum?'pending':'not_submitted'},
-    {name:'PSC / Director Identity', sub:app.pscFullName||(app.pscFullName&&app.pscDob?app.pscFullName:''), status:(app.pscFullName&&app.pscDob)?'pending':'not_submitted'},
-    {name:'Registered Office Address', sub:app.regOfficeAddr||'', status:app.regOfficeAddr?'pending':'not_submitted'}
-  ] : [
-    {name:'Photo ID Verification', sub:app.fullLegalName?'Document uploaded — awaiting OCR scan':'No document uploaded', status:app.fullLegalName?'pending':'not_submitted'},
-    {name:'Selfie Biometric Match', sub:app.fullLegalName?'Selfie uploaded — awaiting match':'Not uploaded', status:app.fullLegalName?'pending':'not_submitted'},
-    {name:'Proof of Address', sub:app.homeAddress?'Utility bill uploaded':('Not uploaded'), status:app.homeAddress?'pending':'not_submitted'},
-    {name:'NI Number', sub:app.niNumber||'', status:app.niNumber?'pending':'not_submitted'}
-  ];
-  items.push({section:'Identity & Address', icon:'id', checks:idChecks});
-  // Business Legitimacy
-  var bizChecks = isCo ? [
-    {name:'VAT Registration', sub:app.vatRegistered?('VAT No. '+app.vatNumber):'Not VAT registered', status:app.vatRegistered?'pending':'not_submitted'},
-    {name:'TIN / Tax ID', sub:app.tinNum||'', status:app.tinNum?'pending':'not_submitted'}
-  ] : [
-    {name:'UTR Number', sub:'Not collected at onboarding', status:'na'},
-    {name:'VAT Registration', sub:app.vatRegistered?('VAT No. '+app.vatNumber):'Not VAT registered', status:app.vatRegistered?'pending':'not_submitted'}
-  ];
-  items.push({section:'Business Legitimacy', icon:'biz', checks:bizChecks});
-  // Insurance
-  var insChecks=[{name:'Public Liability Insurance', sub:app.insProvider?(app.insCoverage+' — '+app.insProvider+' #'+app.insPolicy):'Not provided', expiry:app.insExpiry, status:app.insProvider?'pending':'not_submitted'},
-    {name:'Professional Indemnity', sub:app.profIndemnity?'Declared':'Not required / not declared', status:app.profIndemnity?'pending':'not_submitted'}];
-  if(isCo&&app.employersLiability) insChecks.push({name:"Employers' Liability", sub:'Declared', status:'pending'});
-  items.push({section:'Insurance', icon:'ins', checks:insChecks});
-  // Trade Certs
-  if(app.tradeCerts&&app.tradeCerts.length){
-    items.push({section:'Trade Certifications', icon:'cert', checks:app.tradeCerts.map(function(c){return{name:c, sub:'Self-declared', status:'pending'};})});
+  var isCo=app.operationType==='company';
+  var vState=app._verificationState||{};
+  function ck(key,name,sub,expiry,method,type){
+    var s=vState[key]||( sub&&sub!=='Not provided'&&sub!=='Not declared'&&sub!=='Not uploaded'&&sub!=='No document uploaded'?'pending':'not_submitted');
+    return {key:key,name:name,sub:sub,expiry:expiry,method:method,type:type,status:s};
   }
-  // Background
-  var bgChecks=isCo?[
-    {name:'Company DBS Policy', sub:app.companyDbsDecl?('Policy: '+app.companyDbsDecl+(app.companyDbsLevel?' · Level: '+app.companyDbsLevel:'')):'Not declared', status:app.companyDbsDecl?'pending':'not_submitted'},
-    {name:'Right to Work (All Staff)', sub:app.rightToWork?('Status: '+app.rightToWork):'Not declared', status:app.rightToWork?'pending':'not_submitted'}
+  var idChecks=isCo?[
+    ck('co_reg','Company Registration',app.companyRegNum||'','','Companies House API','Automated'),
+    ck('psc_id','PSC / Director Identity',(app.pscFullName&&app.pscDob)?app.pscFullName+' · '+app.pscDob:'','','OCR + Biometric','Manual Review'),
+    ck('reg_addr','Registered Office Address',app.regOfficeAddr||'','','Address Verification','Automated')
   ]:[
-    {name:'DBS Certificate', sub:app.dbsDeclared?('Level: '+app.dbsLevel+' — Self-declared'):'Not declared', status:app.dbsDeclared?'pending':'not_submitted'},
-    {name:'Right to Work', sub:app.rightToWork?('Status: '+app.rightToWork):'Not declared', status:app.rightToWork?'pending':'not_submitted'}
+    ck('photo_id','Photo ID Verification',app.fullLegalName?'Passport — uploaded':' No document uploaded','','OCR + Biometric','Automated'),
+    ck('selfie','Selfie Biometric Match',app.fullLegalName?'Selfie uploaded — awaiting match':'Not uploaded','','Liveness + FaceMatch','Automated'),
+    ck('proof_addr','Proof of Address',app.homeAddress?'Utility bill — uploaded':'Not uploaded','','Document OCR','Manual Review'),
+    ck('ni_num','NI Number',app.niNumber||'','','Format Validation','Manual Review')
   ];
-  items.push({section:'Background Checks', icon:'bg', checks:bgChecks});
+  var bizChecks=isCo?[
+    ck('vat','VAT Registration',app.vatRegistered?'VAT No. '+app.vatNumber:'Not VAT registered','','HMRC API','Automated'),
+    ck('tin','TIN / Tax ID',app.tinNum||'','','HMRC API','Automated')
+  ]:[
+    ck('utr','UTR Number','Not collected at onboarding','','—','N/A'),
+    ck('vat','VAT Registration',app.vatRegistered?'VAT No. '+app.vatNumber:'Not VAT registered','','HMRC API','Automated')
+  ];
+  var insChecks=[
+    ck('pub_li','Public Liability Insurance',app.insProvider?app.insCoverage+' — '+app.insProvider+' policy #'+app.insPolicy:'Not provided',app.insExpiry,'Document OCR','Manual Review'),
+    ck('prof_ind','Professional Indemnity',app.profIndemnity?'Declared':'Not declared','','Self-Declaration','Manual Review')
+  ];
+  if(isCo&&app.employersLiability) insChecks.push(ck('emp_li',"Employers' Liability",'Declared',app.insExpiry,'Document OCR','Manual Review'));
+  if(isCo) insChecks.push(ck('workers_certs','All Workers Hold Valid Trade Licences',app.allWorkersValidCerts?'Confirmed':'Not confirmed','','Self-Declaration','Manual Review'));
+  var certChecks=(app.tradeCerts||[]).map(function(tc){return ck('cert_'+tc.replace(/\s/g,'_'),tc,'Self-declared','','Self-Declaration','Manual Review');});
+  var bgChecks=isCo?[
+    ck('co_dbs','Company DBS Policy',app.companyDbsDecl?'Policy: '+app.companyDbsDecl+(app.companyDbsLevel?' · Level: '+app.companyDbsLevel:''):'Not declared','','Policy Review','Manual Review'),
+    ck('rtw_all','Right to Work (All Staff)',app.rightToWork?'Status: '+app.rightToWork:'Not declared','','Right to Work Check','Manual Review')
+  ]:[
+    ck('dbs','DBS Certificate',app.dbsDeclared?'Level: '+app.dbsLevel+' — Self-declared':'Not declared','','DBS Validation','Manual Review'),
+    ck('rtw','Right to Work',app.rightToWork?'Status: '+app.rightToWork:'Not declared','','Right to Work Check','Manual Review')
+  ];
+  var items=[
+    {section:'Identity & Address',icon:'id',checks:idChecks},
+    {section:'Business Legitimacy',icon:'biz',checks:bizChecks},
+    {section:'Insurance',icon:'ins',checks:insChecks}
+  ];
+  if(certChecks.length) items.push({section:'Trade Certifications',icon:'cert',checks:certChecks});
+  items.push({section:'Background Checks',icon:'bg',checks:bgChecks});
   return items;
 }
 
@@ -7934,11 +8047,116 @@ function _admCompStats(items){
 
 function _admSearchApplicants(q) { _admRenderApplicants(); }
 function _admToggleHandler(e) {
-  var btn = e.target.closest('.adm-tog');
-  if(!btn) return;
-  var on = btn.hasAttribute('data-on');
-  if(on){ btn.removeAttribute('data-on'); btn.style.background='#e2e8f0'; }
-  else  { btn.setAttribute('data-on','1'); btn.style.background='#1A5FC8'; }
+  // Toggle switches
+  var tog=e.target.closest('.adm-tog');
+  if(tog){ var on=tog.hasAttribute('data-on'); if(on){tog.removeAttribute('data-on');tog.style.background='#e2e8f0';}else{tog.setAttribute('data-on','1');tog.style.background='#1A5FC8';} return; }
+  // Run Verification button
+  var rvBtn=e.target.closest('.adm-run-ver-btn');
+  if(rvBtn){ _admRunVerification(rvBtn.dataset.appid); return; }
+  // Comp approve
+  var apprBtn=e.target.closest('.adm-ci-approve');
+  if(apprBtn){ e.stopPropagation(); _admVerifyCheck(apprBtn.dataset.app,apprBtn.dataset.key,'passed'); return; }
+  // Comp reject
+  var rejBtn=e.target.closest('.adm-ci-reject');
+  if(rejBtn){ e.stopPropagation(); _admVerifyCheck(rejBtn.dataset.app,rejBtn.dataset.key,'issue'); return; }
+  // Comp item expand/collapse
+  var row=e.target.closest('.adm-ci-row');
+  if(row){ _admToggleCompItem(row.dataset.cid); return; }
+}
+
+function _admToggleCompItem(id) {
+  var el=document.getElementById(id); if(!el) return;
+  var wasOpen=el.classList.contains('expanded');
+  // close all others in same panel
+  document.querySelectorAll('.adm-comp-item.expanded').forEach(function(e){ 
+    e.classList.remove('expanded');
+    var chev=e.querySelector('.ci-chevron'); if(chev) chev.style.transform='';
+  });
+  if(!wasOpen){
+    el.classList.add('expanded');
+    var chev=el.querySelector('.ci-chevron'); if(chev) chev.style.transform='rotate(180deg)';
+  }
+}
+
+function _admVerifyCheck(appId, checkKey, newStatus) {
+  var apps=_admLoadApplicants();
+  var idx=apps.findIndex(function(a){return a.id===appId;});
+  if(idx<0) return;
+  if(!apps[idx]._verificationState) apps[idx]._verificationState={};
+  apps[idx]._verificationState[checkKey]=newStatus;
+  _admSaveApplicants(apps);
+  var detail=document.getElementById('admApplicantDetail');
+  var fbWrap=document.getElementById('admFloatBarWrap');
+  if(detail) detail.innerHTML=_admBuildDetail(apps[idx]);
+  if(fbWrap) fbWrap.innerHTML=_admFloatBarHTML(apps[idx]);
+  var ab=document.getElementById('admApprovBtn');
+  var rb=document.getElementById('admRejectBtn');
+  if(ab) ab.onclick=function(){_admUpdateStatus(appId,'approved');};
+  if(rb) rb.onclick=function(){_admUpdateStatus(appId,'rejected');};
+  _admRenderApplicants();
+}
+
+function _admRunVerification(appId) {
+  // Animate button
+  var btn=document.getElementById('admRunVerBtn');
+  if(btn){ btn.disabled=true; btn.innerHTML='<span class="adm-verifying">Running verification…</span>'; }
+  setTimeout(function(){
+    var apps=_admLoadApplicants();
+    var idx=apps.findIndex(function(a){return a.id===appId;});
+    if(idx<0) return;
+    var app=apps[idx];
+    var isCo=app.operationType==='company';
+    var vState=app._verificationState||{};
+    // Auto-verify items that have data; flag missing/expired ones
+    var rules=isCo?{
+      co_reg: !!app.companyRegNum,
+      psc_id: !!(app.pscFullName&&app.pscDob),
+      reg_addr: !!app.regOfficeAddr,
+      vat: app.vatRegistered,
+      tin: !!app.tinNum,
+      pub_li: !!app.insProvider,
+      prof_ind: app.profIndemnity,
+      emp_li: app.employersLiability,
+      workers_certs: app.allWorkersValidCerts,
+      co_dbs: !!app.companyDbsDecl,
+      rtw_all: app.rightToWork==='Yes'
+    }:{
+      photo_id: !!app.fullLegalName,
+      selfie: !!app.fullLegalName,
+      proof_addr: !!app.homeAddress,
+      ni_num: !!app.niNumber,
+      utr: false,
+      vat: app.vatRegistered,
+      pub_li: !!app.insProvider,
+      prof_ind: app.profIndemnity,
+      dbs: !!(app.dbsDeclared&&app.dbsLevel),
+      rtw: app.rightToWork==='Yes'
+    };
+    // Check expiry for insurance
+    var insExpired=app.insExpiry&&new Date(app.insExpiry)<new Date();
+    Object.keys(rules).forEach(function(k){
+      if(vState[k]==='passed'||vState[k]==='verified') return; // keep manually approved
+      if(k==='pub_li'&&insExpired){ vState[k]='issue'; return; }
+      vState[k]=rules[k]?'passed':'issue';
+    });
+    // Add certs
+    (app.tradeCerts||[]).forEach(function(tc){
+      var ck='cert_'+tc.replace(/[^a-z0-9]/gi,'_').replace(/^/,'cert_').replace(/cert_cert_/,'cert_');
+      if(!vState[ck]) vState[ck]='pending';
+    });
+    app._verificationState=vState;
+    apps[idx]=app;
+    _admSaveApplicants(apps);
+    var detail=document.getElementById('admApplicantDetail');
+    var fbWrap=document.getElementById('admFloatBarWrap');
+    if(detail) detail.innerHTML=_admBuildDetail(app);
+    if(fbWrap) fbWrap.innerHTML=_admFloatBarHTML(app);
+    var ab=document.getElementById('admApprovBtn');
+    var rb=document.getElementById('admRejectBtn');
+    if(ab) ab.onclick=function(){_admUpdateStatus(appId,'approved');};
+    if(rb) rb.onclick=function(){_admUpdateStatus(appId,'rejected');};
+    _admRenderApplicants();
+  }, 2000);
 }
 function _admToggleSb() {
   var sb = document.getElementById('admSidebar');
