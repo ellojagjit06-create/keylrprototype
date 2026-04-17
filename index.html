@@ -7844,7 +7844,8 @@ function _admBuildDetail(app) {
       both:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 18V11l7-6 7 6v7"/><rect x="13" y="9" width="8" height="9" rx="1"/><path d="M13 14h8"/></svg>'
     }[s];
     var sel=sectorVal===s;
-    return '<div class="adm-sector-card'+(sel?' selected':'')+'" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;position:relative;">'
+    return '<div class="adm-sector-card'+(sel?' selected':'')+' adm-sec-card-btn" data-sector="'+s+'"'
+      +' style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;position:relative;cursor:pointer;">'
       +'<div style="color:'+(sel?'#1A5FC8':'#94a3b8')+';">'+ico+'</div>'
       +'<div style="font-size:13px;font-weight:'+(sel?'700':'600')+';color:'+(sel?'#1A5FC8':'#0f172a')+';">'+lbl+'</div>'
       +(sel?'<div style="position:absolute;top:8px;right:8px;"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#1A5FC8"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.8"/></svg></div>':'')
@@ -7878,22 +7879,20 @@ function _admBuildDetail(app) {
         +secCard('residential')+secCard('commercial')+secCard('both')
       +'</div>'
     +'</div>'
-    +(sectorVal==='residential'||sectorVal==='both'
-      ?'<div style="padding:14px 20px 4px;">'
-        +'<div style="font-size:13px;color:#64748b;margin-bottom:10px;">Residential sub-types <span style="color:#94a3b8;font-size:12px;">(optional)</span></div>'
-        +'<div style="display:flex;flex-wrap:wrap;gap:8px;" id="admResChips">'
-          +resSubAll.map(function(v){ return subChip('res',v,app.sectorSubRes||[]); }).join('')
-        +'</div>'
+    // Residential chips — always rendered, shown/hidden by JS
+    +'<div id="admSecResGroup" style="padding:14px 20px 4px;display:'+(sectorVal==='residential'||sectorVal==='both'?'block':'none')+'">'
+      +'<div style="font-size:13px;color:#64748b;margin-bottom:10px;">Residential sub-types <span style="color:#94a3b8;font-size:12px;">(optional)</span></div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:8px;" id="admResChips">'
+        +resSubAll.map(function(v){ return subChip('res',v,app.sectorSubRes||[]); }).join('')
       +'</div>'
-      :'')
-    +(sectorVal==='commercial'||sectorVal==='both'
-      ?'<div style="padding:14px 20px 4px;">'
-        +'<div style="font-size:13px;color:#64748b;margin-bottom:10px;">Commercial sub-types <span style="color:#94a3b8;font-size:12px;">(optional)</span></div>'
-        +'<div style="display:flex;flex-wrap:wrap;gap:8px;" id="admComChips">'
-          +comSubAll.map(function(v){ return subChip('com',v,app.sectorSubCom||[]); }).join('')
-        +'</div>'
+    +'</div>'
+    // Commercial chips — always rendered, shown/hidden by JS
+    +'<div id="admSecComGroup" style="padding:14px 20px 4px;display:'+(sectorVal==='commercial'||sectorVal==='both'?'block':'none')+'">'
+      +'<div style="font-size:13px;color:#64748b;margin-bottom:10px;">Commercial sub-types <span style="color:#94a3b8;font-size:12px;">(optional)</span></div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:8px;" id="admComChips">'
+        +comSubAll.map(function(v){ return subChip('com',v,app.sectorSubCom||[]); }).join('')
       +'</div>'
-      :'')
+    +'</div>'
   +'</div>'
   // ── Fixed save bar inside the left panel ──
   +'<div class="adm-save-row" id="saveRow_sector" style="position:sticky;bottom:0;background:#fff;border-top:1px solid #f1f5f9;z-index:10;">'
@@ -8172,6 +8171,9 @@ function _admToggleHandler(e) {
   // Profile type switcher
   var switchB=e.target.closest('.adm-type-switcher');
   if(switchB){ _admSwitchType(switchB.dataset.appid, switchB.dataset.optype); return; }
+  // Sector card click
+  var secCard=e.target.closest('.adm-sec-card-btn');
+  if(secCard){ _admSelectSector(secCard.dataset.sector); return; }
   // Sector sub-type chips
   var chip=e.target.closest('.adm-sub-chip');
   if(chip){ _admToggleSubChip(chip); return; }
@@ -8200,6 +8202,42 @@ function _admToggleSubChip(chip) {
   }
 }
 
+function _admSelectSector(newSector) {
+  // Update card styles
+  document.querySelectorAll('.adm-sec-card-btn').forEach(function(card) {
+    var s = card.dataset.sector;
+    var sel = s === newSector;
+    // card border/bg
+    card.classList.toggle('selected', sel);
+    // icon colour
+    var iconEl = card.querySelector('div:first-child');
+    if(iconEl) iconEl.style.color = sel ? '#1A5FC8' : '#94a3b8';
+    // label colour + weight
+    var lblEl = card.querySelectorAll('div')[1];
+    if(lblEl){ lblEl.style.color = sel ? '#1A5FC8' : '#0f172a'; lblEl.style.fontWeight = sel ? '700' : '600'; }
+    // checkmark badge — remove old, add new
+    var oldBadge = card.querySelector('.adm-sec-check');
+    if(oldBadge) oldBadge.remove();
+    if(sel) {
+      var badge = document.createElement('div');
+      badge.className = 'adm-sec-check';
+      badge.style.cssText = 'position:absolute;top:8px;right:8px;';
+      badge.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#1A5FC8"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.8"/></svg>';
+      card.appendChild(badge);
+    }
+  });
+  // Show/hide chip groups
+  var showRes = newSector === 'residential' || newSector === 'both';
+  var showCom = newSector === 'commercial' || newSector === 'both';
+  var resGrp = document.getElementById('admSecResGroup');
+  var comGrp = document.getElementById('admSecComGroup');
+  if(resGrp) resGrp.style.display = showRes ? 'block' : 'none';
+  if(comGrp) comGrp.style.display = showCom ? 'block' : 'none';
+  // Store the new sector value in a data attribute on the panel so save picks it up
+  var panel = document.getElementById('admTab-sector');
+  if(panel) panel.dataset.sector = newSector;
+}
+
 function _admSaveTab(appId, tabId) {
   var apps=_admLoadApplicants();
   var idx=apps.findIndex(function(a){return a.id===appId;});
@@ -8226,6 +8264,8 @@ function _admSaveTab(appId, tabId) {
     });
     apps[idx].sectorSubRes=resSel;
     apps[idx].sectorSubCom=comSel;
+    // Also save the selected sector card value
+    if(panel.dataset.sector) apps[idx].sector=panel.dataset.sector;
   }
   _admSaveApplicants(apps);
   // Show inline toast
