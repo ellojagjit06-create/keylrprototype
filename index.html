@@ -7735,8 +7735,8 @@ function _admBuildDetail(app) {
     +'<div style="display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:9px;min-height:40px;">'
     +(arr&&arr.length?arr.map(function(v){return '<span class="adm-chip">'+_admEsc(v)+'</span>';}).join('')
     :'<span style="color:#d1d5db;font-size:12.5px;font-style:italic;">None</span>')+'</div></div>'; }
-  function saveBtn(tabId){ return '<div class="adm-save-row" id="saveRow_'+tabId+'">'
-    +'<span class="adm-save-toast" id="saveToast_'+tabId+'" style="display:none;color:#059669;font-size:13px;font-weight:600;display:none;align-items:center;gap:6px;">'
+  function saveBtn(tabId){ return '<div class="adm-save-row" id="saveRow_'+tabId+'" style="position:sticky;bottom:0;background:#fff;border-top:1px solid #f1f5f9;z-index:10;">'
+    +'<span class="adm-save-toast" id="saveToast_'+tabId+'" style="display:none;color:#059669;font-size:13px;font-weight:600;align-items:center;gap:6px;">'
       +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Changes saved</span>'
     +'<button class="adm-save-btn" data-tab="'+tabId+'" data-appid="'+app.id+'">Save changes</button>'
   +'</div>'; }
@@ -7860,32 +7860,47 @@ function _admBuildDetail(app) {
   }
 
   // ── TAB: Sectors ──
-  var tabSector = '<div class="adm-form-grid">'
+  // Selectable res sub-types (same chips as onboarding)
+  var resSubAll=['AST (Assured Shorthold)','HMO','STR / Short-let','Block management'];
+  var comSubAll=['Offices','Retail','Industrial','Hospitality','Mixed use'];
+  function subChip(type, val, selArr){
+    var sel=selArr.indexOf(val)>=0;
+    return '<button class="adm-sub-chip'+(sel?' selected':'')+'" data-type="'+type+'" data-val="'+_admEsc(val)+'"'
+      +' style="padding:7px 16px;border-radius:999px;border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';'
+      +'background:'+(sel?'#eff6ff':'#fff')+';color:'+(sel?'#1e3a5f':'#374151')+';'
+      +'font-size:13px;font-family:Inter,sans-serif;cursor:pointer;transition:all .15s;white-space:nowrap;">'
+      +_admEsc(val)+'</button>';
+  }
+  var tabSector = '<div class="adm-form-grid" style="position:relative;">'
     +fgHead('Sectors Served')
-    +'<div style="padding:12px 20px;">'
+    +'<div style="padding:12px 20px 4px;">'
       +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">'
         +secCard('residential')+secCard('commercial')+secCard('both')
       +'</div>'
     +'</div>'
     +(sectorVal==='residential'||sectorVal==='both'
-      ?fgHead('Residential Sub-types')
-        +'<div style="padding:8px 20px 4px;display:flex;flex-wrap:wrap;gap:8px;">'
-          +(app.sectorSubRes&&app.sectorSubRes.length
-            ?app.sectorSubRes.map(function(v){ return '<span style="border:1.5px solid #e2e8f0;border-radius:20px;padding:5px 14px;font-size:13px;color:#374151;background:#fff;">'+_admEsc(v)+'</span>'; }).join('')
-            :'<span style="color:#d1d5db;font-size:12.5px;font-style:italic;">None selected</span>'
-          )
+      ?'<div style="padding:14px 20px 4px;">'
+        +'<div style="font-size:13px;color:#64748b;margin-bottom:10px;">Residential sub-types <span style="color:#94a3b8;font-size:12px;">(optional)</span></div>'
+        +'<div style="display:flex;flex-wrap:wrap;gap:8px;" id="admResChips">'
+          +resSubAll.map(function(v){ return subChip('res',v,app.sectorSubRes||[]); }).join('')
         +'</div>'
+      +'</div>'
       :'')
     +(sectorVal==='commercial'||sectorVal==='both'
-      ?fgHead('Commercial Sub-types')
-        +'<div style="padding:8px 20px 4px;display:flex;flex-wrap:wrap;gap:8px;">'
-          +(app.sectorSubCom&&app.sectorSubCom.length
-            ?app.sectorSubCom.map(function(v){ return '<span style="border:1.5px solid #e2e8f0;border-radius:20px;padding:5px 14px;font-size:13px;color:#374151;background:#fff;">'+_admEsc(v)+'</span>'; }).join('')
-            :'<span style="color:#d1d5db;font-size:12.5px;font-style:italic;">None selected</span>'
-          )
+      ?'<div style="padding:14px 20px 4px;">'
+        +'<div style="font-size:13px;color:#64748b;margin-bottom:10px;">Commercial sub-types <span style="color:#94a3b8;font-size:12px;">(optional)</span></div>'
+        +'<div style="display:flex;flex-wrap:wrap;gap:8px;" id="admComChips">'
+          +comSubAll.map(function(v){ return subChip('com',v,app.sectorSubCom||[]); }).join('')
         +'</div>'
+      +'</div>'
       :'')
-  +'</div>'+saveBtn('sector');
+  +'</div>'
+  // ── Fixed save bar inside the left panel ──
+  +'<div class="adm-save-row" id="saveRow_sector" style="position:sticky;bottom:0;background:#fff;border-top:1px solid #f1f5f9;z-index:10;">'
+    +'<span class="adm-save-toast" id="saveToast_sector" style="display:none;color:#059669;font-size:13px;font-weight:600;align-items:center;gap:6px;">'
+      +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l4 4 6-6"/></svg>Changes saved</span>'
+    +'<button class="adm-save-btn" data-tab="sector" data-appid="'+app.id+'">Save changes</button>'
+  +'</div>';
 
   // ── Upload field: shows as already-uploaded with remove option ──
   function fgUploadFilled(label, filename, hint){
@@ -8157,6 +8172,9 @@ function _admToggleHandler(e) {
   // Profile type switcher
   var switchB=e.target.closest('.adm-type-switcher');
   if(switchB){ _admSwitchType(switchB.dataset.appid, switchB.dataset.optype); return; }
+  // Sector sub-type chips
+  var chip=e.target.closest('.adm-sub-chip');
+  if(chip){ _admToggleSubChip(chip); return; }
   // Comp approve
   var apprBtn=e.target.closest('.adm-ci-approve');
   if(apprBtn){ e.stopPropagation(); _admVerifyCheck(apprBtn.dataset.app,apprBtn.dataset.key,'passed'); return; }
@@ -8168,24 +8186,49 @@ function _admToggleHandler(e) {
   if(row){ _admToggleCompItem(row.dataset.cid); return; }
 }
 
+function _admToggleSubChip(chip) {
+  var sel = chip.classList.contains('selected');
+  chip.classList.toggle('selected', !sel);
+  if(!sel) {
+    chip.style.border='1.5px solid #1A5FC8';
+    chip.style.background='#eff6ff';
+    chip.style.color='#1e3a5f';
+  } else {
+    chip.style.border='1.5px solid #d1d5db';
+    chip.style.background='#fff';
+    chip.style.color='#374151';
+  }
+}
+
 function _admSaveTab(appId, tabId) {
   var apps=_admLoadApplicants();
   var idx=apps.findIndex(function(a){return a.id===appId;});
   if(idx<0) return;
   var panel=document.getElementById('admTab-'+tabId);
   if(!panel) return;
-  // Collect all editable fields
+  // Collect editable text fields
   panel.querySelectorAll('.adm-edit-field').forEach(function(el){
     var key=el.dataset.field; if(!key) return;
-    apps[idx][key]=el.value||el.tagName==='TEXTAREA'?el.value:'';
+    apps[idx][key]=el.value;
   });
   // Collect toggles
   panel.querySelectorAll('.adm-tog').forEach(function(btn){
     var key=btn.dataset.field; if(!key) return;
     apps[idx][key]=btn.hasAttribute('data-on');
   });
+  // Collect sector sub-type chips
+  if(tabId==='sector'){
+    var resSel=[], comSel=[];
+    panel.querySelectorAll('.adm-sub-chip').forEach(function(chip){
+      if(!chip.classList.contains('selected')) return;
+      if(chip.dataset.type==='res') resSel.push(chip.dataset.val);
+      if(chip.dataset.type==='com') comSel.push(chip.dataset.val);
+    });
+    apps[idx].sectorSubRes=resSel;
+    apps[idx].sectorSubCom=comSel;
+  }
   _admSaveApplicants(apps);
-  // Show toast
+  // Show inline toast
   var toast=document.getElementById('saveToast_'+tabId);
   if(toast){ toast.style.display='flex'; setTimeout(function(){ toast.style.display='none'; },2500); }
 }
