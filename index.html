@@ -3521,7 +3521,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .adm-comp-status.not_submitted{background:#f1f5f9;color:#94a3b8;}
 .adm-comp-status.na{background:#f1f5f9;color:#94a3b8;}
 /* Float action bar */
-.adm-float-bar{position:fixed;bottom:0;right:0;left:0;background:#fff;border-top:1px solid #e8edf2;padding:12px 24px;display:flex;align-items:center;justify-content:flex-end;gap:10px;z-index:500;box-shadow:0 -4px 20px rgba(0,0,0,0.06);}
+.adm-float-bar{position:sticky;bottom:0;background:#fff;border-top:1px solid #e8edf2;padding:12px 24px;display:flex;align-items:center;justify-content:flex-end;gap:10px;z-index:100;box-shadow:0 -2px 12px rgba(0,0,0,0.05);margin:0 -28px -28px;}
 /* Detail top bar */
 .adm-detail-topbar{background:#fff;border-bottom:1.5px solid #e8edf2;padding:0 24px;height:52px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:200;margin:-28px -28px 24px;}
 .adm-detail-topbar-back{display:flex;align-items:center;gap:6px;color:#64748b;font-size:13px;font-weight:500;cursor:pointer;padding:6px 10px;border-radius:7px;transition:background .12s,color .12s;border:none;background:none;font-family:Inter,sans-serif;}
@@ -7753,7 +7753,7 @@ function _admBuildDetail(app) {
   +'</div>'
 
   // ── 50/50 body ──
-  +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:80px;" id="admDetailBody">'
+  +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;" id="admDetailBody">'
 
     // LEFT — Tabs + form
     +'<div style="background:#fff;border:1.5px solid #e8edf2;border-radius:14px;overflow:hidden;">'
