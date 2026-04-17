@@ -3540,7 +3540,9 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .adm-form-select:focus{border-color:#1A5FC8;}
 .adm-form-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:9px;}
 .adm-form-toggle-label{font-size:13px;font-weight:500;color:#374151;}
-.adm-form-toggle{width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
+.adm-form-toggle{width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;transition:background .22s;flex-shrink:0;outline:none;}
+.adm-form-toggle::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .22s;box-shadow:0 1px 3px rgba(0,0,0,0.18);}
+.adm-form-toggle[data-on]::after{transform:translateX(20px);}
 .adm-form-section-head{font-size:10.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;padding:16px 20px 6px;background:transparent;border:none;grid-column:1/-1;border-top:1px solid #f1f5f9;margin-top:6px;}
 .adm-form-section-head:first-child{padding-top:14px;border-top:none;margin-top:0;}
 .adm-save-row{padding:14px 20px;border-top:1px solid #f1f5f9;display:flex;justify-content:flex-end;align-items:center;gap:12px;grid-column:1/-1;}
@@ -7978,6 +7980,19 @@ function _admBuildDetail(app) {
   +'</div>'+saveBtn('identity');
 
   // ── TAB: Bank Details ──
+  // VAT Number field — shown only when vatRegistered is on
+  var vatNumField = '<div class="adm-form-field span2" id="admVatNumRow" style="display:'+(app.vatRegistered?'flex':'none')+';">'
+    +'<div class="adm-form-label">VAT Number</div>'
+    +'<input class="adm-form-input adm-edit-field" data-field="vatNumber" value="'+_admEsc(app.vatNumber||'')+'" placeholder="e.g. GB123456789">'
+  +'</div>';
+  // Build toggle that also fires vatNumber show/hide
+  var vatToggle = '<div class="adm-form-field">'
+    +'<div class="adm-form-toggle-row">'
+      +'<span class="adm-form-toggle-label">VAT Registered</span>'
+      +'<button class="adm-form-toggle adm-tog adm-vat-tog" data-field="vatRegistered" style="background:'+(app.vatRegistered?'#1A5FC8':'#d1d5db')+';"'+(app.vatRegistered?' data-on="1"':'')+' ></button>'
+    +'</div>'
+  +'</div>';
+  var bizToggle = fgToggle('Business Bank Account',app.businessAccount,'businessAccount');
   var tabBank = '<div class="adm-form-grid">'
     +fgHead('Bank Account')
     +fg('Account Holder Name',app.accountHolder,'accountHolder')
@@ -7985,9 +8000,9 @@ function _admBuildDetail(app) {
     +fg('Sort Code',app.sortCode,'sortCode')
     +fg('Account Number',app.accountNumber,'accountNumber')
     +fgHead('VAT & Business')
-    +fgToggle('VAT Registered',app.vatRegistered,'vatRegistered')
-    +fg('VAT Number',app.vatNumber||'','vatNumber')
-    +fgToggle('Business Bank Account',app.businessAccount,'businessAccount')
+    +vatToggle
+    +bizToggle
+    +vatNumField
   +'</div>'+saveBtn('bank');
 
   // ── TAB: Insurance ──
@@ -8184,7 +8199,17 @@ function _admSearchApplicants(q) { _admRenderApplicants(); }
 function _admToggleHandler(e) {
   // Toggle switches
   var tog=e.target.closest('.adm-tog');
-  if(tog){ var on=tog.hasAttribute('data-on'); if(on){tog.removeAttribute('data-on');tog.style.background='#e2e8f0';}else{tog.setAttribute('data-on','1');tog.style.background='#1A5FC8';} return; }
+  if(tog){
+    var on=tog.hasAttribute('data-on');
+    if(on){ tog.removeAttribute('data-on'); tog.style.background='#d1d5db'; }
+    else  { tog.setAttribute('data-on','1'); tog.style.background='#1A5FC8'; }
+    // Show/hide VAT number field when VAT toggle changes
+    if(tog.classList.contains('adm-vat-tog')){
+      var vatRow=document.getElementById('admVatNumRow');
+      if(vatRow) vatRow.style.display=tog.hasAttribute('data-on')?'flex':'none';
+    }
+    return;
+  }
   // Run Verification button
   var rvBtn=e.target.closest('.adm-run-ver-btn');
   if(rvBtn){ _admRunVerification(rvBtn.dataset.appid); return; }
