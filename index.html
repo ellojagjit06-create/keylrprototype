@@ -16849,12 +16849,48 @@ function _suppBuildProfilePage(){
     +'</div>';
   }
   var panelSectors=''
-    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;">'
+    // Sector cards — clickable, store selection in data-sector
+    +'<div id="profSecCards" data-sector="'+sectorVal+'" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;">'
       +secCard('residential')+secCard('commercial')+secCard('both')
     +'</div>'
-    +(sectorVal==='residential'||sectorVal==='both'?'<div style="margin-bottom:16px;"><div style="font-size:13px;color:#64748b;margin-bottom:8px;font-family:Inter,sans-serif;">Residential sub-types <span style="color:#94a3b8;font-size:12px;">(optional)</span></div><div style="display:flex;flex-wrap:wrap;gap:8px;">'+resSubAll.map(function(v){return chip(v,(so.sectorSubRes||[]).indexOf(v)>=0);}).join('')+'</div></div>':'')
-    +(sectorVal==='commercial'||sectorVal==='both'?'<div style="margin-bottom:16px;"><div style="font-size:13px;color:#64748b;margin-bottom:8px;font-family:Inter,sans-serif;">Commercial sub-types <span style="color:#94a3b8;font-size:12px;">(optional)</span></div><div style="display:flex;flex-wrap:wrap;gap:8px;">'+comSubAll.map(function(v){return chip(v,(so.sectorSubCom||[]).indexOf(v)>=0);}).join('')+'</div></div>':'')
+    // Residential chips
+    +'<div id="profResGroup" style="margin-bottom:16px;display:'+(sectorVal==='residential'||sectorVal==='both'?'block':'none')+'">'
+      +'<div style="font-size:13px;color:#64748b;margin-bottom:8px;font-family:Inter,sans-serif;">Residential sub-types <span style="color:#94a3b8;font-size:12px;">(optional)</span></div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:8px;">'+resSubAll.map(function(v){
+        var sel=(so.sectorSubRes||[]).indexOf(v)>=0;
+        return '<button class="prof-sector-chip" data-type="res" data-val="'+v+'" style="padding:6px 16px;border-radius:999px;border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#eff6ff':'#fff')+';color:'+(sel?'#1e3a5f':'#374151')+';font-size:13px;font-family:Inter,sans-serif;cursor:pointer;transition:all .15s;"'+(sel?' data-sel="1"':'')+'>'+v+'</button>';
+      }).join('')+'</div>'
+    +'</div>'
+    // Commercial chips
+    +'<div id="profComGroup" style="margin-bottom:16px;display:'+(sectorVal==='commercial'||sectorVal==='both'?'block':'none')+'">'
+      +'<div style="font-size:13px;color:#64748b;margin-bottom:8px;font-family:Inter,sans-serif;">Commercial sub-types <span style="color:#94a3b8;font-size:12px;">(optional)</span></div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:8px;">'+comSubAll.map(function(v){
+        var sel=(so.sectorSubCom||[]).indexOf(v)>=0;
+        return '<button class="prof-sector-chip" data-type="com" data-val="'+v+'" style="padding:6px 16px;border-radius:999px;border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#eff6ff':'#fff')+';color:'+(sel?'#1e3a5f':'#374151')+';font-size:13px;font-family:Inter,sans-serif;cursor:pointer;transition:all .15s;"'+(sel?' data-sel="1"':'')+'>'+v+'</button>';
+      }).join('')+'</div>'
+    +'</div>'
     +saveBar();
+
+  // ── Upload field helper (for Identity) ──
+  function uploadField(label,filename,hint){
+    var hasFile=!!filename;
+    return '<div>'
+      +'<label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">'+label+'</label>'
+      +'<div class="prof-upload-box'+(hasFile?' has-file':'')+'" style="border:1.5px '+(hasFile?'solid #e2e8f0':'dashed #d1d5db')+';border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:8px;background:'+(hasFile?'#f8fafc':'#fafafa')+';cursor:pointer;">'
+        +(hasFile
+          ?'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.6"><rect x="2" y="1" width="10" height="12" rx="1.5"/><path d="M4 4h6M4 6.5h6M4 9h4"/></svg>'
+           +'<span style="font-size:13px;color:#374151;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+filename+'</span>'
+           +'<div style="display:flex;gap:4px;flex-shrink:0;">'
+             +'<button class="prof-doc-view" title="View" style="width:26px;height:26px;border:1.5px solid #e2e8f0;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#374151" stroke-width="1.7"><ellipse cx="6" cy="6" rx="5" ry="3.5"/><circle cx="6" cy="6" r="1.5"/></svg></button>'
+             +'<button class="prof-doc-del" title="Delete" style="width:26px;height:26px;border:1.5px solid #fecaca;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#dc2626" stroke-width="1.8"><path d="M2 3h7M4.5 3V2h2v1M3.5 3v6a.5.5 0 00.5.5h3a.5.5 0 00.5-.5V3"/></svg></button>'
+           +'</div>'
+          :'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.6"><path d="M2 10v1.5a.5.5 0 00.5.5h9a.5.5 0 00.5-.5V10"/><path d="M7 2v7M4.5 4.5L7 2l2.5 2.5"/></svg>'
+           +'<span style="font-size:12.5px;color:#94a3b8;flex:1;">'+hint+'</span>'
+           +'<button class="prof-doc-upload" style="background:#1A5FC8;color:#fff;border:none;border-radius:7px;padding:5px 12px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;flex-shrink:0;">Upload</button>'
+        )
+      +'</div>'
+    +'</div>';
+  }
 
   // ── Panel: Identity ──
   var panelIdentity=''
@@ -16868,6 +16904,12 @@ function _suppBuildProfilePage(){
       :secHdr('Personal Details')
        +row2(field2('Full Legal Name',so.fullLegalName,'fullLegalName'),field2('Date of Birth',so.dob,'dob'))
        +row2(field2('NI Number',so.niNumber,'niNumber'),field2('Home Address',so.homeAddress,'homeAddress'))
+       +secHdr('Identity Documents')
+       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">'
+         +uploadField('Photo ID',so._docPhotoId?'passport_id.pdf':'','Upload passport or driving licence (PDF / image)')
+         +uploadField('Selfie Verification',so._docSelfie?'selfie_photo.jpg':'','Upload a selfie photo for biometric match')
+       +'</div>'
+       +row1(uploadField('Proof of Address',so._docProofAddr?'utility_bill.pdf':'','Upload utility bill or bank statement (last 3 months)'))
     )
     +saveBar();
 
@@ -16878,7 +16920,9 @@ function _suppBuildProfilePage(){
     +row2(field2('Sort Code',so.sortCode,'sortCode'),field2('Account Number',so.accountNumber,'accountNumber'))
     +secHdr('VAT & Business')
     +tog('VAT Registered',so.vatRegistered,'vatRegistered')
-    +(so.vatRegistered?row1(field2('VAT Number',so.vatNumber,'vatNumber')):'')
+    +'<div id="profVatNumRow" style="display:'+(so.vatRegistered?'block':'none')+';margin-bottom:12px;">'
+      +row1(field2('VAT Number',so.vatNumber,'vatNumber'))
+    +'</div>'
     +tog('Business Bank Account',so.businessAccount,'businessAccount')
     +saveBar();
 
@@ -16891,6 +16935,10 @@ function _suppBuildProfilePage(){
     +tog('Professional Indemnity Insurance',so.profIndemnity,'profIndemnity')
     +(isCo?tog("Employers' Liability Insurance",so.employersLiability,'employersLiability'):'')
     +(isCo?tog('All Workers Hold Valid Trade Licences',so.allWorkersValidCerts,'allWorkersValidCerts'):'')
+    +secHdr('Trade Certifications')
+    +'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">'
+      +((so.tradeCerts||[]).length?(so.tradeCerts||[]).map(function(c){return '<span style="padding:6px 14px;background:#f1f5f9;border-radius:8px;font-size:13px;color:#374151;font-family:Inter,sans-serif;">'+c+'</span>';}).join(''):'<span style="color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;font-style:italic;">No certifications added</span>')
+    +'</div>'
     +saveBar();
 
   // ── Panel: Background Checks ──
@@ -16898,6 +16946,7 @@ function _suppBuildProfilePage(){
     +(isCo
       ?secHdr('Company DBS Policy')
        +row2(field2('Team Size',so.teamSize,'teamSize'),field2('Company Has a DBS Policy?',so.companyDbsDecl,'companyDbsDecl'))
+       +(so.companyDbsDecl==='Yes'?row1(field2('Company DBS Level',so.companyDbsLevel,'companyDbsLevel')):'')
        +row1(field2('Right to Work — All Staff',so.rightToWork,'rightToWork'))
       :secHdr('Personal DBS & Right to Work')
        +row2(field2('DBS Check Declared',so.dbsDeclared,'dbsDeclared'),field2('DBS Level',so.dbsLevel,'dbsLevel'))
@@ -16906,7 +16955,15 @@ function _suppBuildProfilePage(){
     +secHdr('Profile & Experience')
     +row2(field2('Primary Trade',so.primaryTrade,'primaryTrade'),field2('Years of Experience',so.experience,'experience'))
     +row2(field2('Jobs Completed',so.jobsCompleted,'jobsCompleted'),field2('Emergency Callouts',so.emergencyCallouts,'emergencyCallouts'))
-    +row1('<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Bio / Description</label><textarea data-pfield="bio" rows="3" placeholder="Tell clients about yourself..." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;resize:vertical;">'+(so.bio||'')+'</textarea></div>')
+    +secHdr('Secondary Trades')
+    +'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">'
+      +((so.secondaryTrades||[]).length?(so.secondaryTrades||[]).map(function(t){return '<span style="padding:6px 14px;background:#f1f5f9;border-radius:8px;font-size:13px;color:#374151;font-family:Inter,sans-serif;">'+t+'</span>';}).join(''):'<span style="color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;font-style:italic;">None added</span>')
+    +'</div>'
+    +secHdr('Pricing Models')
+    +'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">'
+      +((so.pricingModels||[]).length?(so.pricingModels||[]).map(function(m){return '<span style="padding:6px 14px;background:#f1f5f9;border-radius:8px;font-size:13px;color:#374151;font-family:Inter,sans-serif;">'+m+'</span>';}).join(''):'<span style="color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;font-style:italic;">None selected</span>')
+    +'</div>'
+    +row1('<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Bio / Description</label><textarea data-pfield="bio" rows="4" placeholder="Tell clients about yourself..." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;resize:vertical;">'+(so.bio||'')+'</textarea></div>')
     +saveBar();
 
   var panels={profile:panelProfile,sectors:panelSectors,identity:panelIdentity,bank:panelBank,insurance:panelInsurance,background:panelBg};
@@ -16957,27 +17014,124 @@ function _suppWireProfilePage(){
     // Tab switch
     var tabBtn=e.target.closest('.supp-prof-tab');
     if(tabBtn){ window._suppProfileTab=tabBtn.dataset.tabid; _suppNavTo('profile'); return; }
+
+    // Sector card click
+    var secCardEl=e.target.closest('[data-sector]');
+    if(secCardEl&&secCardEl.closest('#profSecCards')){
+      var newSec=secCardEl.dataset.sector;
+      var cardsWrap=document.getElementById('profSecCards');
+      if(cardsWrap){
+        cardsWrap.dataset.sector=newSec;
+        cardsWrap.querySelectorAll('[data-sector]').forEach(function(card){
+          var s=card.dataset.sector; var sel=s===newSec;
+          card.style.border='1.5px solid '+(sel?'#1A5FC8':'#e2e8f0');
+          card.style.background=sel?'#eff6ff':'#fff';
+          var iconDiv=card.querySelector('div:first-child');
+          if(iconDiv) iconDiv.style.color=sel?'#1A5FC8':'#94a3b8';
+          var lbl=card.querySelectorAll('div')[1];
+          if(lbl){lbl.style.color=sel?'#1A5FC8':'#374151';lbl.style.fontWeight=sel?'700':'500';}
+          // badge
+          var badge=card.querySelector('.sec-badge'); if(badge) badge.remove();
+          if(sel){var b=document.createElement('div');b.className='sec-badge';b.style.cssText='position:absolute;top:8px;right:8px;';b.innerHTML='<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#1A5FC8"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.8"/></svg>';card.appendChild(b);}
+        });
+      }
+      var showRes=newSec==='residential'||newSec==='both';
+      var showCom=newSec==='commercial'||newSec==='both';
+      var rg=document.getElementById('profResGroup'); if(rg) rg.style.display=showRes?'block':'none';
+      var cg=document.getElementById('profComGroup'); if(cg) cg.style.display=showCom?'block':'none';
+      return;
+    }
+
+    // Sector chip click
+    var chipBtn=e.target.closest('.prof-sector-chip');
+    if(chipBtn){
+      var isSel=chipBtn.hasAttribute('data-sel');
+      if(isSel){chipBtn.removeAttribute('data-sel');chipBtn.style.border='1.5px solid #d1d5db';chipBtn.style.background='#fff';chipBtn.style.color='#374151';}
+      else{chipBtn.setAttribute('data-sel','1');chipBtn.style.border='1.5px solid #1A5FC8';chipBtn.style.background='#eff6ff';chipBtn.style.color='#1e3a5f';}
+      return;
+    }
+
+    // VAT toggle → show/hide VAT number
+    var togBtn=e.target.closest('.prof-tog');
+    if(togBtn){
+      var on=togBtn.hasAttribute('data-on');
+      if(on){togBtn.removeAttribute('data-on');togBtn.style.background='#d1d5db';var sp=togBtn.querySelector('span');if(sp){sp.style.left='2px';sp.style.right='';}}
+      else{togBtn.setAttribute('data-on','1');togBtn.style.background='#1A5FC8';var sp=togBtn.querySelector('span');if(sp){sp.style.right='2px';sp.style.left='';}}
+      if(togBtn.dataset.pfield==='vatRegistered'){
+        var vr=document.getElementById('profVatNumRow'); if(vr) vr.style.display=togBtn.hasAttribute('data-on')?'block':'none';
+      }
+      return;
+    }
+
+    // Upload doc button
+    var upBtn=e.target.closest('.prof-doc-upload');
+    if(upBtn){
+      var box=upBtn.closest('.prof-upload-box'); if(!box) return;
+      var inp=document.createElement('input'); inp.type='file'; inp.accept='.pdf,.jpg,.jpeg,.png';
+      inp.onchange=function(){
+        var f=inp.files&&inp.files[0]; if(!f) return;
+        box.classList.add('has-file');
+        box.style.border='1.5px solid #e2e8f0';
+        box.style.background='#f8fafc';
+        box.innerHTML=''
+          +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.6"><rect x="2" y="1" width="10" height="12" rx="1.5"/><path d="M4 4h6M4 6.5h6M4 9h4"/></svg>'
+          +'<span style="font-size:13px;color:#374151;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+f.name+'</span>'
+          +'<div style="display:flex;gap:4px;flex-shrink:0;">'
+            +'<button class="prof-doc-view" title="View" style="width:26px;height:26px;border:1.5px solid #e2e8f0;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#374151" stroke-width="1.7"><ellipse cx="6" cy="6" rx="5" ry="3.5"/><circle cx="6" cy="6" r="1.5"/></svg></button>'
+            +'<button class="prof-doc-del" title="Delete" style="width:26px;height:26px;border:1.5px solid #fecaca;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#dc2626" stroke-width="1.8"><path d="M2 3h7M4.5 3V2h2v1M3.5 3v6a.5.5 0 00.5.5h3a.5.5 0 00.5-.5V3"/></svg></button>'
+          +'</div>';
+      };
+      inp.click();
+      return;
+    }
+
+    // Delete doc
+    var delBtn=e.target.closest('.prof-doc-del');
+    if(delBtn){
+      var box=delBtn.closest('.prof-upload-box'); if(!box) return;
+      var hint=box.dataset.hint||'Upload document';
+      box.classList.remove('has-file');
+      box.style.border='1.5px dashed #d1d5db';
+      box.style.background='#fafafa';
+      box.innerHTML=''
+        +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.6"><path d="M2 10v1.5a.5.5 0 00.5.5h9a.5.5 0 00.5-.5V10"/><path d="M7 2v7M4.5 4.5L7 2l2.5 2.5"/></svg>'
+        +'<span style="font-size:12.5px;color:#94a3b8;flex:1;">'+hint+'</span>'
+        +'<button class="prof-doc-upload" style="background:#1A5FC8;color:#fff;border:none;border-radius:7px;padding:5px 12px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;flex-shrink:0;">Upload</button>';
+      return;
+    }
+
     // Save
     if(e.target.closest('.supp-prof-save')){
       var wrap=document.getElementById('suppProfPanelWrap'); if(!wrap) return;
       var so=window._suppOnboard=window._suppOnboard||{};
+      // Text fields
       wrap.querySelectorAll('[data-pfield]').forEach(function(el){
         var k=el.dataset.pfield; if(!k||k==='_email') return;
-        so[k]=el.value||'';
+        so[k]=el.tagName==='TEXTAREA'?el.value:(el.value||'');
       });
+      // Toggles
       wrap.querySelectorAll('.prof-tog').forEach(function(btn){
         var k=btn.dataset.pfield; if(!k) return;
         so[k]=btn.hasAttribute('data-on');
       });
-      // Show snackbar
+      // Sector
+      var cardsWrap=document.getElementById('profSecCards');
+      if(cardsWrap) so.sector=cardsWrap.dataset.sector||so.sector||'';
+      // Sub-type chips
+      var resChips=[],comChips=[];
+      wrap.querySelectorAll('.prof-sector-chip').forEach(function(c){
+        if(!c.hasAttribute('data-sel')) return;
+        if(c.dataset.type==='res') resChips.push(c.dataset.val);
+        else comChips.push(c.dataset.val);
+      });
+      if(resChips.length||document.getElementById('profResGroup')) so.sectorSubRes=resChips;
+      if(comChips.length||document.getElementById('profComGroup')) so.sectorSubCom=comChips;
+      // Snackbar
       var sb=document.getElementById('admSnackbar'); var sm=document.getElementById('admSnackbarMsg');
-      if(sm) sm.textContent='Profile updated successfully';
+      if(sm) sm.textContent='Changes saved successfully';
       if(sb){ sb.classList.add('show'); clearTimeout(sb._t); sb._t=setTimeout(function(){sb.classList.remove('show');},2800); }
       return;
     }
-    // Toggle
-    var tog=e.target.closest('.prof-tog');
-    if(tog){ var on=tog.hasAttribute('data-on'); if(on){tog.removeAttribute('data-on');tog.style.background='#d1d5db';tog.querySelector('span').style.left='2px';tog.querySelector('span').style.right='';}else{tog.setAttribute('data-on','1');tog.style.background='#1A5FC8';tog.querySelector('span').style.right='2px';tog.querySelector('span').style.left='';} return; }
   });
 }
 
