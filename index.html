@@ -16922,13 +16922,12 @@ function _suppBuildProfilePage(){
     +row2(field2('Account Holder Name',so.accountHolder,'accountHolder'),field2('Bank Name',so.bankName,'bankName'))
     +row2(field2('Sort Code',so.sortCode,'sortCode'),field2('Account Number',so.accountNumber,'accountNumber'))
     +secHdr('VAT & Business')
-    // Toggles side by side
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px;">'
-      // VAT card — contains toggle + expandable VAT number
-      +'<div style="border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;">'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">'
+      // VAT card with expandable number inside
+      +'<div id="profVatCard" style="border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;">'
         +'<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;">'
-          +'<span style="font-size:14px;font-weight:500;color:#374151;font-family:Inter,sans-serif;">VAT Registered</span>'
-          +'<button class="prof-tog" data-pfield="vatRegistered" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(so.vatRegistered?'#1A5FC8':'#d1d5db')+';transition:background .2s;flex-shrink:0;"'+(so.vatRegistered?' data-on="1"':'')+' >'
+          +'<span style="font-size:13.5px;font-weight:500;color:#374151;font-family:Inter,sans-serif;">VAT Registered</span>'
+          +'<button class="prof-tog" data-pfield="vatRegistered" id="profVatTog" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(so.vatRegistered?'#1A5FC8':'#d1d5db')+';transition:background .2s;flex-shrink:0;"'+(so.vatRegistered?' data-on="1"':'')+' >'
             +'<span style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(so.vatRegistered?'right:2px;':'left:2px;')+'transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,0.18);display:block;"></span>'
           +'</button>'
         +'</div>'
@@ -16937,9 +16936,9 @@ function _suppBuildProfilePage(){
           +'<input data-pfield="vatNumber" value="'+(so.vatNumber||'')+'" placeholder="e.g. GB123456789" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;">'
         +'</div>'
       +'</div>'
-      // Business Bank Account toggle
+      // Business Bank Account card
       +'<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;border:1.5px solid #e2e8f0;border-radius:10px;">'
-        +'<span style="font-size:14px;font-weight:500;color:#374151;font-family:Inter,sans-serif;">Business Bank Account</span>'
+        +'<span style="font-size:13.5px;font-weight:500;color:#374151;font-family:Inter,sans-serif;">Business Bank Account</span>'
         +'<button class="prof-tog" data-pfield="businessAccount" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(so.businessAccount?'#1A5FC8':'#d1d5db')+';transition:background .2s;flex-shrink:0;"'+(so.businessAccount?' data-on="1"':'')+' >'
           +'<span style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(so.businessAccount?'right:2px;':'left:2px;')+'transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,0.18);display:block;"></span>'
         +'</button>'
@@ -16952,13 +16951,34 @@ function _suppBuildProfilePage(){
     +secHdr('Public Liability Insurance')
     +row2(field2('Insurance Provider',so.insProvider,'insProvider'),field2('Policy Number',so.insPolicy,'insPolicy'))
     +row2(field2('Coverage Amount',so.insCoverage,'insCoverage'),field2('Policy Expiry Date',so.insExpiry,'insExpiry'))
+    // Insurance certificate upload — always shown
+    +secHdr('Insurance Certificate')
+    +'<div style="margin-bottom:16px;">'
+      +uploadField('Upload Certificate',so._docInsurance?'insurance_certificate.pdf':'','Upload your public liability insurance certificate (PDF or image)')
+    +'</div>'
     +secHdr('Additional Cover')
-    +tog('Professional Indemnity Insurance',so.profIndemnity,'profIndemnity')
-    +(isCo?tog("Employers' Liability Insurance",so.employersLiability,'employersLiability'):'')
-    +(isCo?tog('All Workers Hold Valid Trade Licences',so.allWorkersValidCerts,'allWorkersValidCerts'):'')
+    // Additional toggles inline 2-col
+    +'<div style="display:grid;grid-template-columns:1fr '+(isCo?'1fr 1fr':'1fr')+';gap:14px;margin-bottom:16px;">'
+      +['Professional Indemnity Insurance','profIndemnity'].reduce(function(_,__,i,arr){ return ''; },'')+''
+      // build each toggle card inline
+      +'<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;border:1.5px solid #e2e8f0;border-radius:10px;">'
+        +'<span style="font-size:13.5px;font-weight:500;color:#374151;font-family:Inter,sans-serif;">Professional Indemnity</span>'
+        +'<button class="prof-tog" data-pfield="profIndemnity" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(so.profIndemnity?'#1A5FC8':'#d1d5db')+';flex-shrink:0;"'+(so.profIndemnity?' data-on="1"':'')+' ><span style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(so.profIndemnity?'right:2px;':'left:2px;')+'box-shadow:0 1px 3px rgba(0,0,0,0.18);display:block;"></span></button>'
+      +'</div>'
+      +(isCo?'<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;border:1.5px solid #e2e8f0;border-radius:10px;">'
+        +'<span style="font-size:13.5px;font-weight:500;color:#374151;font-family:Inter,sans-serif;">Employers\' Liability</span>'
+        +'<button class="prof-tog" data-pfield="employersLiability" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(so.employersLiability?'#1A5FC8':'#d1d5db')+';flex-shrink:0;"'+(so.employersLiability?' data-on="1"':'')+' ><span style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(so.employersLiability?'right:2px;':'left:2px;')+'box-shadow:0 1px 3px rgba(0,0,0,0.18);display:block;"></span></button>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;border:1.5px solid #e2e8f0;border-radius:10px;">'
+        +'<span style="font-size:13.5px;font-weight:500;color:#374151;font-family:Inter,sans-serif;">All Workers Valid Certs</span>'
+        +'<button class="prof-tog" data-pfield="allWorkersValidCerts" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(so.allWorkersValidCerts?'#1A5FC8':'#d1d5db')+';flex-shrink:0;"'+(so.allWorkersValidCerts?' data-on="1"':'')+' ><span style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(so.allWorkersValidCerts?'right:2px;':'left:2px;')+'box-shadow:0 1px 3px rgba(0,0,0,0.18);display:block;"></span></button>'
+      +'</div>':'')
+    +'</div>'
     +secHdr('Trade Certifications')
     +'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">'
-      +((so.tradeCerts||[]).length?(so.tradeCerts||[]).map(function(c){return '<span style="padding:6px 14px;background:#f1f5f9;border-radius:8px;font-size:13px;color:#374151;font-family:Inter,sans-serif;">'+c+'</span>';}).join(''):'<span style="color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;font-style:italic;">No certifications added</span>')
+      +((so.tradeCerts||[]).length
+        ?(so.tradeCerts||[]).map(function(cert){return '<span style="padding:6px 14px;background:#f1f5f9;border-radius:8px;font-size:13px;color:#374151;font-family:Inter,sans-serif;">'+cert+'</span>';}).join('')
+        :'<span style="color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;font-style:italic;">No certifications added during onboarding</span>')
     +'</div>'
     +saveBar();
 
@@ -16966,23 +16986,47 @@ function _suppBuildProfilePage(){
   var panelBg=''
     +(isCo
       ?secHdr('Company DBS Policy')
-       +row2(field2('Team Size',so.teamSize,'teamSize'),field2('Company Has a DBS Policy?',so.companyDbsDecl,'companyDbsDecl'))
+       +row2(field2('Team Size',so.teamSize,'teamSize'),field2('Company DBS Policy',so.companyDbsDecl,'companyDbsDecl'))
        +(so.companyDbsDecl==='Yes'?row1(field2('Company DBS Level',so.companyDbsLevel,'companyDbsLevel')):'')
        +row1(field2('Right to Work — All Staff',so.rightToWork,'rightToWork'))
       :secHdr('Personal DBS & Right to Work')
        +row2(field2('DBS Check Declared',so.dbsDeclared,'dbsDeclared'),field2('DBS Level',so.dbsLevel,'dbsLevel'))
        +row1(field2('Right to Work',so.rightToWork,'rightToWork'))
     )
+    +secHdr('Background Check Certificate')
+    +'<div style="margin-bottom:16px;">'
+      +uploadField('DBS Certificate',so._docDbs?'dbs_certificate.pdf':'','Upload your DBS certificate (PDF or image)')
+    +'</div>'
     +secHdr('Profile & Experience')
     +row2(field2('Primary Trade',so.primaryTrade,'primaryTrade'),field2('Years of Experience',so.experience,'experience'))
     +row2(field2('Jobs Completed',so.jobsCompleted,'jobsCompleted'),field2('Emergency Callouts',so.emergencyCallouts,'emergencyCallouts'))
-    +secHdr('Secondary Trades')
-    +'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">'
-      +((so.secondaryTrades||[]).length?(so.secondaryTrades||[]).map(function(t){return '<span style="padding:6px 14px;background:#f1f5f9;border-radius:8px;font-size:13px;color:#374151;font-family:Inter,sans-serif;">'+t+'</span>';}).join(''):'<span style="color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;font-style:italic;">None added</span>')
+    +secHdr('Availability')
+    +'<div style="margin-bottom:16px;">'
+      +'<label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;font-family:Inter,sans-serif;">Working Days</label>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:8px;">'
+        +['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(function(d){
+          var sel=(so.workDays||[]).indexOf(d)>=0;
+          return '<span style="padding:6px 14px;border-radius:8px;border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';background:'+(sel?'#eff6ff':'#f8fafc')+';color:'+(sel?'#1A5FC8':'#64748b')+';font-size:13px;font-family:Inter,sans-serif;font-weight:'+(sel?'600':'400')+';">'+d+'</span>';
+        }).join('')
+      +'</div>'
     +'</div>'
-    +secHdr('Pricing Models')
-    +'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">'
-      +((so.pricingModels||[]).length?(so.pricingModels||[]).map(function(m){return '<span style="padding:6px 14px;background:#f1f5f9;border-radius:8px;font-size:13px;color:#374151;font-family:Inter,sans-serif;">'+m+'</span>';}).join(''):'<span style="color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;font-style:italic;">None selected</span>')
+    +row2(field2('Start Time',so.startTime||'08:00','startTime'),field2('End Time',so.endTime||'17:00','endTime'))
+    +secHdr('Secondary Trades & Pricing')
+    +'<div style="margin-bottom:12px;">'
+      +'<label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Secondary Trades</label>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:8px;">'
+        +((so.secondaryTrades||[]).length
+          ?(so.secondaryTrades||[]).map(function(t){return '<span style="padding:6px 14px;background:#f1f5f9;border-radius:8px;font-size:13px;color:#374151;font-family:Inter,sans-serif;">'+t+'</span>';}).join('')
+          :'<span style="color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;font-style:italic;">None added</span>')
+      +'</div>'
+    +'</div>'
+    +'<div style="margin-bottom:16px;">'
+      +'<label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Pricing Models</label>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:8px;">'
+        +((so.pricingModels||[]).length
+          ?(so.pricingModels||[]).map(function(m){return '<span style="padding:6px 14px;background:#f1f5f9;border-radius:8px;font-size:13px;color:#374151;font-family:Inter,sans-serif;">'+m+'</span>';}).join('')
+          :'<span style="color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;font-style:italic;">None selected</span>')
+      +'</div>'
     +'</div>'
     +row1('<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Bio / Description</label><textarea data-pfield="bio" rows="4" placeholder="Tell clients about yourself..." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;resize:vertical;">'+(so.bio||'')+'</textarea></div>')
     +saveBar();
