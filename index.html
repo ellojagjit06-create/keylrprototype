@@ -3523,7 +3523,6 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 /* Float action bar */
 .adm-float-bar{background:#fff;border-top:1px solid #e8edf2;padding:12px 24px;display:flex;align-items:center;justify-content:flex-end;gap:10px;box-shadow:0 -2px 12px rgba(0,0,0,0.05);flex-shrink:0;}
 /* Detail top bar */
-.adm-detail-topbar{background:#fff;border-bottom:1.5px solid #e8edf2;padding:0 24px;height:52px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:200;margin:-28px -28px 20px;flex-shrink:0;}
 .adm-detail-topbar-back{display:flex;align-items:center;gap:6px;color:#64748b;font-size:13px;font-weight:500;cursor:pointer;padding:6px 10px;border-radius:7px;transition:background .12s,color .12s;border:none;background:none;font-family:Inter,sans-serif;}
 .adm-detail-topbar-back:hover{background:#f1f5f9;color:#0f172a;}
 .adm-detail-topbar-sep{color:#d1d5db;font-size:14px;line-height:1;}
@@ -3648,6 +3647,8 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
         </button>
         <img id="admLogoImgMob" alt="Keylr" style="height:22px;object-fit:contain;">
       </div>
+      <!-- Detail page topbar (rendered outside adm-content so no padding/sticky issues) -->
+      <div id="admDetailTopbarSlot" style="display:none;background:#fff;border-bottom:1.5px solid #e8edf2;padding:0 24px;height:52px;display:none;align-items:center;gap:10px;flex-shrink:0;"></div>
 
       <div class="adm-content" id="admContent">
 
@@ -7658,12 +7659,25 @@ function _admOpenApplicant(id) {
   var apps = _admLoadApplicants();
   var app = apps.find(function(a){ return a.id===id; });
   if(!app) return;
+  var isCo=app.operationType==='company';
+  var dispName=isCo?(app.tradingName||app.regCompanyName||app.name):(app.tradingName||app.name);
   var view = document.getElementById('admApplicantsView');
   var detail = document.getElementById('admApplicantDetail');
   var fbWrap = document.getElementById('admFloatBarWrap');
+  var topSlot = document.getElementById('admDetailTopbarSlot');
   if(view) view.style.display='none';
   if(detail){ detail.style.display='block'; detail.innerHTML=_admBuildDetail(app); }
   if(fbWrap){ fbWrap.style.display=''; fbWrap.innerHTML=_admFloatBarHTML(app); }
+  // Render topbar into the slot outside adm-content
+  if(topSlot){
+    topSlot.style.display='flex';
+    topSlot.innerHTML=''
+      +'<button class="adm-detail-topbar-back" onclick="_admBackToApplicants()">'
+        +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2L5 7l4 5"/></svg>Applicants'
+      +'</button>'
+      +'<span class="adm-detail-topbar-sep" style="color:#d1d5db;font-size:14px;">/</span>'
+      +'<span class="adm-detail-topbar-title" style="font-size:14px;font-weight:600;color:#0f172a;">'+_admEsc(dispName)+'</span>';
+  }
   var ab=document.getElementById('admApprovBtn');
   var rb=document.getElementById('admRejectBtn');
   if(ab) ab.onclick=function(){ _admUpdateStatus(id,'approved'); };
@@ -7674,9 +7688,11 @@ function _admBackToApplicants() {
   var view=document.getElementById('admApplicantsView');
   var detail=document.getElementById('admApplicantDetail');
   var fbWrap=document.getElementById('admFloatBarWrap');
+  var topSlot=document.getElementById('admDetailTopbarSlot');
   if(view){ view.style.display=''; _admRenderApplicants(); }
   if(detail) detail.style.display='none';
   if(fbWrap){ fbWrap.style.display='none'; fbWrap.innerHTML=''; }
+  if(topSlot){ topSlot.style.display='none'; topSlot.innerHTML=''; }
 }
 
 function _admUpdateStatus(id, status) {
@@ -7999,14 +8015,6 @@ function _admBuildDetail(app) {
   +'</div>'+saveBtn('background');
 
   var html=''
-  // ── Sticky top bar ──
-  +'<div class="adm-detail-topbar">'
-    +'<button class="adm-detail-topbar-back" onclick="_admBackToApplicants()">'
-      +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2L5 7l4 5"/></svg>Applicants'
-    +'</button>'
-    +'<span class="adm-detail-topbar-sep">/</span>'
-    +'<span class="adm-detail-topbar-title">'+_admEsc(dispName)+'</span>'
-  +'</div>'
   // ── Applicant identity block ──
   +'<div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap;">'
     +'<div class="adm-avatar" style="background:'+avColor+';width:52px;height:52px;font-size:22px;flex-shrink:0;">'+initial+'</div>'
