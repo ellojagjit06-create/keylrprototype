@@ -7981,24 +7981,26 @@ function _admBuildDetail(app) {
 
   // ── TAB: Bank Details ──
   // VAT Number field — shown only when vatRegistered is on
-  // ── VAT card: toggle + expandable VAT number input inside the same card, spans 1 col ──
+  // ── VAT card: toggle + expandable VAT number input inside, 1 col ──
   var vatToggle = '<div class="adm-form-field">'
-    +'<div class="adm-form-label">VAT Registered</div>'
     +'<div style="border:1.5px solid #e2e8f0;border-radius:9px;overflow:hidden;">'
-      // Toggle row
       +'<div class="adm-form-toggle-row" style="border:none;border-radius:0;background:#f8fafc;">'
         +'<span class="adm-form-toggle-label">VAT Registered</span>'
         +'<button class="adm-form-toggle adm-tog adm-vat-tog" data-field="vatRegistered" style="background:'+(app.vatRegistered?'#1A5FC8':'#d1d5db')+';"'+(app.vatRegistered?' data-on="1"':'')+' ></button>'
       +'</div>'
-      // VAT number input — inside the card, shown only when toggle is ON
       +'<div id="admVatNumRow" style="display:'+(app.vatRegistered?'block':'none')+';padding:10px 12px;border-top:1px solid #e2e8f0;background:#fff;">'
         +'<div class="adm-form-label" style="margin-bottom:6px;">VAT Number</div>'
         +'<input class="adm-form-input adm-edit-field" data-field="vatNumber" value="'+_admEsc(app.vatNumber||'')+'" placeholder="e.g. GB123456789" style="margin:0;">'
       +'</div>'
     +'</div>'
   +'</div>';
-  // Business Bank Account — parallel (same row, 1 col)
-  var bizToggle = fgToggle('Business Bank Account',app.businessAccount,'businessAccount');
+  // Business Bank Account — single column, parallel to VAT toggle
+  var bizToggle = '<div class="adm-form-field">'
+    +'<div class="adm-form-toggle-row">'
+      +'<span class="adm-form-toggle-label">Business Bank Account</span>'
+      +'<button class="adm-form-toggle adm-tog" data-field="businessAccount" style="background:'+(app.businessAccount?'#1A5FC8':'#d1d5db')+';"'+(app.businessAccount?' data-on="1"':'')+' ></button>'
+    +'</div>'
+  +'</div>';
   var tabBank = '<div class="adm-form-grid">'
     +fgHead('Bank Account')
     +fg('Account Holder Name',app.accountHolder,'accountHolder')
