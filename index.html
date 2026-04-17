@@ -7922,15 +7922,18 @@ function _admBuildDetail(app) {
     +'<button class="adm-save-btn" data-tab="sector" data-appid="'+app.id+'">Save changes</button>'
   +'</div>';
 
-  // ── Upload field: neutral colors, view + delete icons, interactive ──
+  // ── Upload field: 1-col or 2-col, real file picker, delete resets ──
   var _ufCounter=(_ufCounter||0)+1;
-  function fgUploadFilled(label, filename, hint){
+  function fgUploadFilled(label, filename, hint, fullWidth){
     var hasFile=!!filename;
-    var uid='uf_'+(++_ufCounter)+'_'+Date.now();
+    var uid='uf_'+(++_ufCounter);
     var hintEsc=_admEsc(hint||'No file uploaded');
-    // Wrapper spans full width always
-    return '<div class="adm-form-field span2" id="wrap_'+uid+'"><div class="adm-form-label">'+label+'</div>'
-      +'<div class="adm-upload-field adm-uf-box'+(hasFile?' has-file':'')+'" id="box_'+uid+'" style="gap:8px;">'
+    var cls=fullWidth?'adm-form-field span2':'adm-form-field';
+    return '<div class="'+cls+'" id="wrap_'+uid+'">'
+      +'<div class="adm-form-label">'+label+'</div>'
+      // Hidden real file input
+      +'<input type="file" id="finput_'+uid+'" accept=".pdf,.jpg,.jpeg,.png" style="display:none;" class="adm-uf-finput" data-uid="'+uid+'">'
+      +'<div class="adm-upload-field'+(hasFile?' has-file':'')+'" id="box_'+uid+'" style="gap:8px;">'
         +(hasFile
           ?'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.6"><rect x="2" y="1" width="10" height="12" rx="1.5"/><path d="M4 4h6M4 6.5h6M4 9h4"/></svg>'
           +'<span style="font-size:12.5px;color:#374151;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="fname_'+uid+'">'+_admEsc(filename)+'</span>'
@@ -7946,7 +7949,8 @@ function _admBuildDetail(app) {
           +'<span style="font-size:12px;color:#94a3b8;flex:1;" id="fname_'+uid+'">'+hintEsc+'</span>'
           +'<button class="adm-uf-upload" data-uid="'+uid+'" style="background:#1A5FC8;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;flex-shrink:0;">Upload</button>'
         )
-      +'</div></div>';
+      +'</div>'
+    +'</div>';
   }
 
   // ── TAB: Identity ──
@@ -7967,11 +7971,9 @@ function _admBuildDetail(app) {
         +fg('NI Number',app.niNumber,'niNumber')
         +fg('Home Address',app.homeAddress,'homeAddress')
         +fgHead('Identity Documents')
-        +fgUploadFilled('Photo ID',app.fullLegalName?'passport_id.pdf':'','Upload passport or driving licence')
-        +fgUploadFilled('Selfie Verification',app.fullLegalName?'selfie_photo.jpg':'','Upload selfie for biometric match')
-        +'<div class="span2" style="padding:0 20px 4px;">'
-          +fgUploadFilled('Proof of Address',app.homeAddress?'utility_bill.pdf':'','Upload utility bill or bank statement')
-        +'</div>'
+        +fgUploadFilled('Photo ID',app.fullLegalName?'passport_id.pdf':'','Upload passport or driving licence', false)
+        +fgUploadFilled('Selfie Verification',app.fullLegalName?'selfie_photo.jpg':'','Upload selfie for biometric match', false)
+        +fgUploadFilled('Proof of Address',app.homeAddress?'utility_bill.pdf':'','Upload utility bill or bank statement', true)
     )
   +'</div>'+saveBtn('identity');
 
@@ -8203,12 +8205,47 @@ function _admToggleHandler(e) {
     var box=document.getElementById('box_'+uid);
     if(box){
       box.classList.remove('has-file');
-      box.style.borderColor='#d1d5db'; box.style.background='#f8fafc';
       box.innerHTML=''
         +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.6"><path d="M2 10v1.5a.5.5 0 00.5.5h9a.5.5 0 00.5-.5V10"/><path d="M7 2v7M4.5 4.5L7 2l2.5 2.5"/></svg>'
         +'<span style="font-size:12px;color:#94a3b8;flex:1;">'+hint+'</span>'
         +'<button class="adm-uf-upload" data-uid="'+uid+'" style="background:#1A5FC8;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;flex-shrink:0;">Upload</button>';
     }
+    return;
+  }
+  // Upload: click triggers real file picker
+  var upBtn=e.target.closest('.adm-uf-upload');
+  if(upBtn){
+    var uid=upBtn.dataset.uid;
+    var finput=document.getElementById('finput_'+uid);
+    if(!finput){
+      // create dynamically if not present (e.g. after delete rebuilt box)
+      finput=document.createElement('input');
+      finput.type='file'; finput.accept='.pdf,.jpg,.jpeg,.png';
+      finput.style.display='none'; finput.id='finput_'+uid;
+      finput.className='adm-uf-finput'; finput.dataset.uid=uid;
+      document.body.appendChild(finput);
+    }
+    finput.onchange=function(){
+      var file=finput.files&&finput.files[0];
+      if(!file) return;
+      var box=document.getElementById('box_'+uid);
+      if(box){
+        box.classList.add('has-file');
+        box.innerHTML=''
+          +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.6"><rect x="2" y="1" width="10" height="12" rx="1.5"/><path d="M4 4h6M4 6.5h6M4 9h4"/></svg>'
+          +'<span style="font-size:12.5px;color:#374151;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+file.name+'</span>'
+          +'<div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">'
+            +'<button title="View document" class="adm-uf-view" data-uid="'+uid+'" data-filename="'+file.name+'" style="width:28px;height:28px;border:1.5px solid #e2e8f0;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">'
+              +'<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#374151" stroke-width="1.7"><ellipse cx="6.5" cy="6.5" rx="5.5" ry="3.5"/><circle cx="6.5" cy="6.5" r="1.5"/></svg>'
+            +'</button>'
+            +'<button title="Delete document" class="adm-uf-delete" data-uid="'+uid+'" data-hint="No file uploaded" style="width:28px;height:28px;border:1.5px solid #fecaca;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">'
+              +'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#dc2626" stroke-width="1.8"><path d="M2 3h8M5 3V2h2v1M4 3v6.5a.5.5 0 00.5.5h3a.5.5 0 00.5-.5V3"/></svg>'
+            +'</button>'
+          +'</div>';
+        finput.value='';
+      }
+    };
+    finput.click();
     return;
   }
   // Sector card click
