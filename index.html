@@ -16029,6 +16029,9 @@ function _suppNavTo(pageId){
   if(pageId==='svcs'){
     mainEl.innerHTML = '<div style="'+pad+'">'+_suppBuildServicesPage()+'</div>';
     _suppWireServicesPage();
+  } else if(pageId==='profile'){
+    mainEl.innerHTML = '<div style="'+pad+'">'+_suppBuildProfilePage()+'</div>';
+    _suppWireProfilePage();
   } else if(pageId==='price'){
     mainEl.innerHTML = '<div style="'+pad+'">'+_suppBuildPricingPage()+'</div>';
     _suppWirePricingPage();
@@ -16752,6 +16755,224 @@ function _suppOpenPricingModal(svcId, svcLabel){
   document.body.appendChild(overlay);
 }
 
+// ══ SUPPLIER PROFILE PAGE ══
+function _suppBuildProfilePage(){
+  var so=window._suppOnboard||{};
+  var st=window._suppState||{};
+  var user=window._user||{};
+  var nm=so.fullLegalName||so.tradingName||user.name||'';
+  var em=user.email||'';
+  var isCo=so.operationType==='company';
+  var activeTab=window._suppProfileTab||'profile';
+
+  // Tab builder helpers (reuse admin-style layout)
+  function field(label,val,key){
+    return '<div style="display:flex;flex-direction:column;gap:4px;margin-bottom:16px;">'
+      +'<label style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;font-family:Inter,sans-serif;">'+label+'</label>'
+      +'<input data-pfield="'+key+'" value="'+(val||'')+'" placeholder="Not provided" style="border:1.5px solid #e2e8f0;border-radius:9px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;color:#0f172a;background:#fff;outline:none;width:100%;box-sizing:border-box;">'
+    +'</div>';
+  }
+  function fieldRow(items){
+    return '<div style="display:grid;grid-template-columns:'+(items.length===2?'1fr 1fr':'1fr 1fr 1fr')+';gap:16px;">'
+      +items.map(function(f){return field(f.l,f.v,f.k);}).join('')
+    +'</div>';
+  }
+  function sectionHead(label){
+    return '<div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;font-family:Inter,sans-serif;margin:20px 0 12px;padding-top:16px;border-top:1px solid #f1f5f9;">'+label+'</div>';
+  }
+  function toggle(label,val,key){
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:9px;margin-bottom:12px;">'
+      +'<span style="font-size:13.5px;font-weight:500;color:#374151;font-family:Inter,sans-serif;">'+label+'</span>'
+      +'<button class="prof-tog" data-pfield="'+key+'" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(val?'#1A5FC8':'#d1d5db')+';transition:background .2s;"'+(val?' data-on="1"':'')+' >'
+        +'<span style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(val?'right:2px;':'left:2px;')+'transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,0.18);display:block;"></span>'
+      +'</button>'
+    +'</div>';
+  }
+  function chip(label,selected){
+    return '<span style="padding:6px 16px;border-radius:999px;border:1.5px solid '+(selected?'#1A5FC8':'#d1d5db')+';background:'+(selected?'#eff6ff':'#fff')+';color:'+(selected?'#1e3a5f':'#374151')+';font-size:13px;font-family:Inter,sans-serif;cursor:default;">'+label+'</span>';
+  }
+  function saveBtn(){
+    return '<div style="display:flex;justify-content:flex-end;margin-top:24px;">'
+      +'<button class="supp-prof-save" style="background:#1A5FC8;color:#fff;border:none;border-radius:9px;padding:10px 24px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save changes</button>'
+    +'</div>';
+  }
+
+  // ── Tab panels ──
+  var tabs=[
+    {id:'profile',label:'Profile'},
+    {id:'sectors',label:'Sectors'},
+    {id:'identity',label:'Identity'},
+    {id:'bank',label:'Bank Details'},
+    {id:'insurance',label:'Insurance'},
+    {id:'background',label:'Background Checks'}
+  ];
+
+  // Profile tab
+  var panelProfile=''
+    +'<div style="padding:8px 0;">'
+      +'<div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;padding:20px;background:#f8fafc;border-radius:12px;border:1.5px solid #e2e8f0;">'
+        +'<div style="width:60px;height:60px;background:#1A5FC8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;flex-shrink:0;">'+((nm||'?')[0].toUpperCase())+'</div>'
+        +'<div style="flex:1;">'
+          +'<div style="font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:2px;">'+(nm||'Your Name')+'</div>'
+          +'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">'+em+'</div>'
+          +(isCo?'<span style="font-size:11.5px;background:#eff6ff;color:#1A5FC8;border-radius:6px;padding:2px 8px;font-weight:600;margin-top:4px;display:inline-block;">Company</span>':'<span style="font-size:11.5px;background:#f0fdf4;color:#16a34a;border-radius:6px;padding:2px 8px;font-weight:600;margin-top:4px;display:inline-block;">Sole Trader</span>')
+        +'</div>'
+      +'</div>'
+      +fieldRow([{l:'Full name',v:nm,k:'fullLegalName'},{l:'Email address',v:em,k:'_email'}])
+      +'<div style="margin-bottom:16px;">'
+        +'<label style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;font-family:Inter,sans-serif;display:block;margin-bottom:4px;">Mobile number</label>'
+        +'<div style="display:flex;gap:8px;">'
+          +'<div style="border:1.5px solid #e2e8f0;border-radius:9px;padding:10px 12px;font-size:13px;font-family:Inter,sans-serif;background:#f8fafc;color:#374151;white-space:nowrap;">GB +44</div>'
+          +'<input data-pfield="phone" value="'+(so.phone||'')+'" placeholder="7700 000000" style="border:1.5px solid #e2e8f0;border-radius:9px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;color:#0f172a;outline:none;flex:1;">'
+        +'</div>'
+      +'</div>'
+      +'<div style="margin-bottom:16px;">'
+        +'<label style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;font-family:Inter,sans-serif;display:block;margin-bottom:4px;">Password</label>'
+        +'<div style="position:relative;">'
+          +'<input type="password" value="password" style="border:1.5px solid #e2e8f0;border-radius:9px;padding:10px 42px 10px 13px;font-size:13.5px;font-family:Inter,sans-serif;color:#0f172a;outline:none;width:100%;box-sizing:border-box;">'
+          +'<svg style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#94a3b8" stroke-width="1.6"><ellipse cx="8" cy="8" rx="7" ry="4.5"/><circle cx="8" cy="8" r="2"/></svg>'
+        +'</div>'
+        +'<div style="margin-top:6px;"><a href="javascript:void(0)" style="font-size:13px;color:#1A5FC8;font-family:Inter,sans-serif;text-decoration:none;">Change password</a></div>'
+      +'</div>'
+    +'</div>'
+    +saveBtn();
+
+  // Sectors tab
+  var sectorVal=so.sector||'';
+  var resSubAll=['AST (Assured Shorthold)','HMO','STR / Short-let','Block management'];
+  var comSubAll=['Offices','Retail','Industrial','Hospitality','Mixed use'];
+  function secCardP(s){
+    var lbl={residential:'Residential',commercial:'Commercial',both:'Both'}[s];
+    var ico={
+      residential:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 19V10L11 3l8 7v9"/><path d="M8 19v-6h6v6"/></svg>',
+      commercial:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="16" height="13" rx="1"/><path d="M3 11h16"/><path d="M8 7V5h6v2"/></svg>',
+      both:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 18V11l7-6 7 6v7"/><rect x="13" y="9" width="8" height="9" rx="1"/></svg>'
+    }[s];
+    var sel=sectorVal===s;
+    return '<div style="border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:12px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:default;position:relative;background:'+(sel?'#eff6ff':'#fff')+'">'
+      +'<div style="color:'+(sel?'#1A5FC8':'#94a3b8')+';">'+ico+'</div>'
+      +'<div style="font-size:13px;font-weight:'+(sel?'700':'500')+';color:'+(sel?'#1A5FC8':'#374151')+';font-family:Inter,sans-serif;">'+lbl+'</div>'
+      +(sel?'<div style="position:absolute;top:8px;right:8px;"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#1A5FC8"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.8"/></svg></div>':'')
+    +'</div>';
+  }
+  var panelSectors='<div style="padding:8px 0;">'
+    +'<div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;font-family:Inter,sans-serif;margin-bottom:10px;">Sectors Served</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;">'
+      +secCardP('residential')+secCardP('commercial')+secCardP('both')
+    +'</div>'
+    +(sectorVal==='residential'||sectorVal==='both'?'<div style="margin-bottom:16px;"><div style="font-size:13px;color:#64748b;margin-bottom:8px;font-family:Inter,sans-serif;">Residential sub-types <span style="color:#94a3b8;font-size:12px;">(optional)</span></div><div style="display:flex;flex-wrap:wrap;gap:8px;">'+resSubAll.map(function(v){return chip(v,(so.sectorSubRes||[]).indexOf(v)>=0);}).join('')+'</div></div>':'')
+    +(sectorVal==='commercial'||sectorVal==='both'?'<div style="margin-bottom:16px;"><div style="font-size:13px;color:#64748b;margin-bottom:8px;font-family:Inter,sans-serif;">Commercial sub-types <span style="color:#94a3b8;font-size:12px;">(optional)</span></div><div style="display:flex;flex-wrap:wrap;gap:8px;">'+comSubAll.map(function(v){return chip(v,(so.sectorSubCom||[]).indexOf(v)>=0);}).join('')+'</div></div>':'')
+  +'</div>'+saveBtn();
+
+  // Identity tab
+  var panelIdentity='<div style="padding:8px 0;">'
+    +sectionHead(isCo?'Company Details':'Personal Details')
+    +(isCo
+      ?fieldRow([{l:'Trading Name',v:so.tradingName,k:'tradingName'},{l:'Registered Company Name',v:so.regCompanyName,k:'regCompanyName'}])
+       +fieldRow([{l:'Company Reg Number',v:so.companyRegNum,k:'companyRegNum'}])
+       +field('Registered Office Address',so.regOfficeAddr,'regOfficeAddr')
+       +sectionHead('Person of Significant Control (PSC)')
+       +fieldRow([{l:'PSC Full Name',v:so.pscFullName,k:'pscFullName'},{l:'PSC Date of Birth',v:so.pscDob,k:'pscDob'}])
+       +field('TIN / Tax ID',so.tinNum,'tinNum')
+      :fieldRow([{l:'Full Legal Name',v:so.fullLegalName,k:'fullLegalName'},{l:'Date of Birth',v:so.dob,k:'dob'}])
+       +fieldRow([{l:'NI Number',v:so.niNumber,k:'niNumber'},{l:'Home Address',v:so.homeAddress,k:'homeAddress'}])
+    )
+  +'</div>'+saveBtn();
+
+  // Bank Details tab
+  var panelBank='<div style="padding:8px 0;">'
+    +sectionHead('Bank Account')
+    +fieldRow([{l:'Account Holder Name',v:so.accountHolder,k:'accountHolder'},{l:'Bank Name',v:so.bankName,k:'bankName'}])
+    +fieldRow([{l:'Sort Code',v:so.sortCode,k:'sortCode'},{l:'Account Number',v:so.accountNumber,k:'accountNumber'}])
+    +sectionHead('VAT & Business')
+    +toggle('VAT Registered',so.vatRegistered,'vatRegistered')
+    +(so.vatRegistered?field('VAT Number',so.vatNumber,'vatNumber'):'')
+    +toggle('Business Bank Account',so.businessAccount,'businessAccount')
+  +'</div>'+saveBtn();
+
+  // Insurance tab
+  var panelInsurance='<div style="padding:8px 0;">'
+    +sectionHead('Public Liability Insurance')
+    +fieldRow([{l:'Insurance Provider',v:so.insProvider,k:'insProvider'},{l:'Policy Number',v:so.insPolicy,k:'insPolicy'}])
+    +fieldRow([{l:'Coverage Amount',v:so.insCoverage,k:'insCoverage'},{l:'Policy Expiry Date',v:so.insExpiry,k:'insExpiry'}])
+    +sectionHead('Additional Cover')
+    +toggle('Professional Indemnity Insurance',so.profIndemnity,'profIndemnity')
+    +(isCo?toggle("Employers' Liability Insurance",so.employersLiability,'employersLiability'):'')
+    +(isCo?toggle('All Workers Hold Valid Trade Licences',so.allWorkersValidCerts,'allWorkersValidCerts'):'')
+  +'</div>'+saveBtn();
+
+  // Background Checks tab
+  var panelBg='<div style="padding:8px 0;">'
+    +(isCo
+      ?sectionHead('Company DBS Policy')
+       +fieldRow([{l:'Team Size',v:so.teamSize,k:'teamSize'},{l:'Company Has a DBS Policy?',v:so.companyDbsDecl,k:'companyDbsDecl'}])
+       +field('Right to Work — All Staff',so.rightToWork,'rightToWork')
+      :sectionHead('Personal DBS & Right to Work')
+       +fieldRow([{l:'DBS Check Declared',v:so.dbsDeclared,k:'dbsDeclared'},{l:'DBS Level',v:so.dbsLevel,k:'dbsLevel'}])
+       +field('Right to Work',so.rightToWork,'rightToWork')
+    )
+    +sectionHead('Profile & Experience')
+    +fieldRow([{l:'Primary Trade',v:so.primaryTrade,k:'primaryTrade'},{l:'Years of Experience',v:so.experience,k:'experience'}])
+    +fieldRow([{l:'Jobs Completed',v:so.jobsCompleted,k:'jobsCompleted'},{l:'Emergency Callouts',v:so.emergencyCallouts,k:'emergencyCallouts'}])
+    +field('Bio / Description',so.bio,'bio')
+  +'</div>'+saveBtn();
+
+  var panels={profile:panelProfile,sectors:panelSectors,identity:panelIdentity,bank:panelBank,insurance:panelInsurance,background:panelBg};
+
+  return '<div style="max-width:760px;">'
+    // Header row
+    +'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;">'
+      +'<div>'
+        +'<div style="font-size:11px;font-weight:700;color:#1A5FC8;letter-spacing:.06em;font-family:Inter,sans-serif;margin-bottom:4px;">ACCOUNT</div>'
+        +'<h1 style="font-size:26px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin:0;">My Profile</h1>'
+      +'</div>'
+    +'</div>'
+    // Tab bar
+    +'<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;overflow:hidden;">'
+      +'<div style="display:flex;border-bottom:1.5px solid #e8edf2;overflow-x:auto;scrollbar-width:none;">'
+        +tabs.map(function(t){
+          var isAct=t.id===activeTab;
+          return '<button class="supp-prof-tab" data-tabid="'+t.id+'" style="padding:13px 18px;border:none;border-bottom:2.5px solid '+(isAct?'#1A5FC8':'transparent')+';font-size:13px;font-weight:'+(isAct?'700':'500')+';color:'+(isAct?'#1A5FC8':'#64748b')+';cursor:pointer;background:none;font-family:Inter,sans-serif;white-space:nowrap;">'+t.label+'</button>';
+        }).join('')
+      +'</div>'
+      +'<div style="padding:20px 24px;" id="suppProfPanelWrap">'
+        +(panels[activeTab]||'')
+      +'</div>'
+    +'</div>'
+  +'</div>';
+}
+
+function _suppWireProfilePage(){
+  var mainEl=document.getElementById('suppMain')||window._suppMain;
+  if(!mainEl) return;
+  mainEl.addEventListener('click',function(e){
+    // Tab switch
+    var tabBtn=e.target.closest('.supp-prof-tab');
+    if(tabBtn){ window._suppProfileTab=tabBtn.dataset.tabid; _suppNavTo('profile'); return; }
+    // Save
+    if(e.target.closest('.supp-prof-save')){
+      var wrap=document.getElementById('suppProfPanelWrap'); if(!wrap) return;
+      var so=window._suppOnboard=window._suppOnboard||{};
+      wrap.querySelectorAll('[data-pfield]').forEach(function(el){
+        var k=el.dataset.pfield; if(!k||k==='_email') return;
+        so[k]=el.value||'';
+      });
+      wrap.querySelectorAll('.prof-tog').forEach(function(btn){
+        var k=btn.dataset.pfield; if(!k) return;
+        so[k]=btn.hasAttribute('data-on');
+      });
+      // Show snackbar
+      var sb=document.getElementById('admSnackbar'); var sm=document.getElementById('admSnackbarMsg');
+      if(sm) sm.textContent='Profile updated successfully';
+      if(sb){ sb.classList.add('show'); clearTimeout(sb._t); sb._t=setTimeout(function(){sb.classList.remove('show');},2800); }
+      return;
+    }
+    // Toggle
+    var tog=e.target.closest('.prof-tog');
+    if(tog){ var on=tog.hasAttribute('data-on'); if(on){tog.removeAttribute('data-on');tog.style.background='#d1d5db';tog.querySelector('span').style.left='2px';tog.querySelector('span').style.right='';}else{tog.setAttribute('data-on','1');tog.style.background='#1A5FC8';tog.querySelector('span').style.right='2px';tog.querySelector('span').style.left='';} return; }
+  });
+}
+
 function _showSupplierDashboard(){
   ['pg-landing','pg-dashboard'].forEach(function(id){
     var el=document.getElementById(id);if(el)el.style.display='none';
@@ -16772,6 +16993,7 @@ function _showSupplierDashboard(){
   var KEYLR_LOGO = '<svg width="82" height="15" viewBox="0 0 852 151" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.16 144.91C0.04 141.58 0 107.67 0 69.53L0.08 0.21L18.62 0.09L37.12 0.01V75.47V150.93H18.74H0.36L0.16 144.91Z" fill="#0f172a"/><path d="M111 148.19C108.62 145.58 63.58 96.97 50.75 83.19C46.99 79.15 43.54 75.35 43.07 74.75C42.2 73.64 42.2 73.64 42.95 72.77C43.39 72.29 47.55 67.78 52.22 62.79C56.89 57.76 62.48 51.7 64.66 49.32C66.84 46.94 75.24 37.83 83.28 29.12C91.36 20.37 100.67 10.26 104.04 6.62L110.14 0H134.11H158.12L156.54 1.7C155.67 2.61 151.03 7.64 146.24 12.87C135.7 24.4 122.2 39.09 110.98 51.29C90.9 73.12 86.66 77.83 86.74 78.11C86.82 78.27 90.7 82.39 95.38 87.22C104.02 96.21 146.92 140.58 153.37 147.27L156.94 150.91L135.15 150.87L113.4 150.83L111.02 148.18L111 148.19Z" fill="#0f172a"/><path d="M190.03 133.89V116.86H257.17H324.31V133.89V150.92H257.17H190.03V133.89Z" fill="#0f172a"/><path d="M415.03 121.65V92.38L413.52 90.44C412.69 89.41 405.44 79.82 397.4 69.13C389.36 58.47 374.46 38.63 364.24 25.08C354.06 11.53 345.7 0.36 345.7 0.24C345.7 0.12 354.14 0 364.48 0H383.26L407.54 32.48C420.93 50.31 432.06 64.88 432.26 64.8C432.7 64.68 438.24 57.08 466.88 17.03C473.06 8.43 478.41 1.07 478.76 0.67C479.39 0.04 480.7 0 497.73 0.08L516.03 0.2L512.5 4.95C510.6 7.56 501.37 20.08 492.02 32.72C482.67 45.4 472.45 59.3 469.28 63.58C466.11 67.9 459.85 76.37 455.34 82.48L447.1 93.53V122.21V150.93H431.06H415.02V121.66L415.03 121.65Z" fill="#0f172a"/><path d="M566.75 150.17C556.77 148.03 548.49 141.61 544.53 132.86C541.84 126.92 541.99 131.67 541.99 62.59V0.2L558.94 0.08L575.85 0V50.39C575.85 80.22 576.05 102.01 576.25 103.75C577.08 110.05 580.29 114.01 586.35 116.23C587.18 116.51 600.77 116.71 630.91 116.86L674.29 117.06L674.41 134.01L674.49 150.92L622.32 150.88C573.6 150.88 569.87 150.8 566.74 150.17H566.75Z" fill="#0f172a"/><path d="M699.65 150.45C699.53 150.17 699.49 132.31 699.53 110.72L699.65 71.5L748.18 71.3C787.04 71.14 797.02 70.98 798.29 70.55C801.3 69.56 804.63 67.54 806.81 65.36C817.7 54.43 811.56 35.81 796.11 33.04C793.73 32.6 783.75 32.53 746.28 32.49H699.46L699.54 16.37L699.66 0.21L741.45 0.09C794.17 -0.03 799.96 0.21 809.11 3.22C813.35 4.57 820.16 8.09 824.24 10.98C828.91 14.31 835.69 21 838.38 24.96C846.9 37.52 849.63 53.32 845.87 68.3C843.73 76.58 840.05 82.88 833.39 89.57C827.65 95.27 821.39 99.28 814.53 101.65C812.79 102.24 811.2 102.84 811.04 103C810.68 103.32 814.21 107.52 832.15 128.15C837.06 133.81 843.2 140.94 845.78 144C848.39 147.05 850.77 149.86 851.09 150.26C851.64 150.89 850.65 150.93 830.85 150.93H809.97L807.63 148.08C806.36 146.5 798.12 136.35 789.37 125.58C780.58 114.81 772.97 105.5 772.42 104.86L771.39 103.79L753.96 103.87L736.49 103.99V127.48V150.93H718.15C703.85 150.93 699.77 150.81 699.65 150.45Z" fill="#0f172a"/><path d="M190.03 74.87V57.84H248.66H307.29V74.87V91.9H248.66H190.03V74.87Z" fill="#0f172a"/><path d="M190.03 17.04V0.01L257.09 0.09L324.11 0.21L324.23 17.16L324.31 34.07H257.17H190.03V17.04Z" fill="#0f172a"/></svg>';
   var _sbCollapsed = false;
 
+  // ensure profile page can be navigated to
   var navItems = [
     {id:'dash',  label:'Dashboard',    active:true,
      svg:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>'},
@@ -16871,20 +17093,31 @@ function _showSupplierDashboard(){
     };
     bot.appendChild(dm);
 
-    // User row — triggers popover
+    // ── User row — click goes to Profile page ──
     var userRow = document.createElement('div');
     userRow.id  = 'suppUserRow';
-    userRow.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 6px;border-radius:8px;cursor:pointer;position:relative;';
+    userRow.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 6px;border-radius:8px;cursor:pointer;';
     userRow.innerHTML = '<div style="width:28px;height:28px;background:#1A5FC8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;">'+initials+'</div>'
       +(!collapsed
-          ? '<div style="flex:1;min-width:0;"><div style="font-size:12.5px;font-weight:600;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+name+'</div>'
+          ? '<div style="flex:1;min-width:0;"><div style="font-size:12.5px;font-weight:600;color:'+(window._suppDark?'#e2e8f0':'#0f172a')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+name+'</div>'
             +'<div style="font-size:11px;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+email+'</div></div>'
-            +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.6" style="flex-shrink:0;"><path d="M9 7H3M11 5l2 2-2 2"/><path d="M11 1H3a2 2 0 00-2 2v6a2 2 0 002 2h8"/></svg>'
           : '');
     userRow.onmouseover = function(){ this.style.background=window._suppDark?'rgba(255,255,255,0.06)':'#EDEEF1'; };
     userRow.onmouseout  = function(){ this.style.background=''; };
-    userRow.onclick = showSuppUserPopover;
+    userRow.onclick = function(){ _suppNavTo('profile'); };
     bot.appendChild(userRow);
+
+    // ── Logout button — separate, independent ──
+    if(!collapsed){
+      var logoutRow = document.createElement('button');
+      logoutRow.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;background:none;border:none;width:100%;margin-top:2px;font-family:Inter,sans-serif;color:#ef4444;font-size:13px;font-weight:500;';
+      logoutRow.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#ef4444" stroke-width="1.7" style="flex-shrink:0;"><path d="M8.5 6.5H3M10 4.5l2 2-2 2"/><path d="M10 1H4.5A1.5 1.5 0 003 2.5v1M3 9.5v1A1.5 1.5 0 004.5 12H10"/></svg>Log out';
+      logoutRow.onmouseover = function(){ this.style.background=window._suppDark?'rgba(239,68,68,0.1)':'#fef2f2'; };
+      logoutRow.onmouseout  = function(){ this.style.background=''; };
+      logoutRow.onclick = function(){ _doLogout(); };
+      bot.appendChild(logoutRow);
+    }
+
     sb.appendChild(bot);
     return sb;
   }
@@ -16931,40 +17164,7 @@ function _showSupplierDashboard(){
     else parent.appendChild(newSb);
   });
 
-  function showSuppUserPopover() {
-    var existing = document.getElementById('suppUserPopover');
-    if (existing) { existing.remove(); return; }
-    var row = document.getElementById('suppUserRow');
-    if (!row) return;
-    var pop = document.createElement('div');
-    pop.id = 'suppUserPopover';
-    pop.style.cssText = 'position:fixed;bottom:72px;left:8px;width:220px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:20000;padding:6px;animation:modalPop 0.15s ease;';
-    pop.innerHTML = '<div style="padding:10px 12px 8px;border-bottom:1px solid #f1f5f9;">'
-      +'<div style="font-size:13px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">'+name+'</div>'
-      +'<div style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:1px;">'+email+'</div>'
-    +'</div>'
-    +'<div onclick="_suppGoToProfile()" style="display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;border-radius:8px;font-size:13px;color:#374151;font-family:Inter,sans-serif;margin-top:2px;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'\'">'
-      +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748b" stroke-width="1.6"><circle cx="7" cy="5" r="3"/><path d="M1 13c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>My profile'
-    +'</div>'
-    +'<div onclick="_doLogout();" style="display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;border-radius:8px;font-size:13px;color:#dc2626;font-family:Inter,sans-serif;" onmouseover="this.style.background=\'#fef2f2\'" onmouseout="this.style.background=\'\'">'
-      +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#dc2626" stroke-width="1.6"><path d="M9 7H3M11 5l2 2-2 2"/><path d="M11 1H3a2 2 0 00-2 2v6a2 2 0 002 2h8"/></svg>Log out'
-    +'</div>';
-    document.body.appendChild(pop);
-    // Close on outside click
-    setTimeout(function(){
-      document.addEventListener('click', function closeOnOut(e){
-        if (!pop.contains(e.target) && !row.contains(e.target)) {
-          pop.remove();
-          document.removeEventListener('click', closeOnOut);
-        }
-      });
-    }, 50);
-  }
-
-  window._suppGoToProfile = function() {
-    var p = document.getElementById('suppUserPopover'); if(p) p.remove();
-  };
-  window._suppShowLogout = showSuppUserPopover;
+  window._suppShowLogout = function(){ _doLogout(); };
 
   // ── Main content area ──
   var mainEl = document.createElement('div');
