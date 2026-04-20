@@ -17962,13 +17962,13 @@ function _suppGenericToggle(id) {
   // Save state to _suppOnboard
   if (id === 'ins-workers') _suppOnboard.workersLicensed = newOn;
   if (id === 'pm-biz-acc')  _suppOnboard.businessAccount = newOn;
+  if (id === 'pm-monthly')  _suppOnboard.monthlyInvoicing = newOn;
+  if (id === 'ins-pi')      _suppOnboard.profIndemnity    = newOn;
+}
 function _suppSetBizAcc(val) {
   _suppSaveCurrentStep();
   _suppOnboard.businessAccount = val;
   _renderSuppOnboard();
-}
-  if (id === 'pm-monthly')  _suppOnboard.monthlyInvoicing = newOn;
-  if (id === 'ins-pi')      _suppOnboard.profIndemnity    = newOn;
 }
 
 // ═══ END SUPPLIER ONBOARDING ═══
