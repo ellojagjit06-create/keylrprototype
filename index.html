@@ -13366,6 +13366,17 @@ function showDiscoveryPage(qIdx) {
         if(tool) discPmsRemove(tool);
       });
     }, 60);
+    // Update button + skip BEFORE returning
+    var contBtnPms = document.getElementById('disc-page-cont');
+    if (contBtnPms) {
+      contBtnPms.textContent = 'Finish';
+      contBtnPms.style.background = 'linear-gradient(90deg,#10b981,#059669)';
+      contBtnPms.dataset.q = qIdx;
+    }
+    var skipBtnPms = document.getElementById('disc-page-skip');
+    if (skipBtnPms) { skipBtnPms.style.visibility = 'hidden'; skipBtnPms.dataset.q = qIdx; }
+    var backBtnPms = document.getElementById('disc-page-back');
+    if (backBtnPms) { backBtnPms.style.display = 'flex'; backBtnPms.dataset.q = qIdx; }
     return;
   }
 
