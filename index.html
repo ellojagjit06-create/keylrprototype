@@ -11334,7 +11334,7 @@ function _saveCompanyStep() {
 // PROFILING (7 questions) — Screen 4
 // =============================================
 var _PROFILING_Q = [
-  { q:'What best describes what you do?', type:'single', opts:['Residential letting agent','Short-term rental / Airbnb manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator','Facilities manager','Individual landlord','Other'] },
+  { q:'What best describes what you do?', type:'multi', sub:'Select all that apply — many managers wear multiple hats.', opts:['Estate agent — Lettings','Estate agent — Sales','Residential letting agent','Short-term rental / Airbnb','HMO landlord or operator','Block / leasehold manager','Commercial PM','Hospitality (hotel, B&B)','Facilities manager','Individual landlord','Other'] },
   { q:'What types of property do you manage?', type:'multi', opts:['Houses and flats — AST','HMO','Short-term rental / holiday let','Residential block / leasehold','Serviced apartments','Offices','Retail units','Industrial / warehouse','Hotels','Hostels / B&Bs'] },
   { q:'How many properties or units do you manage?', type:'single', opts:['1 to 5','6 to 25','26 to 100','101 to 500','500 or more'] },
   { q:'Which services do you currently coordinate?', type:'multi', opts:['Cleaning','Compliance certificates','Reactive maintenance','Planned / preventive maintenance','Property inspections','Landscaping','Pest control','Security and access','Specialist trades'] },
@@ -11582,7 +11582,7 @@ var _inlineQStep = 0;
 var _inlineAnswers = Array(7).fill(null).map(function(){ return {}; });
 var _PROFILING_QS = [
   {
-    q: 'What best describes what you do?', type:'single',
+    q: 'What best describes what you do?', type:'multi', sub:'Select all that apply — many managers wear multiple hats.',
     opts:['Residential letting agent','Short-term rental / Airbnb manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator','Facilities manager','Individual landlord','Other']
   },
   {
@@ -11945,7 +11945,7 @@ function toggleDashTheme() {
 // SETTINGS PAGE full logic
 var _discAnswers=[null,null,null,null,null,null,null];
 var _discQuestions=[
-  {q:'What best describes what you do?',type:'single',opts:['Residential letting agent','Short-term rental manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator','Facilities manager','Individual landlord','Other']},
+  {q:'What best describes what you do?',type:'multi',sub:'Select all that apply — many managers wear multiple hats.',opts:['Estate agent — Lettings','Estate agent — Sales','Residential letting agent','Short-term rental / Airbnb','HMO landlord or operator','Block / leasehold manager','Commercial PM','Hospitality (hotel, B&B)','Facilities manager','Individual landlord','Other']},
   {q:'What types of property do you manage?',type:'multi',groups:[{label:'RESIDENTIAL',opts:['Houses & flats - AST','HMO - houses in multiple occupation','Short-term rental','Residential block / leasehold','Serviced apartments']},{label:'COMMERCIAL',opts:['Offices','Retail units','Industrial / warehouse','Healthcare / medical','Education','Restaurants']},{label:'HOSPITALITY',opts:['Hotels','Hostels','Guest houses','PBSA']}]},
   {q:'How many properties/units?',type:'single',opts:['1-5','6-25','26-100','101-500','500+']},
   {q:'Which services do you coordinate?',type:'multi',opts:['Cleaning','Compliance certificates','Reactive maintenance','PPM','Inspections & inventory','Landscaping','Pest control','Security','Removals','Specialist trades']},
@@ -13507,7 +13507,10 @@ function showDiscoveryModal(qIdx){
     // Question
     +'<div style="text-align:center;margin-bottom:24px;">'
       +'<div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">'+qDef.q+'</div>'
-      +'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">'+(qDef.type==='multi'?'Select all that apply':'Select one')+'&nbsp;&middot;&nbsp;<a onclick="discSkipQ('+qIdx+')" style="color:#1d4ed8;cursor:pointer;font-weight:600;">Skip</a></div>'
+      +(qDef.sub
+        ?'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:4px;">'+qDef.sub+'</div>'
+        :'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">'+(qDef.type==='multi'?'Select all that apply':'Select one')+'&nbsp;&middot;&nbsp;<a onclick="discSkipQ('+qIdx+')" style="color:#1d4ed8;cursor:pointer;font-weight:600;">Skip</a></div>'
+      )
     +'</div>'
     +'<div id="discOptsWrap">'+optsHtml+'</div>'
     +'</div>'
