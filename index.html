@@ -11950,8 +11950,8 @@ var _discQuestions=[
   {q:'How many properties/units?',type:'single',sub:'This helps us recommend the right plan and onboarding path.',opts:[{v:'1–5',s:'Individual landlord or small portfolio'},{v:'6–25',s:'Growing portfolio'},{v:'26–100',s:'Mid-size operation'},{v:'101–500',s:'Large portfolio'},{v:'500+',s:'Enterprise scale'}]},
   {q:'Which services do you coordinate?',type:'multi',sub:'Select all that apply. This configures your service categories and booking options.',opts:['Gas & Heating','Electrical','Plumbing','Fire Safety','Compliance & Certificates','Damp, Mould & Structural','Security & Access','Property Marketing & Agency Services','Void & Turnover','General Maintenance','Grounds & Outdoor','Cleaning','Pest Control','Appliances','Smart Home & Tech','Lifts & Accessibility','All the services','Other']},
   {q:'Where are your properties located?',type:'multi',sub:'Select all regions. This pre-loads your local service provider pool.',opts:['Greater London','South East','South West','East of England','East Midlands','West Midlands','Yorkshire & The Humber','North West','North East','Wales','Scotland','Northern Ireland']},
-  {q:'How do you coordinate your supply operations?',type:'multi',opts:['PMS system','Email','WhatsApp / SMS','Phone calls','Spreadsheets (Excel / Google Sheets)','Google Calendar','Other']},
-  {q:'What is your biggest headache?',type:'multi',opts:['Finding reliable contractors','Chasing jobs','Compliance tracking','Invoices & payments','Team coordination','No single portfolio view','Other']}
+  {q:'How do you coordinate your supply operations?',type:'multi',sub:'This determines how we match you with providers.',opts:['PMS system','Email','WhatsApp / SMS','Phone calls','Spreadsheets (Excel / Google Sheets)','Google Calendar','Other']},
+  {q:'What is your biggest headache?',type:'multi',sub:'Select all that apply. This helps us prioritise what to solve first.',opts:['Finding reliable contractors','Chasing jobs','Compliance tracking','Invoices & payments','Team coordination','No single portfolio view','Other']}
 ];
 var _discTempAnswers=[null,null,null,null,null,null,null];
 var _sgInstalled=false;
@@ -13277,11 +13277,14 @@ function showDiscoveryPage(qIdx) {
   var hintEl = document.getElementById('disc-page-hint');
   if (qEl) qEl.textContent = qDef.q;
   if (hintEl) {
+    var helperText = qDef.type === 'single' ? 'Select the closest answer' : 'Select all that apply';
     if (qDef.sub) {
       hintEl.innerHTML = '<div style="display:flex;flex-direction:column;gap:6px;">'
-        + '<div>'+qDef.sub+'</div>'
-        + '<div style="color:#1A5FC8;font-weight:600;font-size:13px;font-family:Inter,sans-serif;">Select all that apply</div>'
+        + '<div style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;">'+qDef.sub+'</div>'
+        + '<div style="color:#1A5FC8;font-weight:600;font-size:13px;font-family:Inter,sans-serif;">'+helperText+'</div>'
         + '</div>';
+    } else if (qDef.type === 'multi') {
+      hintEl.innerHTML = '<div style="color:#1A5FC8;font-weight:600;font-size:13px;font-family:Inter,sans-serif;">Select all that apply</div>';
     } else {
       hintEl.innerHTML = '';
     }
