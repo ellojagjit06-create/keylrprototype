@@ -13276,8 +13276,16 @@ function showDiscoveryPage(qIdx) {
   var qEl = document.getElementById('disc-page-q');
   var hintEl = document.getElementById('disc-page-hint');
   if (qEl) qEl.textContent = qDef.q;
-  if (hintEl) hintEl.innerHTML = (qDef.type==='multi' ? 'Select all that apply' : 'Select one')
-    + ' &nbsp;&middot;&nbsp; <a onclick="discPageSkip()" style="color:#1A5FC8;cursor:pointer;font-weight:600;">Skip this question</a>';
+  if (hintEl) {
+    if (qDef.sub) {
+      hintEl.innerHTML = '<div style="display:flex;flex-direction:column;gap:6px;">'
+        + '<div>'+qDef.sub+'</div>'
+        + '<a onclick="discPageSkip()" style="color:#1A5FC8;cursor:pointer;font-weight:600;font-size:13px;">Skip this question</a>'
+        + '</div>';
+    } else {
+      hintEl.innerHTML = '';
+    }
+  }
 
   // Options
   var optsEl = document.getElementById('disc-page-opts');
