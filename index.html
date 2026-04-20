@@ -4997,7 +4997,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
                 </div>
                 <div>
                   <div style="font-size:13px;font-weight:700;color:#1e3a5f;font-family:Inter,sans-serif;">Complete your discovery profile</div>
-                  <div style="font-size:12px;color:#3b82f6;font-family:Inter,sans-serif;">Answer 7 quick questions to unlock personalised recommendations</div>
+                  <div style="font-size:12px;color:#3b82f6;font-family:Inter,sans-serif;">Answer 8 quick questions to unlock personalised recommendations</div>
                 </div>
               </div>
               <button onclick="editDiscoveryQ(0)" style="background:#1d4ed8;color:#fff;border:none;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;">Start <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6h8M7 3l3 3-3 3"/></svg></button>
@@ -11030,7 +11030,7 @@ function showAuthPage(mode, forcedRole) {
     var enteredPwd = pwdEl ? pwdEl.value : '';
     if (a && a.isSignup) {
       // Fresh signup — always create fresh state
-      if(typeof _discAnswers!=='undefined'){_discAnswers=[null,null,null,null,null,null,null];}
+      if(typeof _discAnswers!=='undefined'){_discAnswers=[null,null,null,null,null,null,null,null];}
       if(typeof _discTempAnswers!=='undefined'){_discTempAnswers=[null,null,null,null,null,null,null];}
       ['bizTradingName','bizLegalName','bizRegAddr','bizRegNum','bizTradingAddr','bizVat'].forEach(function(fid){var el=document.getElementById(fid);if(el)el.value='';});
       var isPhone = /^\d{7,15}$/.test((a.contact||'').replace(/[\s\-\(\)\+]/g,''));
@@ -11944,7 +11944,7 @@ function toggleDashTheme() {
 
 
 // SETTINGS PAGE full logic
-var _discAnswers=[null,null,null,null,null,null,null];
+var _discAnswers=[null,null,null,null,null,null,null,null];
 var _discQuestions=[
   {q:'What describe your property operations?',type:'multi',sub:'Many managers wear multiple hats.',opts:['Fully in-house','Hybrid (in-house + trusted contractors)','Fully outsourced','On-demand / platform-based providers','Specialist-only outsourcing']},
   {q:'What types of property do you manage?',type:'multi',sub:'This determines your compliance requirements and service options.',groups:[{label:'RESIDENTIAL',opts:['Houses & flats - AST','HMO - houses in multiple occupation','Short-term rental','Residential block / leasehold','Serviced apartments']},{label:'COMMERCIAL',opts:['Offices','Retail units','Industrial / warehouse','Healthcare / medical','Education','Restaurants']},{label:'HOSPITALITY',opts:['Hotels','Hostels','Guest houses','PBSA']}]},
@@ -13055,7 +13055,7 @@ function recalcProgress(){
 
   // ── Discovery (max 30%) ──
   var df=_discAnswers.filter(function(a){return a!==null&&!(Array.isArray(a)&&a.length===0);}).length;
-  pct+=Math.round((df/7)*30);
+  pct+=Math.round((df/8)*30);
 
   pct=Math.min(pct,100);
   setSettingsRing(pct);
@@ -13494,15 +13494,20 @@ function discPageContinue() {
   if (qIdx < _discQuestions.length - 1) {
     showDiscoveryPage(qIdx + 1);
   } else {
-    discPageClose();
     var answered = _discAnswers.filter(function(a){ return a!==null&&!(Array.isArray(a)&&a.length===0); }).length;
     if (typeof showToast === 'function') {
       showToast(answered===8 ? 'Discovery complete! Profile updated.' : 'Discovery profile updated.', 'success');
     }
-    // Dismiss discovery chip + redirect to PM home
     _pmChipsDismissed['discovery_questions'] = true;
     if (typeof _renderPmActionChips === 'function') setTimeout(_renderPmActionChips, 150);
-    if (typeof showPage === 'function') setTimeout(function(){ showPage('home', null); }, 300);
+    if (_discPageFrom === 'settings') {
+      // Came from Settings → return to Discovery tab
+      discPageClose();
+    } else {
+      // Came from home/onboarding → go to PM home
+      discPageClose();
+      if (typeof showPage === 'function') setTimeout(function(){ showPage('home', null); }, 300);
+    }
   }
 }
 
@@ -13669,7 +13674,7 @@ function discContinue(q){
     recalcProgress();
     var answered=_discAnswers.filter(function(a){return a!==null&&!(Array.isArray(a)&&a.length===0);}).length;
     if(typeof showToast==='function'){
-      if(answered===7)showToast('Discovery complete! Progress updated.','success');
+      if(answered===8)showToast('Discovery complete! Progress updated.','success');
       else showToast('Discovery profile updated.','success');
     }
   }
@@ -14422,7 +14427,7 @@ function triggerProfilingFromProgress() {
     + '<div style="width:35%;height:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);border-radius:3px;transition:width 0.6s ease;"></div>'
     + '</div><span style="font-size:13px;font-weight:700;color:#1d4ed8;font-family:Inter,sans-serif;flex-shrink:0;">35%</span></div>'
     + '<div style="font-size:18px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:6px;">Boost your profile to 60%</div>'
-    + '<p style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 20px;line-height:1.5;">Answer 7 quick questions so we can personalise your dashboard, match you with the right professionals, and set up compliance tracking.</p>'
+    + '<p style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 20px;line-height:1.5;">Answer 8 quick questions so we can personalise your dashboard, match you with the right professionals, and set up compliance tracking.</p>'
     + '<div style="display:flex;gap:10px;">'
     + '<button onclick="document.getElementById(\'profilingPromptModal\').remove();if(typeof startDiscoveryFlow===\'function\')startDiscoveryFlow();" style="flex:2;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Start 7 questions →</button>'
     + '<button onclick="document.getElementById(\'profilingPromptModal\').remove();_checkPendingBookingRestore()" style="flex:1;background:#f1f5f9;border:none;color:#374151;border-radius:12px;padding:13px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">Later</button>'
@@ -14710,7 +14715,7 @@ function _updateChipBadges() {
 
   // Discovery badge — based on answered questions
   var df = _discAnswers.filter(function(a){ return a !== null && !(Array.isArray(a) && a.length === 0); }).length;
-  var discPct = Math.round((df / 7) * 100);
+  var discPct = Math.round((df / 8) * 100);
   var discChip = _pmActionChipDefs.find(function(c){ return c.id === 'discovery_questions'; });
   if (discChip) discChip.badge = discPct + '%';
 
