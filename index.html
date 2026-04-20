@@ -13508,9 +13508,11 @@ function showDiscoveryModal(qIdx){
     +'<div style="text-align:center;margin-bottom:24px;">'
       +'<div style="font-size:20px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin-bottom:8px;">'+qDef.q+'</div>'
       +(qDef.sub
-        ?'<div style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:6px;line-height:1.5;">'+qDef.sub+'</div>'
-         +'<div style="font-size:12.5px;font-weight:600;color:#94a3b8;font-family:Inter,sans-serif;letter-spacing:.01em;margin-bottom:4px;">Select all that apply</div>'
-         +'<a onclick="discSkipQ('+qIdx+')" style="font-size:12px;color:#1d4ed8;cursor:pointer;font-weight:600;font-family:Inter,sans-serif;">Skip this question</a>'
+        ?'<div style="display:flex;flex-direction:column;align-items:center;gap:6px;">'
+           +'<div style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;">'+qDef.sub+'</div>'
+           +'<div style="font-size:12.5px;font-weight:600;color:#94a3b8;font-family:Inter,sans-serif;letter-spacing:.01em;">Select all that apply</div>'
+           +'<a onclick="discSkipQ('+qIdx+')" style="font-size:12px;color:#1d4ed8;cursor:pointer;font-weight:600;font-family:Inter,sans-serif;text-decoration:none;">Skip this question</a>'
+         +'</div>'
         :'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">'+(qDef.type==='multi'?'Select all that apply':'Select one')+'</div>'
       )
     +'</div>'
