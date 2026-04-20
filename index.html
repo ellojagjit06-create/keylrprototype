@@ -14914,10 +14914,28 @@ function _buildSuppOnboardStep(step) {
           + '<div>'+_suppField('Account number','','pm-acc-num','text','12345678')+'</div>'
         + '</div>'
         + _suppField('Bank name','','pm-bank','text','e.g. Barclays, Lloyds, Starling')
-        + (!isCompany ? '<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0 2px;border-top:1px solid #f1f5f9;margin-top:4px;">'
-          + '<div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">Business bank account?</div>'
-            + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">Confirm whether you use a dedicated business account or a personal account.</div></div>'
-          + _suppToggle('pm-biz-acc','_suppGenericToggle(\'pm-biz-acc\')',_suppOnboard.businessAccount||false)
+        + (!isCompany ? '<div style="margin-top:16px;padding-top:16px;border-top:1px solid #f1f5f9;">'
+          + '<div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">Account type</div>'
+          + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:12px;">What type of bank account will you use for business payments?</div>'
+          + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
+            + (function(){
+                var isBiz = _suppOnboard.businessAccount === true || _suppOnboard.businessAccount === 'business';
+                var isPer = _suppOnboard.businessAccount === false || _suppOnboard.businessAccount === 'personal';
+                function card(val, heading, sub, sel) {
+                  return '<div onclick="_suppSetBizAcc(\''+val+'\')" data-bizacc="'+val+'" style="border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:11px;padding:14px 16px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';display:flex;align-items:flex-start;gap:10px;transition:all .15s;position:relative;">'
+                    + '<div style="width:20px;height:20px;border-radius:50%;border:2px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;">'
+                      + (sel ? '<div style="width:8px;height:8px;border-radius:50%;background:#fff;"></div>' : '')
+                    + '</div>'
+                    + '<div>'
+                      + '<div style="font-size:13.5px;font-weight:600;color:'+(sel?'#1e3a5f':'#0f172a')+';font-family:Inter,sans-serif;">'+heading+'</div>'
+                      + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:3px;line-height:1.4;">'+sub+'</div>'
+                    + '</div>'
+                  + '</div>';
+                }
+                return card('business','Business Account','A dedicated business bank account',isBiz)
+                     + card('personal','Personal Account','A personal bank account used for business payments',isPer);
+              })()
+          + '</div>'
         + '</div>' : '')
 
       + '</div>'
@@ -17944,6 +17962,11 @@ function _suppGenericToggle(id) {
   // Save state to _suppOnboard
   if (id === 'ins-workers') _suppOnboard.workersLicensed = newOn;
   if (id === 'pm-biz-acc')  _suppOnboard.businessAccount = newOn;
+function _suppSetBizAcc(val) {
+  _suppSaveCurrentStep();
+  _suppOnboard.businessAccount = val;
+  _renderSuppOnboard();
+}
   if (id === 'pm-monthly')  _suppOnboard.monthlyInvoicing = newOn;
   if (id === 'ins-pi')      _suppOnboard.profIndemnity    = newOn;
 }
