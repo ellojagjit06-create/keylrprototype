@@ -11339,7 +11339,7 @@ var _PROFILING_Q = [
   { q:'How many properties or units do you manage?', type:'single', opts:['1 to 5','6 to 25','26 to 100','101 to 500','500 or more'] },
   { q:'Which services do you currently coordinate?', type:'multi', opts:['Gas & Heating','Electrical','Plumbing','Fire Safety','Compliance & Certificates','Damp, Mould & Structural','Security & Access','Property Marketing & Agency Services','Void & Turnover','General Maintenance','Grounds & Outdoor','Cleaning','Pest Control','Appliances','Smart Home & Tech','Lifts & Accessibility','All the services','Other'] },
   { q:'Where are your properties located?', type:'multi', opts:['Greater London','South East','South West','East of England','East Midlands','West Midlands','Yorkshire & The Humber','North West','North East','Wales','Scotland','Northern Ireland'] },
-  { q:'What describe your property operations?', type:'single', opts:['Fully in-house','Hybrid (in-house + trusted contractors)','Fully outsourced','On-demand / platform-based providers','Specialist-only outsourcing'] },
+  { q:'How do you coordinate your supply operations?', type:'multi', opts:['PMS system','Email','WhatsApp / SMS','Phone calls','Spreadsheets (Excel / Google Sheets)','Google Calendar','Other'] },
   { q:'What is your biggest headache right now?', type:'single', opts:['Finding reliable, vetted contractors quickly','Keeping track of jobs and chasing completion','Compliance — certificates expiring without warning','Invoices and payments from many suppliers','Coordinating my team','No single view across my portfolio','Other'] },
 ];
 var _profileQStep = 0;
@@ -11607,8 +11607,8 @@ var _PROFILING_QS = [
     opts:['Greater London','South East','South West','East of England','East Midlands','West Midlands','Yorkshire & The Humber','North West','North East','Wales','Scotland','Northern Ireland']
   },
   {
-    q: 'What describe your property operations?', type:'single',
-    opts:['Fully in-house','Hybrid (in-house + trusted contractors)','Fully outsourced','On-demand / platform-based providers','Specialist-only outsourcing']
+    q: 'How do you coordinate your supply operations?', type:'multi',
+    opts:['PMS system','Email','WhatsApp / SMS','Phone calls','Spreadsheets (Excel / Google Sheets)','Google Calendar','Other']
   },
   {
     q: 'What is your biggest headache right now?', type:'single',
@@ -11950,7 +11950,7 @@ var _discQuestions=[
   {q:'How many properties/units?',type:'single',sub:'This helps us recommend the right plan and onboarding path.',opts:[{v:'1–5',s:'Individual landlord or small portfolio'},{v:'6–25',s:'Growing portfolio'},{v:'26–100',s:'Mid-size operation'},{v:'101–500',s:'Large portfolio'},{v:'500+',s:'Enterprise scale'}]},
   {q:'Which services do you coordinate?',type:'multi',sub:'Select all that apply. This configures your service categories and booking options.',opts:['Gas & Heating','Electrical','Plumbing','Fire Safety','Compliance & Certificates','Damp, Mould & Structural','Security & Access','Property Marketing & Agency Services','Void & Turnover','General Maintenance','Grounds & Outdoor','Cleaning','Pest Control','Appliances','Smart Home & Tech','Lifts & Accessibility','All the services','Other']},
   {q:'Where are your properties located?',type:'multi',sub:'Select all regions. This pre-loads your local service provider pool.',opts:['Greater London','South East','South West','East of England','East Midlands','West Midlands','Yorkshire & The Humber','North West','North East','Wales','Scotland','Northern Ireland']},
-  {q:'What describe your property operations?',type:'single',opts:['Fully in-house','Hybrid (in-house + trusted contractors)','Fully outsourced','On-demand / platform-based providers','Specialist-only outsourcing']},
+  {q:'How do you coordinate your supply operations?',type:'multi',opts:['PMS system','Email','WhatsApp / SMS','Phone calls','Spreadsheets (Excel / Google Sheets)','Google Calendar','Other']},
   {q:'What is your biggest headache?',type:'multi',opts:['Finding reliable contractors','Chasing jobs','Compliance tracking','Invoices & payments','Team coordination','No single portfolio view','Other']}
 ];
 var _discTempAnswers=[null,null,null,null,null,null,null];
