@@ -11947,7 +11947,7 @@ var _discAnswers=[null,null,null,null,null,null,null];
 var _discQuestions=[
   {q:'What best describes what you do?',type:'multi',sub:'Select all that apply — many managers wear multiple hats.',opts:['Estate agent — Lettings','Estate agent — Sales','Residential letting agent','Short-term rental / Airbnb','HMO landlord or operator','Block / leasehold manager','Commercial PM','Hospitality (hotel, B&B)','Facilities manager','Individual landlord','Other']},
   {q:'What types of property do you manage?',type:'multi',sub:'Select all that apply. This determines your compliance requirements and service options.',groups:[{label:'RESIDENTIAL',opts:['Houses & flats - AST','HMO - houses in multiple occupation','Short-term rental','Residential block / leasehold','Serviced apartments']},{label:'COMMERCIAL',opts:['Offices','Retail units','Industrial / warehouse','Healthcare / medical','Education','Restaurants']},{label:'HOSPITALITY',opts:['Hotels','Hostels','Guest houses','PBSA']}]},
-  {q:'How many properties/units?',type:'single',opts:['1-5','6-25','26-100','101-500','500+']},
+  {q:'How many properties/units?',type:'single',sub:'This helps us recommend the right plan and onboarding path.',opts:[{v:'1–5',s:'Individual landlord or small portfolio'},{v:'6–25',s:'Growing portfolio'},{v:'26–100',s:'Mid-size operation'},{v:'101–500',s:'Large portfolio'},{v:'500+',s:'Enterprise scale'}]},
   {q:'Which services do you coordinate?',type:'multi',opts:['Gas & Heating','Electrical','Plumbing','Fire Safety','Compliance & Certificates','Damp, Mould & Structural','Security & Access','Property Marketing & Agency Services','Void & Turnover','General Maintenance','Grounds & Outdoor','Cleaning','Pest Control','Appliances','Smart Home & Tech','Lifts & Accessibility','All the services','Other']},
   {q:'Where are your properties located?',type:'multi',opts:['Greater London','South East','South West','East of England','East Midlands','West Midlands','Yorkshire & The Humber','North West','North East','Wales','Scotland','Northern Ireland']},
   {q:'How do you coordinate your supply operations?',type:'multi',opts:['PMS system','Email','WhatsApp / SMS','Phone calls','Spreadsheets (Excel / Google Sheets)','Google Calendar','Other']},
@@ -13293,23 +13293,28 @@ function showDiscoveryPage(qIdx) {
   optsEl.innerHTML = '';
 
   function renderOpts(opts, isSingle) {
-    var colCount = opts.length > 8 ? 3 : opts.length > 4 ? 2 : 1;
+    var hasDesc = opts.length > 0 && typeof opts[0] === 'object';
+    var colCount = hasDesc ? 1 : (opts.length > 8 ? 3 : opts.length > 4 ? 2 : 1);
     var grid = document.createElement('div');
     grid.style.cssText = 'display:grid;grid-template-columns:repeat('+colCount+',1fr);gap:8px;';
     opts.forEach(function(opt) {
-      var sel = isSingle ? cur === opt : (Array.isArray(cur) && cur.indexOf(opt) >= 0);
+      var val = hasDesc ? opt.v : opt;
+      var sub = hasDesc ? opt.s : '';
+      var sel = isSingle ? cur === val : (Array.isArray(cur) && cur.indexOf(val) >= 0);
       var item = document.createElement('div');
-      // Radio for single, checkbox for multi
       item.className = 'disc-opt-page' + (isSingle ? '' : ' checkbox-opt') + (sel ? ' selected' : '');
-      item.dataset.opt = opt;
+      item.dataset.opt = val;
       item.dataset.single = isSingle ? '1' : '0';
-      // Single → filled dot; multi → checkmark svg
       var innerIcon = sel
         ? (isSingle
             ? '<div style="width:7px;height:7px;background:#fff;border-radius:50%;"></div>'
             : '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 5l2.5 2.5 4-4"/></svg>')
         : '';
-      item.innerHTML = '<div class="disc-check-pg">' + innerIcon + '</div>' + opt;
+      item.innerHTML = '<div class="disc-check-pg">' + innerIcon + '</div>'
+        + '<div style="display:flex;flex-direction:column;gap:2px;">'
+          + '<span style="font-size:13.5px;font-weight:600;color:'+(sel?'#1e3a5f':'#0f172a')+';font-family:Inter,sans-serif;">'+val+'</span>'
+          + (sub ? '<span style="font-size:12px;color:'+(sel?'#3b82f6':'#64748b')+';font-family:Inter,sans-serif;">'+sub+'</span>' : '')
+        + '</div>';
       item.onclick = function() { discPageSelectOpt(this, qIdx); };
       grid.appendChild(item);
     });
