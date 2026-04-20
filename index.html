@@ -13394,7 +13394,7 @@ function showDiscoveryPage(qIdx) {
   // Continue label
   var contBtn = document.getElementById('disc-page-cont');
   if (contBtn) {
-    contBtn.textContent = (qIdx === total-1) ? 'Finish ✓' : 'Next →';
+    contBtn.textContent = (qIdx === total-1) ? 'Finish' : 'Next →';
     contBtn.dataset.q = qIdx;
   }
 
@@ -13464,8 +13464,12 @@ function discPageContinue() {
   var qIdx = contBtn ? parseInt(contBtn.dataset.q) : 0;
   // Save this step's answer
   _discAnswers[qIdx] = _discTempAnswers[qIdx];
+  // For Q8 (PMS/CRM), also persist to user profile
+  if (qIdx === 7) {
+    if (window._user) window._user._pmsCrmSelected = _discTempAnswers[7] || [];
+    try { localStorage.setItem('keylr_pms_selected', JSON.stringify(_discTempAnswers[7] || [])); } catch(e) {}
+  }
   updateDiscAnswerRow(qIdx);
-  // Update progress after every step
   if (typeof recalcProgress === 'function') recalcProgress();
   if (typeof _updateChipBadges === 'function') _updateChipBadges();
   if (qIdx < _discQuestions.length - 1) {
@@ -13474,13 +13478,12 @@ function discPageContinue() {
     discPageClose();
     var answered = _discAnswers.filter(function(a){ return a!==null&&!(Array.isArray(a)&&a.length===0); }).length;
     if (typeof showToast === 'function') {
-      showToast(answered===8 ? 'Discovery complete! Progress updated.' : 'Discovery profile updated.', 'success');
+      showToast(answered===8 ? 'Discovery complete! Profile updated.' : 'Discovery profile updated.', 'success');
     }
-    // Dismiss discovery chip if all 7 answered
-    if (answered === 8) {
-      _pmChipsDismissed['discovery_questions'] = true;
-      if (typeof _renderPmActionChips === 'function') setTimeout(_renderPmActionChips, 150);
-    }
+    // Dismiss discovery chip + redirect to PM home
+    _pmChipsDismissed['discovery_questions'] = true;
+    if (typeof _renderPmActionChips === 'function') setTimeout(_renderPmActionChips, 150);
+    if (typeof showPage === 'function') setTimeout(function(){ showPage('home', null); }, 300);
   }
 }
 
