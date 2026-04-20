@@ -15367,7 +15367,7 @@ function _buildSuppOnboardStep(step) {
 
   // ── pricing ──
   if (id === 'pricing') {
-    var models = ['Hourly','Fixed price','Service-based','Call-out + hourly','Quote-based','Subscription'];
+    var models = ['Fixed Price','Hourly / Day Rate','Tiered / Banded','Estimated','Quote Based','Subscription / Bundle'];
     return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:540px;margin:0 auto;">'
       + models.map(function(m){
           var sel = _suppOnboard.pricingModels.indexOf(m) >= 0;
@@ -17378,7 +17378,7 @@ function _suppBuildProfilePage(){
       sub:'You can combine multiple models.',
       isLast:false,
       html:function(){
-        var models=['Hourly','Fixed price','Service-based','Call-out + hourly','Quote-based','Subscription'];
+        var models=['Fixed Price','Hourly / Day Rate','Tiered / Banded','Estimated','Quote Based','Subscription / Bundle'];
         return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:520px;">'
           +models.map(function(m){
             var sel=(so.pricingModels||[]).indexOf(m)>=0;
