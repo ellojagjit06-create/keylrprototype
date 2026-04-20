@@ -11951,9 +11951,11 @@ var _discQuestions=[
   {q:'Which services do you coordinate?',type:'multi',sub:'This configures your service categories and booking options.',opts:['Gas & Heating','Electrical','Plumbing','Fire Safety','Compliance & Certificates','Damp, Mould & Structural','Security & Access','Property Marketing & Agency Services','Void & Turnover','General Maintenance','Grounds & Outdoor','Cleaning','Pest Control','Appliances','Smart Home & Tech','Lifts & Accessibility','All the services','Other']},
   {q:'Where are your properties located?',type:'multi',sub:'Select all regions. This pre-loads your local service provider pool.',opts:['Greater London','South East','South West','East of England','East Midlands','West Midlands','Yorkshire & The Humber','North West','North East','Wales','Scotland','Northern Ireland']},
   {q:'How do you coordinate your supply operations?',type:'multi',sub:'This determines how we match you with providers.',opts:['PMS system','Email','WhatsApp / SMS','Phone calls','Spreadsheets (Excel / Google Sheets)','Google Calendar','Other']},
-  {q:'What is your biggest headache?',type:'multi',sub:'This helps us prioritise what to solve first.',opts:['Finding reliable contractors','Chasing jobs','Compliance tracking','Invoices & payments','Team coordination','No single portfolio view','Other']}
+  {q:'What is your biggest headache?',type:'multi',sub:'This helps us prioritise what to solve first.',opts:['Finding reliable contractors','Chasing jobs','Compliance tracking','Invoices & payments','Team coordination','No single portfolio view','Other']},
+  {q:'Do you use any PMS / CRM?',type:'pms',sub:'Search and select your tools — or type to add your own.',opts:[]}
 ];
-var _discTempAnswers=[null,null,null,null,null,null,null];
+var _discTempAnswers=[null,null,null,null,null,null,null,null];
+var _pmsCrmList=["Alto", "Reapit", "Dezrez", "MRI Software", "Agent Pro", "APEX 27", "Rex Software", "Street", "Jupix", "SME Professional", "Openview", "Lifecyle (AgentOS)", "Gnomen", "Vaultre", "Propertybase", "Salesforce (Property)", "Engage CRM", "Acaboom", "Docusoft", "Moveit", "Arthur Online", "Landlord Vision", "Re-Leased", "PropertyMe", "Rent Manager", "Hammock", "PayProp", "Residently", "RealPage", "Yardi Breeze", "Yardi Voyager", "Lofti", "Lendlord", "Landlord Studio", "COHO", "Rooms Click", "Apartemo", "Spce", "Guesty", "Hostaway", "Lodgify", "Hostfully", "Smoobu", "Hospitable", "Hostify", "Rental Ready", "Tokeet", "iGMS"];
 var _sgInstalled=false;
 // ── PM Home Action Chips ──
 var _pmChipsDismissed = {};  // persisted per chip id
@@ -13324,6 +13326,49 @@ function showDiscoveryPage(qIdx) {
     return grid;
   }
 
+  // ── PMS/CRM typeahead question ──
+  if (qDef.type === 'pms') {
+    var cur8 = _discTempAnswers[qIdx] || [];
+    optsEl.innerHTML = '<div style="display:flex;flex-direction:column;gap:12px;">'
+      + '<div style="position:relative;">'
+        + '<input id="pms-search" autocomplete="off" placeholder="Search PMS / CRM or type your own..." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fff;">'
+        + '<div id="pms-dropdown" style="display:none;position:absolute;left:0;right:0;top:100%;margin-top:4px;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.1);z-index:100;max-height:220px;overflow-y:auto;"></div>'
+      + '</div>'
+      + '<div id="pms-chips" style="display:flex;flex-wrap:wrap;gap:8px;min-height:32px;">'
+        + cur8.map(_pmChipHtml).join('')
+      + '</div>'
+    + '</div>';
+    setTimeout(function(){
+      var inp = document.getElementById('pms-search');
+      var dd  = document.getElementById('pms-dropdown');
+      if (!inp || !dd) return;
+      inp.addEventListener('input', function(){
+        var q = inp.value.trim().toLowerCase();
+        if (!q) { dd.style.display='none'; return; }
+        var cur = _discTempAnswers[qIdx] || [];
+        var matches = _pmsCrmList.filter(function(p){ return p.toLowerCase().indexOf(q)>=0 && cur.indexOf(p)<0; }).slice(0,10);
+        var customVal = inp.value.trim();
+        var showAdd = customVal && cur.indexOf(customVal)<0 && _pmsCrmList.map(function(p){return p.toLowerCase();}).indexOf(customVal.toLowerCase())<0;
+        if (!matches.length && !showAdd) { dd.style.display='none'; return; }
+        dd.innerHTML = matches.map(function(p){
+          return '<div onclick="discPmsAdd(\''+p.replace(/'/g,"\\'")+'\')" style="padding:10px 14px;cursor:pointer;font-size:13px;color:#0f172a;font-family:Inter,sans-serif;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'\'">'+p+'</div>';
+        }).join('')+(showAdd?'<div onclick="discPmsAdd(\''+customVal.replace(/'/g,"\\'")+'\')" style="padding:10px 14px;cursor:pointer;font-size:13px;color:#1A5FC8;font-weight:600;font-family:Inter,sans-serif;border-top:1px solid #f1f5f9;" onmouseover="this.style.background=\'#f0f9ff\'" onmouseout="this.style.background=\'\'">+ Add &ldquo;'+customVal+'&rdquo;</div>':'');
+        dd.style.display='block';
+      });
+      document.addEventListener('click', function closeDd(e){ if(!inp.contains(e.target)&&!dd.contains(e.target)){dd.style.display='none';} });
+      // Delegate chip deletion
+      document.addEventListener('click', function(e){
+        var btn=e.target.closest('.pms-chip-del');
+        if(!btn) return;
+        var chip=btn.closest('.pms-chip');
+        if(!chip) return;
+        var tool=decodeURIComponent(chip.dataset.v||'');
+        if(tool) discPmsRemove(tool);
+      });
+    }, 60);
+    return;
+  }
+
   if (qDef.groups) {
     qDef.groups.forEach(function(g) {
       var label = document.createElement('div');
@@ -13429,14 +13474,30 @@ function discPageContinue() {
     discPageClose();
     var answered = _discAnswers.filter(function(a){ return a!==null&&!(Array.isArray(a)&&a.length===0); }).length;
     if (typeof showToast === 'function') {
-      showToast(answered===7 ? 'Discovery complete! Progress updated.' : 'Discovery profile updated.', 'success');
+      showToast(answered===8 ? 'Discovery complete! Progress updated.' : 'Discovery profile updated.', 'success');
     }
     // Dismiss discovery chip if all 7 answered
-    if (answered === 7) {
+    if (answered === 8) {
       _pmChipsDismissed['discovery_questions'] = true;
       if (typeof _renderPmActionChips === 'function') setTimeout(_renderPmActionChips, 150);
     }
   }
+}
+
+function _pmChipHtml(t){return '<span class="pms-chip" data-v="'+encodeURIComponent(t)+'" style="display:inline-flex;align-items:center;gap:6px;background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:999px;padding:5px 12px;font-size:13px;color:#1e3a5f;font-family:Inter,sans-serif;font-weight:500;">'+t+' <button class="pms-chip-del" style="background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;font-size:18px;line-height:1;">&times;</button></span>';}
+function discPmsAdd(tool) {
+  var qIdx = parseInt((document.getElementById('disc-page-cont')||{}).dataset&&document.getElementById('disc-page-cont').dataset.q||'7');
+  if (!_discTempAnswers[qIdx]) _discTempAnswers[qIdx]=[];
+  if (_discTempAnswers[qIdx].indexOf(tool)<0) _discTempAnswers[qIdx].push(tool);
+  var inp=document.getElementById('pms-search'); if(inp){inp.value=''; var dd=document.getElementById('pms-dropdown'); if(dd)dd.style.display='none';}
+  var chips=document.getElementById('pms-chips');
+  if(chips) chips.innerHTML=(_discTempAnswers[qIdx]||[]).map(_pmChipHtml).join('');
+}
+function discPmsRemove(tool) {
+  var qIdx = parseInt(document.getElementById('disc-page-cont') ? document.getElementById('disc-page-cont').dataset.q : '7');
+  if (_discTempAnswers[qIdx]) _discTempAnswers[qIdx]=_discTempAnswers[qIdx].filter(function(t){return t!==tool;});
+  var chips=document.getElementById('pms-chips');
+  if(chips) chips.innerHTML=(_discTempAnswers[qIdx]||[]).map(_pmChipHtml).join('');
 }
 
 function discPageClose() {
