@@ -11334,7 +11334,7 @@ function _saveCompanyStep() {
 // PROFILING (7 questions) — Screen 4
 // =============================================
 var _PROFILING_Q = [
-  { q:'What best describes what you do?', type:'multi', sub:'Select all that apply — many managers wear multiple hats.', opts:['Estate agent — Lettings','Estate agent — Sales','Residential letting agent','Short-term rental / Airbnb','HMO landlord or operator','Block / leasehold manager','Commercial PM','Hospitality (hotel, B&B)','Facilities manager','Individual landlord','Other'] },
+  { q:'What describe your property operations?', type:'single', opts:['Fully in-house','Hybrid (in-house + trusted contractors)','Fully outsourced','On-demand / platform-based providers','Specialist-only outsourcing'] },
   { q:'What types of property do you manage?', type:'multi', opts:['Houses and flats — AST','HMO','Short-term rental / holiday let','Residential block / leasehold','Serviced apartments','Offices','Retail units','Industrial / warehouse','Hotels','Hostels / B&Bs'] },
   { q:'How many properties or units do you manage?', type:'single', opts:['1 to 5','6 to 25','26 to 100','101 to 500','500 or more'] },
   { q:'Which services do you currently coordinate?', type:'multi', opts:['Gas & Heating','Electrical','Plumbing','Fire Safety','Compliance & Certificates','Damp, Mould & Structural','Security & Access','Property Marketing & Agency Services','Void & Turnover','General Maintenance','Grounds & Outdoor','Cleaning','Pest Control','Appliances','Smart Home & Tech','Lifts & Accessibility','All the services','Other'] },
@@ -11582,8 +11582,8 @@ var _inlineQStep = 0;
 var _inlineAnswers = Array(7).fill(null).map(function(){ return {}; });
 var _PROFILING_QS = [
   {
-    q: 'What best describes what you do?', type:'multi', sub:'Select all that apply — many managers wear multiple hats.',
-    opts:['Residential letting agent','Short-term rental / Airbnb manager','HMO landlord or operator','Block or leasehold manager','Commercial property manager','Hospitality operator','Facilities manager','Individual landlord','Other']
+    q: 'What describe your property operations?', type:'single',
+    opts:['Fully in-house','Hybrid (in-house + trusted contractors)','Fully outsourced','On-demand / platform-based providers','Specialist-only outsourcing']
   },
   {
     q: 'What types of property do you manage?', type:'multi-grouped',
@@ -11945,7 +11945,7 @@ function toggleDashTheme() {
 // SETTINGS PAGE full logic
 var _discAnswers=[null,null,null,null,null,null,null];
 var _discQuestions=[
-  {q:'What best describes what you do?',type:'multi',sub:'Select all that apply — many managers wear multiple hats.',opts:['Estate agent — Lettings','Estate agent — Sales','Residential letting agent','Short-term rental / Airbnb','HMO landlord or operator','Block / leasehold manager','Commercial PM','Hospitality (hotel, B&B)','Facilities manager','Individual landlord','Other']},
+  {q:'What describe your property operations?',type:'single',opts:['Fully in-house','Hybrid (in-house + trusted contractors)','Fully outsourced','On-demand / platform-based providers','Specialist-only outsourcing']},
   {q:'What types of property do you manage?',type:'multi',sub:'Select all that apply. This determines your compliance requirements and service options.',groups:[{label:'RESIDENTIAL',opts:['Houses & flats - AST','HMO - houses in multiple occupation','Short-term rental','Residential block / leasehold','Serviced apartments']},{label:'COMMERCIAL',opts:['Offices','Retail units','Industrial / warehouse','Healthcare / medical','Education','Restaurants']},{label:'HOSPITALITY',opts:['Hotels','Hostels','Guest houses','PBSA']}]},
   {q:'How many properties/units?',type:'single',sub:'This helps us recommend the right plan and onboarding path.',opts:[{v:'1–5',s:'Individual landlord or small portfolio'},{v:'6–25',s:'Growing portfolio'},{v:'26–100',s:'Mid-size operation'},{v:'101–500',s:'Large portfolio'},{v:'500+',s:'Enterprise scale'}]},
   {q:'Which services do you coordinate?',type:'multi',sub:'Select all that apply. This configures your service categories and booking options.',opts:['Gas & Heating','Electrical','Plumbing','Fire Safety','Compliance & Certificates','Damp, Mould & Structural','Security & Access','Property Marketing & Agency Services','Void & Turnover','General Maintenance','Grounds & Outdoor','Cleaning','Pest Control','Appliances','Smart Home & Tech','Lifts & Accessibility','All the services','Other']},
