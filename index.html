@@ -13391,15 +13391,22 @@ function showDiscoveryPage(qIdx) {
     backBtn.dataset.q = qIdx;
   }
 
-  // Continue label
+  // Continue label — style Finish differently
   var contBtn = document.getElementById('disc-page-cont');
   if (contBtn) {
-    contBtn.textContent = (qIdx === total-1) ? 'Finish' : 'Next →';
+    var isLast = qIdx === total-1;
+    contBtn.textContent = isLast ? 'Finish' : 'Next →';
+    contBtn.style.background = isLast
+      ? 'linear-gradient(90deg,#10b981,#059669)'
+      : 'linear-gradient(90deg,#1A5FC8,#0FA3D0)';
     contBtn.dataset.q = qIdx;
   }
 
   var skipBtn = document.getElementById('disc-page-skip');
-  if (skipBtn) skipBtn.dataset.q = qIdx;
+  if (skipBtn) {
+    skipBtn.dataset.q = qIdx;
+    skipBtn.style.visibility = (qIdx === total-1) ? 'hidden' : 'visible';
+  }
 
   // Scroll to top
   var body = pg ? pg.querySelector('.disc-page-body') : null;
@@ -13489,7 +13496,8 @@ function discPageContinue() {
 
 function _pmChipHtml(t){return '<span class="pms-chip" data-v="'+encodeURIComponent(t)+'" style="display:inline-flex;align-items:center;gap:6px;background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:999px;padding:5px 12px;font-size:13px;color:#1e3a5f;font-family:Inter,sans-serif;font-weight:500;">'+t+' <button class="pms-chip-del" style="background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;font-size:18px;line-height:1;">&times;</button></span>';}
 function discPmsAdd(tool) {
-  var qIdx = parseInt((document.getElementById('disc-page-cont')||{}).dataset&&document.getElementById('disc-page-cont').dataset.q||'7');
+  var btn = document.getElementById('disc-page-cont');
+  var qIdx = btn ? parseInt(btn.dataset.q) : 7;
   if (!_discTempAnswers[qIdx]) _discTempAnswers[qIdx]=[];
   if (_discTempAnswers[qIdx].indexOf(tool)<0) _discTempAnswers[qIdx].push(tool);
   var inp=document.getElementById('pms-search'); if(inp){inp.value=''; var dd=document.getElementById('pms-dropdown'); if(dd)dd.style.display='none';}
@@ -13497,7 +13505,8 @@ function discPmsAdd(tool) {
   if(chips) chips.innerHTML=(_discTempAnswers[qIdx]||[]).map(_pmChipHtml).join('');
 }
 function discPmsRemove(tool) {
-  var qIdx = parseInt(document.getElementById('disc-page-cont') ? document.getElementById('disc-page-cont').dataset.q : '7');
+  var btn = document.getElementById('disc-page-cont');
+  var qIdx = btn ? parseInt(btn.dataset.q) : 7;
   if (_discTempAnswers[qIdx]) _discTempAnswers[qIdx]=_discTempAnswers[qIdx].filter(function(t){return t!==tool;});
   var chips=document.getElementById('pms-chips');
   if(chips) chips.innerHTML=(_discTempAnswers[qIdx]||[]).map(_pmChipHtml).join('');
