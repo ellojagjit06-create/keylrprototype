@@ -8151,7 +8151,7 @@ function _admBuildDetail(app) {
 
   // ── TAB: Sectors ──
   // Selectable res sub-types (same chips as onboarding)
-  var resSubAll=['AST (Assured Shorthold)','HMO','STR / Short-let','Block management'];
+  var resSubAll=['Houses & Flats – Sales/Lettings','HMO – Houses in Multiple Occupation','STR – Short Term Rentals','Block Management','Serviced Apartments','Shared Accommodation','BTR – Build to Rent'];
   var comSubAll=['Offices','Retail','Industrial','Hospitality','Mixed use'];
   function subChip(type, val, selArr){
     var sel=selArr.indexOf(val)>=0;
@@ -14838,7 +14838,7 @@ function _buildSuppOnboardStep(step) {
     var s = _suppOnboard.sector;
     var resChips = (s==='residential'||s==='both')
       ? '<div style="margin-top:24px;"><div style="font-size:13px;color:#64748b;margin-bottom:10px;">Residential sub-types <span style="color:#94a3b8;">(optional)</span></div><div style="display:flex;flex-wrap:wrap;gap:8px;">'
-        + ['AST (Assured Shorthold)','HMO','STR / Short-let','Block management'].map(function(sub){
+        + ['Houses & Flats – Sales/Lettings','HMO – Houses in Multiple Occupation','STR – Short Term Rentals','Block Management','Serviced Apartments','Shared Accommodation','BTR – Build to Rent'].map(function(sub){
             var sel=_suppOnboard.sectorSubRes.indexOf(sub)>=0;
             return '<button onclick="_suppToggleSectorSub(\'res\',\''+sub+'\',this)" style="padding:7px 14px;border-radius:999px;border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#eff6ff':'#fff')+';color:'+(sel?'#1e3a5f':'#374151')+';font-size:13px;font-family:Inter,sans-serif;cursor:pointer;transition:all 0.15s;">'+sub+'</button>';
           }).join('')+'</div></div>' : '';
@@ -17170,7 +17170,7 @@ function _suppBuildProfilePage(){
 
   // ── Sectors ──
   var sectorVal=so.sector||'';
-  var resSubAll=['AST (Assured Shorthold)','HMO','STR / Short-let','Block management'];
+  var resSubAll=['Houses & Flats – Sales/Lettings','HMO – Houses in Multiple Occupation','STR – Short Term Rentals','Block Management','Serviced Apartments','Shared Accommodation','BTR – Build to Rent'];
   var comSubAll=['Offices','Retail','Industrial','Hospitality','Mixed use'];
   function secCardHTML(s){
     var lbl={residential:'Residential',commercial:'Commercial',both:'Both'}[s];
