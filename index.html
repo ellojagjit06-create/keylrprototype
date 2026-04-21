@@ -978,7 +978,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   cursor:pointer;
   padding:5px;border-radius:7px;
   display:flex;align-items:center;
-  color:#1a1f2e;
+  color:#000000;
   transition:background .14s,color .14s,border-color .14s,transform .2s;
   flex-shrink:0;
 }
@@ -1036,7 +1036,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   cursor:pointer;
   padding:5px;border-radius:7px;
   display:flex;align-items:center;
-  color:#1a1f2e;
+  color:#000000;
   transition:background .14s,color .14s,border-color .14s,transform .2s;
   flex-shrink:0;
 }
@@ -1087,7 +1087,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   cursor:pointer;
   padding:5px;border-radius:7px;
   display:flex;align-items:center;
-  color:#1a1f2e;
+  color:#000000;
   transition:background .14s,color .14s,border-color .14s,transform .2s;
   flex-shrink:0;
 }
@@ -1138,7 +1138,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   cursor:pointer;
   padding:5px;border-radius:7px;
   display:flex;align-items:center;
-  color:#1a1f2e;
+  color:#000000;
   transition:background .14s,color .14s,border-color .14s,transform .2s;
   flex-shrink:0;
 }
@@ -1189,7 +1189,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
   cursor:pointer;
   padding:5px;border-radius:7px;
   display:flex;align-items:center;
-  color:#1a1f2e;
+  color:#000000;
   transition:background .14s,color .14s,border-color .14s,transform .2s;
   flex-shrink:0;
 }
@@ -5504,6 +5504,8 @@ function _doLogout() {
   btnLogout.onmouseout  = function(){ this.style.background = '#dc2626'; };
   btnLogout.onclick = function(){
     modal.remove();
+    // Clear supplier onboard state (must run BEFORE _user is nulled so per-user key is derivable)
+    if (typeof _suppClearOnboardOnLogout === 'function') _suppClearOnboardOnLogout();
     // Clear all auth state
     _isLoggedIn = false;
     window._user = null;
@@ -11032,8 +11034,32 @@ function showAuthPage(mode, forcedRole) {
         _emailVerified: false
       });
       modal.remove(); delete window._auth;
+      // Fresh signup: always reset any lingering onboarding state so new users
+      // never see data from a previous session or a different user on this browser.
+      if (typeof _suppResetOnboard === 'function') _suppResetOnboard();
+      try { localStorage.removeItem('keylr_supp_onboard'); } catch(e) {}
+      // Also wipe the per-user key for this signing-up user (covers the case
+      // where the same email signs up again — previous data was persisting).
+      try {
+        var _suk = (typeof _suppUserKey === 'function') ? _suppUserKey() : null;
+        if (_suk) localStorage.removeItem(_suk);
+      } catch(e) {}
+      if (typeof _discAnswers !== 'undefined') {
+        _discAnswers = [null,null,null,null,null,null,null,null];
+      }
+      // Clear any pre-existing supplier onboarding DOM (old session may have left
+      // input values in the form that survive state reset). Removing the element
+      // forces showSupplierOnboarding() to rebuild from fresh _suppOnboard state.
+      var _suppPrev = document.getElementById('supplierOnboardingScreen');
+      if (_suppPrev) _suppPrev.remove();
+      // Clear PM biz onboarding DOM fields so a previous user's values don't bleed in
+      ['ob-trading','ob-legal','ob-regaddr','ob-regno','ob-tradaddr','ob-vat'].forEach(function(id){
+        var el = document.getElementById(id); if (el) el.value = '';
+      });
+      var _logoPrev = document.getElementById('ob-logo-preview');
+      if (_logoPrev) _logoPrev.innerHTML = '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#94a3b8" stroke-width="1.7"><path d="M7.5 10V3M4 6l3.5-3.5L11 6"/><path d="M2 12h11"/></svg><span id="ob-logo-label">Upload PNG or SVG</span>';
       if (a.role === 'supplier') {
-        showSupplierOnboarding();
+        showSupplierOnboarding(true);
       } else {
         showPMBizOnboarding();
       }
@@ -11080,6 +11106,14 @@ function showAuthPage(mode, forcedRole) {
           var el = document.getElementById(id);
           if(el && val) el.value = val;
         });
+        // If this user is a supplier, load their saved onboarding into _suppOnboard;
+        // otherwise clear any stale supplier state from a previous user on the same browser.
+        if (_user.role === 'supplier') {
+          var _loaded = (typeof _suppLoadOnboardForUser === 'function') && _suppLoadOnboardForUser();
+          if (!_loaded && typeof _suppResetOnboard === 'function') _suppResetOnboard();
+        } else if (typeof _suppResetOnboard === 'function') {
+          _suppResetOnboard();
+        }
         // Set compliance alert count: 7 if company done & has properties, 0 otherwise
         window._complianceAlertCount = (_user._companyDone && _user._hasProperties) ? 7 : 0;
         _syncUserUI();
@@ -11128,6 +11162,44 @@ function showAuthPage(mode, forcedRole) {
     var errEl=document.getElementById('authContactErr');
     if(errEl)errEl.style.display='none';
     ct.style.borderColor='#e2e8f0';
+
+    // Duplicate-account check: if signup and this contact already exists, block and redirect to login
+    if (_aa && _aa.isSignup && typeof _userStore !== 'undefined') {
+      var _valClean = val.toLowerCase().replace(/[\s\-\(\)\+]/g,'');
+      var _existingUser = null;
+      // Try the direct key first
+      if (typeof _userKey === 'function') {
+        var _k = _userKey(val);
+        if (_userStore[_k]) _existingUser = _userStore[_k];
+      }
+      // Then scan by normalized email/phone
+      if (!_existingUser) {
+        Object.keys(_userStore).forEach(function(k){
+          if (_existingUser) return;
+          var u = _userStore[k];
+          if (!u) return;
+          var eClean = (u.email||'').toLowerCase().replace(/[\s\-\(\)\+]/g,'');
+          var pClean = (u.phone||u.contact||'').replace(/[\s\-\(\)\+]/g,'');
+          if ((eClean && eClean === _valClean) || (pClean && pClean === _valClean)) {
+            _existingUser = u;
+          }
+        });
+      }
+      if (_existingUser) {
+        ct.style.borderColor = '#ef4444';
+        var _errEl2 = document.getElementById('authContactErr');
+        if (_errEl2) {
+          var _kind = isValidEmail ? 'email' : 'mobile number';
+          _errEl2.innerHTML = 'An account with this ' + _kind + ' already exists. '
+            + '<button onclick="document.getElementById(\'authModal\').remove();showAuthPage(\'login\');" style="background:none;border:none;color:#1A5FC8;font-weight:700;cursor:pointer;padding:0;font-family:Inter,sans-serif;text-decoration:underline;">Log in instead</button>'
+            + ' or use a different ' + _kind + '.';
+          _errEl2.style.display = 'block';
+        }
+        ct.focus();
+        return;
+      }
+    }
+
     window._auth.contact=val;
     var nm=document.getElementById('authName');if(nm)window._auth.name=nm.value.trim();
     var cleaned=val.replace(/[\s\-\(\)\+]/g,'');
@@ -11854,6 +11926,49 @@ function showSupplierAuth() {
     var ct = document.getElementById('suppContact');
     if (nm && !nm.value.trim()) { nm.style.borderColor = '#ef4444'; nm.focus(); return; }
     if (ct && !ct.value.trim()) { ct.style.borderColor = '#ef4444'; ct.focus(); return; }
+
+    // Duplicate-account check
+    var _val = ct ? ct.value.trim() : '';
+    var _isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(_val);
+    if (typeof _userStore !== 'undefined') {
+      var _valClean = _val.toLowerCase().replace(/[\s\-\(\)\+]/g,'');
+      var _existing = null;
+      if (typeof _userKey === 'function') {
+        var _k = _userKey(_val);
+        if (_userStore[_k]) _existing = _userStore[_k];
+      }
+      if (!_existing) {
+        Object.keys(_userStore).forEach(function(k){
+          if (_existing) return;
+          var u = _userStore[k]; if (!u) return;
+          var eClean = (u.email||'').toLowerCase().replace(/[\s\-\(\)\+]/g,'');
+          var pClean = (u.phone||u.contact||'').replace(/[\s\-\(\)\+]/g,'');
+          if ((eClean && eClean === _valClean) || (pClean && pClean === _valClean)) _existing = u;
+        });
+      }
+      if (_existing) {
+        ct.style.borderColor = '#ef4444';
+        // Create or reuse an inline error message under the input
+        var errId = 'suppContactErr';
+        var errEl = document.getElementById(errId);
+        if (!errEl) {
+          errEl = document.createElement('div');
+          errEl.id = errId;
+          errEl.style.cssText = 'font-size:11.5px;color:#ef4444;font-family:Inter,sans-serif;margin-top:6px;';
+          if (ct.parentNode) ct.parentNode.appendChild(errEl);
+        }
+        var _kind = _isValidEmail ? 'email' : 'mobile number';
+        errEl.innerHTML = 'An account with this ' + _kind + ' already exists. '
+          + '<button onclick="var m=document.getElementById(\'suppAuthModal\')||document.querySelector(\'.supp-auth-modal\');if(m)m.remove();if(window._suppAuth)delete window._suppAuth;showAuthPage(\'login\',\'supplier\');" style="background:none;border:none;color:#1A5FC8;font-weight:700;cursor:pointer;padding:0;font-family:Inter,sans-serif;text-decoration:underline;">Log in instead</button>'
+          + ' or use a different ' + _kind + '.';
+        ct.focus();
+        return;
+      } else {
+        var _existingErr = document.getElementById('suppContactErr');
+        if (_existingErr) _existingErr.remove();
+      }
+    }
+
     window._suppAuth.name = nm ? nm.value.trim() : '';
     window._suppAuth.contact = ct ? ct.value.trim() : '';
     window._suppAuth.step = 'password';
@@ -11872,8 +11987,15 @@ function showSupplierAuth() {
       _pwd: pwdEl ? pwdEl.value : ''
     });
     modal.remove(); delete window._suppAuth;
+    // Fresh signup: wipe any stale supplier onboarding state before rendering
+    if (typeof _suppResetOnboard === 'function') _suppResetOnboard();
+    try { localStorage.removeItem('keylr_supp_onboard'); } catch(e) {}
+    try {
+      var _suk2 = (typeof _suppUserKey === 'function') ? _suppUserKey() : null;
+      if (_suk2) localStorage.removeItem(_suk2);
+    } catch(e) {}
     // Redirect to supplier onboarding (not property manager dashboard)
-    showSupplierOnboarding();
+    showSupplierOnboarding(true);
   };
   render();
 }
@@ -14797,7 +14919,7 @@ var _suppOnboard = (function(){
   tradingName: '', regCompanyName: '', companyRegNum: '', regOfficeAddr: '', pscDob: '', tinNum: '', pscFullName: '', pscConfirmed: false, companyAddr: '',
   // Payment
   vatRegistered: false, vatNumber: '',
-  accountHolder: '', sortCode: '', accountNumber: '', bankName: '', businessAccount: false,
+  accountHolder: '', sortCode: '', accountNumber: '', bankName: '', businessAccount: null,
   monthlyInvoicing: false,
   // Insurance
   insProvider: '', insPolicy: '', insCoverage: '', insExpiry: '',
@@ -14805,12 +14927,87 @@ var _suppOnboard = (function(){
   // Background
   teamSize: '', companyDbsDecl: '', dbsLevel: '', dbsDeclared: '', convictionsDetail: '', rightToWork: '', jobRefs: '',
   // Availability
-  workDays: ['Mon','Tue','Wed','Thu','Fri'],
-  startTime: '08:00', endTime: '17:00', emergencyCallouts: '',
+  workDays: [],
+  startTime: '', endTime: '', emergencyCallouts: '',
   // Profile
   primaryTrade: '', secondaryTrades: [], pricingModels: [],
   experience: '', jobsCompleted: '', bio: ''
 };})();
+
+// ═══════════════════════════════════════════════
+// SUPPLIER ONBOARDING — per-user persistence
+// ═══════════════════════════════════════════════
+// Default shape used when resetting to empty state
+function _suppOnboardDefaults(){
+  return {
+    step: 0,
+    operationType: '',
+    sector: '', sectorSubRes: [], sectorSubCom: [],
+    fullLegalName: '', dob: '', niNumber: '', homeAddress: '',
+    tradingName: '', regCompanyName: '', companyRegNum: '', regOfficeAddr: '',
+    pscDob: '', tinNum: '', pscFullName: '', pscConfirmed: false, companyAddr: '',
+    vatRegistered: false, vatNumber: '',
+    accountHolder: '', sortCode: '', accountNumber: '', bankName: '',
+    businessAccount: null, monthlyInvoicing: false,
+    insProvider: '', insPolicy: '', insCoverage: '', insExpiry: '',
+    profIndemnity: false, tradeCerts: [], customCerts: [],
+    teamSize: '', companyDbsDecl: '', dbsLevel: '', dbsDeclared: '',
+    convictionsDetail: '', rightToWork: '', jobRefs: '',
+    workDays: [],
+    startTime: '', endTime: '', emergencyCallouts: '',
+    primaryTrade: '', secondaryTrades: [], pricingModels: [],
+    experience: '', jobsCompleted: '', bio: ''
+  };
+}
+
+// Build a per-user storage key from the logged-in user's contact info
+function _suppUserKey(){
+  var u = window._user;
+  if (!u) return null;
+  var id = (u.email || u.phone || u.contact || '').toLowerCase().trim();
+  return id ? 'keylr_supp_onboard:' + id : null;
+}
+
+// Reset _suppOnboard to defaults in-place (keeps existing references valid)
+function _suppResetOnboard(){
+  var defs = _suppOnboardDefaults();
+  Object.keys(_suppOnboard).forEach(function(k){ delete _suppOnboard[k]; });
+  Object.keys(defs).forEach(function(k){ _suppOnboard[k] = defs[k]; });
+}
+
+// Save current onboarding data under the logged-in user's key
+function _suppSaveOnboard(){
+  try {
+    var k = _suppUserKey();
+    if (k) localStorage.setItem(k, JSON.stringify(_suppOnboard));
+    // Also keep legacy global key for in-flight onboarding before user identity is known
+    localStorage.setItem('keylr_supp_onboard', JSON.stringify(_suppOnboard));
+  } catch(e) {}
+}
+
+// Load onboarding data for the currently logged-in user; returns true if found
+function _suppLoadOnboardForUser(){
+  var k = _suppUserKey();
+  if (!k) return false;
+  try {
+    var s = localStorage.getItem(k);
+    if (!s) return false;
+    var d = JSON.parse(s);
+    d.step = 0;
+    // Mutate in place so references to _suppOnboard stay live
+    Object.keys(_suppOnboard).forEach(function(key){ delete _suppOnboard[key]; });
+    Object.keys(d).forEach(function(key){ _suppOnboard[key] = d[key]; });
+    return true;
+  } catch(e) { return false; }
+}
+
+// Clear all supplier onboard state (used on logout)
+function _suppClearOnboardOnLogout(){
+  var k = _suppUserKey();
+  _suppResetOnboard();
+  try { localStorage.removeItem('keylr_supp_onboard'); } catch(e) {}
+  if (k) { try { localStorage.removeItem(k); } catch(e) {} }
+}
 
 // Phase labels for top nav
 var _suppPhases = ['Verification','Verification','Verification','Verification','Availability','Profile','Profile','Profile','Profile','Profile','Profile','Profile'];
@@ -14853,7 +15050,7 @@ function _suppCancelToLanding() {
   if (pg) pg.style.display = '';
 }
 
-function showSupplierOnboarding() {
+function showSupplierOnboarding(freshStart) {
   ['pg-landing','pg-dashboard'].forEach(function(id){
     var el = document.getElementById(id);
     if (el) el.style.display = 'none';
@@ -14864,6 +15061,13 @@ function showSupplierOnboarding() {
   screen.id = 'supplierOnboardingScreen';
   screen.style.cssText = 'position:fixed;inset:0;background:#eef0f3;z-index:10000;display:flex;flex-direction:column;font-family:Inter,sans-serif;overflow:hidden;';
   document.body.appendChild(screen);
+  // freshStart === true => ALWAYS reset, ignore any saved per-user data (signup path)
+  // freshStart !== true => try to hydrate from saved per-user data first (returning-user path)
+  var hadSaved = false;
+  if (freshStart !== true) {
+    hadSaved = (typeof _suppLoadOnboardForUser === 'function') && _suppLoadOnboardForUser();
+  }
+  if (!hadSaved && typeof _suppResetOnboard === 'function') _suppResetOnboard();
   _suppOnboard.step = 0;
   _renderSuppOnboard();
 }
@@ -15451,10 +15655,12 @@ function _buildSuppOnboardStep(step) {
         + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
           + '<div><label style="font-size:12.5px;font-weight:600;color:#64748b;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">Start time</label>'
             + '<select id="av-start" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fff;cursor:pointer;">'
-            + ['06:00','07:00','08:00','09:00','10:00'].map(function(t){ return '<option '+(t==='08:00'?'selected':'')+'>'+t+'</option>'; }).join('')+'</select></div>'
+            + '<option value="" '+(!_suppOnboard.startTime?'selected':'')+' disabled>Select a time</option>'
+            + ['06:00','07:00','08:00','09:00','10:00'].map(function(t){ return '<option '+(_suppOnboard.startTime===t?'selected':'')+'>'+t+'</option>'; }).join('')+'</select></div>'
           + '<div><label style="font-size:12.5px;font-weight:600;color:#64748b;display:block;margin-bottom:6px;font-family:Inter,sans-serif;">End time</label>'
             + '<select id="av-end" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fff;cursor:pointer;">'
-            + ['16:00','17:00','18:00','19:00','20:00'].map(function(t){ return '<option '+(t==='17:00'?'selected':'')+'>'+t+'</option>'; }).join('')+'</select></div>'
+            + '<option value="" '+(!_suppOnboard.endTime?'selected':'')+' disabled>Select a time</option>'
+            + ['16:00','17:00','18:00','19:00','20:00'].map(function(t){ return '<option '+(_suppOnboard.endTime===t?'selected':'')+'>'+t+'</option>'; }).join('')+'</select></div>'
         + '</div>'
         + '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:6px;">These are your standard hours. Specific job start times are agreed with clients during booking.</div>'
       + '</div>'
@@ -15679,9 +15885,8 @@ function _suppToggleCert(cert,el){
 }
 
 function _suppRenderCertCards() {
-  // Find the detail cards container — it sits right after the cert grid
-  // Use a re-render of the step to update cards
-  _renderSuppOnboard();
+  // Re-render whichever screen is currently active (onboarding or Account Settings)
+  _suppRerender();
 }
 function _suppShowAddCert() {
   var area = document.getElementById('addCertArea');
@@ -15752,15 +15957,15 @@ function _suppAddCustomCert(name) {
 function _suppRemoveCustomCert(idx) {
   if (!_suppOnboard.customCerts) return;
   _suppOnboard.customCerts.splice(idx, 1);
-  _renderSuppOnboard();
+  _suppRerender();
 }
 
 
 function _suppToggleCheck(id) {
   // Toggle state
-  if (id === 'comp-pi')  { _suppSaveCurrentStep(); _suppOnboard.profIndemnity       = !(_suppOnboard.profIndemnity||false);       _renderSuppOnboard(); return; }
+  if (id === 'comp-pi')  { _suppSaveCurrentStep(); _suppOnboard.profIndemnity       = !(_suppOnboard.profIndemnity||false);       _suppRerender(); return; }
   if (id === 'comp-psc-confirm') { _suppSaveCurrentStep(); _suppOnboard.pscConfirmed = !(_suppOnboard.pscConfirmed||false); _renderSuppOnboard(); return; }
-  if (id === 'comp-el')  { _suppSaveCurrentStep(); _suppOnboard.employersLiability  = !(_suppOnboard.employersLiability||false);  _renderSuppOnboard(); return; }
+  if (id === 'comp-el')  { _suppSaveCurrentStep(); _suppOnboard.employersLiability  = !(_suppOnboard.employersLiability||false);  _suppRerender(); return; }
   if (id === 'comp-insurance') _suppOnboard.insurance = !_suppOnboard.insurance;
   if (id === 'comp-dbs')       _suppOnboard.dbs       = !_suppOnboard.dbs;
   // Map id → current value
@@ -15851,7 +16056,7 @@ function _suppCompCheck(id, label, sub, icon, checked) {
 
 
 function _suppSetDbsDecl(val){_suppOnboard.dbsDeclared=val;_renderSuppOnboard();setTimeout(function(){var ta=document.getElementById('so-convictions-detail');if(ta){ta.oninput=function(){_suppOnboard.convictionsDetail=this.value;};ta.value=_suppOnboard.convictionsDetail||'';}},50);}
-function _suppSetRightToWork(val){_suppOnboard.rightToWork=val;_renderSuppOnboard();}
+function _suppSetRightToWork(val){_suppOnboard.rightToWork=val;_suppRerender();}
 function _suppSetTeamSize(val){_suppOnboard.teamSize=val;_renderSuppOnboard();}
 function _suppToggleDay(day,el){
   var idx=_suppOnboard.workDays.indexOf(day);
@@ -15860,7 +16065,7 @@ function _suppToggleDay(day,el){
   el.style.borderColor=sel?'#1d4ed8':'#e2e8f0'; el.style.background=sel?'#eff6ff':'#fff';
   var t=el.querySelector('div:first-child'); if(t)t.style.color=sel?'#1d4ed8':'#374151';
 }
-function _suppSetEmergency(val){_suppOnboard.emergencyCallouts=val;_renderSuppOnboard();}
+function _suppSetEmergency(val){_suppOnboard.emergencyCallouts=val;_suppRerender();}
 function _suppSetPrimaryTrade(val,el){
   _suppOnboard.primaryTrade=val;
   // Fast DOM update without full re-render
@@ -16021,8 +16226,9 @@ function _suppOnboardFinish(){
       profileComplete:true
     });
     if(typeof _updateUser==='function')_updateUser({});
-    // Persist onboarding data for Account Settings
-    try { localStorage.setItem('keylr_supp_onboard', JSON.stringify(_suppOnboard)); } catch(e){}
+    // Persist onboarding data per-user so Account Settings shows it on return, and a different
+    // user signing up later on the same browser doesn't inherit this data.
+    if (typeof _suppSaveOnboard === 'function') _suppSaveOnboard();
   }
   // ── Save full onboarding data to admin applicants store ──
   try {
@@ -16782,6 +16988,14 @@ function _suppWireServicesPage(){
 // Re-render just the services page content without rebuilding the whole layout
 function _suppInitTabsDrag(){
   var bar=document.getElementById('suppProfTabsBar'); if(!bar) return;
+  // Guard: don't re-attach listeners on re-render — they'd accumulate and cause glitching
+  if (bar._dragWired) {
+    // Still scroll active tab into view on re-render
+    var active=bar.querySelector('.supp-prof-tab[style*="#1A5FC8"]');
+    if(active) setTimeout(function(){active.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});},80);
+    return;
+  }
+  bar._dragWired = true;
   var isDown=false,startX=0,scrollLeft=0;
   bar.addEventListener('mousedown',function(e){isDown=true;bar.classList.add('dragging');startX=e.pageX-bar.offsetLeft;scrollLeft=bar.scrollLeft;});
   bar.addEventListener('mouseleave',function(){isDown=false;bar.classList.remove('dragging');});
@@ -17385,101 +17599,274 @@ function _suppBuildProfilePage(){
     +saveBar('Identity saved');
 
   // ── Bank Details ──
-  var panelBank=''
-    +hdr('Bank Account')
-    +row2(inp('Account Holder Name',so.accountHolder,'accountHolder','text','Full name as on account'),inp('Bank Name',so.bankName,'bankName','text','e.g. Barclays, HSBC, Lloyds'))
-    +row2(inp('Sort Code',so.sortCode,'sortCode','text','XX-XX-XX'),inp('Account Number',so.accountNumber,'accountNumber','text','8-digit account number'))
-    +hdr('VAT & Business Settings')
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;align-items:start;">'
-      +'<div id="profVatCard" style="border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;">'
-        +'<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:#fafafa;">'
-          +'<span style="font-size:13.5px;font-weight:500;color:#374151;font-family:Inter,sans-serif;">VAT Registered</span>'
-          +'<button class="prof-tog" data-pfield="vatRegistered" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(so.vatRegistered?'#1A5FC8':'#d1d5db')+';flex-shrink:0;"'+(so.vatRegistered?' data-on="1"':'')+' ><span style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(so.vatRegistered?'right:2px;':'left:2px;')+'box-shadow:0 1px 3px rgba(0,0,0,0.18);display:block;"></span></button>'
-        +'</div>'
-        +'<div id="profVatNumRow" style="display:'+(so.vatRegistered?'block':'none')+';padding:10px 14px;border-top:1px solid #e2e8f0;background:#fff;">'
-          +'<label style="display:block;font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;font-family:Inter,sans-serif;margin-bottom:5px;">VAT Number</label>'
-          +'<input data-pfield="vatNumber" value="'+(so.vatNumber||'')+'" placeholder="e.g. GB123456789" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;">'
-        +'</div>'
-      +'</div>'
-      +'<div style="display:flex;flex-direction:column;gap:8px;">'
-        +togSmall('Business Bank Account',so.businessAccount,'businessAccount')
-        +togSmall('Accept Monthly Invoicing',so.monthlyInvoicing,'monthlyInvoicing')
-      +'</div>'
-    +'</div>'
-    +saveBar('Bank details saved');
+  var panelBank=(function(){
+    var isBiz = so.businessAccount === true || so.businessAccount === 'business';
+    var isPer = so.businessAccount === false || so.businessAccount === 'personal';
+    function acctCard(val, heading, sub, sel) {
+      return '<div onclick="_suppSetBizAcc(\''+val+'\')" data-bizacc="'+val+'" style="border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:11px;padding:14px 16px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';display:flex;align-items:flex-start;gap:10px;transition:all .15s;">'
+        + '<div style="width:20px;height:20px;border-radius:50%;border:2px solid '+(sel?'#1A5FC8':'#d1d5db')+';background:'+(sel?'#1A5FC8':'#fff')+';flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;">'
+          + (sel ? '<div style="width:8px;height:8px;border-radius:50%;background:#fff;"></div>' : '')
+        + '</div>'
+        + '<div><div style="font-size:13.5px;font-weight:600;color:'+(sel?'#1e3a5f':'#0f172a')+';font-family:Inter,sans-serif;">'+heading+'</div>'
+          + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:3px;line-height:1.4;">'+sub+'</div></div>'
+      + '</div>';
+    }
+    return hdr('Bank Account')
+      + row2(inp('Account Holder Name',so.accountHolder,'accountHolder','text','Full name as on account'),inp('Bank Name',so.bankName,'bankName','text','e.g. Barclays, HSBC, Lloyds'))
+      + row2(inp('Sort Code',so.sortCode,'sortCode','text','XX-XX-XX'),inp('Account Number',so.accountNumber,'accountNumber','text','8-digit account number'))
+      + hdr('VAT & Business Settings')
+      + '<div id="profVatCard" style="border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;margin-bottom:16px;">'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:#fafafa;">'
+          + '<span style="font-size:13.5px;font-weight:500;color:#374151;font-family:Inter,sans-serif;">VAT Registered</span>'
+          + '<button class="prof-tog" data-pfield="vatRegistered" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(so.vatRegistered?'#1A5FC8':'#d1d5db')+';flex-shrink:0;"'+(so.vatRegistered?' data-on="1"':'')+' ><span style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(so.vatRegistered?'right:2px;':'left:2px;')+'box-shadow:0 1px 3px rgba(0,0,0,0.18);display:block;"></span></button>'
+        + '</div>'
+        + '<div id="profVatNumRow" style="display:'+(so.vatRegistered?'block':'none')+';padding:10px 14px;border-top:1px solid #e2e8f0;background:#fff;">'
+          + '<label style="display:block;font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;font-family:Inter,sans-serif;margin-bottom:5px;">VAT Number</label>'
+          + '<input data-pfield="vatNumber" value="'+(so.vatNumber||'')+'" placeholder="e.g. GB123456789" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;">'
+        + '</div>'
+      + '</div>'
+      // Account Type (under VAT)
+      + (!isCo ? '<div style="margin-bottom:16px;"><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">Account type</div>'
+        + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:10px;">What type of bank account will you use for business payments?</div>'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
+          + acctCard('business','Business Account','A dedicated business bank account',isBiz)
+          + acctCard('personal','Personal Account','A personal bank account used for business payments',isPer)
+        + '</div>'
+      + '</div>' : '')
+      // Monthly Invoicing (under Account Type)
+      + '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:12px;">'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+          + '<svg width="14" height="14" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><rect x="1" y="2" width="13" height="11" rx="1.5"/><path d="M1 6h13"/><path d="M5 2V0M10 2V0"/></svg>'
+          + '<span style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Monthly invoicing</span>'
+        + '</div>'
+        + '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;margin-bottom:12px;">Many property managers pay service providers on a monthly cycle. Accepting monthly invoicing increases your booking chances.</div>'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;">'
+          + '<div><div style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Accept monthly invoicing?</div>'
+            + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;">You\'ll receive one consolidated payment per month for all completed jobs.</div></div>'
+          + '<button class="prof-tog" data-pfield="monthlyInvoicing" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(so.monthlyInvoicing?'#1A5FC8':'#d1d5db')+';flex-shrink:0;margin-left:12px;"'+(so.monthlyInvoicing?' data-on="1"':'')+' ><span style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(so.monthlyInvoicing?'right:2px;':'left:2px;')+'box-shadow:0 1px 3px rgba(0,0,0,0.18);display:block;"></span></button>'
+        + '</div>'
+      + '</div>'
+      + saveBar('Bank details saved');
+  })();
 
-  // ── Insurance ──
-  var panelInsurance=''
-    +hdr('Public Liability Insurance')
-    +row2(inp('Insurance Provider',so.insProvider,'insProvider','text','e.g. Hiscox, AXA, Aviva'),inp('Policy Number',so.insPolicy,'insPolicy','text','Your policy reference number'))
-    +row2(inp('Coverage Amount (£)',so.insCoverage,'insCoverage','text','e.g. 1,000,000'),inp('Policy Expiry Date',so.insExpiry,'insExpiry','date',''))
-    +hdr('Insurance Certificate')
-    +row1(uploadBox('Public Liability Certificate','','Upload your insurance certificate (PDF or image)'))
-    +hdr('Professional Indemnity Insurance')
-    +'<div id="profIndemCard" style="border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;margin-bottom:12px;">'
-      +'<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;">'
-        +'<div><div style="font-size:13.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Professional Indemnity</div>'
-          +'<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:1px;">Covers claims of negligence, errors or omissions in professional services</div></div>'
-        +'<button class="prof-tog" data-pfield="profIndemnity" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(so.profIndemnity?'#1A5FC8':'#d1d5db')+';flex-shrink:0;margin-left:12px;"'+(so.profIndemnity?' data-on="1"':'')+' ><span style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(so.profIndemnity?'right:2px;':'left:2px;')+'box-shadow:0 1px 3px rgba(0,0,0,0.18);display:block;"></span></button>'
-      +'</div>'
-      +'<div id="profIndemFields" style="display:'+(so.profIndemnity?'block':'none')+';padding:14px;border-top:1px solid #e2e8f0;background:#fff;">'
-        +row2(inp('Indemnity Provider',so.indemProvider||'','indemProvider','text','e.g. Hiscox, Zurich'),inp('Policy Number',so.indemPolicy||'','indemPolicy','text','Your policy reference'))
-        +row2(inp('Coverage Amount (£)',so.indemCoverage||'','indemCoverage','text','e.g. 500,000'),inp('Expiry Date',so.indemExpiry||'','indemExpiry','date',''))
-        +uploadBox('PI Certificate','','Upload Professional Indemnity certificate')
-      +'</div>'
-    +'</div>'
-    +(isCo?'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">'
-      +togSmall('Employers\' Liability',so.employersLiability,'employersLiability')
-      +togSmall('All Workers Hold Valid Certs',so.allWorkersValidCerts,'allWorkersValidCerts')
-    +'</div>':'')
-    +hdr('Trade Certifications')
-    +'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;">'
-      +((so.tradeCerts||[]).length?(so.tradeCerts||[]).map(function(tc){return '<span style="padding:6px 14px;background:#f1f5f9;border-radius:8px;font-size:13px;color:#374151;font-family:Inter,sans-serif;display:flex;align-items:center;gap:6px;"><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#1A5FC8"/><path d="M2.5 5l2 2 3-3" stroke="#fff" stroke-width="1.6" fill="none"/></svg>'+tc+'</span>';}).join(''):'<span style="color:#94a3b8;font-size:13px;font-style:italic;font-family:Inter,sans-serif;">None added during onboarding</span>')
-    +'</div>'
-    +hdr('Additional Certifications')
-    +row1(uploadBox('Upload Additional Certificate','','Upload any other trade certificate (PDF or image)'))
-    +saveBar('Insurance details saved');
+  var panelInsurance=(function(){
+    var certsList = ['Gas Safe','NICEIC / NAPIT','CSCS','F-Gas','Part P','OFTEC','CIPHE','MCS','NAPIT Fire','TrustMark','Which? Trusted Traders','Checkatrade'];
+    var certDescs = {
+      'Gas Safe':'Required for any gas work — boilers, cookers, pipework.',
+      'NICEIC / NAPIT':'Electrical contractor accreditation for domestic and commercial.',
+      'CSCS':'Construction Skills Certification Scheme required on most construction sites.',
+      'F-Gas':'Required for refrigeration, air conditioning, and heat pump work.',
+      'Part P':'Building regulations competent person scheme for electrical installations.',
+      'OFTEC':'Oil firing equipment installation and servicing registration.',
+      'CIPHE':'Chartered Institute of Plumbing and Heating Engineering membership.',
+      'MCS':'Microgeneration Certification Scheme — solar, heat pumps, wind.',
+      'NAPIT Fire':'Fire detection and alarm systems competent person.',
+      'TrustMark':'Government endorsed quality scheme for home improvement.',
+      'Which? Trusted Traders':'Consumer endorsement for vetted tradespeople.',
+      'Checkatrade':'Verified membership with published customer reviews.'
+    };
+    var autoVerified = ['Gas Safe','NICEIC / NAPIT','CSCS'];
+    var regNumLabels = {'Gas Safe':'Gas Safe registration number','NICEIC / NAPIT':'NICEIC / NAPIT number','CSCS':'CSCS card number'};
+    var regNumPh = {'Gas Safe':'Enter your Gas Safe number','NICEIC / NAPIT':'Enter your NICEIC / NAPIT number','CSCS':'Enter your CSCS number'};
+    var selCerts = so.tradeCerts || [];
+    var customCerts = so.customCerts || [];
+    var minCov = isCo ? 'Min £2,000,000' : 'Min £1,000,000';
+
+    // Cert grid cards
+    var certGrid = '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">'
+      + certsList.map(function(c){
+          var auto = autoVerified.indexOf(c) >= 0;
+          var sel = selCerts.indexOf(c) >= 0;
+          return '<div onclick="_suppToggleCert(\''+c.replace(/'/g,"\\'")+'\',this)" data-cert="'+c+'" style="border:1px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;padding:12px;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all 0.15s;">'
+            + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">'
+              + '<div data-chk style="width:14px;height:14px;border:1.5px solid '+(sel?'#1A5FC8':'#d1d5db')+';border-radius:3px;background:'+(sel?'#1A5FC8':'#fff')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+                + (sel?'<svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="#fff" stroke-width="2"><path d="M1 4l2 2 4-3"/></svg>':'')
+              + '</div>'
+              + '<span data-lbl style="font-size:12.5px;font-weight:600;color:'+(sel?'#1e3a5f':'#374151')+';font-family:Inter,sans-serif;">'+c+'</span>'
+              + (auto?'<span style="font-size:9px;background:#dbeafe;color:#1d4ed8;border-radius:3px;padding:1px 5px;font-weight:700;font-family:Inter,sans-serif;">AUTO</span>':'')
+            + '</div>'
+            + '<div style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;line-height:1.4;">'+(certDescs[c]||'')+'</div>'
+          + '</div>';
+        }).join('')
+    + '</div>';
+
+    // Per-cert detail cards (expiry + upload)
+    var certDetails = (selCerts.length>0 ? '<div style="display:flex;flex-direction:column;gap:14px;margin-bottom:16px;">'
+      + selCerts.map(function(c){
+          var sid = 'ci_'+c.replace(/[^a-z0-9]/gi,'_');
+          var isAuto = autoVerified.indexOf(c) >= 0;
+          var head = isAuto
+            ? '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">'+c+'</div><span style="font-size:11px;background:#dbeafe;color:#1d4ed8;border-radius:4px;padding:1px 8px;font-weight:700;font-family:Inter,sans-serif;">Auto-verified</span></div>'
+              + '<div style="margin-bottom:12px;"><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">'+(regNumLabels[c]||c+' number')+'</label><input type="text" placeholder="'+(regNumPh[c]||'Enter your number')+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;"></div>'
+            : '<div style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:12px;">'+c+'</div>';
+          return '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;">'
+            + head
+            + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
+              + '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">Expiry date</label>'
+                + '<input type="date" id="'+sid+'" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fff;color:#374151;"></div>'
+              + _suppUploadField('Upload certificate','Photo or PDF','cert-upload-'+sid)
+            + '</div>'
+          + '</div>';
+        }).join('')
+    + '</div>' : '');
+
+    // Custom certs
+    var customCertCards = customCerts.map(function(cc, ci){
+      return '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 16px;margin-bottom:10px;">'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">'+cc+'</div>'
+          + '<button onclick="_suppRemoveCustomCert('+ci+')" style="background:none;border:none;cursor:pointer;color:#94a3b8;padding:2px;display:flex;align-items:center;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 1l11 11M12 1L1 12"/></svg></button>'
+        + '</div>'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">'
+          + '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:4px;font-family:Inter,sans-serif;">Certificate number</label>'
+            + '<input type="text" placeholder="Optional" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;"></div>'
+          + '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:4px;font-family:Inter,sans-serif;">Expiry date</label>'
+            + '<input type="date" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#374151;"></div>'
+        + '</div>'
+        + _suppUploadField('Upload certificate','Photo or PDF','custom-cert-upload-as-'+ci)
+      + '</div>';
+    }).join('');
+
+    return hdr('Public Liability Insurance')
+      + row2(inp('Insurance Provider',so.insProvider,'insProvider','text','e.g. Hiscox, AXA, Aviva'),inp('Policy Number',so.insPolicy,'insPolicy','text','Your policy reference number'))
+      + row2(inp('Public liability coverage',so.insCoverage,'insCoverage','text',minCov),inp('Policy Expiry Date',so.insExpiry,'insExpiry','date',''))
+      + '<div style="margin-bottom:16px;">'+_suppUploadField('Upload insurance certificate','PDF or image — details extracted automatically via OCR','main-ins-upload-as')+'</div>'
+      + hdr('Professional Indemnity Insurance')
+      + '<div id="profIndemCard" style="border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;margin-bottom:12px;">'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;">'
+          + '<div><div style="font-size:13.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Professional Indemnity</div>'
+            + '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:1px;">Covers claims of negligence, errors or omissions in professional services</div></div>'
+          + '<button class="prof-tog" data-pfield="profIndemnity" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(so.profIndemnity?'#1A5FC8':'#d1d5db')+';flex-shrink:0;margin-left:12px;"'+(so.profIndemnity?' data-on="1"':'')+' ><span style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(so.profIndemnity?'right:2px;':'left:2px;')+'box-shadow:0 1px 3px rgba(0,0,0,0.18);display:block;"></span></button>'
+        + '</div>'
+        + '<div id="profIndemFields" style="display:'+(so.profIndemnity?'block':'none')+';padding:14px;border-top:1px solid #e2e8f0;background:#fff;">'
+          + row2(inp('Indemnity Provider',so.indemProvider||'','indemProvider','text','e.g. Hiscox, Zurich'),inp('Policy Number',so.indemPolicy||'','indemPolicy','text','Your policy reference'))
+          + row2(inp('Public liability coverage',so.indemCoverage||'','indemCoverage','text','e.g. 500,000'),inp('Expiry Date',so.indemExpiry||'','indemExpiry','date',''))
+          + _suppUploadField('PI certificate','Upload Professional Indemnity certificate','pi-upload-as')
+        + '</div>'
+      + '</div>'
+      + (isCo?'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">'
+        + togSmall('Employers\' Liability',so.employersLiability,'employersLiability')
+        + togSmall('All Workers Hold Valid Certs',so.allWorkersValidCerts,'allWorkersValidCerts')
+      + '</div>':'')
+      + hdr('Trade Certifications')
+      + '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 14px;font-size:12.5px;color:#1e3a5f;font-family:Inter,sans-serif;margin-bottom:14px;line-height:1.5;">'
+        + '✨ Verified certifications appear as trust badges on your profile. Select only those you hold — you can upload proof and add details for each.'
+      + '</div>'
+      + certGrid
+      + certDetails
+      + hdr('Other Certifications')
+      + customCertCards
+      + '<button onclick="_suppShowAddCert()" style="background:#fff;border:1.5px dashed #cbd5e1;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:600;color:#1A5FC8;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 1v10M1 6h10"/></svg>Add another certification</button>'
+      + '<div id="addCertArea" style="display:none;margin-bottom:14px;">'
+        + '<input id="certSearchInput" oninput="_suppCertSearchInput(this.value)" placeholder="Search for a certification..." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;margin-bottom:8px;">'
+        + '<div id="certSearchResults"></div>'
+      + '</div>'
+      + saveBar('Insurance details saved');
+  })();
 
   // ── Background ──
   var dbsVal=so.dbsDeclared||'';
-  var panelBg=''
-    +(isCo
-      ?hdr('Company DBS Policy')
-       +row2(inp('Team Size',so.teamSize,'teamSize','text','e.g. 1-5, 5-10'),inp('Company DBS Policy',so.companyDbsDecl,'companyDbsDecl','text','Yes / No / In Progress'))
-      :hdr('DBS Declaration')
-       +dbsCard('I confirm I have no unspent criminal convictions',dbsVal)
-       +dbsCard('I have unspent convictions to declare',dbsVal)
-       +(dbsVal==='I have unspent convictions to declare'?'<div style="margin:8px 0 14px;"><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Please describe your unspent convictions</label><textarea data-pfield="convictionsDetail" rows="4" placeholder="Provide details including dates, offences, and outcomes. This is kept confidential." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;resize:vertical;">'+(so.convictionsDetail||'')+'</textarea></div>':'')
-       +row1(uploadBox('DBS Certificate','','Upload your DBS certificate (PDF or image)'))
-    )
-    +hdr('Right to Work in the UK')
-    +row1(yesNo(so.rightToWork,'rightToWork'))
-    +hdr('Job References')
-    +row1('<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">References / Previous Clients</label><textarea data-pfield="jobRefs" rows="3" placeholder="List previous clients or job references (name, company, contact if available)..." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;resize:vertical;">'+(so.jobRefs||'')+'</textarea></div>')
-    +hdr('Portfolio Photos')
-    +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;" id="profPortfolioGrid">'
-      +((so.portfolioPhotos||[]).length?(so.portfolioPhotos||[]).map(function(ph,i){return '<div style="position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:#f1f5f9;"><img src="'+ph+'" style="width:100%;height:100%;object-fit:cover;"><button class="prof-port-del" data-idx="'+i+'" style="position:absolute;top:4px;right:4px;width:22px;height:22px;background:rgba(0,0,0,0.55);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M2 2l6 6M8 2l-6 6"/></svg></button></div>';}).join(''):'')
-      +'<label style="aspect-ratio:1;border:1.5px dashed #d1d5db;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;background:#fafafa;"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#94a3b8" stroke-width="1.6"><path d="M3 14v2.5a.5.5 0 00.5.5h13a.5.5 0 00.5-.5V14"/><path d="M10 3v10M7 6l3-3 3 3"/></svg><span style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;">Add photo</span><input type="file" accept="image/*" multiple class="prof-port-upload" style="display:none;"></label>'
-    +'</div>'
-    +saveBar('Background check saved');
+  var panelBg=(function(){
+    var rtw = so.rightToWork;
+    function rtwCard(val, yes) {
+      var sel = rtw === val;
+      var color = yes ? '#10b981' : '#ef4444';
+      var bgSel = yes ? '#f0fdf4' : '#fef2f2';
+      var headCol = sel ? (yes?'#065f46':'#991b1b') : '#0f172a';
+      var subCol = sel ? (yes?'#059669':'#dc2626') : '#64748b';
+      var ySub = isCo ? 'All staff have right to work in the UK' : 'I have the right to work in the UK';
+      var nSub = isCo ? 'Not all staff have verified right to work' : 'I do not currently have right to work';
+      var icon = yes
+        ? '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#10b981" stroke-width="1.8"><circle cx="10" cy="10" r="8"/><path d="M6 10l3 3 5-5"/></svg>'
+        : '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#ef4444" stroke-width="1.8"><circle cx="10" cy="10" r="8"/><path d="M10 6v4M10 13v.5"/></svg>';
+      return '<div onclick="_suppSetRightToWork(\''+val+'\')" style="border:1.5px solid '+(sel?color:'#e2e8f0')+';border-radius:10px;padding:16px;text-align:center;cursor:pointer;background:'+(sel?bgSel:'#fff')+';transition:all 0.15s;">'
+        + (sel?'<div style="margin-bottom:4px;">'+icon+'</div>':'')
+        + '<div style="font-size:14px;font-weight:700;color:'+headCol+';font-family:Inter,sans-serif;margin-bottom:3px;">'+val+'</div>'
+        + '<div style="font-size:12px;color:'+subCol+';font-family:Inter,sans-serif;">'+(yes?ySub:nSub)+'</div>'
+      + '</div>';
+    }
+    // Portfolio photos (nested inside Job References below)
+    var portfolio = '<div style="font-size:12px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin:14px 0 8px;">Portfolio photos</div>'
+      + '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:6px;" id="profPortfolioGrid">'
+        + ((so.portfolioPhotos||[]).length?(so.portfolioPhotos||[]).map(function(ph,i){return '<div style="position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:#f1f5f9;"><img src="'+ph+'" style="width:100%;height:100%;object-fit:cover;"><button class="prof-port-del" data-idx="'+i+'" style="position:absolute;top:4px;right:4px;width:22px;height:22px;background:rgba(0,0,0,0.55);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2"><path d="M2 2l6 6M8 2l-6 6"/></svg></button></div>';}).join(''):'')
+        + '<label style="aspect-ratio:1;border:1.5px dashed #d1d5db;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;background:#fafafa;"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#94a3b8" stroke-width="1.6"><path d="M3 14v2.5a.5.5 0 00.5.5h13a.5.5 0 00.5-.5V14"/><path d="M10 3v10M7 6l3-3 3 3"/></svg><span style="font-size:11px;color:#94a3b8;font-family:Inter,sans-serif;">Add photo</span><input type="file" accept="image/*" multiple class="prof-port-upload" style="display:none;"></label>'
+      + '</div>'
+      + '<div style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;">Upload photos of completed work — kitchens, bathrooms, electrical panels, before/after shots. High-quality images increase booking rates significantly.</div>';
+
+    return (isCo
+        ? hdr('Company DBS Policy')
+          + row2(inp('Team Size',so.teamSize,'teamSize','text','e.g. 1-5, 5-10'),inp('Company DBS Policy',so.companyDbsDecl,'companyDbsDecl','text','Yes / No / In Progress'))
+        : hdr('DBS Declaration')
+          + dbsCard('I confirm I have no unspent criminal convictions',dbsVal)
+          + dbsCard('I have unspent convictions to declare',dbsVal)
+          + (dbsVal==='I have unspent convictions to declare'
+              ? '<div style="margin:8px 0 14px;"><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Please describe your unspent convictions</label>'
+                + '<textarea data-pfield="convictionsDetail" rows="4" placeholder="Provide details including dates, offences, and outcomes. This is kept confidential." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;resize:vertical;">'+(so.convictionsDetail||'')+'</textarea>'
+                + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:6px;">Check the <a href="https://www.gov.uk/government/publications/dbs-filtering-guidance/dbs-filtering-guidance" target="_blank" style="color:#1d4ed8;font-weight:600;text-decoration:none;">DBS filtering rules</a> if unsure what must be disclosed. Only unspent convictions need to be declared.</div>'
+              + '</div>'
+              : '')
+          + '<div style="margin-bottom:16px;">'+_suppUploadField('DBS certificate','Upload your DBS certificate (PDF or image)','dbs-upload-as')+'</div>'
+      )
+      + hdr('Right to Work in the UK')
+      + '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:10px;line-height:1.5;">'
+        + (isCo
+            ? 'As a company dispatching operatives to client properties, you are the employer and have a legal obligation to verify Right to Work for all individuals under your management — including employees, subcontractors, and agency workers.'
+            : 'You must confirm whether you have the legal right to work in the United Kingdom. Some property managers in regulated sectors may require document verification before booking.')
+      + '</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
+        + rtwCard('Yes', true)
+        + rtwCard('No', false)
+      + '</div>'
+      + (rtw === 'No'
+          ? '<div style="display:flex;align-items:flex-start;gap:10px;background:#fff7ed;border:1.5px solid #fed7aa;border-radius:10px;padding:12px 14px;margin-bottom:12px;">'
+            + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#c2410c" stroke-width="1.6" style="flex-shrink:0;margin-top:1px;"><path d="M7.5 1.5l6 11H1.5l6-11z"/><path d="M7.5 6v3M7.5 10.5v.5"/></svg>'
+            + '<span style="font-size:12.5px;color:#9a3412;font-family:Inter,sans-serif;line-height:1.55;">'
+              + (isCo
+                  ? 'You are legally required to verify Right to Work for all operatives before dispatching them. Please resolve this before completing onboarding.'
+                  : 'You cannot list services on the marketplace without the legal right to work in the UK. Please contact our support team if you need guidance.')
+            + '</span>'
+          + '</div>'
+          : '')
+      + hdr('Job References &amp; Portfolio')
+      + '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:10px;line-height:1.5;">References and portfolio photos appear on your marketplace profile. They help build trust and improve your search ranking.</div>'
+      + row1('<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">References / Previous Clients</label><textarea data-pfield="jobRefs" rows="3" placeholder="Describe 2–3 recent jobs with client name, type of work, and outcome." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;resize:vertical;">'+(so.jobRefs||'')+'</textarea></div>')
+      + portfolio
+      + saveBar('Background check saved');
+  })();
 
   // ── Availability ──
   var allDays=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  var panelAvailability=''
-    +'<p style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 20px;">Set your standard working schedule. You can adjust per-week availability from your calendar.</p>'
-    +'<div style="margin-bottom:20px;">'
-      +'<label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:10px;font-family:Inter,sans-serif;">Working Days</label>'
-      +'<div style="display:flex;flex-wrap:wrap;gap:8px;">'
-        +allDays.map(function(d){
-          var sel=(so.workDays||[]).indexOf(d)>=0;
-          return '<button class="prof-day-chip" data-day="'+d+'" style="padding:10px 18px;border-radius:9px;border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';background:'+(sel?'#eff6ff':'#fff')+';color:'+(sel?'#1A5FC8':'#64748b')+';font-size:13px;font-weight:'+(sel?'700':'500')+';cursor:pointer;font-family:Inter,sans-serif;transition:all .15s;min-width:60px;text-align:center;"'+(sel?' data-sel="1"':'')+'>'+d+'</button>';
-        }).join('')
-      +'</div>'
-    +'</div>'
-    +row2(inp('Start Time',so.startTime||'08:00','startTime','time',''),inp('End Time',so.endTime||'17:00','endTime','time',''))
-    +hdr('Emergency Callouts')
-    +'<div style="margin-bottom:16px;"><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;font-family:Inter,sans-serif;">Do you accept emergency callouts?</label>'+yesNo(so.emergencyCallouts,'emergencyCallouts')+'</div>'
-    +saveBar('Availability saved');
+  var panelAvailability=(function(){
+    var emVal = so.emergencyCallouts;
+    function emCard(val, sub) {
+      var sel = emVal === val;
+      return '<div onclick="_suppSetEmergency(\''+val.replace(/'/g,"\\'")+'\')" style="border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;padding:14px;text-align:center;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all 0.15s;">'
+        + '<div style="font-size:13.5px;font-weight:700;color:'+(sel?'#1e3a5f':'#0f172a')+';font-family:Inter,sans-serif;margin-bottom:3px;">'+val+'</div>'
+        + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">'+sub+'</div>'
+      + '</div>';
+    }
+    return '<p style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 20px;">Set your standard working schedule. You can adjust per-week availability from your calendar.</p>'
+      + '<div style="margin-bottom:20px;">'
+        + '<label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:10px;font-family:Inter,sans-serif;">Working Days</label>'
+        + '<div style="display:flex;flex-wrap:wrap;gap:8px;">'
+          + allDays.map(function(d){
+            var sel=(so.workDays||[]).indexOf(d)>=0;
+            return '<button class="prof-day-chip" data-day="'+d+'" style="padding:10px 18px;border-radius:9px;border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';background:'+(sel?'#eff6ff':'#fff')+';color:'+(sel?'#1A5FC8':'#64748b')+';font-size:13px;font-weight:'+(sel?'700':'500')+';cursor:pointer;font-family:Inter,sans-serif;transition:all .15s;min-width:60px;text-align:center;"'+(sel?' data-sel="1"':'')+'>'+d+'</button>';
+          }).join('')
+        + '</div>'
+      + '</div>'
+      + row2(inp('Start Time',so.startTime||'','startTime','time',''),inp('End Time',so.endTime||'','endTime','time',''))
+      + hdr('Out-of-hours & Emergency Callouts')
+      + '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:10px;line-height:1.5;">Do you take on urgent same-day or out-of-hours work? Providers who accept emergency callouts earn more on average — you can set your own uplift fee in pricing settings.</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
+        + emCard('Yes, I\'m available', 'Urgent same-day requests with emergency pricing')
+        + emCard('Scheduled only',       'Pre-booked appointments during working hours')
+      + '</div>'
+      + '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 14px;font-size:12.5px;color:#1e3a5f;font-family:Inter,sans-serif;line-height:1.5;margin-bottom:16px;">'
+        + '✨ Providers who accept emergency callouts earn on average 25% more per month.'
+      + '</div>'
+      + saveBar('Availability saved');
+  })();
 
   // ── Questionnaire (wizard) ──
   var qSteps=[
@@ -17869,7 +18256,7 @@ function _showSupplierDashboard(){
     }
     var toggleBtn = document.createElement('button');
     toggleBtn.className = 'supp-collapse-btn';
-    toggleBtn.style.color = window._suppDark ? '#d1d9e0' : '#1a1f2e';
+    toggleBtn.style.color = window._suppDark ? '#d1d9e0' : '#000000';
     toggleBtn.style.borderColor = window._suppDark ? '#3d4452' : '#c8cdd6';
     toggleBtn.title = collapsed ? 'Expand' : 'Collapse';
     toggleBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="'+(collapsed?'5 2l4 5-4 5':'9 2L5 7l4 5')+'"/></svg>';
@@ -18113,7 +18500,19 @@ function _suppGenericToggle(id) {
 function _suppSetBizAcc(val) {
   _suppSaveCurrentStep();
   _suppOnboard.businessAccount = val;
-  _renderSuppOnboard();
+  _suppRerender();
+}
+
+// Context-aware rerender: re-renders whichever screen is currently active
+function _suppRerender() {
+  if (document.getElementById('supplierOnboardingScreen')) {
+    _renderSuppOnboard();
+    return;
+  }
+  if (document.getElementById('suppDashScreen') && typeof _suppNavTo === 'function') {
+    _suppNavTo('profile');
+    return;
+  }
 }
 
 // ═══ END SUPPLIER ONBOARDING ═══
