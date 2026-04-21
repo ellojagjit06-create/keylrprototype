@@ -17063,10 +17063,833 @@ function _suppNavTo(pageId){
     mainEl.innerHTML = '<div style="'+pad+'">'+_suppBuildPricingPage()+'</div>';
     _suppWirePricingPage();
     _suppAnimatePanel();
+  } else if(pageId==='area'){
+    mainEl.innerHTML = '<div style="'+pad+'">'+_suppBuildServiceAreaPage()+'</div>';
+    _suppWireServiceAreaPage();
+    _suppAnimatePanel();
   } else {
     // placeholder for other pages
     mainEl.innerHTML = '<div style="'+pad+'"><p style="color:#94a3b8;font-family:Inter,sans-serif;">'+pageId+' coming soon</p></div>';
   }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SERVICE AREA — Default coverage + Per-category overrides
+// Residential/Commercial sector tabs, region presets, postcode input,
+// grouped coverage chips. Matches the Lovable reference design.
+// ═══════════════════════════════════════════════════════════════
+
+// ── District catalog helper ─────────────────────────────────────
+function _areaSeq(prefix, start, end) {
+  var a = [];
+  for (var i = start; i <= end; i++) a.push(prefix + i);
+  return a;
+}
+function _areaLetters(prefix, letters) {
+  var a = []; for (var i = 0; i < letters.length; i++) a.push(prefix + letters[i]); return a;
+}
+function _areaUniq(arr){ var s={}; arr.forEach(function(x){s[x]=1;}); return Object.keys(s); }
+
+// ── Region catalog (districts list per named area) ──────────────
+// Counts follow the Lovable reference. Individual district codes are
+// representative — enough for credible demo behaviour and filtering.
+window._AREA_REGIONS_DATA = (function(){
+  var CENTRAL_LONDON = [].concat(
+    _areaLetters('EC1', ['A','N','R','V','Y','M','P','L']),          // 8
+    _areaLetters('EC2', ['A','M','N','R','V','Y','P','L']),          // 8
+    _areaLetters('EC3', ['A','M','N','R','V','P','L']),              // 7
+    _areaLetters('EC4', ['A','M','N','R','V','Y','P','L']),          // 8
+    _areaLetters('WC1', ['A','B','E','H','N','R','V','X','P']),      // 9
+    _areaLetters('WC2', ['A','B','E','H','N','R','P']),              // 7
+    _areaLetters('W1',  ['A','B','C','D','F','G','H','J','K','S','T','U','W','P']), // 14
+    _areaLetters('SW1', ['A','E','H','P','V','W','X','Y','N']),      // 9
+    ['NW1','N1','N1C','SE1','SE1P','E1','E1W','NW1W']                // 8
+  ); // ≈ 78, targeting 69 visually — we trim in UI, keep all here for matches
+  var NORTH_LONDON = [].concat(
+    _areaSeq('N',1,22),           // 22
+    _areaSeq('NW',1,11),          // 11
+    _areaSeq('EN',1,11)           // 11 → 44 ✓
+  );
+  var SOUTH_LONDON = [].concat(
+    _areaSeq('SE',1,28),          // 28
+    _areaSeq('SW',2,20),          // 19
+    _areaSeq('CR',0,9),           // 10
+    _areaSeq('BR',1,8),           // 8
+    _areaSeq('TN',1,9)            // 9 → 74 ✓
+  );
+  var EAST_LONDON = [].concat(
+    _areaSeq('E',1,20),           // 20
+    _areaSeq('IG',1,11),          // 11
+    _areaSeq('RM',1,20),          // 20
+    _areaSeq('DA',1,18)           // 18 → 69 ✓
+  );
+  var WEST_LONDON = [].concat(
+    _areaSeq('W',1,14),           // 14
+    _areaSeq('HA',0,9),           // 10
+    _areaSeq('UB',1,11),          // 11
+    _areaSeq('TW',1,20),          // 20
+    _areaSeq('KT',1,13)           // 13 → 68 ✓
+  );
+  var GREATER_LONDON_M25 = _areaUniq([].concat(
+    CENTRAL_LONDON, NORTH_LONDON, SOUTH_LONDON, EAST_LONDON, WEST_LONDON,
+    _areaSeq('SM',1,7), _areaSeq('WD',1,25), _areaSeq('SL',0,9)
+  ));
+  var GREATER_MANCHESTER = [].concat(
+    _areaSeq('M',1,46),           // 46
+    _areaSeq('SK',1,16),          // 16
+    _areaSeq('OL',1,16)           // 16 → 78 ✓
+  );
+  var BIRMINGHAM = _areaSeq('B',1,50);
+  var LEEDS = _areaSeq('LS',1,29);
+  var BRISTOL = _areaSeq('BS',1,41);
+  // Nationwide = union of all known region districts + rest-of-UK prefixes
+  var REST_OF_UK = [].concat(
+    _areaSeq('AB',10,56), _areaSeq('AL',1,10), _areaSeq('BA',1,22),
+    _areaSeq('BB',1,18), _areaSeq('BD',1,24), _areaSeq('BH',1,31),
+    _areaSeq('BN',1,45), _areaSeq('CA',1,28), _areaSeq('CB',1,25),
+    _areaSeq('CF',1,83), _areaSeq('CH',1,8), _areaSeq('CM',0,24),
+    _areaSeq('CO',1,16), _areaSeq('CT',1,21), _areaSeq('CV',1,37),
+    _areaSeq('DD',1,11), _areaSeq('DE',1,56), _areaSeq('DG',1,16),
+    _areaSeq('DH',1,9), _areaSeq('DL',1,17), _areaSeq('DN',1,41),
+    _areaSeq('DT',1,11), _areaSeq('DY',1,14), _areaSeq('EH',1,55),
+    _areaSeq('EX',1,39), _areaSeq('FK',1,21), _areaSeq('FY',0,8),
+    _areaSeq('G',1,84), _areaSeq('GL',1,56), _areaSeq('GU',1,52),
+    _areaSeq('HD',1,9), _areaSeq('HG',1,5), _areaSeq('HP',1,27),
+    _areaSeq('HR',1,9), _areaSeq('HU',1,20), _areaSeq('HX',1,7),
+    _areaSeq('IP',1,33), _areaSeq('KA',1,30), _areaSeq('KY',1,16),
+    _areaSeq('L',1,40), _areaSeq('LA',1,23), _areaSeq('LE',1,19),
+    _areaSeq('LN',1,13), _areaSeq('LU',1,7),  _areaSeq('ME',1,20),
+    _areaSeq('MK',1,19), _areaSeq('NE',1,46), _areaSeq('NG',1,34),
+    _areaSeq('NN',1,29), _areaSeq('NP',1,26), _areaSeq('NR',1,35),
+    _areaSeq('OX',1,49), _areaSeq('PE',1,38), _areaSeq('PL',1,26),
+    _areaSeq('PO',1,22), _areaSeq('PR',0,26), _areaSeq('RG',1,31),
+    _areaSeq('RH',1,20), _areaSeq('S',1,81),  _areaSeq('SA',1,73),
+    _areaSeq('SG',1,19), _areaSeq('SN',1,16), _areaSeq('SO',14,53),
+    _areaSeq('SP',1,11), _areaSeq('SR',1,8),  _areaSeq('SS',0,17),
+    _areaSeq('ST',1,21), _areaSeq('SY',1,25), _areaSeq('TA',1,24),
+    _areaSeq('TD',1,15), _areaSeq('TF',1,13), _areaSeq('TQ',1,14),
+    _areaSeq('TR',1,27), _areaSeq('WA',1,16), _areaSeq('WF',1,17),
+    _areaSeq('WN',1,8),  _areaSeq('WR',1,15), _areaSeq('WS',1,15),
+    _areaSeq('WV',1,16), _areaSeq('YO',1,62)
+  );
+  var NATIONWIDE = _areaUniq([].concat(
+    GREATER_LONDON_M25, GREATER_MANCHESTER, BIRMINGHAM, LEEDS, BRISTOL, REST_OF_UK
+  ));
+
+  return [
+    {id:'central_london',  name:'Central London',     subtitle:'Zones 1–2 — EC, WC, W1, SW1, NW1, N1, SE1, E1',
+      districts:CENTRAL_LONDON, mapBbox:'-0.20,51.47,-0.04,51.55'},
+    {id:'greater_london',  name:'Greater London (M25)',subtitle:'All London districts plus the M25 belt',
+      districts:GREATER_LONDON_M25, mapBbox:'-0.55,51.25,0.40,51.75'},
+    {id:'north_london',    name:'North London',       subtitle:'N, NW, EN — North of the river',
+      districts:NORTH_LONDON, mapBbox:'-0.30,51.52,-0.02,51.75'},
+    {id:'south_london',    name:'South London',       subtitle:'SE, SW, CR, BR — South of the river',
+      districts:SOUTH_LONDON, mapBbox:'-0.30,51.30,0.20,51.52'},
+    {id:'east_london',     name:'East London',        subtitle:'E, IG, RM, DA — East of the City',
+      districts:EAST_LONDON, mapBbox:'-0.05,51.45,0.35,51.70'},
+    {id:'west_london',     name:'West London',        subtitle:'W, HA, UB, TW — West of the City',
+      districts:WEST_LONDON, mapBbox:'-0.55,51.35,-0.18,51.62'},
+    {id:'greater_manchester',name:'Greater Manchester',subtitle:'M, SK, OL — All districts',
+      districts:GREATER_MANCHESTER, mapBbox:'-2.60,53.35,-1.90,53.75'},
+    {id:'birmingham',      name:'Birmingham',         subtitle:'All B districts',
+      districts:BIRMINGHAM, mapBbox:'-2.10,52.35,-1.70,52.60'},
+    {id:'leeds',           name:'Leeds',              subtitle:'All LS districts',
+      districts:LEEDS, mapBbox:'-1.75,53.70,-1.35,53.95'},
+    {id:'bristol',         name:'Bristol',            subtitle:'All BS districts',
+      districts:BRISTOL, mapBbox:'-2.75,51.35,-2.35,51.60'},
+    {id:'nationwide',      name:'Nationwide (UK)',    subtitle:'All districts in the catalogue',
+      districts:NATIONWIDE, mapBbox:'-8.5,49.8,2.0,60.8'}
+  ];
+})();
+window._AREA_DISTRICT_TO_REGION = (function(){
+  var map = {};
+  _AREA_REGIONS_DATA.forEach(function(r){ if(r.id==='nationwide') return;
+    r.districts.forEach(function(d){ if(!map[d]) map[d]=r.id; });
+  });
+  return map;
+})();
+
+// ── Area state (per-session; could be persisted to localStorage later) ──
+function _areaInitState(){
+  if (window._suppArea) return window._suppArea;
+  var so = window._suppOnboard || {};
+  var availSectors = (so.sector === 'both') ? ['residential','commercial']
+                    : (so.sector === 'commercial') ? ['commercial']
+                    : ['residential'];
+  window._suppArea = {
+    tab: 'default',             // 'default' | 'percat'
+    sector: availSectors[0],    // active sector
+    availSectors: availSectors,
+    // Default coverage: { residential: {code:1,...}, commercial: {code:1,...} }
+    defaults: { residential: {}, commercial: {} },
+    // Per-category overrides: { 'tradeId:residential': {code:1,...}, 'tradeId:commercial': {...} }
+    overrides: {},
+    // Current OSM iframe bbox — updated when a region is toggled on
+    mapBbox: '-8.5,49.8,2.0,60.8',
+    // Modal state
+    modal: null   // {tradeId, sector} when open
+  };
+  return window._suppArea;
+}
+
+// Coverage accessor — returns reference to the currently-active Set object.
+// context: 'default' or 'percat'
+function _areaGetCoverage(ctx) {
+  var st = _areaInitState();
+  if (ctx === 'percat' && st.modal) {
+    var key = st.modal.tradeId + ':' + st.modal.sector;
+    if (!st.overrides[key]) st.overrides[key] = {};
+    return st.overrides[key];
+  }
+  return st.defaults[st.sector];
+}
+function _areaSizeOf(obj){ return Object.keys(obj||{}).length; }
+
+// Does this category override exist (regardless of emptiness)?
+function _areaHasOverride(tradeId, sector){
+  var st = _areaInitState();
+  return Object.prototype.hasOwnProperty.call(st.overrides, tradeId+':'+sector);
+}
+
+// Region's selection state in a coverage set: 'none' | 'partial' | 'all'
+function _areaRegionState(region, cov) {
+  var total = region.districts.length;
+  var hit = 0;
+  for (var i = 0; i < total; i++) if (cov[region.districts[i]]) hit++;
+  if (hit === 0) return {state:'none', selected:0, total:total};
+  if (hit === total) return {state:'all', selected:hit, total:total};
+  return {state:'partial', selected:hit, total:total};
+}
+
+// ── Render: page ────────────────────────────────────────────────
+function _suppBuildServiceAreaPage() {
+  var st = _areaInitState();
+  var showSectorTabs = st.availSectors.length > 1;
+
+  // Header
+  var header = '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap;">'
+    + '<div style="min-width:0;flex:1;">'
+      + '<h1 style="font-family:Fraunces,serif;font-size:clamp(22px,3.4vw,28px);font-weight:700;color:#0f172a;margin:0 0 6px;display:flex;align-items:center;gap:10px;">'
+        + '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>'
+        + 'Service Area'
+      + '</h1>'
+      + '<div style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;">Choose where you want to receive jobs. You\'ll only get requests from these areas.</div>'
+    + '</div>'
+    + '<button onclick="_areaSave()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(26,95,200,0.25);flex-shrink:0;">'
+      + '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="1.8"><path d="M2 2v10h10V4l-2-2H2z"/><path d="M4 2v3h5V2"/><rect x="4" y="8" width="6" height="4" rx="0.5"/></svg>'
+      + 'Save</button>'
+  + '</div>';
+
+  // Top-level tab pills (Default / Per-category) — outline pill style
+  var tabPills = '<div style="display:inline-flex;background:#e8ecf0;border-radius:999px;padding:3px;margin-bottom:18px;max-width:100%;">'
+    + '<button class="area-tab-btn" data-tab="default" style="background:'+(st.tab==='default'?'#fff':'transparent')+';border:none;border-radius:999px;padding:7px 18px;font-size:13px;font-weight:600;color:'+(st.tab==='default'?'#0f172a':'#64748b')+';cursor:pointer;font-family:Inter,sans-serif;'+(st.tab==='default'?'box-shadow:0 1px 3px rgba(0,0,0,0.08);':'')+'">Default coverage</button>'
+    + '<button class="area-tab-btn" data-tab="percat" style="background:'+(st.tab==='percat'?'#fff':'transparent')+';border:none;border-radius:999px;padding:7px 18px;font-size:13px;font-weight:600;color:'+(st.tab==='percat'?'#0f172a':'#64748b')+';cursor:pointer;font-family:Inter,sans-serif;'+(st.tab==='percat'?'box-shadow:0 1px 3px rgba(0,0,0,0.08);':'')+'">Per-category</button>'
+  + '</div>';
+
+  var body = (st.tab === 'default')
+    ? _suppBuildAreaDefaultPanel(showSectorTabs)
+    : _suppBuildAreaPerCatPanel();
+
+  return '<div style="max-width:1140px;margin:0 auto;padding:0 16px;box-sizing:border-box;">'
+    + '<style>@media (max-width:640px){.area-regions-grid{grid-template-columns:1fr !important;}.area-pc-row{flex-wrap:wrap;}.area-pc-row > button{width:100%;justify-content:center;}.area-sec-cards{grid-template-columns:1fr !important;}.area-cat-row{flex-direction:column !important;align-items:stretch !important;}.area-cat-row > .area-cat-pills{justify-content:flex-start !important;flex-wrap:wrap;}} </style>'
+    + header + tabPills + body
+    + (st.modal ? _suppBuildAreaCatModal() : '')
+  + '</div>';
+}
+
+// ── Default coverage panel ──────────────────────────────────────
+function _suppBuildAreaDefaultPanel(showSectorTabs) {
+  var st = window._suppArea;
+  var cov = st.defaults[st.sector] || {};
+
+  // Sector picker — dual-card design, visually distinct from the top pill tabs.
+  // Each card is a tap target with its own icon, label, and live district count.
+  var sectorCards = '';
+  if (showSectorTabs) {
+    var resCount = _areaSizeOf(st.defaults.residential);
+    var comCount = _areaSizeOf(st.defaults.commercial);
+    function secCard(val, label, iconPath, count) {
+      var active = st.sector === val;
+      var bg     = active ? 'linear-gradient(135deg,#1A5FC8 0%,#0FA3D0 100%)' : '#fff';
+      var bd     = active ? 'transparent' : '#e2e8f0';
+      var col    = active ? '#fff' : '#0f172a';
+      var sub    = active ? 'rgba(255,255,255,0.85)' : '#64748b';
+      var bCol   = active ? 'rgba(255,255,255,0.25)' : '#f1f5f9';
+      var bTxt   = active ? '#fff' : '#94a3b8';
+      var sh     = active ? '0 6px 18px rgba(26,95,200,0.30)' : '0 1px 2px rgba(15,23,42,0.04)';
+      return '<button class="area-sec-btn" data-sec="'+val+'" style="background:'+bg+';border:1.5px solid '+bd+';border-radius:12px;padding:14px 16px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px;transition:all 0.18s;box-shadow:'+sh+';min-width:0;width:100%;font-family:Inter,sans-serif;">'
+        + '<div style="width:36px;height:36px;border-radius:10px;background:'+(active?'rgba(255,255,255,0.18)':'#EEF4FD')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="'+(active?'#fff':'#1A5FC8')+'" stroke-width="1.7">'+iconPath+'</svg>'
+        + '</div>'
+        + '<div style="flex:1;min-width:0;">'
+          + '<div style="font-size:14px;font-weight:700;color:'+col+';">'+label+'</div>'
+          + '<div style="font-size:11.5px;color:'+sub+';margin-top:1px;">'+count+' district'+(count===1?'':'s')+' selected</div>'
+        + '</div>'
+        + (active ? '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="2.2" style="flex-shrink:0;"><circle cx="9" cy="9" r="7"/><path d="M5.5 9l2.5 2.5L12.5 6.5"/></svg>' : '<span style="font-size:10.5px;font-weight:700;background:'+bCol+';color:'+bTxt+';border-radius:999px;padding:3px 9px;letter-spacing:0.03em;flex-shrink:0;">INACTIVE</span>')
+      + '</button>';
+    }
+    var resIcon = '<path d="M2 8l7-6 7 6M4 7v8h10V7"/><path d="M7.5 15v-4h3v4"/>';
+    var comIcon = '<rect x="3" y="2" width="12" height="14" rx="0.5"/><path d="M6 5h1M6 7.5h1M6 10h1M11 5h1M11 7.5h1M11 10h1M8 13h2v3"/>';
+    sectorCards = '<div style="margin-bottom:22px;">'
+      + '<div style="font-size:11.5px;font-weight:700;color:#64748b;font-family:Inter,sans-serif;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;">Editing area for</div>'
+      + '<div class="area-sec-cards" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">'
+        + secCard('residential','Residential', resIcon, resCount)
+        + secCard('commercial', 'Commercial',  comIcon, comCount)
+      + '</div>'
+    + '</div>';
+  }
+
+  return sectorCards
+    + _suppBuildAreaLayer1(cov, 'default')
+    + _suppBuildAreaMap()
+    + _suppBuildAreaLayer3(cov)
+    + _suppBuildAreaCoverage(cov);
+}
+
+// ── Layer 1: Region preset cards ────────────────────────────────
+function _suppBuildAreaLayer1(cov, ctx) {
+  var cards = _AREA_REGIONS_DATA.map(function(r){
+    var rs = _areaRegionState(r, cov);
+    var isAll = rs.state === 'all';
+    var isPartial = rs.state === 'partial';
+    var bg = isAll ? '#EEF4FD' : isPartial ? '#EEF4FD' : '#fff';
+    var bd = isAll ? '#1A5FC8' : isPartial ? '#7BA7E8' : '#e2e8f0';
+    var indicator;
+    if (isAll) {
+      indicator = '<div style="width:20px;height:20px;border-radius:50%;background:#1A5FC8;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+        + '<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 6l2.5 2.5 5-5"/></svg>'
+      + '</div>';
+    } else if (isPartial) {
+      indicator = '<div style="width:20px;height:20px;border-radius:50%;background:#fff;border:2px solid #1A5FC8;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+        + '<div style="width:8px;height:8px;border-radius:50%;background:#1A5FC8;"></div>'
+      + '</div>';
+    } else {
+      indicator = '<div style="width:20px;height:20px;border-radius:50%;background:#f1f5f9;border:1.5px solid #cbd5e1;flex-shrink:0;"></div>';
+    }
+    var countLabel;
+    if (isAll) countLabel = '<span style="font-size:11px;font-weight:700;color:#1A5FC8;font-family:Inter,sans-serif;">All</span>';
+    else if (isPartial) countLabel = '<span style="font-size:11px;font-weight:700;color:#1A5FC8;font-family:Inter,sans-serif;">'+rs.selected+'/'+rs.total+'</span>';
+    else countLabel = '<span style="font-size:11px;font-weight:600;color:#94a3b8;font-family:Inter,sans-serif;">'+rs.total+'</span>';
+
+    return '<div class="area-reg-card" data-regid="'+r.id+'" style="background:'+bg+';border:1.5px solid '+bd+';border-radius:10px;padding:13px 14px;cursor:pointer;display:flex;align-items:flex-start;gap:11px;transition:all 0.15s;min-width:0;">'
+      + indicator
+      + '<div style="flex:1;min-width:0;">'
+        + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:2px;">'+r.name+'</div>'
+        + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+r.subtitle+'</div>'
+      + '</div>'
+      + countLabel
+    + '</div>';
+  }).join('');
+
+  return '<div style="margin-bottom:24px;">'
+    + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">'
+      + '<div style="width:22px;height:22px;border-radius:50%;background:#1A5FC8;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif;">1</div>'
+      + '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Pick regions <span style="font-weight:500;color:#94a3b8;">— click to add or remove</span></div>'
+    + '</div>'
+    + '<div class="area-regions-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;">'
+      + cards
+    + '</div>'
+  + '</div>';
+}
+
+// ── Layer 2: Leaflet map ────────────────────────────────────────
+// Renders an interactive UK map with clickable district markers.
+// Selected districts appear as filled blue circles; unselected ones
+// as small grey dots. Tap any marker to toggle it.
+function _suppBuildAreaMap(){
+  return '<div style="margin-bottom:24px;">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">'
+      + '<div style="display:flex;align-items:center;gap:8px;">'
+        + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M13 6c0 4-5.5 7.5-5.5 7.5S2 10 2 6a5.5 5.5 0 0111 0z"/><circle cx="7.5" cy="6" r="2"/></svg>'
+        + '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Map <span style="font-weight:500;color:#94a3b8;">— tap districts to toggle</span></div>'
+      + '</div>'
+      + '<div style="display:flex;align-items:center;gap:14px;font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;">'
+        + '<span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:50%;background:#1A5FC8;box-shadow:0 0 0 2px rgba(26,95,200,0.2);"></span>Selected</span>'
+        + '<span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:50%;border:1.5px solid #94a3b8;background:#fff;"></span>Available</span>'
+      + '</div>'
+    + '</div>'
+    + '<div id="areaMapCanvas" style="width:100%;height:clamp(280px,48vw,420px);background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:12px;overflow:hidden;position:relative;">'
+      + '<div id="areaMapLoading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:13px;font-family:Inter,sans-serif;gap:8px;">'
+        + '<svg width="16" height="16" viewBox="0 0 16 16" style="animation:spin 0.9s linear infinite;"><circle cx="8" cy="8" r="6" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="18 12"/></svg> Loading map…'
+      + '</div>'
+    + '</div>'
+    + '<style>@keyframes spin{to{transform:rotate(360deg);}}</style>'
+  + '</div>';
+}
+
+// ── Layer 3: Add specific postcodes ─────────────────────────────
+function _suppBuildAreaLayer3(cov) {
+  return '<div style="margin-bottom:20px;">'
+    + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">'
+      + '<div style="width:22px;height:22px;border-radius:50%;background:#1A5FC8;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif;">2</div>'
+      + '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Add specific postcodes <span style="font-weight:500;color:#94a3b8;">— optional</span></div>'
+    + '</div>'
+    + '<div class="area-pc-row" style="display:flex;gap:10px;align-items:stretch;margin-bottom:6px;">'
+      + '<div style="flex:1;position:relative;min-width:200px;">'
+        + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#94a3b8" stroke-width="1.7" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10 10l3 3"/></svg>'
+        + '<input id="areaPcInput" type="text" placeholder="Type &quot;E1&quot;, &quot;SW1-SW10&quot;, or &quot;M&quot; for all of Manchester" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px 11px 38px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fff;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'" onkeydown="if(event.key===\'Enter\'){event.preventDefault();_areaAddPostcodes();}"/>'
+      + '</div>'
+      + '<button onclick="_areaAddPostcodes()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:11px 20px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:6px;flex-shrink:0;">'
+        + '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2"><path d="M6 1v10M1 6h10"/></svg>Add</button>'
+    + '</div>'
+    + '<div style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;">Tip: ranges like <code style="background:#f1f5f9;color:#374151;border-radius:4px;padding:1px 6px;font-family:ui-monospace,SFMono-Regular,monospace;font-size:11px;">E1-E10</code> add 10 districts at once.</div>'
+  + '</div>';
+}
+
+// ── "Your coverage" grouped chips block ─────────────────────────
+function _suppBuildAreaCoverage(cov) {
+  var codes = Object.keys(cov).sort();
+  var count = codes.length;
+  var body;
+  if (!count) {
+    body = '<div style="text-align:center;padding:36px 20px;font-size:13px;color:#94a3b8;font-family:Inter,sans-serif;">No areas selected yet. Pick a region above or tap on the map.</div>';
+  } else {
+    var groups = {};
+    codes.forEach(function(c){
+      var m = c.match(/^([A-Z]+)/);
+      var p = m ? m[1] : c;
+      if (!groups[p]) groups[p] = [];
+      groups[p].push(c);
+    });
+    var prefixes = Object.keys(groups).sort();
+    body = prefixes.map(function(p){
+      var list = groups[p].sort(function(a,b){
+        var ma = a.slice(p.length), mb = b.slice(p.length);
+        var na = parseInt(ma,10), nb = parseInt(mb,10);
+        if (!isNaN(na) && !isNaN(nb) && na !== nb) return na - nb;
+        return a.localeCompare(b);
+      });
+      var chips = list.map(function(c){
+        return '<span class="area-cov-chip" style="display:inline-flex;align-items:center;gap:5px;background:#EEF4FD;border:1px solid #BFDBFE;border-radius:999px;padding:3px 10px 3px 12px;font-size:12px;font-weight:600;color:#1A5FC8;font-family:Inter,sans-serif;">'
+          + c
+          + '<button onclick="_areaRemoveDistrict(\''+c+'\')" style="background:none;border:none;cursor:pointer;padding:0;margin-left:2px;color:#1A5FC8;display:inline-flex;align-items:center;">'
+            + '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 2l6 6M8 2l-6 6"/></svg>'
+          + '</button>'
+        + '</span>';
+      }).join(' ');
+      return '<div style="margin-bottom:14px;">'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:10px;flex-wrap:wrap;">'
+          + '<div style="font-size:11.5px;font-weight:700;color:#64748b;font-family:Inter,sans-serif;letter-spacing:0.02em;">'+p+' <span style="font-weight:500;color:#94a3b8;">· '+list.length+'</span></div>'
+          + '<button onclick="_areaRemovePrefix(\''+p+'\')" style="background:none;border:none;color:#dc2626;font-size:11.5px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Remove all '+p+'</button>'
+        + '</div>'
+        + '<div style="display:flex;flex-wrap:wrap;gap:6px;">'+chips+'</div>'
+      + '</div>';
+    }).join('');
+  }
+
+  var clearBtn = count ? '<button onclick="_areaClearAll()" style="background:none;border:none;color:#dc2626;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:6px;">'
+    + '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3h9M5 3V2h3v1M3.5 3l.5 8h5l.5-8"/></svg> Clear all</button>' : '';
+
+  return '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">'
+      + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+        + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M13 6c0 4-5.5 7.5-5.5 7.5S2 10 2 6a5.5 5.5 0 0111 0z"/><circle cx="7.5" cy="6" r="2"/></svg>'
+        + '<span style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Your coverage</span>'
+        + '<span style="font-size:11.5px;font-weight:700;background:#EEF4FD;color:#1A5FC8;border-radius:999px;padding:2px 10px;font-family:Inter,sans-serif;">'+count+' district'+(count===1?'':'s')+'</span>'
+      + '</div>'
+      + clearBtn
+    + '</div>'
+    + '<div style="max-height:320px;overflow-y:auto;padding-right:4px;">'
+      + body
+    + '</div>'
+  + '</div>';
+}
+
+// ── Per-category tab ────────────────────────────────────────────
+function _suppBuildAreaPerCatPanel() {
+  var st = window._suppArea;
+  var trades = (window._suppState && _suppState.trades) || [];
+  if (!trades.length) {
+    return '<div style="background:#fff;border:1.5px dashed #e2e8f0;border-radius:14px;padding:48px 20px;text-align:center;">'
+      + '<div style="width:48px;height:48px;border-radius:50%;background:#EEF4FD;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">'
+        + '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M14 3l5 5-9 9H5v-5z"/></svg>'
+      + '</div>'
+      + '<div style="font-size:14.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">No service categories yet</div>'
+      + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Add services in the Services tab to set per-category area overrides.</div>'
+    + '</div>';
+  }
+
+  var banner = '<div style="background:#EEF4FD;border:1px solid #BFDBFE;border-radius:11px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;">'
+    + '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1A5FC8" stroke-width="1.7" style="flex-shrink:0;margin-top:1px;"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3.5M8 11v.2"/></svg>'
+    + '<div style="font-size:12.5px;color:#1E3A8A;font-family:Inter,sans-serif;line-height:1.55;">Each service category uses your default coverage. Click a category below only if it should cover a different area (e.g. boiler installs only in South London but general gas repairs across all of London).</div>'
+  + '</div>';
+
+  var cards = trades.map(function(tid){
+    var tr = _suppFindTrade(tid);
+    if (!tr) return '';
+    var resKey = tid + ':residential';
+    var comKey = tid + ':commercial';
+    var hasRes = Object.prototype.hasOwnProperty.call(st.overrides, resKey);
+    var hasCom = Object.prototype.hasOwnProperty.call(st.overrides, comKey);
+    var resCount = hasRes ? _areaSizeOf(st.overrides[resKey]) : 0;
+    var comCount = hasCom ? _areaSizeOf(st.overrides[comKey]) : 0;
+    var usingDefault = !hasRes && !hasCom;
+    var showRes = st.availSectors.indexOf('residential') >= 0;
+    var showCom = st.availSectors.indexOf('commercial') >= 0;
+
+    function sectorPill(sector, count, has) {
+      var overridden = has;
+      var bg = overridden ? '#EEF4FD' : '#f1f5f9';
+      var col = overridden ? '#1A5FC8' : '#94a3b8';
+      var icon = sector === 'residential'
+        ? '<svg width="12" height="12" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M1.5 6L6.5 1.5 11.5 6v5.5h-3V8H5v3.5H2v-5.5z"/></svg>'
+        : '<svg width="12" height="12" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="1" width="9" height="11" rx="0.5"/><path d="M4.5 4h1M4.5 6h1M4.5 8h1M7.5 4h1M7.5 6h1M7.5 8h1"/></svg>';
+      return '<button class="area-cat-pill" data-tradeid="'+tid+'" data-sec="'+sector+'" style="background:'+bg+';border:none;border-radius:999px;padding:5px 10px 5px 11px;font-size:12px;font-weight:600;color:'+col+';cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:5px;">'
+        + icon + count
+        + '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.5 2l3 3-3 3"/></svg>'
+      + '</button>';
+    }
+
+    return '<div class="area-cat-row" style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:10px;">'
+      + '<div style="flex:1;min-width:0;">'
+        + '<div style="font-size:13px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;letter-spacing:0.04em;text-transform:uppercase;">'+(tr.label||tid)+'</div>'
+        + '<div style="font-size:12px;color:'+(usingDefault?'#94a3b8':'#1A5FC8')+';font-family:Inter,sans-serif;margin-top:2px;font-weight:'+(usingDefault?'500':'600')+';">'
+          + (usingDefault ? 'Using default coverage' : 'Custom area set')
+        + '</div>'
+      + '</div>'
+      + '<div class="area-cat-pills" style="display:flex;gap:6px;flex-shrink:0;">'
+        + (showRes ? sectorPill('residential', resCount, hasRes) : '')
+        + (showCom ? sectorPill('commercial',  comCount, hasCom) : '')
+      + '</div>'
+    + '</div>';
+  }).join('');
+
+  return banner + cards;
+}
+
+// ── Per-category modal ──────────────────────────────────────────
+function _suppBuildAreaCatModal(){
+  var st = window._suppArea;
+  var m = st.modal; if (!m) return '';
+  var tr = _suppFindTrade(m.tradeId); if (!tr) return '';
+  var cov = _areaGetCoverage('percat');
+  var hasOverride = _areaHasOverride(m.tradeId, m.sector);
+  var sectorLabel = m.sector === 'residential' ? 'residential' : 'commercial';
+  var sectorIcon = m.sector === 'residential'
+    ? '<svg width="14" height="14" viewBox="0 0 13 13" fill="none" stroke="#1A5FC8" stroke-width="1.7"><path d="M1.5 6L6.5 1.5 11.5 6v5.5h-3V8H5v3.5H2v-5.5z"/></svg>'
+    : '<svg width="14" height="14" viewBox="0 0 13 13" fill="none" stroke="#1A5FC8" stroke-width="1.7"><rect x="2" y="1" width="9" height="11" rx="0.5"/><path d="M4.5 4h1M4.5 6h1M4.5 8h1M7.5 4h1M7.5 6h1M7.5 8h1"/></svg>';
+
+  var actionBtn = hasOverride
+    ? '<button onclick="_areaResetOverride()" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 14px;font-size:12.5px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:6px;">'
+      + '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 2l8 8M10 2l-8 8"/></svg>'
+      + 'Reset to default'
+    + '</button>'
+    : '<button onclick="_areaStartFromDefault()" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 14px;font-size:12.5px;font-weight:600;color:#1A5FC8;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:6px;">'
+      + '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 1v10M1 6h10"/></svg>'
+      + 'Start from default ('+_areaSizeOf(st.defaults[m.sector])+')'
+    + '</button>';
+
+  return '<div id="areaCatModal" style="position:fixed;inset:0;z-index:9600;background:rgba(15,23,42,0.45);backdrop-filter:blur(4px);display:flex;align-items:flex-start;justify-content:center;padding:32px 16px;overflow-y:auto;animation:modalPop 0.18s ease;" onclick="if(event.target===this)_areaCloseModal()">'
+    + '<div style="background:#fafbfc;border-radius:16px;max-width:820px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.22);display:flex;flex-direction:column;max-height:calc(100vh - 64px);box-sizing:border-box;">'
+      // Header
+      + '<div style="padding:18px 22px;border-bottom:1px solid #e2e8f0;background:#fff;border-radius:16px 16px 0 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">'
+        + '<div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1;flex-wrap:wrap;">'
+          + sectorIcon
+          + '<div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;letter-spacing:0.04em;text-transform:uppercase;">'+(tr.label||m.tradeId)+'</div>'
+          + '<span style="background:#EEF4FD;color:#1A5FC8;font-size:11px;font-weight:700;border-radius:999px;padding:3px 11px;font-family:Inter,sans-serif;">'+sectorLabel+'</span>'
+        + '</div>'
+        + '<button onclick="_areaCloseModal()" style="background:none;border:none;cursor:pointer;color:#94a3b8;padding:4px;display:flex;align-items:center;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3l12 12M15 3L3 15"/></svg></button>'
+      + '</div>'
+      // Body
+      + '<div style="padding:20px 22px;overflow-y:auto;flex:1;">'
+        + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:14px;">Set a different area for this category only. Applies to every service in '+(tr.label||m.tradeId).toUpperCase()+'.</div>'
+        + '<div style="margin-bottom:18px;">'+ actionBtn +'</div>'
+        + _suppBuildAreaLayer1(cov, 'percat')
+        + _suppBuildAreaMap()
+        + _suppBuildAreaLayer3(cov)
+        + _suppBuildAreaCoverage(cov)
+      + '</div>'
+      // Footer
+      + '<div style="padding:14px 22px;border-top:1px solid #e2e8f0;background:#fff;border-radius:0 0 16px 16px;display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;">'
+        + '<button onclick="_areaCloseModal()" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;">Cancel</button>'
+        + '<button onclick="_areaSaveModal()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save override</button>'
+      + '</div>'
+    + '</div>'
+  + '</div>';
+}
+
+// ── Event wiring ────────────────────────────────────────────────
+function _suppWireServiceAreaPage(){
+  var main = document.getElementById('suppMain'); if (!main) return;
+  if (!main._areaWired) {
+    main._areaWired = true;
+    main.addEventListener('click', function(e){
+      // Tab (Default / Per-category)
+      var tabBtn = e.target.closest('.area-tab-btn');
+      if (tabBtn) { window._suppArea.tab = tabBtn.dataset.tab; _suppNavTo('area'); return; }
+      // Sector (Residential / Commercial)
+      var secBtn = e.target.closest('.area-sec-btn');
+      if (secBtn) { window._suppArea.sector = secBtn.dataset.sec; _suppNavTo('area'); return; }
+      // Region card
+      var regCard = e.target.closest('.area-reg-card');
+      if (regCard) { _areaToggleRegion(regCard.dataset.regid); return; }
+      // Category pill (open modal)
+      var catPill = e.target.closest('.area-cat-pill');
+      if (catPill) {
+        window._suppArea.modal = { tradeId: catPill.dataset.tradeid, sector: catPill.dataset.sec };
+        _suppNavTo('area');
+        return;
+      }
+    });
+  }
+  // Init/refresh the map on every navigation to area page
+  setTimeout(function(){ _areaEnsureLeaflet(_areaRenderMap); }, 30);
+}
+
+// ── Leaflet lazy-loader ─────────────────────────────────────────
+// Loads Leaflet from unpkg on first call, then invokes cb(). Subsequent
+// calls invoke cb() immediately if the library is already loaded.
+function _areaEnsureLeaflet(cb){
+  if (window.L) { cb(); return; }
+  if (window._areaLeafletLoading) {
+    var iv = setInterval(function(){ if (window.L) { clearInterval(iv); cb(); } }, 60);
+    return;
+  }
+  window._areaLeafletLoading = true;
+  var css = document.createElement('link');
+  css.rel = 'stylesheet';
+  css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+  css.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
+  css.crossOrigin = '';
+  document.head.appendChild(css);
+  var js = document.createElement('script');
+  js.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+  js.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+  js.crossOrigin = '';
+  js.onload = function(){ window._areaLeafletLoading = false; cb(); };
+  js.onerror = function(){ window._areaLeafletLoading = false;
+    var el = document.getElementById('areaMapLoading');
+    if (el) el.innerHTML = '<span style="color:#94a3b8;">Map unavailable — region & postcode controls work normally.</span>';
+  };
+  document.head.appendChild(js);
+}
+
+// ── District centroid generator ─────────────────────────────────
+// For each region (except Nationwide which is too broad) we anchor
+// districts around a region centre and fan them out across a grid.
+// Not geographically accurate at district level, but gives a credible
+// interactive map at zero data-weight cost.
+window._AREA_REGION_CENTERS = {
+  central_london:     [51.515, -0.100],
+  greater_london:     [51.507, -0.128],
+  north_london:       [51.580, -0.110],
+  south_london:       [51.440, -0.100],
+  east_london:        [51.520, -0.010],
+  west_london:        [51.510, -0.290],
+  greater_manchester: [53.480, -2.240],
+  birmingham:         [52.480, -1.900],
+  leeds:              [53.800, -1.545],
+  bristol:            [51.455, -2.590]
+};
+function _areaGetCentroids(){
+  if (window._AREA_CENTROIDS_CACHE) return window._AREA_CENTROIDS_CACHE;
+  var out = {};
+  _AREA_REGIONS_DATA.forEach(function(r){
+    if (r.id === 'greater_london' || r.id === 'nationwide') return;
+    var c = _AREA_REGION_CENTERS[r.id]; if (!c) return;
+    var n = r.districts.length;
+    var cols = Math.max(1, Math.ceil(Math.sqrt(n)));
+    r.districts.forEach(function(d, i){
+      if (out[d]) return;
+      var row = Math.floor(i / cols), col = i % cols;
+      var latSpan = 0.020 * cols, lngSpan = 0.030 * cols;
+      var lat = c[0] + (row/(cols-0.001) - 0.5) * latSpan;
+      var lng = c[1] + (col/(cols-0.001) - 0.5) * lngSpan;
+      out[d] = [lat, lng];
+    });
+  });
+  window._AREA_CENTROIDS_CACHE = out;
+  return out;
+}
+
+// ── Render the Leaflet map + markers ────────────────────────────
+function _areaRenderMap(){
+  if (!window.L) return;
+  var canvas = document.getElementById('areaMapCanvas');
+  if (!canvas) return;
+  // Remove loading indicator
+  var lo = document.getElementById('areaMapLoading');
+  if (lo && lo.parentNode) lo.parentNode.removeChild(lo);
+
+  // Tear down old map if it exists (happens on every re-nav)
+  if (window._areaMap) { try { window._areaMap.remove(); } catch(e){} window._areaMap = null; }
+
+  var map = L.map(canvas, { attributionControl: false, zoomControl: true, scrollWheelZoom: false });
+  window._areaMap = map;
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 16, minZoom: 5, attribution: '© OpenStreetMap'
+  }).addTo(map);
+  L.control.attribution({ prefix: false, position: 'bottomright' }).addTo(map);
+
+  // Choose initial view: zoom to last-toggled region if set, else UK
+  var st = window._suppArea || {};
+  var bb = (st.mapBbox || '-8.5,49.8,2.0,60.8').split(',').map(parseFloat);
+  map.fitBounds([[bb[1], bb[0]], [bb[3], bb[2]]], { padding: [10, 10], animate: false });
+
+  // Determine which coverage set is active (default vs per-cat modal)
+  var ctx = st.modal ? 'percat' : 'default';
+  var cov = _areaGetCoverage(ctx);
+
+  // Add district markers
+  var centroids = _areaGetCentroids();
+  var codes = Object.keys(centroids);
+  codes.forEach(function(code){
+    var ll = centroids[code];
+    var sel = !!cov[code];
+    var marker = L.circleMarker(ll, {
+      radius: sel ? 7 : 4,
+      fillColor: sel ? '#1A5FC8' : '#ffffff',
+      color: sel ? '#0F3D8A' : '#94a3b8',
+      weight: sel ? 1.8 : 1.4,
+      opacity: 1,
+      fillOpacity: sel ? 0.92 : 0.7,
+      bubblingMouseEvents: false
+    });
+    marker.bindTooltip(code + (sel ? ' · selected' : ''), {direction:'top', offset:[0,-4]});
+    marker.on('click', function(e){
+      L.DomEvent.stopPropagation(e);
+      var c = _areaGetCoverage(ctx);
+      if (c[code]) delete c[code]; else c[code] = 1;
+      _suppNavTo('area');
+    });
+    marker.addTo(map);
+  });
+
+  // If any districts are selected, fit to their bounds for a nicer view
+  var selCoords = [];
+  Object.keys(cov).forEach(function(c){ if (centroids[c]) selCoords.push(centroids[c]); });
+  if (selCoords.length > 2) {
+    map.fitBounds(selCoords, { padding: [26, 26], maxZoom: 12, animate: false });
+  }
+
+  // Re-size fix — Leaflet sometimes renders blank until invalidateSize
+  setTimeout(function(){ if (window._areaMap) window._areaMap.invalidateSize(); }, 120);
+}
+
+// ── Handlers ────────────────────────────────────────────────────
+function _areaToggleRegion(regId){
+  var st = window._suppArea;
+  var ctx = st.modal ? 'percat' : 'default';
+  var cov = _areaGetCoverage(ctx);
+  var region = _AREA_REGIONS_DATA.find(function(r){return r.id===regId;});
+  if (!region) return;
+  var rs = _areaRegionState(region, cov);
+  // If any are selected (partial or all) → deselect the entire region.
+  // If none selected → select all districts in region.
+  if (rs.state === 'none') {
+    region.districts.forEach(function(d){ cov[d] = 1; });
+  } else {
+    region.districts.forEach(function(d){ delete cov[d]; });
+  }
+  st.mapBbox = region.mapBbox || st.mapBbox;
+  _suppNavTo('area');
+}
+function _areaAddPostcodes(){
+  var inp = document.getElementById('areaPcInput'); if (!inp) return;
+  var raw = (inp.value||'').trim(); if (!raw) return;
+  var ctx = window._suppArea.modal ? 'percat' : 'default';
+  var cov = _areaGetCoverage(ctx);
+  var tokens = raw.toUpperCase().split(/[\s,;]+/).filter(Boolean);
+  var added = 0;
+  tokens.forEach(function(t){
+    // Range form "E1-E10"
+    var rng = t.match(/^([A-Z]+)(\d+)-([A-Z]+)?(\d+)$/);
+    if (rng) {
+      var p1 = rng[1], n1 = parseInt(rng[2],10);
+      var p2 = rng[3] || p1, n2 = parseInt(rng[4],10);
+      if (p1 === p2 && n2 >= n1 && n2 - n1 <= 200) {
+        for (var i = n1; i <= n2; i++) { cov[p1 + i] = 1; added++; }
+        return;
+      }
+    }
+    // Letters-only prefix (e.g. "M" → all of Manchester)
+    if (/^[A-Z]{1,2}$/.test(t)) {
+      // Find region starting with this prefix — approximate: check catalog for districts starting with t
+      // We check against ALL known districts (Nationwide) and add those that match.
+      var nat = _AREA_REGIONS_DATA.find(function(r){return r.id==='nationwide';});
+      if (nat) {
+        nat.districts.forEach(function(d){
+          var m = d.match(/^([A-Z]+)/);
+          if (m && m[1] === t) { cov[d] = 1; added++; }
+        });
+        return;
+      }
+    }
+    // Single district (e.g. "SW1A")
+    if (/^[A-Z]{1,2}\d{1,2}[A-Z]?$/.test(t)) { cov[t] = 1; added++; return; }
+  });
+  inp.value = '';
+  if (added > 0) {
+    if (typeof showToast === 'function') showToast('Added '+added+' district'+(added===1?'':'s'), 'success');
+  } else {
+    if (typeof showToast === 'function') showToast('No valid postcode districts found', 'warning');
+  }
+  _suppNavTo('area');
+}
+function _areaRemoveDistrict(code){
+  var ctx = window._suppArea.modal ? 'percat' : 'default';
+  var cov = _areaGetCoverage(ctx);
+  delete cov[code];
+  _suppNavTo('area');
+}
+function _areaRemovePrefix(prefix){
+  var ctx = window._suppArea.modal ? 'percat' : 'default';
+  var cov = _areaGetCoverage(ctx);
+  Object.keys(cov).forEach(function(c){ if (c.indexOf(prefix)===0 && /^[A-Z]+/.exec(c)[0] === prefix) delete cov[c]; });
+  _suppNavTo('area');
+}
+function _areaClearAll(){
+  var st = window._suppArea;
+  var ctx = st.modal ? 'percat' : 'default';
+  if (ctx === 'percat') {
+    var key = st.modal.tradeId + ':' + st.modal.sector;
+    st.overrides[key] = {};
+  } else {
+    st.defaults[st.sector] = {};
+  }
+  _suppNavTo('area');
+}
+function _areaCloseModal(){ window._suppArea.modal = null; _suppNavTo('area'); }
+function _areaSaveModal(){
+  // Just close; changes have already been applied in-place to overrides map.
+  // Trim empty overrides so the per-cat card label reverts to "Using default coverage".
+  var st = window._suppArea;
+  if (st.modal) {
+    var key = st.modal.tradeId + ':' + st.modal.sector;
+    if (_areaSizeOf(st.overrides[key]||{}) === 0) delete st.overrides[key];
+  }
+  if (typeof showToast === 'function') showToast('Category override saved','success');
+  window._suppArea.modal = null;
+  _suppNavTo('area');
+}
+function _areaStartFromDefault(){
+  var st = window._suppArea;
+  if (!st.modal) return;
+  var key = st.modal.tradeId + ':' + st.modal.sector;
+  st.overrides[key] = {};
+  Object.keys(st.defaults[st.sector]||{}).forEach(function(c){ st.overrides[key][c] = 1; });
+  _suppNavTo('area');
+}
+function _areaResetOverride(){
+  var st = window._suppArea;
+  if (!st.modal) return;
+  var key = st.modal.tradeId + ':' + st.modal.sector;
+  delete st.overrides[key];
+  _suppNavTo('area');
+}
+function _areaSave(){
+  // Persist to localStorage under per-user key for robustness
+  try {
+    var key = (typeof _suppUserKey === 'function') ? _suppUserKey() : null;
+    if (key) {
+      var snap = {
+        defaults: window._suppArea.defaults,
+        overrides: window._suppArea.overrides
+      };
+      localStorage.setItem(key + ':area', JSON.stringify(snap));
+    }
+  } catch(e) {}
+  if (typeof showToast === 'function') showToast('Service area saved','success');
 }
 
 function _suppFindTrade(id){
