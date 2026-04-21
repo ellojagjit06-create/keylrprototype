@@ -11245,6 +11245,10 @@ function showAuthPage(mode, forcedRole) {
       } else {
         showPMBizOnboarding();
       }
+      // ── Email-signup path: send verification link + snackbar right after account creation ──
+      if (!isPhone && a.contact) {
+        setTimeout(function(){ _sendVerificationLinkSilent(a.contact); }, 400);
+      }
     } else {
       // Login — look up stored user by contact (try exact key, then scan all store)
       var key = _userKey(a.contact || '');
@@ -12954,24 +12958,10 @@ function _syncSettingsPage(){
   // Update password section visibility for phone users
   setTimeout(_updateProfilePwdSection, 50);
 
-  // Verify badge
+  // Verify badge below name — per UX update, this chip is no longer shown
+  // (email verification is communicated via the inline tag inside the email input)
   var badge=document.getElementById('settingsVerifyBadge');
-  if(badge){
-    if(_user._emailVerified){
-      badge.style.display='block';
-      badge.innerHTML='<span style="display:inline-flex;align-items:center;gap:5px;background:#d1fae5;border-radius:999px;padding:3px 10px;border:1px solid #a7f3d0;">'
-        +'<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>'
-        +'<span style="font-size:11px;font-weight:600;color:#065f46;font-family:Inter,sans-serif;">Email verified</span></span>';
-    } else if(_user.email){
-      badge.style.display='block';
-      badge.innerHTML='<span style="display:inline-flex;align-items:center;gap:5px;background:#fef3c7;border-radius:999px;padding:3px 10px;border:1px solid #fcd34d;">'
-        +'<div style="width:5px;height:5px;background:#f59e0b;border-radius:50%;"></div>'
-        +'<span style="font-size:11px;font-weight:600;color:#92400e;font-family:Inter,sans-serif;">Email not verified — </span>'
-        +'<button onclick="sendVerifyEmail()" style="background:none;border:none;color:#1d4ed8;font-size:11px;font-weight:700;cursor:pointer;padding:0;font-family:Inter,sans-serif;">Verify now</button></span>';
-    } else {
-      badge.style.display='none';
-    }
-  }
+  if(badge){ badge.style.display='none'; badge.innerHTML=''; }
 
   // Populate profile cc dropdown
   buildProfCcList();
@@ -13039,45 +13029,34 @@ function _updateProfilePwdSection(){
   var isPhoneUser  = _user && _user._authMethod === 'phone';
   var hasSavedPwd  = _user && !!_user._pwd;
 
-  // Show password section only when: not a phone user OR phone user has typed an email
-  var show = !isPhoneUser || emailVal.length > 0;
+  // Visibility rules:
+  //  • Email-signup users: password was set at signup → never show in profile
+  //  • Phone-signup users with no email typed yet: hide (no password flow applies)
+  //  • Phone-signup users with email typed and NO saved password: show editable input + Save
+  //  • Phone-signup users with email typed and password SAVED: hide (password already set)
+  var show = isPhoneUser && emailVal.length > 0 && !hasSavedPwd;
   sec.style.display = show ? '' : 'none';
   if (!show) return;
 
-  // Password label
+  // Phone user, email entered, no password yet — editable input + "Save password" button
   var pwLabel = sec.querySelector('label');
-  if (pwLabel) pwLabel.textContent = (isPhoneUser && !hasSavedPwd) ? 'Set password' : 'Password';
+  if (pwLabel) pwLabel.textContent = 'Set password';
 
   var inp = document.getElementById('profilePwd');
   var btn = document.getElementById('profileChangePwdBtn');
-  var actionsDiv = document.getElementById('profilePwdActions');
 
-  if (isPhoneUser && !hasSavedPwd) {
-    // Phone user, no password yet — editable input + "Save password" button
-    if (inp) {
-      inp.removeAttribute('readonly');
-      inp.value = '';
-      inp.placeholder = 'Create a password (min 8 chars)';
-      inp.style.background = '#fff';
-      inp.style.color = '#0f172a';
-      inp.style.cursor = 'text';
-      inp.style.borderColor = '#e2e8f0';
-    }
-    // Show "Save password" button, hide "Change password"
-    if (btn) { btn.textContent = 'Save password'; btn.style.display = 'inline'; btn.onclick = profileSaveFirstPwd; }
-  } else {
-    // Has a password (email or phone user) — readonly bullets + "Change password" button
-    if (inp) {
-      inp.setAttribute('readonly', '');
-      if (!inp.value) inp.value = '••••••••';
-      inp.style.background = '#fafafa';
-      inp.style.color = '#94a3b8';
-      inp.style.cursor = 'default';
-    }
-    if (btn) { btn.textContent = 'Change password'; btn.style.display = 'inline'; btn.onclick = profileChangePwd; }
+  if (inp) {
+    inp.removeAttribute('readonly');
+    inp.value = '';
+    inp.placeholder = 'Create a password (min 8 chars)';
+    inp.style.background = '#fff';
+    inp.style.color = '#0f172a';
+    inp.style.cursor = 'text';
+    inp.style.borderColor = '#e2e8f0';
   }
+  if (btn) { btn.textContent = 'Save password'; btn.style.display = 'inline'; btn.onclick = profileSaveFirstPwd; }
 
-  // Verify email button
+  // Verify email button (kept for back-compat if present)
   var verifyBtn = document.getElementById('profileVerifyEmailBtn');
   if (verifyBtn) {
     var emailVerified = _user && _user._emailVerified;
@@ -13095,21 +13074,26 @@ function profileSaveFirstPwd(){
     inp.style.borderColor = '#ef4444';
     showToast('Password must be at least 8 characters','error'); return;
   }
-  // Save
+  // Save password
   if (_user) { _user._pwd = inp.value; _updateUser({_pwd: inp.value}); }
-  // Lock field
-  inp.setAttribute('readonly','');
-  inp.value = '••••••••';
-  inp.style.background = '#fafafa';
-  inp.style.color = '#94a3b8';
-  inp.style.cursor = 'default';
-  inp.style.borderColor = '#e2e8f0';
-  // Swap button to "Change password"
-  var btn = document.getElementById('profileChangePwdBtn');
-  if (btn) { btn.textContent = 'Change password'; btn.onclick = profileChangePwd; }
-  // Show verify email button if applicable
+  // Capture the email the user entered — we need to commit it before sending the verification
+  var emailEl = document.getElementById('profileEmail');
+  var emailVal = emailEl ? emailEl.value.trim() : '';
+  var needVerify = false;
+  if (emailVal && _user && emailVal !== (_user.email||'')) {
+    _user.email = emailVal;
+    _updateUser({email: emailVal});
+    needVerify = true;
+  } else if (emailVal && _user && !_user._emailVerified) {
+    needVerify = true;
+  }
+  // Password field should now disappear — re-run visibility rules
   _updateProfilePwdSection();
   showToast('Password saved!','success');
+  // ── Silently send verification link if we have an unverified email ──
+  if (needVerify) {
+    setTimeout(function(){ _sendVerificationLinkSilent(emailVal); }, 600);
+  }
 }
 
 function profileChangePwd(){
@@ -13416,15 +13400,11 @@ function saveProfileTab(){
   var pwdVal=(pwdEl&&pwdEl.value)||'';
   var isPhoneUser=_user&&_user._authMethod==='phone';
 
-  // ── Gate 1: Email entered but not verified → open email verification modal ──
-  var emailChanged=emailVal&&emailVal!==(_user.email||'');
-  if(emailVal&&(!_user._emailVerified||emailChanged)){
-    showToast('Please verify your email address first','warning');
-    setTimeout(function(){sendVerifyEmail();},200);
-    return;
-  }
+  // ── Email changed (or first time added) → commit save AND silently send verification link ──
+  var emailChanged = emailVal && emailVal !== (_user.email||'');
+  var needVerifySend = emailVal && (emailChanged || !_user._emailVerified);
 
-  // ── Gate 2: Phone entered but not verified → open OTP modal directly ──
+  // ── Gate: Phone entered but not verified → open OTP modal directly ──
   if(phoneVal&&!isPhoneUser&&!(_user&&_user._phoneVerified)){
     showToast('Please verify your mobile number first','warning');
     setTimeout(function(){_showPhoneOtpModal(phoneVal);},200);
@@ -13454,6 +13434,10 @@ function saveProfileTab(){
   _syncSettingsPage();
   recalcProgress();
   showToast('Profile saved!','success');
+  // ── Silently send verification link if email is new or changed ──
+  if (needVerifySend) {
+    setTimeout(function(){ _sendVerificationLinkSilent(emailVal); }, 600);
+  }
 }
 
 
@@ -14054,6 +14038,40 @@ function showToast(msg, type) {
 })();
 
 // ── Email verification ──
+// Silent send: shows an informational snackbar, no modal. Used from profile save
+// when the user has entered/changed their email. Auto-marks the email as
+// verified after a short delay to simulate the user clicking the verification
+// link (in production, this would happen when the user opens the link).
+function _sendVerificationLinkSilent(email) {
+  if (!email) return;
+  showToast('Verification link sent to ' + email, 'info');
+  if (!window._user) return;
+  window._user._emailVerified = false;
+  window._user._verifPending = true;
+  // Simulate the user clicking the verification link in their email ~5s later
+  if (window._verifyTimer) clearTimeout(window._verifyTimer);
+  window._verifyTimer = setTimeout(function(){
+    if (!window._user) return;
+    window._user._emailVerified = true;
+    window._user._verifPending = false;
+    // Persist
+    try {
+      if (typeof _userStore !== 'undefined' && typeof _userKey === 'function') {
+        var k = _userKey(_user.contact || _user.email || _user.phone);
+        if (k && _userStore[k]) {
+          _userStore[k]._emailVerified = true;
+          _userStore[k]._verifPending = false;
+          try { localStorage.setItem('keylr_users', JSON.stringify(_userStore)); } catch(e){}
+        }
+      }
+    } catch(e){}
+    // Refresh whichever profile view is active
+    if (typeof _syncSettingsPage === 'function') _syncSettingsPage();
+    if (typeof _suppRerender === 'function' && document.getElementById('suppDashScreen')) _suppRerender();
+    showToast('Email verified ✓', 'success');
+  }, 5000);
+}
+
 function sendVerifyEmail() {
   var email = (_user && _user.email) ? _user.email : '';
   if (!email) { showToast('No email address to verify', 'warning'); return; }
@@ -15413,8 +15431,7 @@ function _buildSuppOnboardStep(step) {
   if (id === 'company_identity') {
     var isOn = _suppOnboard.pscConfirmed || false;
     return '<div style="display:flex;flex-direction:column;gap:0;">'      + _suppInfoBox('Photo ID and selfie verification must be completed by a Person of Significant Control (PSC) — someone holding 25% or more of the company shares. This is a legal requirement under anti-money-laundering regulations.')      + '<div style="margin-bottom:14px;">'        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><label style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Trading name</label><span style="font-size:11px;background:#f0fdf4;color:#166534;border:1px solid #86efac;border-radius:4px;padding:1px 7px;font-weight:700;font-family:Inter,sans-serif;">Displayed to clients</span></div>'        + '<input id="ci-trading-name" type="text" value="'+(_suppOnboard.tradingName||'')+'" placeholder="The name clients will see (e.g. Smith Plumbing)" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/>'        + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:4px;">This is the name displayed on your marketplace profile, invoices to clients, and booking confirmations. It can differ from your registered company name.</div>'      + '</div>'      + '<div style="margin-bottom:14px;">'        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><label style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Registered company name</label><span style="font-size:11px;background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:1px 7px;font-weight:700;font-family:Inter,sans-serif;">DAC7 Required</span></div>'        + '<input id="ci-reg-name" type="text" value="'+(_suppOnboard.regCompanyName||'')+'" placeholder="Exactly as registered at Companies House (e.g. Smith Electrical Services Ltd)" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/>'        + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:4px;">The full registered company name including Ltd/Limited. Must match Companies House exactly.</div>'      + '</div>'      + '<div style="margin-bottom:14px;">'        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><label style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Company registration number</label><span style="font-size:11px;background:#fef2f2;color:#dc2626;border-radius:4px;padding:1px 7px;font-weight:700;font-family:Inter,sans-serif;">Required</span></div>'        + '<input id="ci-reg-num" type="text" value="'+(_suppOnboard.companyRegNum||'')+'" placeholder="e.g. 12345678" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/>'        + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:4px;">Your 8-digit Companies House registration number. We\'ll automatically verify company status, directors, and PSCs.</div>'      + '</div>'      + '<div style="margin-bottom:14px;">'        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><label style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Registered office address</label><span style="font-size:11px;background:#f0fdf4;color:#166534;border:1px solid #86efac;border-radius:4px;padding:1px 7px;font-weight:700;font-family:Inter,sans-serif;">Auto-verified</span></div>'        + '<input id="ci-reg-addr" type="text" value="'+(_suppOnboard.regOfficeAddr||'')+'" placeholder="Auto-populated from Companies House" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/>'        + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:4px;">The registered office address from Companies House. This is the DAC7 requirement for the legal entity.</div>'      + '</div>'      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">'        + '<div>'          + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><label style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">PSC date of birth</label><span style="font-size:11px;background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:1px 7px;font-weight:700;font-family:Inter,sans-serif;">DAC7</span></div>'          + '<input id="ci-psc-dob" type="date" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;color:#374151;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/>'          + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:4px;">Date of birth of the Person of Significant Control (25%+ shareholder) completing verification.</div>'        + '</div>'        + '<div>'          + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><label style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">TIN (Tax Identification Number)</label><span style="font-size:11px;background:#f1f5f9;color:#64748b;border-radius:4px;padding:1px 7px;font-weight:700;font-family:Inter,sans-serif;">Optional</span></div>'          + '<input id="ci-tin" type="text" value="'+(_suppOnboard.tinNum||'')+'" placeholder="e.g. UTR or company TIN" style="width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'"/>'          + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:4px;">If the company has a separate Tax Identification Number (e.g. Corporation Tax UTR), enter it here. Not required if you\'ve provided your Companies House number.</div>'        + '</div>'      + '</div>'      // PSC box
-      + '<div style="border:1.5px solid #bfdbfe;background:#eff6ff;border-radius:12px;padding:16px 18px;margin-bottom:16px;">'        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><circle cx="7.5" cy="7.5" r="6"/><path d="M5 7.5h5M7.5 5v5"/></svg>'          + '<span style="font-size:13.5px;font-weight:700;color:#1e3a5f;font-family:Inter,sans-serif;">PSC — Person of Significant Control</span>'        + '</div>'        + '<div style="font-size:13px;color:#374151;font-family:Inter,sans-serif;line-height:1.5;margin-bottom:12px;">A <strong>Person of Significant Control (PSC)</strong> is an individual who owns or controls <strong>25% or more</strong> of the company\'s shares or voting rights. UK anti-money-laundering regulations require identity verification of at least one PSC. The photo ID and selfie below must belong to this individual.</div>'        + '<div style="margin-bottom:10px;"><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">Full name of PSC</label>'          + '<input id="ci-psc-name" type="text" value="'+(_suppOnboard.pscFullName||'')+'" placeholder="Full legal name of the person completing verification" style="width:100%;border:1.5px solid #bfdbfe;border-radius:8px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fff;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#bfdbfe\'"/>'          + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:4px;">The full legal name of the shareholder providing ID — as it appears on their passport or driving licence.</div>'        + '</div>'        + _suppExpandCheck('comp-psc-confirm','I confirm the ID provided belongs to a person holding 25%+ shares','This person is a registered PSC at Companies House for this company.',isOn,'psc')      + '</div>'      // Photo ID + Selfie
-      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">'        + _suppUploadField('Photo ID','PSC\'s passport or driving licence','ci-photo-id')        + _suppUploadField('Selfie verification','PSC biometric liveness check','ci-selfie')      + '</div>'      + _suppField('Company address','DAC7','ci-comp-addr','text','Main business or trading address','','<div style="font-size:11.5px;color:#64748b;margin-top:4px;font-family:Inter,sans-serif;">The primary address where the company operates from. Required for DAC7 compliance and marketplace verification.</div>')      + '<div style="margin-bottom:8px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Proof of address — company</span><span style="font-size:11px;background:#fef2f2;color:#dc2626;border-radius:4px;padding:1px 7px;font-weight:700;font-family:Inter,sans-serif;">Required</span></div>'        + _suppUploadField('Upload company proof of address','Must be in the company\'s name. We accept utility bills, bank statements, business rates bills, or HMRC correspondence dated within the last 3 months.','ci-poa')        + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:6px;">Must be in the company\'s name. We accept utility bills, bank statements, business rates bills, or HMRC correspondence dated within the last 3 months.</div>'      + '</div>'    + '</div>';  }
+      + '<div style="border:1.5px solid #bfdbfe;background:#eff6ff;border-radius:12px;padding:16px 18px;margin-bottom:16px;">'        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><circle cx="7.5" cy="7.5" r="6"/><path d="M5 7.5h5M7.5 5v5"/></svg>'          + '<span style="font-size:13.5px;font-weight:700;color:#1e3a5f;font-family:Inter,sans-serif;">PSC — Person of Significant Control</span>'        + '</div>'        + '<div style="font-size:13px;color:#374151;font-family:Inter,sans-serif;line-height:1.5;margin-bottom:12px;">A <strong>Person of Significant Control (PSC)</strong> is an individual who owns or controls <strong>25% or more</strong> of the company\'s shares or voting rights. UK anti-money-laundering regulations require identity verification of at least one PSC. The photo ID and selfie below must belong to this individual.</div>'        + '<div style="margin-bottom:10px;"><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;font-family:Inter,sans-serif;">Full name of PSC</label>'          + '<input id="ci-psc-name" type="text" value="'+(_suppOnboard.pscFullName||'')+'" placeholder="Full legal name of the person completing verification" style="width:100%;border:1.5px solid #bfdbfe;border-radius:8px;padding:10px 13px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fff;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#bfdbfe\'"/>'          + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:4px;">The full legal name of the shareholder providing ID — as it appears on their passport or driving licence.</div>'        + '</div>'        + _suppExpandCheck('comp-psc-confirm','I confirm the ID provided belongs to a person holding 25%+ shares','This person is a registered PSC at Companies House for this company.',isOn,'psc')      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;">'        + _suppUploadField('Photo ID','PSC\'s passport or driving licence','ci-photo-id')        + _suppUploadField('Selfie verification','PSC biometric liveness check','ci-selfie')      + '</div>'      + '</div>'      + _suppField('Company Operational Address','DAC7','ci-comp-addr','text','Main business or trading address','','<div style="font-size:11.5px;color:#64748b;margin-top:4px;font-family:Inter,sans-serif;">The primary address where the company operates from. Required for DAC7 compliance and marketplace verification.</div>')      + '<div style="margin-bottom:8px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Proof of address — company</span><span style="font-size:11px;background:#fef2f2;color:#dc2626;border-radius:4px;padding:1px 7px;font-weight:700;font-family:Inter,sans-serif;">Required</span></div>'        + _suppUploadField('Upload company proof of address','Must be in the company\'s name. We accept utility bills, bank statements, business rates bills, or HMRC correspondence dated within the last 3 months.','ci-poa')        + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:6px;">Must be in the company\'s name. We accept utility bills, bank statements, business rates bills, or HMRC correspondence dated within the last 3 months.</div>'      + '</div>'    + '</div>';  }
 
   // ── payment ──
   if (id === 'payment') {
@@ -16404,7 +16421,9 @@ function _suppCompCheck(id, label, sub, icon, checked) {
 
 function _suppSetDbsDecl(val){_suppOnboard.dbsDeclared=val;_renderSuppOnboard();setTimeout(function(){var ta=document.getElementById('so-convictions-detail');if(ta){ta.oninput=function(){_suppOnboard.convictionsDetail=this.value;};ta.value=_suppOnboard.convictionsDetail||'';}},50);}
 function _suppSetRightToWork(val){_suppOnboard.rightToWork=val;_suppRerender();}
-function _suppSetTeamSize(val){_suppOnboard.teamSize=val;_renderSuppOnboard();}
+function _suppSetTeamSize(val){_suppOnboard.teamSize=val;_suppRerender();}
+function _suppSetCompanyDbsDecl(val){_suppSaveCurrentStep();_suppOnboard.companyDbsDecl=val;_suppRerender();}
+function _suppSetCompanyDbsLevel(val){_suppSaveCurrentStep();_suppOnboard.companyDbsLevel=val;_suppRerender();}
 function _suppToggleDay(day,el){
   var idx=_suppOnboard.workDays.indexOf(day);
   if(idx>=0)_suppOnboard.workDays.splice(idx,1);else _suppOnboard.workDays.push(day);
@@ -17895,11 +17914,20 @@ function _suppBuildProfilePage(){
         +'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">'+(em||'—')+'</div>'
         +'<div style="display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap;">'
           +'<span style="font-size:11.5px;font-weight:700;background:'+(isCo?'#eff6ff':'#f0fdf4')+';color:'+(isCo?'#1A5FC8':'#16a34a')+';border-radius:6px;padding:2px 10px;font-family:Inter,sans-serif;">'+(isCo?'Company':'Sole Trader')+'</span>'
-          +'<div style="display:inline-flex;align-items:center;gap:5px;background:#fefce8;border:1px solid #fde047;border-radius:999px;padding:3px 10px;">'
-            +'<span style="width:6px;height:6px;border-radius:50%;background:#eab308;"></span>'
-            +'<span style="font-size:11.5px;font-weight:600;color:#854d0e;font-family:Inter,sans-serif;">Email not verified</span>'
-            +'<a href="javascript:void(0)" style="font-size:11.5px;color:#1A5FC8;font-weight:600;font-family:Inter,sans-serif;text-decoration:none;">Verify now</a>'
-          +'</div>'
+          + (function(){
+              var u = window._user || {};
+              if (!em) return '';
+              if (u._emailVerified) {
+                return '<div style="display:inline-flex;align-items:center;gap:5px;background:#d1fae5;border:1px solid #a7f3d0;border-radius:999px;padding:3px 10px;">'
+                  + '<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>'
+                  + '<span style="font-size:11.5px;font-weight:600;color:#065f46;font-family:Inter,sans-serif;">Email verified</span>'
+                + '</div>';
+              }
+              return '<div style="display:inline-flex;align-items:center;gap:5px;background:#fefce8;border:1px solid #fde047;border-radius:999px;padding:3px 10px;">'
+                + '<span style="width:6px;height:6px;border-radius:50%;background:#eab308;"></span>'
+                + '<span style="font-size:11.5px;font-weight:600;color:#854d0e;font-family:Inter,sans-serif;">Email not verified</span>'
+              + '</div>';
+            })()
         +'</div>'
       +'</div>'
       +'<button class="supp-prof-save" data-msg="Profile saved" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;flex-shrink:0;">Save changes</button>'
@@ -17907,7 +17935,15 @@ function _suppBuildProfilePage(){
     +row2(inp('Full name',signupName,'_signupName','text','Your name from sign-up'),
       '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Email address</label>'
       +'<div style="position:relative;"><input data-pfield="_email" value="'+(em||'')+'" placeholder="your@email.com" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 100px 11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;">'
-      +'<span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10.5px;font-weight:700;background:#fef3c7;color:#b45309;border-radius:999px;padding:2px 9px;white-space:nowrap;">Unverified</span></div></div>')
+      + (function(){
+          var u = window._user || {};
+          if (!em) return '';
+          if (u._emailVerified) {
+            return '<span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10.5px;font-weight:700;background:#d1fae5;color:#065f46;border-radius:999px;padding:2px 9px;white-space:nowrap;">Verified</span>';
+          }
+          return '<span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10.5px;font-weight:700;background:#fef3c7;color:#b45309;border-radius:999px;padding:2px 9px;white-space:nowrap;">Unverified</span>';
+        })()
+      + '</div></div>')
     +row2('<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Mobile number</label><div style="display:flex;"><div style="padding:11px 10px;background:#f8fafc;border:1.5px solid #e2e8f0;border-right:none;border-radius:10px 0 0 10px;font-size:13px;font-family:Inter,sans-serif;color:#374151;white-space:nowrap;">GB +44</div><input data-pfield="phone" value="'+(so.phone||'')+'" placeholder="7700 000000" style="flex:1;border:1.5px solid #e2e8f0;border-radius:0 10px 10px 0;padding:11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;background:#fafafa;"></div></div>',
       '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Password</label><div style="position:relative;"><input type="password" value="password" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 44px 11px 14px;font-size:14px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;"><button type="button" onclick="var i=this.previousElementSibling;i.type=i.type===\'password\'?\'text\':\'password\';" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;"><svg width="16" height="16" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="8.5" cy="8.5" rx="6.5" ry="4"/><circle cx="8.5" cy="8.5" r="1.7"/></svg></button></div><div style="margin-top:6px;"><a href="javascript:void(0)" style="font-size:12.5px;color:#1A5FC8;font-weight:600;font-family:Inter,sans-serif;text-decoration:none;">Change password</a></div></div>');
 
@@ -17950,6 +17986,11 @@ function _suppBuildProfilePage(){
        +row2(inp('Trading Name',so.tradingName,'tradingName','text','e.g. My Services Ltd'),inp('Registered Company Name',so.regCompanyName,'regCompanyName','text','As on Companies House'))
        +row1(inp('Registered Office Address',so.regOfficeAddr,'regOfficeAddr','text','Full registered address'))
        +row2(inp('Company Reg Number',so.companyRegNum,'companyRegNum','text','e.g. 12345678'),inp('TIN / Tax ID',so.tinNum,'tinNum','text','e.g. UTR or VAT number'))
+       +row1(
+         '<div><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;font-family:Inter,sans-serif;">Company Operational Address <span style="font-size:10px;font-weight:700;background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:1px 6px;margin-left:4px;">DAC7</span></label>'
+         + '<input type="text" data-pfield="companyAddr" value="'+(so.companyAddr||'')+'" placeholder="Main business or trading address" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;">'
+         + '<div style="font-size:11.5px;color:#64748b;margin-top:4px;font-family:Inter,sans-serif;">The primary address where the company operates from. Required for DAC7 compliance and marketplace verification.</div>'
+       + '</div>')
        +hdr('Person of Significant Control')
        +row2(inp('PSC Full Name',so.pscFullName,'pscFullName','text','Full legal name'),inp('PSC Date of Birth',so.pscDob,'pscDob','date',''))
        +hdr('Identity Documents')
@@ -18130,23 +18171,25 @@ function _suppBuildProfilePage(){
       + row2(inp('Insurance Provider',so.insProvider,'insProvider','text','e.g. Hiscox, AXA, Aviva'),inp('Policy Number',so.insPolicy,'insPolicy','text','Your policy reference number'))
       + row2(inp('Public liability coverage',so.insCoverage,'insCoverage','text',minCov),inp('Policy Expiry Date',so.insExpiry,'insExpiry','date',''))
       + '<div style="margin-bottom:16px;">'+_suppUploadField('Upload insurance certificate','PDF or image — details extracted automatically via OCR','main-ins-upload-as')+'</div>'
-      + hdr('Professional Indemnity Insurance')
-      + '<div id="profIndemCard" style="border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;margin-bottom:12px;">'
-        + '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;">'
-          + '<div><div style="font-size:13.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Professional Indemnity</div>'
-            + '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:1px;">Covers claims of negligence, errors or omissions in professional services</div></div>'
-          + '<button class="prof-tog" data-pfield="profIndemnity" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(so.profIndemnity?'#1A5FC8':'#d1d5db')+';flex-shrink:0;margin-left:12px;"'+(so.profIndemnity?' data-on="1"':'')+' ><span style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(so.profIndemnity?'right:2px;':'left:2px;')+'box-shadow:0 1px 3px rgba(0,0,0,0.18);display:block;"></span></button>'
-        + '</div>'
-        + '<div id="profIndemFields" style="display:'+(so.profIndemnity?'block':'none')+';padding:14px;border-top:1px solid #e2e8f0;background:#fff;">'
-          + row2(inp('Indemnity Provider',so.indemProvider||'','indemProvider','text','e.g. Hiscox, Zurich'),inp('Policy Number',so.indemPolicy||'','indemPolicy','text','Your policy reference'))
-          + row2(inp('Public liability coverage',so.indemCoverage||'','indemCoverage','text','e.g. 500,000'),inp('Expiry Date',so.indemExpiry||'','indemExpiry','date',''))
-          + _suppUploadField('PI certificate','Upload Professional Indemnity certificate','pi-upload')
-        + '</div>'
-      + '</div>'
-      + (isCo?'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">'
-        + togSmall('Employers\' Liability',so.employersLiability,'employersLiability')
-        + togSmall('All Workers Hold Valid Certs',so.allWorkersValidCerts,'allWorkersValidCerts')
-      + '</div>':'')
+      // ── Employer's Liability (company only, placed ABOVE PI) ──
+      + (isCo
+          ? _suppExpandCheck('comp-el',"Employers' liability insurance",'Legally required if your company has employees. Minimum £5,000,000 coverage.',_suppOnboard.employersLiability||false,'el')
+          : '')
+      // ── Professional Indemnity (independent toggle card, onboarding-style) ──
+      + _suppExpandCheck('comp-pi','Professional indemnity insurance','Required for design, advisory, or consultancy work (architects, surveyors, etc.).',_suppOnboard.profIndemnity||false,'pi')
+      // ── All Workers Hold Valid Trade Licences (company only, placed BELOW PI) ──
+      + (isCo
+          ? '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:12px;">'
+            + '<div style="flex:1;min-width:0;">'
+              + '<div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:2px;">All workers hold valid trade licences</div>'
+              + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;">Confirm all operatives hold the relevant certifications for their work.</div>'
+            + '</div>'
+            + (function(){
+                var on = !!so.allWorkersValidCerts;
+                return '<button class="prof-tog" data-pfield="allWorkersValidCerts" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(on?'#1A5FC8':'#d1d5db')+';flex-shrink:0;"'+(on?' data-on="1"':'')+' ><span style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(on?'right:2px;':'left:2px;')+'box-shadow:0 1px 3px rgba(0,0,0,0.18);display:block;"></span></button>';
+              })()
+          + '</div>'
+          : '')
       + hdr('Trade Certifications')
       + '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 14px;font-size:12.5px;color:#1e3a5f;font-family:Inter,sans-serif;margin-bottom:14px;line-height:1.5;">'
         + '✨ Verified certifications appear as trust badges on your profile. Select only those you hold — you can upload proof and add details for each.'
@@ -18193,8 +18236,82 @@ function _suppBuildProfilePage(){
       + '<div style="font-size:11.5px;color:#94a3b8;font-family:Inter,sans-serif;">Upload photos of completed work — kitchens, bathrooms, electrical panels, before/after shots. High-quality images increase booking rates significantly.</div>';
 
     return (isCo
-        ? hdr('Company DBS Policy')
-          + row2(inp('Team Size',so.teamSize,'teamSize','text','e.g. 1-5, 5-10'),inp('Company DBS Policy',so.companyDbsDecl,'companyDbsDecl','text','Yes / No / In Progress'))
+        ? (function(){
+            var teamSizes = ['Just me|Sole trader','2–10|Small team','11–50|Small-medium company','51–249|Medium company','250–499|Large company','500+|Enterprise'];
+            var ts = so.teamSize || '';
+            var cdecl = so.companyDbsDecl || '';
+            var clevel = so.companyDbsLevel || '';
+            var teamGrid = teamSizes.map(function(opt){
+              var parts = opt.split('|');
+              var sel = ts === parts[0];
+              return '<div onclick="_suppSetTeamSize(\''+parts[0]+'\')" style="border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;padding:14px;text-align:center;cursor:pointer;background:'+(sel?'#eff6ff':'#fff')+';transition:all 0.15s;">'
+                + '<div style="font-size:14px;font-weight:700;color:'+(sel?'#1e3a5f':'#0f172a')+';font-family:Inter,sans-serif;margin-bottom:3px;">'+parts[0]+'</div>'
+                + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">'+parts[1]+'</div>'
+              + '</div>';
+            }).join('');
+            function dbsYn(val, yes) {
+              var sel = cdecl === val;
+              var color = yes ? '#10b981' : '#ef4444';
+              var bgSel = yes ? '#f0fdf4' : '#fef2f2';
+              var headCol = sel ? (yes?'#065f46':'#991b1b') : '#0f172a';
+              var subCol  = sel ? (yes?'#059669':'#dc2626') : '#64748b';
+              var sub = yes ? 'All operatives are DBS checked' : 'Not all operatives have DBS checks';
+              var icon = yes
+                ? '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#10b981" stroke-width="1.8"><circle cx="10" cy="10" r="8"/><path d="M6 10l3 3 5-5"/></svg>'
+                : '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#ef4444" stroke-width="1.8"><circle cx="10" cy="10" r="8"/><path d="M10 6v4M10 13v.5"/></svg>';
+              return '<div onclick="_suppSetCompanyDbsDecl(\''+val+'\')" style="border:1.5px solid '+(sel?color:'#e2e8f0')+';border-radius:10px;padding:16px 14px;text-align:center;cursor:pointer;background:'+(sel?bgSel:'#fff')+';transition:all 0.15s;">'
+                + (sel?'<div style="margin-bottom:4px;">'+icon+'</div>':'')
+                + '<div style="font-size:14px;font-weight:700;color:'+headCol+';margin-bottom:3px;font-family:Inter,sans-serif;">'+val+'</div>'
+                + '<div style="font-size:12px;color:'+subCol+';font-family:Inter,sans-serif;">'+sub+'</div>'
+              + '</div>';
+            }
+            var levelCards = [['Basic DBS','Shows unspent convictions only. Suitable for most trades.'],['Enhanced DBS','Includes spent & unspent convictions, cautions, and barred list checks.']].map(function(d){
+              var lsel = clevel === d[0];
+              return '<div onclick="_suppSetCompanyDbsLevel(\''+d[0]+'\')" style="border:1.5px solid '+(lsel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;padding:14px;cursor:pointer;background:'+(lsel?'#eff6ff':'#fff')+';display:flex;align-items:flex-start;gap:10px;transition:all 0.15s;">'
+                + '<div style="width:18px;height:18px;border-radius:50%;border:1.5px solid '+(lsel?'#1A5FC8':'#d1d5db')+';background:'+(lsel?'#1A5FC8':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">'
+                  + (lsel?'<div style="width:6px;height:6px;border-radius:50%;background:#fff;"></div>':'')
+                + '</div>'
+                + '<div><div style="font-size:13.5px;font-weight:600;color:'+(lsel?'#1e3a5f':'#0f172a')+';font-family:Inter,sans-serif;margin-bottom:3px;">'+d[0]+'</div>'
+                  + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;line-height:1.45;">'+d[1]+'</div></div>'
+              + '</div>';
+            }).join('');
+            return hdr('How many people work in your company?')
+              + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;margin-bottom:14px;">This helps us understand your team size and capacity. It also determines which compliance checks apply — for example, employers\' liability insurance is legally required if you have employees.</div>'
+              + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:24px;">'+teamGrid+'</div>'
+
+              + hdr('Company DBS & background checks')
+              + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;margin-bottom:14px;">As a company, you must confirm whether all operatives dispatched through the platform have undergone DBS (Disclosure and Barring Service) checks. This declaration is displayed on your marketplace profile as a trust indicator.</div>'
+              + '<div style="font-size:13.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:10px;">DBS self-declaration</div>'
+              + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
+                + dbsYn('Yes', true)
+                + dbsYn('No', false)
+              + '</div>'
+              + (cdecl === 'No'
+                  ? '<div style="display:flex;align-items:flex-start;gap:10px;background:#fff7ed;border:1.5px solid #fed7aa;border-radius:10px;padding:12px 14px;margin-bottom:14px;">'
+                    + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#c2410c" stroke-width="1.6" style="flex-shrink:0;"><path d="M7.5 1.5l6 11H1.5l6-11z"/><path d="M7.5 6v3M7.5 10.5v.5"/></svg>'
+                    + '<span style="font-size:12.5px;color:#9a3412;font-family:Inter,sans-serif;line-height:1.55;">Some property managers require DBS-checked operatives. You can still list on the platform, but your profile will indicate that not all staff are DBS verified.</span>'
+                  + '</div>'
+                  : '')
+              + (cdecl === 'Yes'
+                  ? '<div style="margin-bottom:16px;">'
+                      + '<div style="font-size:13.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:10px;">What level of DBS check do your operatives hold?</div>'
+                      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'+levelCards+'</div>'
+                    + '</div>'
+                  : '')
+              + '<div style="font-size:13.5px;font-weight:600;color:#374151;font-family:Inter,sans-serif;margin-bottom:4px;">DBS policy statement <span style="font-size:11.5px;color:#94a3b8;font-weight:400;">(recommended)</span></div>'
+              + '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:8px;line-height:1.5;">Companies with a compliant DBS policy do not need individual certificates for each employee. Your policy should cover: check frequency, escalation process, named compliance owner, and record retention.</div>'
+              + '<textarea data-pfield="companyDbsPolicy" rows="4" placeholder="Describe your company\'s DBS checking procedures, frequency of checks, escalation process, and compliance ownership." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 13px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;resize:vertical;margin-bottom:10px;background:#fafafa;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'">'+(so.companyDbsPolicy||'')+'</textarea>'
+              + '<button onclick="_suppDraftWithAI(\'dbs-policy\')" style="background:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M6.5 1l1 2.7h2.8l-2.3 1.7.9 2.8L6.5 6.7l-2.4 1.5.9-2.8L2.7 3.7h2.8z"/></svg> Draft with AI</button>'
+              + '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:10px;">AI generates a compliant policy template you can customise.</div>'
+              + '<div style="margin-bottom:20px;">'+_suppUploadField('Upload DBS policy document','PDF of your formal DBS procedures','company-dbs-upload')+'</div>'
+
+              + hdr('Worker vetting policy')
+              + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;line-height:1.5;margin-bottom:10px;">Document your procedures for vetting operatives before dispatching them to client properties — including ID verification, trade licence checks, reference checks, and ongoing monitoring.</div>'
+              + '<textarea data-pfield="workerVettingPolicy" rows="4" placeholder="Describe how you vet operatives before dispatching them: ID checks, trade verification, reference checks, ongoing monitoring." style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 13px;font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;resize:vertical;margin-bottom:10px;background:#fafafa;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'">'+(so.workerVettingPolicy||'')+'</textarea>'
+              + '<button onclick="_suppDraftWithAI(\'vetting-policy\')" style="background:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M6.5 1l1 2.7h2.8l-2.3 1.7.9 2.8L6.5 6.7l-2.4 1.5.9-2.8L2.7 3.7h2.8z"/></svg> Draft with AI</button>'
+              + '<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:10px;">AI generates a comprehensive vetting policy you can adapt.</div>'
+              + _suppUploadField('Upload vetting policy document','PDF — reviewed by our compliance team within 2–3 days','vetting-upload');
+          })()
         : hdr('DBS Declaration')
           + dbsCard('I confirm I have no unspent criminal convictions',dbsVal)
           + dbsCard('I have unspent convictions to declare',dbsVal)
@@ -18598,6 +18715,13 @@ function _suppWireProfilePage(){
       var msg=btn.dataset.msg||'Saved';
       var wrap=document.getElementById('suppProfPanelWrap');if(!wrap)return;
       var so=window._suppOnboard=window._suppOnboard||{};
+      // ── Detect email changes on the profile tab (data-pfield="_email") ──
+      var emailInp = wrap.querySelector('[data-pfield="_email"]');
+      var newEmail = emailInp ? (emailInp.value||'').trim() : '';
+      var oldEmail = (window._user && window._user.email) || '';
+      var emailChangedSupp = newEmail && newEmail !== oldEmail;
+      var needVerifySendSupp = newEmail && (emailChangedSupp || !(window._user && window._user._emailVerified));
+      if (newEmail && window._user) window._user.email = newEmail;
       wrap.querySelectorAll('[data-pfield]').forEach(function(el){var k=el.dataset.pfield;if(!k||k==='_email'||k==='_signupName')return;so[k]=el.tagName==='TEXTAREA'?el.value:(el.value||'');});
       // signup name update
       var snInp=wrap.querySelector('[data-pfield="_signupName"]');if(snInp&&snInp.value&&window._user)window._user.name=snInp.value.trim();
@@ -18628,6 +18752,10 @@ function _suppWireProfilePage(){
       var sb=document.getElementById('admSnackbar'),sm=document.getElementById('admSnackbarMsg');
       if(sm)sm.textContent=msg;
       if(sb){sb.classList.add('show');clearTimeout(sb._t);sb._t=setTimeout(function(){sb.classList.remove('show');},2800);}
+      // ── Silently send verification link if email is new or changed ──
+      if (needVerifySendSupp) {
+        setTimeout(function(){ _sendVerificationLinkSilent(newEmail); }, 600);
+      }
       // advance questionnaire step
       if(isQNext){
         var steps=6; var cur=window._suppQStep||0;
