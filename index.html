@@ -4527,28 +4527,18 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
       <div style="flex:1;overflow-y:auto;min-height:0;">
         <div class="db-main-inner">
 
-          <!-- AI ASSISTANT CARD -->
-          <div style="background:linear-gradient(135deg,#0f1c38 0%,#162845 50%,#1a3356 100%);border-radius:18px;padding:22px 24px 18px;margin-bottom:20px;position:relative;overflow:hidden;">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-              <div style="width:34px;height:34px;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2"><path d="M8 2C5 2 2.5 4 2.5 6.5c0 1.3.6 2.5 1.6 3.3L3.5 13l3-1.3c.5.1 1 .2 1.5.2C11 11.9 13.5 9.7 13.5 7.2S11 2 8 2z"/></svg>
-              </div>
-              <div>
-                <div style="font-size:14px;font-weight:700;color:#fff;font-family:'Inter',sans-serif;">Keylr AI Assistant</div>
-                <div style="font-size:12px;color:rgba(255,255,255,0.55);font-family:'Inter',sans-serif;">Ask me anything — I'll find the right service</div>
-              </div>
-            </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-              <button onclick="document.getElementById('exploreAIInput').value='What certificates do I need?';document.getElementById('exploreAIInput').focus();" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:999px;padding:6px 13px;font-size:12px;font-weight:500;color:rgba(255,255,255,0.85);cursor:pointer;font-family:'Inter',sans-serif;">What certificates do I need?</button>
-              <button onclick="document.getElementById('exploreAIInput').value='Gas Safety cost?';document.getElementById('exploreAIInput').focus();" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:999px;padding:6px 13px;font-size:12px;font-weight:500;color:rgba(255,255,255,0.85);cursor:pointer;font-family:'Inter',sans-serif;">Gas Safety cost?</button>
-              <button onclick="document.getElementById('exploreAIInput').value='Find an electrician';document.getElementById('exploreAIInput').focus();" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:999px;padding:6px 13px;font-size:12px;font-weight:500;color:rgba(255,255,255,0.85);cursor:pointer;font-family:'Inter',sans-serif;">Find an electrician</button>
-            </div>
-            <div style="display:flex;align-items:center;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;padding:6px 6px 6px 14px;">
-              <input id="exploreAIInput" type="text" placeholder="Ask about any service..." style="flex:1;background:transparent;border:none;outline:none;font-size:13.5px;color:#fff;font-family:'Inter',sans-serif;caret-color:#fff;" onkeydown="if(event.key==='Enter'){var v=this.value.trim();if(v){startNewChat();showPage('chat',null);sendFromSuggestion(v);this.value='';}}" />
-              <button onclick="var v=document.getElementById('exploreAIInput').value.trim();if(v){startNewChat();showPage('chat',null);sendFromSuggestion(v);document.getElementById('exploreAIInput').value='';}" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 7h10M8 4l4 3-4 3"/></svg>
-              </button>
-            </div>
+          <!-- NEW HEADER: Title + Subtitle -->
+          <div style="margin-bottom:18px;">
+            <h1 style="font-size:26px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;margin:0 0 4px;letter-spacing:-0.02em;">Explore services</h1>
+            <p style="font-size:13.5px;color:#64748b;font-family:'Inter',sans-serif;margin:0;">Find and book any service for your property</p>
+          </div>
+
+          <!-- PROPERTY/POSTCODE FILTER with autocomplete dropdown -->
+          <div style="position:relative;margin-bottom:18px;" id="expLocFilterWrap">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#94a3b8" stroke-width="1.6" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none;z-index:2;"><path d="M8 1a5 5 0 00-5 5c0 4 5 9 5 9s5-5 5-9a5 5 0 00-5-5z"/><circle cx="8" cy="6" r="1.8"/></svg>
+            <input id="expLocFilterInput" autocomplete="off" oninput="_filterExpByLocation(this.value)" onfocus="_expLocDropdownShow()" placeholder="Filter by postcode, city or property name..." style="width:100%;border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 44px 13px 40px;font-size:14px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;background:#fff;color:#0f172a;transition:border-color 0.15s;" onblur="setTimeout(_expLocDropdownHide,160)" />
+            <button id="expLocClearBtn" onclick="_expLocClear()" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;background:#f1f5f9;border:none;cursor:pointer;align-items:center;justify-content:center;color:#64748b;z-index:2;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l8 8M9 1L1 9"/></svg></button>
+            <div id="expLocDropdown" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.10);max-height:340px;overflow-y:auto;z-index:100;"></div>
           </div>
 
           <!-- SEARCH + FILTER (above chips, filter hidden on All) -->
@@ -4625,6 +4615,30 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 
           <!-- CATEGORY VIEW: provider cards -->
           <div id="exploreProviderCards" style="display:none;"></div>
+
+          <!-- AI ASSISTANT CARD — moved to bottom (below all services) -->
+          <div style="background:linear-gradient(135deg,#0f1c38 0%,#162845 50%,#1a3356 100%);border-radius:18px;padding:22px 24px 18px;margin-top:28px;position:relative;overflow:hidden;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+              <div style="width:34px;height:34px;background:linear-gradient(135deg,#1A5FC8,#0FA3D0);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2"><path d="M8 2C5 2 2.5 4 2.5 6.5c0 1.3.6 2.5 1.6 3.3L3.5 13l3-1.3c.5.1 1 .2 1.5.2C11 11.9 13.5 9.7 13.5 7.2S11 2 8 2z"/></svg>
+              </div>
+              <div>
+                <div style="font-size:14px;font-weight:700;color:#fff;font-family:'Inter',sans-serif;">Keylr AI Assistant</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.55);font-family:'Inter',sans-serif;">Ask me anything — I'll find the right service</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+              <button onclick="document.getElementById('exploreAIInput').value='What certificates do I need?';document.getElementById('exploreAIInput').focus();" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:999px;padding:6px 13px;font-size:12px;font-weight:500;color:rgba(255,255,255,0.85);cursor:pointer;font-family:'Inter',sans-serif;">What certificates do I need?</button>
+              <button onclick="document.getElementById('exploreAIInput').value='Gas Safety cost?';document.getElementById('exploreAIInput').focus();" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:999px;padding:6px 13px;font-size:12px;font-weight:500;color:rgba(255,255,255,0.85);cursor:pointer;font-family:'Inter',sans-serif;">Gas Safety cost?</button>
+              <button onclick="document.getElementById('exploreAIInput').value='Find an electrician';document.getElementById('exploreAIInput').focus();" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:999px;padding:6px 13px;font-size:12px;font-weight:500;color:rgba(255,255,255,0.85);cursor:pointer;font-family:'Inter',sans-serif;">Find an electrician</button>
+            </div>
+            <div style="display:flex;align-items:center;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;padding:6px 6px 6px 14px;">
+              <input id="exploreAIInput" type="text" placeholder="Ask about any service..." style="flex:1;background:transparent;border:none;outline:none;font-size:13.5px;color:#fff;font-family:'Inter',sans-serif;caret-color:#fff;" onkeydown="if(event.key==='Enter'){var v=this.value.trim();if(v){startNewChat();showPage('chat',null);sendFromSuggestion(v);this.value='';}}" />
+              <button onclick="var v=document.getElementById('exploreAIInput').value.trim();if(v){startNewChat();showPage('chat',null);sendFromSuggestion(v);document.getElementById('exploreAIInput').value='';}" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 7h10M8 4l4 3-4 3"/></svg>
+              </button>
+            </div>
+          </div>
 
         </div>
       </div>
@@ -7485,6 +7499,8 @@ function _renderExploreCatCards() {
       { label:'Deep cleaning', icon:'clean', count:3 },
       { label:'Boiler Service', icon:'boiler', count:2 },
       { label:'End of Tenancy Clean', icon:'clean', count:3 },
+    ]},
+    { heading: 'Issues & repairs', catKey: 'repairs', items: [
       { label:'Leak Repair', icon:'water', count:2 },
       { label:'Drain Unblocking', icon:'water', count:2 },
       { label:'Faulty Electrics', icon:'electric', count:2 },
@@ -8903,6 +8919,172 @@ function _clearExpSearch() {
   if (inp) inp.value = '';
   _filterExpSearch('');
 }
+// ═══════════════════════════════════════════════
+// LOCATION FILTER AUTOCOMPLETE (Explore Services)
+// ═══════════════════════════════════════════════
+var _expLocFilterValue = '';
+// UK cities + their common postcode prefixes (used in the autocomplete dropdown)
+var _ukCityList = [
+  { city:'London',      prefixes:['E', 'W', 'N', 'S', 'EC', 'WC', 'NW', 'SE', 'SW'] },
+  { city:'Manchester',  prefixes:['M1', 'M2', 'M3'] },
+  { city:'Leeds',       prefixes:['LS1', 'LS2', 'LS3'] },
+  { city:'Liverpool',   prefixes:['L1', 'L2', 'L3'] },
+  { city:'Birmingham',  prefixes:['B1', 'B2', 'B3'] },
+  { city:'Bristol',     prefixes:['BS1', 'BS2', 'BS3'] },
+  { city:'Edinburgh',   prefixes:['EH1', 'EH2', 'EH3'] },
+  { city:'Glasgow',     prefixes:['G1', 'G2', 'G3'] },
+  { city:'Newcastle',   prefixes:['NE1', 'NE2', 'NE3'] },
+  { city:'Sheffield',   prefixes:['S1', 'S2', 'S3'] },
+  { city:'Nottingham',  prefixes:['NG1', 'NG2', 'NG3'] },
+  { city:'Leicester',   prefixes:['LE1', 'LE2', 'LE3'] },
+  { city:'Cardiff',     prefixes:['CF1', 'CF2', 'CF3'] },
+  { city:'Belfast',     prefixes:['BT1', 'BT2', 'BT3'] },
+  { city:'Oxford',      prefixes:['OX1', 'OX2', 'OX3'] },
+  { city:'Cambridge',   prefixes:['CB1', 'CB2', 'CB3'] },
+  { city:'Brighton',    prefixes:['BN1', 'BN2', 'BN3'] },
+  { city:'Southampton', prefixes:['SO14','SO15','SO16'] },
+  { city:'Reading',     prefixes:['RG1', 'RG2', 'RG3'] }
+];
+
+function _filterExpByLocation(v) {
+  _expLocFilterValue = (v || '').trim();
+  window._expLocFilter = _expLocFilterValue; // expose globally for booking flow pre-fill
+  var btn = document.getElementById('expLocClearBtn');
+  if (btn) btn.style.display = _expLocFilterValue ? 'flex' : 'none';
+  var dd = document.getElementById('expLocDropdown');
+  // Only show dropdown once the user has typed at least one character
+  if (!_expLocFilterValue) {
+    if (dd) dd.style.display = 'none';
+    return;
+  }
+  _expLocRenderDropdown(_expLocFilterValue);
+  if (dd) dd.style.display = 'block';
+}
+
+function _expLocDropdownShow() {
+  var input = document.getElementById('expLocFilterInput');
+  if (input) input.style.borderColor = '#1A5FC8';
+  // Don't auto-open the dropdown on focus — wait for the user to type.
+  // If they already have a query, re-show results.
+  if (_expLocFilterValue) {
+    _expLocRenderDropdown(_expLocFilterValue);
+    var dd = document.getElementById('expLocDropdown');
+    if (dd) dd.style.display = 'block';
+  }
+}
+
+function _expLocDropdownHide() {
+  var input = document.getElementById('expLocFilterInput');
+  if (input) input.style.borderColor = '#e2e8f0';
+  var dd = document.getElementById('expLocDropdown');
+  if (dd) dd.style.display = 'none';
+}
+
+function _expLocClear() {
+  var input = document.getElementById('expLocFilterInput');
+  if (input) { input.value = ''; input.focus(); }
+  _expLocFilterValue = '';
+  window._expLocFilter = '';
+  var btn = document.getElementById('expLocClearBtn');
+  if (btn) btn.style.display = 'none';
+  var dd = document.getElementById('expLocDropdown');
+  if (dd) dd.style.display = 'none';
+}
+
+function _expLocSelectItem(labelText, extra) {
+  var input = document.getElementById('expLocFilterInput');
+  var composed = extra ? (labelText + ' · ' + extra) : labelText;
+  if (input) input.value = composed;
+  _expLocFilterValue = composed;
+  window._expLocFilter = composed;
+  var btn = document.getElementById('expLocClearBtn');
+  if (btn) btn.style.display = 'flex';
+  _expLocDropdownHide();
+}
+
+function _expLocRenderDropdown(q) {
+  var dd = document.getElementById('expLocDropdown'); if (!dd) return;
+  var query = (q || '').toLowerCase().trim();
+  var props = (typeof _userProperties !== 'undefined') ? (_userProperties || []) : [];
+
+  // Filter properties by name, address or postcode
+  var matchedProps = props.filter(function(p){
+    if (!query) return true;
+    return (p.name || '').toLowerCase().indexOf(query) >= 0
+        || (p.addr || '').toLowerCase().indexOf(query) >= 0
+        || (p.postcode || '').toLowerCase().indexOf(query) >= 0;
+  });
+
+  // Cities only shown when user has typed something
+  var matchedCities = [];
+  if (query) {
+    matchedCities = _ukCityList.filter(function(c){
+      if (c.city.toLowerCase().indexOf(query) >= 0) return true;
+      return c.prefixes.some(function(p){ return p.toLowerCase().indexOf(query) >= 0; });
+    });
+  }
+
+  // Build dropdown HTML
+  var html = '';
+
+  // Your properties section
+  if (matchedProps.length) {
+    html += '<div style="padding:10px 14px 4px;font-size:10.5px;font-weight:700;color:#94a3b8;letter-spacing:0.08em;font-family:Inter,sans-serif;">YOUR PROPERTIES</div>';
+    matchedProps.forEach(function(p){
+      var name = _expLocEsc(p.name || '');
+      var addr = _expLocEsc(p.addr || '');
+      var postcode = _expLocEsc(p.postcode || '');
+      var addrLine = addr + (postcode ? ' · ' + postcode : '');
+      html += '<div class="exp-loc-row" onmousedown="event.preventDefault();_expLocSelectItem(\'' + _expLocAttrEsc(p.name||'') + '\',\'' + _expLocAttrEsc((p.addr||'') + (p.postcode?(' · '+p.postcode):'')) + '\')" style="display:flex;align-items:center;gap:12px;padding:10px 14px;cursor:pointer;transition:background 0.1s;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'transparent\'">'
+        + '<div style="width:34px;height:34px;border-radius:9px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="#1A5FC8" stroke-width="1.6"><rect x="3" y="2" width="12" height="14" rx="1"/><path d="M6 5h1M6 8h1M6 11h1M11 5h1M11 8h1M11 11h1"/><path d="M7 16v-3h4v3"/></svg>'
+        + '</div>'
+        + '<div style="flex:1;min-width:0;">'
+          + '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;line-height:1.3;">' + name + '</div>'
+          + '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + addrLine + '</div>'
+        + '</div>'
+      + '</div>';
+    });
+  }
+
+  // Cities section (only when typing)
+  if (matchedCities.length) {
+    html += '<div style="padding:10px 14px 4px;font-size:10.5px;font-weight:700;color:#94a3b8;letter-spacing:0.08em;font-family:Inter,sans-serif;' + (matchedProps.length ? 'border-top:1px solid #f1f5f9;margin-top:4px;' : '') + '">CITIES</div>';
+    matchedCities.forEach(function(c){
+      var name = _expLocEsc(c.city);
+      var prefs = _expLocEsc(c.prefixes.slice(0,3).join(', ') + '...');
+      html += '<div class="exp-loc-row" onmousedown="event.preventDefault();_expLocSelectItem(\'' + _expLocAttrEsc(c.city) + '\',\'' + _expLocAttrEsc(c.prefixes.slice(0,3).join(', ') + '...') + '\')" style="display:flex;align-items:center;gap:12px;padding:10px 14px;cursor:pointer;transition:background 0.1s;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'transparent\'">'
+        + '<div style="width:34px;height:34px;border-radius:9px;background:#d1fae5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#047857" stroke-width="1.6"><path d="M8 1a5 5 0 00-5 5c0 4 5 9 5 9s5-5 5-9a5 5 0 00-5-5z"/><circle cx="8" cy="6" r="1.8"/></svg>'
+        + '</div>'
+        + '<div style="flex:1;min-width:0;">'
+          + '<div style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;line-height:1.3;">' + name + '</div>'
+          + '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">' + prefs + '</div>'
+        + '</div>'
+      + '</div>';
+    });
+  }
+
+  // Empty state
+  if (!matchedProps.length && !matchedCities.length) {
+    if (!props.length && !query) {
+      html = '<div style="padding:18px 14px;text-align:center;font-size:13px;color:#94a3b8;font-family:Inter,sans-serif;">No saved properties yet. Start typing to search cities and postcodes.</div>';
+    } else {
+      html = '<div style="padding:18px 14px;text-align:center;font-size:13px;color:#94a3b8;font-family:Inter,sans-serif;">No matches for "' + _expLocEsc(q || '') + '"</div>';
+    }
+  }
+
+  dd.innerHTML = html;
+}
+
+function _expLocEsc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function _expLocAttrEsc(s) {
+  // for use inside single-quoted onmousedown attribute
+  return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+}
+
 function _filterExpSearch(q) {
   q = (q||'').toLowerCase().trim();
   var searchInput = document.getElementById('expSearchInput');
@@ -14918,9 +15100,9 @@ var _suppOnboard = (function(){
   // Company identity
   tradingName: '', regCompanyName: '', companyRegNum: '', regOfficeAddr: '', pscDob: '', tinNum: '', pscFullName: '', pscConfirmed: false, companyAddr: '',
   // Payment
-  vatRegistered: false, vatNumber: '',
+  vatRegistered: '', vatNumber: '', bankSkipped: false,
   accountHolder: '', sortCode: '', accountNumber: '', bankName: '', businessAccount: null,
-  monthlyInvoicing: false,
+  monthlyInvoicing: '',
   // Insurance
   insProvider: '', insPolicy: '', insCoverage: '', insExpiry: '',
   profIndemnity: false, tradeCerts: [], customCerts: [],
@@ -14946,9 +15128,9 @@ function _suppOnboardDefaults(){
     fullLegalName: '', dob: '', niNumber: '', homeAddress: '',
     tradingName: '', regCompanyName: '', companyRegNum: '', regOfficeAddr: '',
     pscDob: '', tinNum: '', pscFullName: '', pscConfirmed: false, companyAddr: '',
-    vatRegistered: false, vatNumber: '',
+    vatRegistered: '', vatNumber: '', bankSkipped: false,
     accountHolder: '', sortCode: '', accountNumber: '', bankName: '',
-    businessAccount: null, monthlyInvoicing: false,
+    businessAccount: null, monthlyInvoicing: '',
     insProvider: '', insPolicy: '', insCoverage: '', insExpiry: '',
     profIndemnity: false, tradeCerts: [], customCerts: [],
     teamSize: '', companyDbsDecl: '', dbsLevel: '', dbsDeclared: '',
@@ -15236,26 +15418,55 @@ function _buildSuppOnboardStep(step) {
 
   // ── payment ──
   if (id === 'payment') {
-    var vatOn = _suppOnboard.vatRegistered;
+    var vatAns = _suppOnboard.vatRegistered || '';     // '' | 'yes' | 'no'
+    var monAns = _suppOnboard.monthlyInvoicing || '';  // '' | 'yes' | 'no'
+    var bankSkipped = !!_suppOnboard.bankSkipped;
     var isCompany = _suppOnboard.operationType === 'company';
-    return '<div style="display:flex;flex-direction:column;gap:16px;">'
-      // VAT toggle
-      + '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;">'
-        + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:'+(vatOn?'16':'0')+'px;">'
-          + '<div><div style="font-size:14px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">Are you VAT registered?</div>'
-            + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">If yes, VAT will be added to your invoices and we\'ll verify your number with HMRC.</div></div>'
-          + _suppToggle('pm-vat','_suppVatToggle()',vatOn)
+
+    // Shared Yes/No radio card builder for required binary choices
+    function ynCard(fnName, val, label, sub, sel, isYes) {
+      var color  = isYes ? '#10b981' : '#ef4444';
+      var bgSel  = isYes ? '#f0fdf4' : '#fef2f2';
+      var bdSel  = isYes ? '#10b981' : '#ef4444';
+      var headCol = sel ? (isYes?'#065f46':'#991b1b') : '#0f172a';
+      var subCol  = sel ? (isYes?'#059669':'#dc2626') : '#64748b';
+      return '<div onclick="'+fnName+'(\''+val+'\')" style="border:1.5px solid '+(sel?bdSel:'#e2e8f0')
+        + ';border-radius:11px;padding:14px 16px;cursor:pointer;background:'+(sel?bgSel:'#fff')
+        + ';display:flex;align-items:flex-start;gap:10px;transition:all .15s;">'
+        + '<div style="width:20px;height:20px;border-radius:50%;border:2px solid '+(sel?bdSel:'#d1d5db')
+          + ';background:'+(sel?bdSel:'#fff')+';flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;">'
+          + (sel ? '<div style="width:8px;height:8px;border-radius:50%;background:#fff;"></div>' : '')
         + '</div>'
-        + (vatOn ? '<div>'+_suppField('VAT number','','pm-vat-num','text','GB 123 4567 89','','<div style="font-size:11.5px;color:#64748b;margin-top:4px;font-family:Inter,sans-serif;">Your UK VAT registration number. Automatically verified via the HMRC VIES register. VAT will be applied to all invoices generated through the platform.</div>')+'</div>' : '')
-      + '</div>'
-      // Bank details
+        + '<div>'
+          + '<div style="font-size:13.5px;font-weight:600;color:'+headCol+';font-family:Inter,sans-serif;">'+label+'</div>'
+          + '<div style="font-size:12px;color:'+subCol+';font-family:Inter,sans-serif;margin-top:3px;line-height:1.4;">'+sub+'</div>'
+        + '</div>'
+      + '</div>';
+    }
+
+    return '<div style="display:flex;flex-direction:column;gap:16px;">'
+      // ─── VAT registration (required Yes/No) ───
       + '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;">'
-        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
+          + '<span style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Are you VAT registered?</span>'
+          + '<span style="font-size:10px;font-weight:700;background:#fee2e2;color:#991b1b;border-radius:4px;padding:2px 6px;font-family:Inter,sans-serif;">REQUIRED</span>'
+        + '</div>'
+        + '<div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:14px;line-height:1.5;">If yes, VAT will be added to your invoices and we\'ll verify your number with HMRC.</div>'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:'+(vatAns==='yes'?'16':'0')+'px;">'
+          + ynCard('_suppSetVatAnswer','yes','Yes, VAT registered','I charge VAT on my invoices',vatAns==='yes',true)
+          + ynCard('_suppSetVatAnswer','no','No, not registered','Below the VAT threshold or exempt',vatAns==='no',false)
+        + '</div>'
+        + (vatAns==='yes' ? '<div>'+_suppField('VAT number','Optional','pm-vat-num','text','GB 123 4567 89','','<div style="font-size:11.5px;color:#64748b;margin-top:4px;font-family:Inter,sans-serif;">Your UK VAT registration number. You can add this now or later from your Account Settings — it will be automatically verified via the HMRC VIES register.</div>')+'</div>' : '')
+      + '</div>'
+
+      // ─── Bank details (optional — user can leave fields blank) ───
+      + '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;">'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
           + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#64748b" stroke-width="1.6"><rect x="1" y="4" width="13" height="9" rx="1.5"/><path d="M1 7h13"/></svg>'
           + '<span style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Bank account details</span>'
-          + '<span style="font-size:11px;color:#64748b;background:#f1f5f9;border-radius:4px;padding:1px 7px;font-family:Inter,sans-serif;">Optional</span>'
+          + '<span style="font-size:10px;font-weight:700;background:#f1f5f9;color:#64748b;border-radius:4px;padding:2px 6px;font-family:Inter,sans-serif;">OPTIONAL</span>'
         + '</div>'
-        + _suppInfoBox('You can skip this for now. Bank details must be provided before your first job payout — you\'ll be prompted to add them once your first job is completed and payment is ready to be processed.')
+        + _suppInfoBox('You can leave this blank for now. Bank details must be provided before your first job payout — you\'ll be prompted to add them once your first job is completed and payment is ready to be processed.')
         + '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:16px;padding:10px 14px;background:#fffbeb;border:1px solid #fde68a;border-radius:9px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#b45309" stroke-width="1.6" style="flex-shrink:0;"><path d="M7 1l6 11H1L7 1z"/><path d="M7 5.5v3M7 10v.5"/></svg><span style="font-size:12.5px;color:#92400e;font-family:Inter,sans-serif;line-height:1.5;"><strong>Note:</strong> You are responsible for providing accurate details, and any errors may result in delays or failed payments.</span></div>'
         + _suppField('Account holder name','','pm-acc-holder','text','Must match your registered business name','','<div style="font-size:11.5px;color:#64748b;margin-top:4px;font-family:Inter,sans-serif;">The name on your bank account — must match your legal name for verification.</div>')
         + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">'
@@ -15286,19 +15497,19 @@ function _buildSuppOnboardStep(step) {
               })()
           + '</div>'
         + '</div>' : '')
-
       + '</div>'
-      // Monthly invoicing
+
+      // ─── Monthly invoicing (toggle — matches the image design) ───
       + '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;">'
         + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
           + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><rect x="1" y="2" width="13" height="11" rx="1.5"/><path d="M1 6h13"/><path d="M5 2V0M10 2V0"/></svg>'
           + '<span style="font-size:14px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">Monthly invoicing</span>'
         + '</div>'
         + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;line-height:1.6;margin-bottom:14px;">Many property managers consolidate payments and pay their service providers on a monthly cycle. Accepting monthly invoicing significantly increases your visibility and chances of being booked — the majority of property managers on Keylr prefer this payment method.</div>'
-        + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px;">'
           + '<div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">Accept monthly invoicing?</div>'
             + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;">You\'ll receive one consolidated payment per month for all completed jobs.</div></div>'
-          + _suppToggle('pm-monthly','',false)
+          + _suppToggle('pm-monthly','', monAns==='yes')
         + '</div>'
         + '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 14px;font-size:12.5px;color:#1e3a5f;font-family:Inter,sans-serif;line-height:1.5;">'
           + '✨ <strong>Providers who accept monthly invoicing receive up to 3× more bookings.</strong> Property managers managing 50+ units typically work on a monthly billing cycle. Opting in makes you eligible for these high-volume clients.'
@@ -15863,8 +16074,34 @@ function _suppToggleSectorSub(group,sub,el){
   el.style.borderColor=sel?'#1A5FC8':'#d1d5db'; el.style.background=sel?'#eff6ff':'#fff'; el.style.color=sel?'#1e3a5f':'#374151';
 }
 function _suppVatToggle(){
+  // Legacy toggle — kept for any old call site. New UI uses _suppSetVatAnswer.
   _suppSaveCurrentStep();
-  _suppOnboard.vatRegistered=!_suppOnboard.vatRegistered; _renderSuppOnboard();
+  _suppOnboard.vatRegistered = (_suppOnboard.vatRegistered === 'yes') ? 'no' : 'yes';
+  _renderSuppOnboard();
+}
+function _suppSetVatAnswer(val){
+  _suppSaveCurrentStep();
+  _suppOnboard.vatRegistered = val;              // 'yes' | 'no'
+  if (val === 'no') _suppOnboard.vatNumber = '';  // clear stored number if they switch to No
+  _suppRerender();
+}
+function _suppSetMonthlyAnswer(val){
+  _suppSaveCurrentStep();
+  _suppOnboard.monthlyInvoicing = val;           // 'yes' | 'no'
+  _suppRerender();
+}
+function _suppToggleBankSkip(){
+  _suppSaveCurrentStep();
+  _suppOnboard.bankSkipped = !_suppOnboard.bankSkipped;
+  if (_suppOnboard.bankSkipped) {
+    // Clear any partially-entered bank data so we don't persist stale info
+    _suppOnboard.accountHolder = '';
+    _suppOnboard.sortCode = '';
+    _suppOnboard.accountNumber = '';
+    _suppOnboard.bankName = '';
+    _suppOnboard.businessAccount = null;
+  }
+  _suppRerender();
 }
 function _suppToggleCert(cert,el){
   _suppSaveCurrentStep();
@@ -16182,6 +16419,21 @@ function _suppOnboardNext(){
   setTimeout(function(){ _hideLoader(); _suppOnboardNextExec(); }, 300);
 }
 function _suppOnboardNextExec(){
+  // Per-step validation gates — block advance when required fields are missing
+  var currId = _suppOnboardSteps[_suppOnboard.step] && _suppOnboardSteps[_suppOnboard.step].id;
+  if (currId === 'payment') {
+    _suppSaveCurrentStep();
+    var vatOk = _suppOnboard.vatRegistered === 'yes' || _suppOnboard.vatRegistered === 'no';
+    // VAT number is OPTIONAL — user can answer "Yes" without filling in the number.
+    // Normalize monthlyInvoicing to 'no' if user never touched the toggle (it's a binary control — no 'unset' state)
+    if (_suppOnboard.monthlyInvoicing !== 'yes' && _suppOnboard.monthlyInvoicing !== 'no') {
+      _suppOnboard.monthlyInvoicing = 'no';
+    }
+    if (!vatOk) {
+      _suppShowInlineErr('Please answer whether you are VAT registered — Yes or No.');
+      return;
+    }
+  }
   _suppSaveCurrentStep();
   var step=_suppOnboard.step;
   if(step>=_suppOnboardSteps.length-1){_suppOnboardFinish();}
@@ -16197,6 +16449,23 @@ function _suppOnboardNextExec(){
     }
     _suppOnboard.step=next;_renderSuppOnboard();
   }
+}
+
+// Inline validation error banner (slides down from the top of the onboarding screen)
+function _suppShowInlineErr(msg){
+  var existing = document.getElementById('suppValidationErr');
+  if (existing) existing.remove();
+  var el = document.createElement('div');
+  el.id = 'suppValidationErr';
+  el.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-20px);z-index:10200;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:12px;padding:12px 18px;font-size:13.5px;font-weight:600;color:#991b1b;font-family:Inter,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,0.12);opacity:0;transition:opacity .22s, transform .22s;display:flex;align-items:center;gap:10px;max-width:90vw;';
+  el.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" style="flex-shrink:0;"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5v4M8 11v.5"/></svg><span>'+msg+'</span>';
+  document.body.appendChild(el);
+  requestAnimationFrame(function(){ el.style.opacity='1'; el.style.transform='translateX(-50%) translateY(0)'; });
+  setTimeout(function(){
+    if (!el.parentNode) return;
+    el.style.opacity='0'; el.style.transform='translateX(-50%) translateY(-20px)';
+    setTimeout(function(){ if (el.parentNode) el.remove(); }, 300);
+  }, 3800);
 }
 function _suppOnboardBack(){
   _suppSaveCurrentStep();
@@ -16261,14 +16530,16 @@ function _suppOnboardFinish(){
       pscFullName: ob.pscFullName,
       pscDob: ob.pscDob,
       tinNum: ob.tinNum,
-      // Payment
-      vatRegistered: ob.vatRegistered,
+      // Payment — normalize string 'yes'/'no' to boolean for admin applicant record
+      vatRegistered: ob.vatRegistered === 'yes' || ob.vatRegistered === true,
       vatNumber: ob.vatNumber,
       accountHolder: ob.accountHolder,
       sortCode: ob.sortCode,
       accountNumber: ob.accountNumber,
       bankName: ob.bankName,
       businessAccount: ob.businessAccount,
+      monthlyInvoicing: ob.monthlyInvoicing === 'yes' || ob.monthlyInvoicing === true,
+      bankSkipped: !!ob.bankSkipped,
       // Insurance
       insProvider: ob.insProvider,
       insPolicy: ob.insPolicy,
@@ -17587,14 +17858,29 @@ function _suppBuildProfilePage(){
        +hdr('Person of Significant Control')
        +row2(inp('PSC Full Name',so.pscFullName,'pscFullName','text','Full legal name'),inp('PSC Date of Birth',so.pscDob,'pscDob','date',''))
        +hdr('Identity Documents')
-       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">'+uploadBox('Director Photo ID','','Passport or driving licence')+uploadBox('Selfie Verification','','Biometric liveness photo')+'</div>'
-       +row1(uploadBox('Proof of Address','','Bank statement or utility bill (last 3 months)'))
+       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">'
+         +_suppUploadField('Director Photo ID','Passport or driving licence','as-ci-photo-id')
+         +_suppUploadField('Selfie Verification','Biometric liveness photo','as-ci-selfie')
+       +'</div>'
+       +'<div style="margin-bottom:12px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+         +'<span style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Proof of address</span>'
+         +'<span style="font-size:11px;font-weight:600;color:#dc2626;background:#fef2f2;border-radius:4px;padding:1px 7px;font-family:Inter,sans-serif;">Required</span>'
+       +'</div>'
+       +_suppUploadField('Upload proof of address','Bank statement or utility bill (last 3 months)','as-ci-poa')
+       +'</div>'
       :hdr('Personal Details')
        +row2(inp('Full Legal Name',so.fullLegalName,'fullLegalName','text','As shown on your passport'),inp('Date of Birth',so.dob,'dob','date',''))
        +row2(inp('NI Number',so.niNumber,'niNumber','text','e.g. QQ 12 34 56 C'),inp('Home Address',so.homeAddress,'homeAddress','text','Your residential address'))
        +hdr('Identity Documents')
-       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">'+uploadBox('Photo ID','','Passport or driving licence')+uploadBox('Selfie Verification','','Biometric liveness photo')+'</div>'
-       +row1(uploadBox('Proof of Address','','Bank statement or utility bill (last 3 months)'))
+       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">'
+         +_suppUploadField('Photo ID','Passport or driving licence','as-id-photo-upload')
+         +_suppUploadField('Selfie Verification','Biometric liveness check','as-id-selfie-upload')
+       +'</div>'
+       +'<div style="margin-bottom:12px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+         +'<span style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Proof of address</span>'
+         +'<span style="font-size:11px;font-weight:600;color:#dc2626;background:#fef2f2;border-radius:4px;padding:1px 7px;font-family:Inter,sans-serif;">Required</span>'
+       +'</div>'
+       +_suppUploadField('Upload proof of address','Utility bill, bank statement, or council tax bill (dated within 3 months)','as-poa-upload')
     )
     +saveBar('Identity saved');
 
@@ -17615,14 +17901,15 @@ function _suppBuildProfilePage(){
       + row2(inp('Account Holder Name',so.accountHolder,'accountHolder','text','Full name as on account'),inp('Bank Name',so.bankName,'bankName','text','e.g. Barclays, HSBC, Lloyds'))
       + row2(inp('Sort Code',so.sortCode,'sortCode','text','XX-XX-XX'),inp('Account Number',so.accountNumber,'accountNumber','text','8-digit account number'))
       + hdr('VAT & Business Settings')
-      + '<div id="profVatCard" style="border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;margin-bottom:16px;">'
-        + '<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:#fafafa;">'
-          + '<span style="font-size:13.5px;font-weight:500;color:#374151;font-family:Inter,sans-serif;">VAT Registered</span>'
-          + '<button class="prof-tog" data-pfield="vatRegistered" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(so.vatRegistered?'#1A5FC8':'#d1d5db')+';flex-shrink:0;"'+(so.vatRegistered?' data-on="1"':'')+' ><span style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(so.vatRegistered?'right:2px;':'left:2px;')+'box-shadow:0 1px 3px rgba(0,0,0,0.18);display:block;"></span></button>'
+      + '<div id="profVatCard" style="border:1.5px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:16px;background:#fafafa;">'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:'+((so.vatRegistered==='yes')?'14':'0')+'px;">'
+          + '<div><div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">VAT registered?</div>'
+          + '<div style="font-size:12px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">If yes, VAT will be added to your invoices.</div></div>'
+          + yesNo(so.vatRegistered==='yes'?'Yes':(so.vatRegistered==='no'?'No':''),'vatRegistered')
         + '</div>'
-        + '<div id="profVatNumRow" style="display:'+(so.vatRegistered?'block':'none')+';padding:10px 14px;border-top:1px solid #e2e8f0;background:#fff;">'
+        + '<div id="profVatNumRow" style="display:'+((so.vatRegistered==='yes')?'block':'none')+';padding-top:12px;margin-top:12px;border-top:1px solid #e2e8f0;">'
           + '<label style="display:block;font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;font-family:Inter,sans-serif;margin-bottom:5px;">VAT Number</label>'
-          + '<input data-pfield="vatNumber" value="'+(so.vatNumber||'')+'" placeholder="e.g. GB123456789" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fafafa;">'
+          + '<input data-pfield="vatNumber" value="'+(so.vatNumber||'')+'" placeholder="e.g. GB123456789" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box;background:#fff;">'
         + '</div>'
       + '</div>'
       // Account Type (under VAT)
@@ -17633,7 +17920,7 @@ function _suppBuildProfilePage(){
           + acctCard('personal','Personal Account','A personal bank account used for business payments',isPer)
         + '</div>'
       + '</div>' : '')
-      // Monthly Invoicing (under Account Type)
+      // Monthly Invoicing (under Account Type) — toggle (reverted to prior design)
       + '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:12px;">'
         + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
           + '<svg width="14" height="14" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><rect x="1" y="2" width="13" height="11" rx="1.5"/><path d="M1 6h13"/><path d="M5 2V0M10 2V0"/></svg>'
@@ -17643,7 +17930,10 @@ function _suppBuildProfilePage(){
         + '<div style="display:flex;align-items:center;justify-content:space-between;">'
           + '<div><div style="font-size:13px;font-weight:600;color:#374151;font-family:Inter,sans-serif;">Accept monthly invoicing?</div>'
             + '<div style="font-size:11.5px;color:#64748b;font-family:Inter,sans-serif;">You\'ll receive one consolidated payment per month for all completed jobs.</div></div>'
-          + '<button class="prof-tog" data-pfield="monthlyInvoicing" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(so.monthlyInvoicing?'#1A5FC8':'#d1d5db')+';flex-shrink:0;margin-left:12px;"'+(so.monthlyInvoicing?' data-on="1"':'')+' ><span style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(so.monthlyInvoicing?'right:2px;':'left:2px;')+'box-shadow:0 1px 3px rgba(0,0,0,0.18);display:block;"></span></button>'
+          + (function(){
+              var on = (so.monthlyInvoicing === 'yes' || so.monthlyInvoicing === true);
+              return '<button class="prof-tog" data-pfield="monthlyInvoicing" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;background:'+(on?'#1A5FC8':'#d1d5db')+';flex-shrink:0;margin-left:12px;"'+(on?' data-on="1"':'')+' ><span style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(on?'right:2px;':'left:2px;')+'box-shadow:0 1px 3px rgba(0,0,0,0.18);display:block;"></span></button>';
+            })()
         + '</div>'
       + '</div>'
       + saveBar('Bank details saved');
@@ -18082,6 +18372,21 @@ function _suppWireProfilePage(){
       if(parent) parent.querySelectorAll('.prof-yesno[data-pfield="'+k+'"]').forEach(function(b){
         var s=b.dataset.val===v; b.style.border='1.5px solid '+(s?'#1A5FC8':'#e2e8f0'); b.style.background=s?'#eff6ff':'#fff'; b.style.color=s?'#1A5FC8':'#374151'; b.style.fontWeight=s?'700':'500'; if(s)b.setAttribute('data-sel','1');else b.removeAttribute('data-sel');
       });
+      // Immediately persist the lowercase value for fields that use 'yes'/'no' contract
+      var so2 = window._suppOnboard = window._suppOnboard || {};
+      if (k === 'vatRegistered' || k === 'monthlyInvoicing') {
+        so2[k] = (v === 'Yes') ? 'yes' : 'no';
+        if (k === 'vatRegistered') {
+          var vatRow = document.getElementById('profVatNumRow');
+          if (vatRow) vatRow.style.display = (v === 'Yes') ? 'block' : 'none';
+          // Clear stored number if user switched to No
+          if (v === 'No') {
+            so2.vatNumber = '';
+            var vatInp = document.querySelector('[data-pfield="vatNumber"]');
+            if (vatInp) vatInp.value = '';
+          }
+        }
+      }
       return;
     }
 
@@ -18171,13 +18476,27 @@ function _suppWireProfilePage(){
       wrap.querySelectorAll('[data-pfield]').forEach(function(el){var k=el.dataset.pfield;if(!k||k==='_email'||k==='_signupName')return;so[k]=el.tagName==='TEXTAREA'?el.value:(el.value||'');});
       // signup name update
       var snInp=wrap.querySelector('[data-pfield="_signupName"]');if(snInp&&snInp.value&&window._user)window._user.name=snInp.value.trim();
-      wrap.querySelectorAll('.prof-tog').forEach(function(b){var k=b.dataset.pfield;if(k)so[k]=b.hasAttribute('data-on');});
+      wrap.querySelectorAll('.prof-tog').forEach(function(b){
+        var k=b.dataset.pfield; if(!k) return;
+        var on = b.hasAttribute('data-on');
+        // monthlyInvoicing uses string 'yes'/'no' contract (not boolean)
+        if (k === 'monthlyInvoicing') so[k] = on ? 'yes' : 'no';
+        else so[k] = on;
+      });
       var cw=document.getElementById('profSecCards');if(cw)so.sector=cw.dataset.sector||so.sector||'';
       var ra=[],ca=[];wrap.querySelectorAll('.prof-sector-chip').forEach(function(c){if(!c.hasAttribute('data-sel'))return;if(c.dataset.type==='res')ra.push(c.dataset.val);else ca.push(c.dataset.val);});
       if(document.getElementById('profResGroup'))so.sectorSubRes=ra;
       if(document.getElementById('profComGroup'))so.sectorSubCom=ca;
       var dbsEl=wrap.querySelector('.prof-dbs-card[style*="#1A5FC8"]');if(dbsEl)so.dbsDeclared=dbsEl.dataset.val;
-      wrap.querySelectorAll('.prof-yesno[data-sel]').forEach(function(b){so[b.dataset.pfield]=b.dataset.val;});
+      wrap.querySelectorAll('.prof-yesno[data-sel]').forEach(function(b){
+        var k = b.dataset.pfield, v = b.dataset.val;
+        // vatRegistered and monthlyInvoicing use lowercase 'yes'/'no' contract
+        if (k === 'vatRegistered' || k === 'monthlyInvoicing') {
+          so[k] = (v === 'Yes') ? 'yes' : 'no';
+        } else {
+          so[k] = v;
+        }
+      });
       var da=[];wrap.querySelectorAll('.prof-day-chip[data-sel]').forEach(function(c){da.push(c.dataset.day);});
       if(wrap.querySelector('.prof-day-chip'))so.workDays=da;
       // show toast
@@ -18494,7 +18813,7 @@ function _suppGenericToggle(id) {
   // Save state to _suppOnboard
   if (id === 'ins-workers') _suppOnboard.workersLicensed = newOn;
   if (id === 'pm-biz-acc')  _suppOnboard.businessAccount = newOn;
-  if (id === 'pm-monthly')  _suppOnboard.monthlyInvoicing = newOn;
+  if (id === 'pm-monthly')  _suppOnboard.monthlyInvoicing = newOn ? 'yes' : 'no';
   if (id === 'ins-pi')      _suppOnboard.profIndemnity    = newOn;
 }
 function _suppSetBizAcc(val) {
