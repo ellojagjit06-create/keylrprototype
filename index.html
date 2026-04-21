@@ -612,7 +612,7 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 .plan-ob-title{font-family:Fraunces,serif;font-size:26px;font-weight:800;color:#0f172a;text-align:center;margin:0 0 8px;}
 .plan-ob-rec{font-size:14px;color:#64748b;font-family:Inter,sans-serif;text-align:center;margin:0 0 32px;}
 .plan-ob-rec a{color:#1A5FC8;font-weight:700;text-decoration:none;}
-.plan-ob-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;width:100%;max-width:820px;}
+.plan-ob-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;width:100%;max-width:620px;}
 .plan-ob-card{background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:24px 22px;display:flex;flex-direction:column;gap:0;position:relative;transition:box-shadow 0.15s;}
 .plan-ob-card:hover{box-shadow:0 6px 24px rgba(26,95,200,0.1);}
 .plan-ob-card.recommended{border-color:#1A5FC8;border-width:2px;box-shadow:0 4px 20px rgba(26,95,200,0.18);}
@@ -4075,8 +4075,8 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
     <div class="db-sidebar-bottom">
       <!-- Sidebar upgrade + compliance cards (logged in only) -->
       <div class="sb-cards-wrap" id="sbCardsWrap" style="display:none;">
-        <!-- Keylr Platform card -->
-        <div class="sb-platform-card">
+        <!-- Keylr Platform card (only shown for free plan users) -->
+        <div class="sb-platform-card" id="sbPlatformCard">
           <div class="sb-platform-card-head">
             <span class="sb-platform-card-icon">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1e40af" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -5026,21 +5026,21 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
                       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.8"><path d="M10 2l2.5 5h5.5l-4.5 3.5 2 6L10 14l-5.5 3.5 2-6L2 7h5.5z"/></svg>
                     </div>
                     <div>
-                      <div style="font-size:16px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;">Connect Free</div>
+                      <div id="subCurrentName" style="font-size:16px;font-weight:800;color:#0f172a;font-family:'Fraunces',serif;">Connect Free</div>
                       <div style="font-size:12.5px;color:#64748b;font-family:Inter,sans-serif;">Current plan</div>
                     </div>
                   </div>
-                  <span style="background:#dcfce7;color:#15803d;font-size:12px;font-weight:700;font-family:Inter,sans-serif;padding:4px 12px;border-radius:999px;border:1px solid #bbf7d0;flex-shrink:0;">Active</span>
+                  <span id="subCurrentBadge" style="background:#dcfce7;color:#15803d;font-size:12px;font-weight:700;font-family:Inter,sans-serif;padding:4px 12px;border-radius:999px;border:1px solid #bbf7d0;flex-shrink:0;">Active</span>
                 </div>
                 <div style="border-top:1px solid #f1f5f9;padding-top:14px;margin-bottom:16px;">
-                  <p style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin:0;">Up to 5 properties, basic compliance alerts, on-demand booking.</p>
+                  <p id="subCurrentDesc" style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin:0;">Up to 5 properties, basic compliance alerts, on-demand booking.</p>
                 </div>
-                <button onclick="showPlanChoosePage()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
+                <button id="subChangeBtn" onclick="showPlanChoosePage()" style="width:100%;background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2l2 4h4l-3.5 2.5 1.5 4.5L8 11l-4 2 1.5-4.5L2 6h4z"/></svg>Change plan
                 </button>
               </div>
-              <!-- Premium teaser -->
-              <div style="background:#fff;border:1px solid #e8ecf3;border-radius:16px;padding:22px 24px;">
+              <!-- Premium teaser (hidden for premium/copilot users) -->
+              <div id="subPremiumTeaser" style="background:#fff;border:1px solid #e8ecf3;border-radius:16px;padding:22px 24px;">
                 <div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:16px;">Premium features — <span style="color:#1d4ed8;">£29/mo</span></div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" class="settings-2col">
                   <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;font-family:Inter,sans-serif;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l3.5 3.5 6.5-6.5"/></svg>Unlimited properties</div>
@@ -5239,20 +5239,6 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
           <div class="plan-ob-feat"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l3.5 3.5L12 4"/></svg>Team member access</div>
         </div>
         <button class="plan-ob-btn" onclick="selectObPlan('premium')">Get Connect Premium</button>
-      </div>
-      <div class="plan-ob-card">
-        <div class="plan-ob-name">Copilot</div>
-        <div class="plan-ob-price">&#xA3;79<span>/mo</span></div>
-        <div class="plan-ob-desc">For large operations</div>
-        <div class="plan-ob-features">
-          <div class="plan-ob-feat"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l3.5 3.5L12 4"/></svg>Everything in Premium</div>
-          <div class="plan-ob-feat"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l3.5 3.5L12 4"/></svg>AI-powered scheduling</div>
-          <div class="plan-ob-feat"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l3.5 3.5L12 4"/></svg>Workflow automation</div>
-          <div class="plan-ob-feat"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l3.5 3.5L12 4"/></svg>Full API access</div>
-          <div class="plan-ob-feat"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l3.5 3.5L12 4"/></svg>Dedicated account manager</div>
-          <div class="plan-ob-feat"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 7l3.5 3.5L12 4"/></svg>Custom integrations</div>
-        </div>
-        <button class="plan-ob-btn" onclick="selectObPlan('copilot')">Get Copilot</button>
       </div>
     </div>
   </div>
@@ -12686,6 +12672,33 @@ function _syncSettingsPage(){
   // Populate profile cc dropdown
   buildProfCcList();
   recalcProgress();
+  _syncSubscriptionTab();
+}
+
+// Sync the Subscription tab to reflect _user._plan
+function _syncSubscriptionTab(){
+  var plan = (window._user && window._user._plan) || 'Connect (Free)';
+  var nameEl = document.getElementById('subCurrentName');
+  var descEl = document.getElementById('subCurrentDesc');
+  var btnEl  = document.getElementById('subChangeBtn');
+  var teaser = document.getElementById('subPremiumTeaser');
+
+  // Map plan → display name and description
+  var display = {
+    'Connect Premium': { name:'Connect Premium', desc:'Unlimited properties, priority matching, rate cards, advanced compliance suite, team access.' },
+    'Copilot':         { name:'Copilot',         desc:'Everything in Premium, plus AI-powered scheduling, workflow automation, API access, and a dedicated account manager.' }
+  };
+  var d = display[plan] || { name:'Connect Free', desc:'Up to 5 properties, basic compliance alerts, on-demand booking.' };
+  if (nameEl) nameEl.textContent = d.name;
+  if (descEl) descEl.textContent = d.desc;
+  // Button label flips between Change plan and Upgrade plan
+  if (btnEl) {
+    var paid = plan === 'Connect Premium' || plan === 'Copilot';
+    var iconSvg = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2l2 4h4l-3.5 2.5 1.5 4.5L8 11l-4 2 1.5-4.5L2 6h4z"/></svg>';
+    btnEl.innerHTML = iconSvg + (paid ? 'Change plan' : 'Upgrade plan');
+  }
+  // Hide the premium teaser when already on a paid plan
+  if (teaser) teaser.style.display = (plan === 'Connect Premium' || plan === 'Copilot') ? 'none' : 'block';
 }
 
 function updateEmailBadge(){
@@ -13023,13 +13036,11 @@ function recalcProgress(){
   // ── Profile (max 35%) ──
   var nameEl=document.getElementById('profileName');
   var emailEl=document.getElementById('profileEmail');
-  var phoneEl=document.getElementById('profilePhone');
   var hasName=nameEl&&nameEl.value.trim().length>0;
   var hasEmail=emailEl&&emailEl.value.trim().length>2;
-  var hasPhone=phoneEl&&phoneEl.value.trim().length>4;
-  var hasContact=hasEmail||hasPhone;
+  // NOTE: phone does NOT impact progress — only email completion counts
   if(hasName)pct+=10;
-  if(hasContact)pct+=10;
+  if(hasEmail)pct+=10;
   // Email verified check
   if(_user&&_user._emailVerified)pct+=15;
   else if(hasEmail)pct+=5; // partial for unverified
@@ -13504,9 +13515,16 @@ function discPageContinue() {
       // Came from Settings → return to Discovery tab
       discPageClose();
     } else {
-      // Came from home/onboarding → go to PM home
+      // Came from home/onboarding → send to plan chooser if no plan yet, else PM home
       discPageClose();
-      if (typeof showPage === 'function') setTimeout(function(){ showPage('home', null); }, 300);
+      setTimeout(function(){
+        var noPlan = !(window._user && window._user._plan);
+        if (noPlan && typeof showPlanChoosePage === 'function') {
+          showPlanChoosePage();
+        } else if (typeof showPage === 'function') {
+          showPage('home', null);
+        }
+      }, 300);
     }
   }
 }
@@ -14573,14 +14591,25 @@ function skipBizOnboarding() {
 // SIDEBAR CARDS — Platform + Compliance
 // ═══════════════════════════════════════════════
 
+// Plan helpers — treats anything other than Premium/Copilot as free
+function _isFreePlan() {
+  var p = (window._user && window._user._plan) || '';
+  return !(p === 'Connect Premium' || p === 'Copilot');
+}
+
 function updateSidebarCards(complianceCount) {
   var wrap = document.getElementById('sbCardsWrap');
   var card = document.getElementById('sbComplianceCard');
   var title = document.getElementById('sbComplianceTitle');
+  var platform = document.getElementById('sbPlatformCard');
   if (!wrap) return;
   // Show the whole cards section (Platform card always visible when logged in)
   wrap.style.display = 'flex';
   wrap.style.flexDirection = 'column';
+  // Platform upgrade card: only for free-plan users
+  if (platform) {
+    platform.style.display = _isFreePlan() ? 'block' : 'none';
+  }
   // Compliance card: show only when count > 0
   if (card) {
     if (complianceCount > 0) {
@@ -14673,6 +14702,10 @@ function selectObPlan(planKey) {
   _pmChipsDismissed['choose_plan'] = true;
   goToDashboard('', false);
   if (typeof _renderPmActionChips === 'function') setTimeout(_renderPmActionChips, 100);
+  // Refresh sidebar (hides platform upgrade card for premium/copilot)
+  if (typeof updateSidebarCards === 'function') updateSidebarCards(window._complianceAlertCount || 0);
+  // Refresh Subscription tab if it's rendered
+  if (typeof _syncSubscriptionTab === 'function') _syncSubscriptionTab();
   if (typeof showToast === 'function') showToast('Plan selected: ' + (planNames[planKey] || planKey) + ' 🎉', 'success');
   if (typeof recalcProgress === 'function') setTimeout(recalcProgress, 300);
 }
