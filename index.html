@@ -18412,23 +18412,28 @@ function _suppUploadCert(cert){
         +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10v2a1 1 0 001 1h8a1 1 0 001-1v-2"/><path d="M7 1v8M4 4l3-3 3 3"/></svg>Submit for review (demo)'
       +'</button>';
 
-    // Wire events
-    document.getElementById('certModalClose').onclick=function(){ overlay.remove(); };
-    document.getElementById('certFileInput').onchange=function(e){
+    // Wire events — use modal.querySelector since modal may not yet be in the document
+    var closeBtn = modal.querySelector('#certModalClose');
+    if (closeBtn) closeBtn.onclick = function(){ overlay.remove(); };
+    var fileInp = modal.querySelector('#certFileInput');
+    if (fileInp) fileInp.onchange = function(e){
       var f=e.target.files&&e.target.files[0]; if(!f) return;
       selectedFile=f; render();
     };
-    document.getElementById('certSubmitBtn').onclick=function(){
+    var submitBtn = modal.querySelector('#certSubmitBtn');
+    if (submitBtn) submitBtn.onclick = function(){
       if(!selectedFile) return;
       window._suppState.uploads[cert]=selectedFile.name;
       overlay.remove();
       _suppRefreshServices();
     };
     // Drag-drop
-    var dz=document.getElementById('certDropZone');
-    dz.ondragover=function(e){e.preventDefault();dz.style.borderColor='#1A5FC8';dz.style.background='#eff6ff';};
-    dz.ondragleave=function(){dz.style.borderColor='#d1d5db';dz.style.background='#f8fafc';};
-    dz.ondrop=function(e){e.preventDefault();var f=e.dataTransfer.files[0];if(f){selectedFile=f;render();}};
+    var dz = modal.querySelector('#certDropZone');
+    if (dz) {
+      dz.ondragover=function(e){e.preventDefault();dz.style.borderColor='#1A5FC8';dz.style.background='#eff6ff';};
+      dz.ondragleave=function(){dz.style.borderColor='#d1d5db';dz.style.background='#f8fafc';};
+      dz.ondrop=function(e){e.preventDefault();var f=e.dataTransfer.files[0];if(f){selectedFile=f;render();}};
+    }
   }
   render();
   overlay.onclick=function(e){if(e.target===overlay)overlay.remove();};
