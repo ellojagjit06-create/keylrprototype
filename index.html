@@ -17281,9 +17281,13 @@ function _suppBuildServiceAreaPage() {
   + '</div>';
 
   // Top-level tab pills (Default / Per-category) — outline pill style
+  // Count overrides for the badge
+  var overrideCount = Object.keys((window._suppArea && window._suppArea.overrides) || {}).length;
   var tabPills = '<div style="display:inline-flex;background:#e8ecf0;border-radius:999px;padding:3px;margin-bottom:18px;max-width:100%;">'
     + '<button class="area-tab-btn" data-tab="default" style="background:'+(st.tab==='default'?'#fff':'transparent')+';border:none;border-radius:999px;padding:7px 18px;font-size:13px;font-weight:600;color:'+(st.tab==='default'?'#0f172a':'#64748b')+';cursor:pointer;font-family:Inter,sans-serif;'+(st.tab==='default'?'box-shadow:0 1px 3px rgba(0,0,0,0.08);':'')+'">Default coverage</button>'
-    + '<button class="area-tab-btn" data-tab="percat" style="background:'+(st.tab==='percat'?'#fff':'transparent')+';border:none;border-radius:999px;padding:7px 18px;font-size:13px;font-weight:600;color:'+(st.tab==='percat'?'#0f172a':'#64748b')+';cursor:pointer;font-family:Inter,sans-serif;'+(st.tab==='percat'?'box-shadow:0 1px 3px rgba(0,0,0,0.08);':'')+'">Per-category</button>'
+    + '<button class="area-tab-btn" data-tab="percat" style="background:'+(st.tab==='percat'?'#fff':'transparent')+';border:none;border-radius:999px;padding:7px 18px;font-size:13px;font-weight:600;color:'+(st.tab==='percat'?'#0f172a':'#64748b')+';cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:7px;'+(st.tab==='percat'?'box-shadow:0 1px 3px rgba(0,0,0,0.08);':'')+'">Per-category'
+      + (overrideCount > 0 ? '<span style="font-size:11px;font-weight:700;background:'+(st.tab==='percat'?'#1A5FC8':'#94a3b8')+';color:#fff;border-radius:999px;padding:1px 7px;min-width:18px;text-align:center;">'+overrideCount+'</span>' : '')
+    + '</button>'
   + '</div>';
 
   var body = (st.tab === 'default')
@@ -17496,10 +17500,22 @@ function _suppBuildAreaCoverage(cov) {
 }
 
 // ── Per-category tab ────────────────────────────────────────────
+// Helper: look up the category (cat) label for a trade id
+function _suppTradeCatLabel(tradeId) {
+  for (var i = 0; i < _SUPP_TRADES.length; i++) {
+    var cat = _SUPP_TRADES[i];
+    for (var j = 0; j < cat.trades.length; j++) {
+      if (cat.trades[j].id === tradeId) return cat.cat; // e.g. 'GAS & HEATING'
+    }
+  }
+  return tradeId;
+}
+
 function _suppBuildAreaPerCatPanel() {
   var st = window._suppArea;
-  var trades = (window._suppState && _suppState.trades) || [];
-  if (!trades.length) {
+  // Read selected trades from the services state (same source as Pricing page)
+  var tradeObjs = (window._suppState && window._suppState.trades) || [];
+  if (!tradeObjs.length) {
     return '<div style="background:#fff;border:1.5px dashed #e2e8f0;border-radius:14px;padding:48px 20px;text-align:center;">'
       + '<div style="width:48px;height:48px;border-radius:50%;background:#EEF4FD;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">'
         + '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M14 3l5 5-9 9H5v-5z"/></svg>'
@@ -17514,40 +17530,53 @@ function _suppBuildAreaPerCatPanel() {
     + '<div style="font-size:12.5px;color:#1E3A8A;font-family:Inter,sans-serif;line-height:1.55;">Each service category uses your default coverage. Click a category below only if it should cover a different area (e.g. boiler installs only in South London but general gas repairs across all of London).</div>'
   + '</div>';
 
-  var cards = trades.map(function(tid){
-    var tr = _suppFindTrade(tid);
-    if (!tr) return '';
+  // SVG fragments
+  var pencilSvg = '<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 1.5l1.5 1.5-6 6H2v-1.5l6-6z"/></svg>';
+  var arrowSvg  = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.5 2l3 3-3 3"/></svg>';
+  var homeIcon  = '<svg width="12" height="12" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M1.5 6L6.5 1.5 11.5 6v5.5h-3V8H5v3.5H2v-5.5z"/></svg>';
+  var bldgIcon  = '<svg width="12" height="12" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="1" width="9" height="11" rx="0.5"/><path d="M4.5 4h1M4.5 6h1M4.5 8h1M7.5 4h1M7.5 6h1M7.5 8h1"/></svg>';
+
+  var cards = tradeObjs.map(function(tradeObj) {
+    // tradeObj = {id, label, isPrimary} — use .id to look up the full trade definition
+    var tid = tradeObj.id;
+    var catLabel = _suppTradeCatLabel(tid); // e.g. "GAS & HEATING"
     var resKey = tid + ':residential';
     var comKey = tid + ':commercial';
     var hasRes = Object.prototype.hasOwnProperty.call(st.overrides, resKey);
     var hasCom = Object.prototype.hasOwnProperty.call(st.overrides, comKey);
-    var resCount = hasRes ? _areaSizeOf(st.overrides[resKey]) : 0;
-    var comCount = hasCom ? _areaSizeOf(st.overrides[comKey]) : 0;
+    // Count: override count when set, else default coverage count
+    var resCount = hasRes ? _areaSizeOf(st.overrides[resKey]) : _areaSizeOf(st.defaults.residential || {});
+    var comCount = hasCom ? _areaSizeOf(st.overrides[comKey]) : _areaSizeOf(st.defaults.commercial || {});
     var usingDefault = !hasRes && !hasCom;
     var showRes = st.availSectors.indexOf('residential') >= 0;
     var showCom = st.availSectors.indexOf('commercial') >= 0;
 
-    function sectorPill(sector, count, has) {
-      var overridden = has;
-      var bg = overridden ? '#EEF4FD' : '#f1f5f9';
-      var col = overridden ? '#1A5FC8' : '#94a3b8';
-      var icon = sector === 'residential'
-        ? '<svg width="12" height="12" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M1.5 6L6.5 1.5 11.5 6v5.5h-3V8H5v3.5H2v-5.5z"/></svg>'
-        : '<svg width="12" height="12" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="1" width="9" height="11" rx="0.5"/><path d="M4.5 4h1M4.5 6h1M4.5 8h1M7.5 4h1M7.5 6h1M7.5 8h1"/></svg>';
-      return '<button class="area-cat-pill" data-tradeid="'+tid+'" data-sec="'+sector+'" style="background:'+bg+';border:none;border-radius:999px;padding:5px 10px 5px 11px;font-size:12px;font-weight:600;color:'+col+';cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:5px;">'
-        + icon + count
-        + '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.5 2l3 3-3 3"/></svg>'
+    function sectorPill(sector, count, hasOverride) {
+      var sectorIcon = sector === 'residential' ? homeIcon : bldgIcon;
+      var trailing   = hasOverride ? pencilSvg : arrowSvg;
+      var bg  = hasOverride ? '#EEF4FD' : '#f1f5f9';
+      var bd  = hasOverride ? '1px solid #BFDBFE' : '1px solid transparent';
+      var col = hasOverride ? '#1A5FC8' : '#64748b';
+      return '<button class="area-cat-pill" data-tradeid="'+tid+'" data-sec="'+sector
+        + '" style="background:'+bg+';border:'+bd+';border-radius:999px;padding:6px 10px 6px 11px;font-size:12.5px;font-weight:600;color:'+col
+        + ';cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:5px;line-height:1;white-space:nowrap;transition:background 0.13s;">'
+        + sectorIcon
+        + '<span>'+count+'</span>'
+        + trailing
       + '</button>';
     }
 
-    return '<div class="area-cat-row" style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:10px;">'
+    var rowBorder = usingDefault ? '#e2e8f0' : '#BFDBFE';
+    var subtitle  = usingDefault
+      ? '<span style="color:#94a3b8;">Using default coverage</span>'
+      : '<span style="color:#1A5FC8;font-weight:600;">Custom area set for this category</span>';
+
+    return '<div class="area-cat-row" style="background:#fff;border:1px solid '+rowBorder+';border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:10px;transition:border-color 0.15s;">'
       + '<div style="flex:1;min-width:0;">'
-        + '<div style="font-size:13px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;letter-spacing:0.04em;text-transform:uppercase;">'+(tr.label||tid)+'</div>'
-        + '<div style="font-size:12px;color:'+(usingDefault?'#94a3b8':'#1A5FC8')+';font-family:Inter,sans-serif;margin-top:2px;font-weight:'+(usingDefault?'500':'600')+';">'
-          + (usingDefault ? 'Using default coverage' : 'Custom area set')
-        + '</div>'
+        + '<div style="font-size:13px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;letter-spacing:0.04em;text-transform:uppercase;">'+catLabel+'</div>'
+        + '<div style="font-size:12px;font-family:Inter,sans-serif;margin-top:2px;">'+subtitle+'</div>'
       + '</div>'
-      + '<div class="area-cat-pills" style="display:flex;gap:6px;flex-shrink:0;">'
+      + '<div class="area-cat-pills" style="display:flex;gap:8px;flex-shrink:0;align-items:center;">'
         + (showRes ? sectorPill('residential', resCount, hasRes) : '')
         + (showCom ? sectorPill('commercial',  comCount, hasCom) : '')
       + '</div>'
@@ -17562,6 +17591,7 @@ function _suppBuildAreaCatModal(){
   var st = window._suppArea;
   var m = st.modal; if (!m) return '';
   var tr = _suppFindTrade(m.tradeId); if (!tr) return '';
+  var catLabel = _suppTradeCatLabel(m.tradeId); // e.g. "GAS & HEATING"
   var cov = _areaGetCoverage('percat');
   var hasOverride = _areaHasOverride(m.tradeId, m.sector);
   var sectorLabel = m.sector === 'residential' ? 'residential' : 'commercial';
@@ -17579,28 +17609,30 @@ function _suppBuildAreaCatModal(){
       + 'Start from default ('+_areaSizeOf(st.defaults[m.sector])+')'
     + '</button>';
 
-  return '<div id="areaCatModal" style="position:fixed;inset:0;z-index:9600;background:rgba(15,23,42,0.45);backdrop-filter:blur(4px);display:flex;align-items:flex-start;justify-content:center;padding:32px 16px;overflow-y:auto;animation:modalPop 0.18s ease;" onclick="if(event.target===this)_areaCloseModal()">'
-    + '<div style="background:#fafbfc;border-radius:16px;max-width:820px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.22);display:flex;flex-direction:column;max-height:calc(100vh - 64px);box-sizing:border-box;">'
+  return '<div id="areaCatModal" style="position:fixed;inset:0;z-index:9600;background:rgba(15,23,42,0.45);backdrop-filter:blur(4px);display:flex;align-items:flex-start;justify-content:center;padding:32px 16px;overflow-y:auto;overflow-x:hidden;animation:modalPop 0.18s ease;" onclick="if(event.target===this)_areaCloseModal()">'
+    + '<div style="background:#fafbfc;border-radius:16px;max-width:820px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.22);display:flex;flex-direction:column;max-height:calc(100vh - 64px);box-sizing:border-box;overflow:hidden;">'
       // Header
-      + '<div style="padding:18px 22px;border-bottom:1px solid #e2e8f0;background:#fff;border-radius:16px 16px 0 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">'
+      + '<div style="padding:18px 22px;border-bottom:1px solid #e2e8f0;background:#fff;border-radius:16px 16px 0 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;flex-shrink:0;">'
         + '<div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1;flex-wrap:wrap;">'
           + sectorIcon
-          + '<div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;letter-spacing:0.04em;text-transform:uppercase;">'+(tr.label||m.tradeId)+'</div>'
-          + '<span style="background:#EEF4FD;color:#1A5FC8;font-size:11px;font-weight:700;border-radius:999px;padding:3px 11px;font-family:Inter,sans-serif;">'+sectorLabel+'</span>'
+          + '<div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;letter-spacing:0.04em;text-transform:uppercase;">'+catLabel+'</div>'
+          + '<span style="background:#EEF4FD;color:#1A5FC8;font-size:11px;font-weight:700;border-radius:999px;padding:3px 11px;font-family:Inter,sans-serif;flex-shrink:0;">'+sectorLabel+'</span>'
         + '</div>'
         + '<button onclick="_areaCloseModal()" style="background:none;border:none;cursor:pointer;color:#94a3b8;padding:4px;display:flex;align-items:center;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3l12 12M15 3L3 15"/></svg></button>'
       + '</div>'
-      // Body
-      + '<div style="padding:20px 22px;overflow-y:auto;flex:1;">'
-        + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:14px;">Set a different area for this category only. Applies to every service in '+(tr.label||m.tradeId).toUpperCase()+'.</div>'
+      // Body — overflow-y scroll, overflow-x hidden to kill the horizontal bar
+      + '<div style="padding:20px 22px;overflow-y:auto;overflow-x:hidden;flex:1;box-sizing:border-box;width:100%;">'
+        + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:14px;">Set a different area for this category only. Applies to every service in '+catLabel+'.</div>'
         + '<div style="margin-bottom:18px;">'+ actionBtn +'</div>'
+        // Force the region grid inside modal to always be 1 or 2 cols, never overflow
+        + '<style>#areaCatModal .area-regions-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr)) !important;}#areaCatModal #areaMapCanvas{height:260px !important;}@media(max-width:520px){#areaCatModal .area-regions-grid{grid-template-columns:1fr !important;}}</style>'
         + _suppBuildAreaLayer1(cov, 'percat')
         + _suppBuildAreaMap()
         + _suppBuildAreaLayer3(cov)
         + _suppBuildAreaCoverage(cov)
       + '</div>'
       // Footer
-      + '<div style="padding:14px 22px;border-top:1px solid #e2e8f0;background:#fff;border-radius:0 0 16px 16px;display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;">'
+      + '<div style="padding:14px 22px;border-top:1px solid #e2e8f0;background:#fff;border-radius:0 0 16px 16px;display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;flex-shrink:0;">'
         + '<button onclick="_areaCloseModal()" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:Inter,sans-serif;">Cancel</button>'
         + '<button onclick="_areaSaveModal()" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Save override</button>'
       + '</div>'
@@ -18484,83 +18516,206 @@ function _suppBuildPricingPage(){
   var trades=st.trades;
   var totalSvcs=0; Object.keys(st.services).forEach(function(k){totalSvcs+=(st.services[k]||[]).length;});
   var pricedSvcs=Object.keys(st.pricing).length;
-  var activeTrade=(window._suppPricingTrade||(trades.length?trades[0].id:''));
+
+  // Normalise activeTrade — fall back to first trade with services, then first trade
+  var activeTrade=window._suppPricingTrade||'';
+  if(!activeTrade||!trades.find(function(t){return t.id===activeTrade;})){
+    var withSvcs=trades.find(function(t){return (st.services[t.id]||[]).length>0;});
+    activeTrade=(withSvcs||trades[0]||{}).id||'';
+    window._suppPricingTrade=activeTrade;
+  }
+
   var tr=_suppFindTrade(activeTrade);
-  var selSvcs=tr?(st.services[activeTrade]||[]).map(function(sid){return tr.svcs.find(function(s){return s.id===sid;});}).filter(Boolean):[];
-  return '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">'
-      +'<div><div style="font-size:11px;font-weight:700;color:#1A5FC8;letter-spacing:.06em;font-family:Inter,sans-serif;margin-bottom:4px;">CONFIGURE</div>'
-        +'<h1 style="font-size:26px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin:0 0 6px;">Pricing</h1>'
-        +'<p style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 20px;max-width:560px;">Set one definitive price for every service. Choose a model, configure time slots and day-of-week rates, and add global surcharges.</p>'
-      +'</div>'
-      +'<button onclick="_suppSaveServices()" style="background:#1A5FC8;color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:7px;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 2h8l2 2v8a1 1 0 01-1 1H3a1 1 0 01-1-1V2z"/><path d="M4 2v4h5V2M3 8h8"/></svg>Save all pricing</button>'
+  // Flatten groups → flat svcs array (the trade object uses groups[], not a top-level svcs[])
+  var allTradeSvcs = tr
+    ? (tr.groups
+        ? [].concat.apply([], tr.groups.map(function(g){return g.svcs;}))
+        : (tr.svcs||[]))
+    : [];
+  var selectedIds = st.services[activeTrade]||[];
+
+  // Build a Map of id→svc for O(1) lookup
+  var svcMap={};
+  allTradeSvcs.forEach(function(s){svcMap[s.id]=s;});
+
+  // Resolve selected IDs → service objects, preserving order they appear in the catalogue
+  var selSvcs = allTradeSvcs.filter(function(s){return selectedIds.indexOf(s.id)>=0;});
+
+  // Compute cheapest and most-used model for stats row
+  var modelCounts={};
+  var minPrice=null;
+  selSvcs.forEach(function(s){
+    var p=st.pricing[s.id]||{};
+    if(p.model) modelCounts[p.model]=(modelCounts[p.model]||0)+1;
+    if(p.price){var n=parseFloat(p.price);if(minPrice===null||n<minPrice) minPrice=n;}
+  });
+  var topModel=Object.keys(modelCounts).sort(function(a,b){return modelCounts[b]-modelCounts[a];})[0]||'—';
+  var cheapestStr=minPrice!==null?'£'+minPrice.toFixed(2):'—';
+
+  var header='<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px;flex-wrap:wrap;">'
+    +'<div>'
+      +'<div style="font-size:11px;font-weight:700;color:#1A5FC8;letter-spacing:.06em;font-family:Inter,sans-serif;margin-bottom:4px;">CONFIGURE</div>'
+      +'<h1 style="font-size:26px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;margin:0 0 6px;">Pricing</h1>'
+      +'<p style="font-size:13.5px;color:#64748b;font-family:Inter,sans-serif;margin:0 0 20px;max-width:560px;">Set one definitive price for every service. Choose a model, configure time slots and day-of-week rates, and add global surcharges.</p>'
     +'</div>'
-    // Stats
-    +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;">'
-      +[{l:'SERVICES',v:String(totalSvcs)},
-        {l:'MOST COMMON MODEL',v:pricedSvcs?'Model A':'—'},
-        {l:'CHEAPEST SERVICE',v:'—'},
-        {l:'MIN CALL-OUT',v:'—'}
-      ].map(function(s){
-        return '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;">'
-          +'<div style="font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:.06em;font-family:Inter,sans-serif;margin-bottom:10px;">'+s.l+'</div>'
-          +'<div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+s.v+'</div>'
+    +'<button onclick="_suppSaveServices()" style="background:#1A5FC8;color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;gap:7px;flex-shrink:0;">'
+      +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 2h8l2 2v8a1 1 0 01-1 1H3a1 1 0 01-1-1V2z"/><path d="M4 2v4h5V2M3 8h8"/></svg>Save all pricing</button>'
+  +'</div>';
+
+  var stats='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:20px;">'
+    +[{l:'SERVICES',v:String(totalSvcs)},
+      {l:'PRICED',v:pricedSvcs+'/'+totalSvcs},
+      {l:'CHEAPEST',v:cheapestStr},
+      {l:'COMMON MODEL',v:topModel}
+    ].map(function(s){
+      return '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;">'
+        +'<div style="font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:.06em;font-family:Inter,sans-serif;margin-bottom:10px;">'+s.l+'</div>'
+        +'<div style="font-size:22px;font-weight:800;color:#0f172a;font-family:Fraunces,serif;">'+s.v+'</div>'
+      +'</div>';
+    }).join('')
+  +'</div>';
+
+  if(!totalSvcs){
+    return header+stats
+      +'<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:40px;text-align:center;">'
+        +'<div style="font-size:32px;margin-bottom:12px;">💰</div>'
+        +'<div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:6px;">No services selected yet</div>'
+        +'<div style="font-size:13px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:16px;">Go to Services first to choose your trades and tick the services you offer.</div>'
+        +'<button class="supp-goto-svcs" style="background:#1A5FC8;color:#fff;border:none;border-radius:9px;padding:10px 20px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Go to Services</button>'
+      +'</div>';
+  }
+
+  // ── Trade tab bar ──
+  var tabBar='<div style="display:flex;gap:0;border-bottom:1.5px solid #e8edf2;padding:0 20px;overflow-x:auto;">'
+    +(trades.length?trades.map(function(t){
+      var isAct=t.id===activeTrade;
+      var cnt=(st.services[t.id]||[]).length;
+      return '<button class="supp-price-tab" data-tradeid="'+t.id
+        +'" style="padding:12px 16px;border:none;border-bottom:2.5px solid '+(isAct?'#1A5FC8':'transparent')
+        +';font-size:13px;font-weight:'+(isAct?'700':'500')+';color:'+(isAct?'#1A5FC8':'#64748b')
+        +';cursor:pointer;background:none;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;">'
+        +t.label
+        +(cnt?'<span style="background:'+(isAct?'#1A5FC8':'#e2e8f0')+';color:'+(isAct?'#fff':'#64748b')+';border-radius:999px;padding:1px 7px;font-size:11px;font-weight:700;">'+cnt+'</span>':'')
+      +'</button>';
+    }).join(''):'')
+  +'</div>';
+
+  // ── Search bar ──
+  var searchBar='<div style="padding:14px 20px;border-bottom:1px solid #f1f5f9;">'
+    +'<div style="position:relative;max-width:400px;">'
+      +'<svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);" width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.8"><circle cx="6" cy="6" r="4.5"/><path d="M10 10l2.5 2.5"/></svg>'
+      +'<input id="pricingSearch" placeholder="Search services in this trade..." oninput="_suppPricingSearch(this.value)" style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:9px;padding:8px 12px 8px 30px;font-size:13px;font-family:Inter,sans-serif;outline:none;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\'#e2e8f0\'">'
+    +'</div>'
+  +'</div>';
+
+  // ── Service rows — grouped by group name ──
+  function buildServiceRow(svc){
+    var pricing=st.pricing[svc.id]||{};
+    var model=pricing.model||''; var price=pricing.price||'';
+    var hasPricing=!!(model||price);
+    var compColor=svc.comp==='mandatory'?'#ef4444':svc.comp==='certified'?'#f97316':svc.comp==='recommended'?'#eab308':'#22c55e';
+    return '<div class="pricing-svc-row" data-svcid="'+svc.id+'" style="display:flex;align-items:center;gap:14px;padding:13px 20px;border-bottom:1px solid #f8fafc;transition:background 0.1s;" onmouseover="this.style.background=\'#fafbff\'" onmouseout="this.style.background=\'\'">'
+      +'<div style="width:38px;height:38px;border-radius:10px;background:'+(hasPricing?'#E6EEFB':'#f1f5f9')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.15s;">'
+        +'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="'+(hasPricing?'#1A5FC8':'#94a3b8')+'" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5v1M8 10v.5M5.5 7a2.5 2.5 0 015 0c0 1-1 1.5-2.5 2s-2.5.5-2.5 2a2.5 2.5 0 005 0"/></svg>'
+      +'</div>'
+      +'<div style="flex:1;min-width:0;">'
+        +'<div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+svc.l+'</div>'
+        +'<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:2px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+          +(svc.comp?'<span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:'+compColor+';flex-shrink:0;"></span>'+svc.comp.charAt(0).toUpperCase()+svc.comp.slice(1)+'</span>':'')
+          +(model?'<span style="background:#f1f5f9;color:#374151;border-radius:4px;padding:1px 7px;font-size:11.5px;font-weight:600;font-family:Inter,sans-serif;">'+model+'</span>':'')
+          +(price?'<span style="color:#0f172a;font-weight:700;font-size:12.5px;">£'+price+'</span>':'')
+          +(!hasPricing?'<span style="color:#f59e0b;font-size:11.5px;font-weight:600;">Not priced yet</span>':'')
+        +'</div>'
+      +'</div>'
+      +(hasPricing?'<div style="font-size:13px;font-weight:700;color:#1A5FC8;font-family:Fraunces,serif;flex-shrink:0;min-width:52px;text-align:right;">£'+price+'</div>':'')
+      +'<button class="supp-cfg-btn" data-sid="'+svc.id+'" data-slbl="'+_suppEsc(svc.l)+'" style="border:1.5px solid '+(hasPricing?'#1A5FC8':'#e2e8f0')+';border-radius:9px;padding:7px 14px;font-size:12.5px;font-weight:600;color:'+(hasPricing?'#1A5FC8':'#374151')+';cursor:pointer;background:#fff;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;flex-shrink:0;transition:all 0.15s;">'
+        +(hasPricing?'Edit':'Configure')+' <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.5 5.5h4M6.5 3.5l2 2-2 2"/></svg>'
+      +'</button>'
+    +'</div>';
+  }
+
+  var serviceBody='';
+  if(selSvcs.length===0){
+    serviceBody='<div style="padding:32px 20px;text-align:center;color:#94a3b8;font-family:Inter,sans-serif;font-size:13px;">'
+      +'No services selected for this trade yet. '
+      +'<button class="supp-goto-svcs" style="background:none;border:none;color:#1A5FC8;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;font-weight:600;text-decoration:underline;">Go to Services</button>'
+    +'</div>';
+  } else {
+    // Group services by their group heading
+    if(tr&&tr.groups){
+      tr.groups.forEach(function(grp){
+        var grpSvcs=grp.svcs.filter(function(s){return selectedIds.indexOf(s.id)>=0;});
+        if(!grpSvcs.length) return;
+        serviceBody+='<div style="padding:12px 20px 4px;">'
+          +'<div style="font-size:10.5px;font-weight:700;color:#94a3b8;letter-spacing:.07em;font-family:Inter,sans-serif;">'+grp.g.toUpperCase()+'</div>'
         +'</div>';
-      }).join('')
-    +'</div>'
-    // No services prompt
-    +(!totalSvcs?'<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:40px;text-align:center;">'
-      +'<div style="font-size:32px;margin-bottom:12px;">💰</div>'
-      +'<div style="font-size:15px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:6px;">No services selected yet</div>'
-      +'<div style="font-size:13px;color:#94a3b8;font-family:Inter,sans-serif;margin-bottom:16px;">Go to Services first to choose your trades and tick the services you offer.</div>'
-      +'<button class="supp-goto-svcs" style="background:#1A5FC8;color:#fff;border:none;border-radius:9px;padding:10px 20px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Go to Services</button>'
-    +'</div>'
-    // Trade tabs + service list
-    :'<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;overflow:hidden;">'
-      // Tab bar
-      +'<div style="display:flex;gap:0;border-bottom:1.5px solid #e8edf2;padding:0 20px;">'
-        +(trades.length?trades.map(function(t){
-          var isAct=t.id===activeTrade;
-          var cnt=(st.services[t.id]||[]).length;
-          return '<button class="supp-price-tab" data-tradeid="'+t.id+'" style="padding:12px 16px;border:none;border-bottom:2.5px solid '+(isAct?'#1A5FC8':'transparent')+';font-size:13px;font-weight:'+(isAct?'700':'500')+';color:'+(isAct?'#1A5FC8':'#64748b')+';cursor:pointer;background:none;font-family:Inter,sans-serif;display:flex;align-items:center;gap:7px;white-space:nowrap;">'
-            +t.label
-            +(cnt?'<span style="background:#1A5FC8;color:#fff;border-radius:999px;padding:1px 7px;font-size:11px;font-weight:700;">'+cnt+'</span>':'')
-          +'</button>';
-        }).join(''):'')
-      +'</div>'
-      // Search bar
-      +'<div style="padding:14px 20px;border-bottom:1px solid #f1f5f9;">'
-        +'<div style="position:relative;max-width:400px;">'
-          +'<svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);" width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.8"><circle cx="6" cy="6" r="4.5"/><path d="M10 10l2.5 2.5"/></svg>'
-          +'<input placeholder="Search services in this trade..." style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:9px;padding:8px 12px 8px 30px;font-size:13px;font-family:Inter,sans-serif;outline:none;">'
-        +'</div>'
-      +'</div>'
-      // Service rows
-      +(selSvcs.length
-        ?'<div style="padding:0 20px 16px;">'
-          +selSvcs.map(function(svc){
-            var pricing=st.pricing[svc.id]||{};
-            var model=pricing.model||''; var price=pricing.price||'';
-            return '<div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #f8fafc;">'
-              +'<div style="width:36px;height:36px;border-radius:10px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
-                +'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1A5FC8" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5v1M8 10v.5M5.5 7a2.5 2.5 0 015 0c0 1-1 1.5-2.5 2s-2.5.5-2.5 2a2.5 2.5 0 005 0"/></svg>'
-              +'</div>'
-              +'<div style="flex:1;min-width:0;">'
-                +'<div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">'+svc.l+'</div>'
-                +'<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:1px;">'
-                  +(svc.cert?'<span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:'+_suppCompColor(svc.comp)+';"></span>'+svc.comp.charAt(0).toUpperCase()+svc.comp.slice(1)+'</span>  ':'')
-                  +(model?'  '+model:'')
-                  +(price?'  •  £'+price:'')
-                +'</div>'
-              +'</div>'
-              +'<button class="supp-cfg-btn" data-sid="'+svc.id+'" data-slbl="'+svc.l+'" style="border:1.5px solid #e2e8f0;border-radius:9px;padding:7px 14px;font-size:12.5px;font-weight:600;color:#374151;cursor:pointer;background:#fff;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;">'
-                +'Configure <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.5 5.5h4M6.5 3.5l2 2-2 2"/></svg>'
-              +'</button>'
-            +'</div>';
-          }).join('')
-        +'</div>'
-        :'<div style="padding:32px 20px;text-align:center;color:#94a3b8;font-family:Inter,sans-serif;font-size:13px;">No services selected for this trade yet. <button class="supp-goto-svcs" style="background:none;border:none;color:#1A5FC8;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;font-weight:600;text-decoration:underline;">Go to Services</button></div>'
-      )
-    +'</div>');
+        serviceBody+=grpSvcs.map(buildServiceRow).join('');
+      });
+    } else {
+      serviceBody=selSvcs.map(buildServiceRow).join('');
+    }
+  }
+
+  return header+stats
+    +'<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;overflow:hidden;">'
+      +tabBar
+      +searchBar
+      +'<div id="pricingSvcList">'+serviceBody+'</div>'
+    +'</div>';
+}
+
+function _suppPricingSearch(q){
+  var st=window._suppState;
+  var activeTrade=window._suppPricingTrade||'';
+  var tr=_suppFindTrade(activeTrade); if(!tr) return;
+  var allSvcs=tr.groups?[].concat.apply([],tr.groups.map(function(g){return g.svcs;})):(tr.svcs||[]);
+  var selectedIds=st.services[activeTrade]||[];
+  var query=(q||'').toLowerCase().trim();
+  var list=document.getElementById('pricingSvcList'); if(!list) return;
+  // Re-render filtered service rows
+  var html='';
+  if(tr.groups){
+    tr.groups.forEach(function(grp){
+      var items=grp.svcs.filter(function(s){return selectedIds.indexOf(s.id)>=0&&(!query||s.l.toLowerCase().indexOf(query)>=0);});
+      if(!items.length) return;
+      html+='<div style="padding:12px 20px 4px;">'
+        +'<div style="font-size:10.5px;font-weight:700;color:#94a3b8;letter-spacing:.07em;font-family:Inter,sans-serif;">'+grp.g.toUpperCase()+'</div>'
+      +'</div>';
+      items.forEach(function(svc){
+        var pricing=st.pricing[svc.id]||{};
+        var model=pricing.model||''; var price=pricing.price||'';
+        var hasPricing=!!(model||price);
+        var compColor=svc.comp==='mandatory'?'#ef4444':svc.comp==='certified'?'#f97316':svc.comp==='recommended'?'#eab308':'#22c55e';
+        html+='<div class="pricing-svc-row" data-svcid="'+svc.id+'" style="display:flex;align-items:center;gap:14px;padding:13px 20px;border-bottom:1px solid #f8fafc;" onmouseover="this.style.background=\'#fafbff\'" onmouseout="this.style.background=\'\'">'
+          +'<div style="width:38px;height:38px;border-radius:10px;background:'+(hasPricing?'#E6EEFB':'#f1f5f9')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+            +'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="'+(hasPricing?'#1A5FC8':'#94a3b8')+'" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5v1M8 10v.5M5.5 7a2.5 2.5 0 015 0c0 1-1 1.5-2.5 2s-2.5.5-2.5 2a2.5 2.5 0 005 0"/></svg>'
+          +'</div>'
+          +'<div style="flex:1;min-width:0;">'
+            +'<div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+svc.l+'</div>'
+            +'<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:2px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+              +(svc.comp?'<span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:'+compColor+';flex-shrink:0;"></span>'+svc.comp.charAt(0).toUpperCase()+svc.comp.slice(1)+'</span>':'')
+              +(model?'<span style="background:#f1f5f9;color:#374151;border-radius:4px;padding:1px 7px;font-size:11.5px;font-weight:600;">'+model+'</span>':'')
+              +(price?'<span style="color:#0f172a;font-weight:700;font-size:12.5px;">£'+price+'</span>':'')
+              +(!hasPricing?'<span style="color:#f59e0b;font-size:11.5px;font-weight:600;">Not priced yet</span>':'')
+            +'</div>'
+          +'</div>'
+          +(hasPricing?'<div style="font-size:13px;font-weight:700;color:#1A5FC8;font-family:Fraunces,serif;flex-shrink:0;min-width:52px;text-align:right;">£'+price+'</div>':'')
+          +'<button class="supp-cfg-btn" data-sid="'+svc.id+'" data-slbl="'+_suppEsc(svc.l)+'" style="border:1.5px solid '+(hasPricing?'#1A5FC8':'#e2e8f0')+';border-radius:9px;padding:7px 14px;font-size:12.5px;font-weight:600;color:'+(hasPricing?'#1A5FC8':'#374151')+';cursor:pointer;background:#fff;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;flex-shrink:0;">'
+            +(hasPricing?'Edit':'Configure')+' <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.5 5.5h4M6.5 3.5l2 2-2 2"/></svg>'
+          +'</button>'
+        +'</div>';
+      });
+    });
+  } else {
+    allSvcs.filter(function(s){return selectedIds.indexOf(s.id)>=0&&(!query||s.l.toLowerCase().indexOf(query)>=0);})
+    .forEach(function(svc){
+      var pricing=st.pricing[svc.id]||{}; var hasPricing=!!(pricing.model||pricing.price);
+      html+='<div class="pricing-svc-row" style="padding:13px 20px;border-bottom:1px solid #f8fafc;">'
+        +'<span style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;">'+svc.l+'</span>'
+      +'</div>';
+    });
+  }
+  list.innerHTML=html||'<div style="padding:32px 20px;text-align:center;color:#94a3b8;font-family:Inter,sans-serif;font-size:13px;">No services match your search.</div>';
 }
 
 function _suppWirePricingPage(){
@@ -18568,7 +18723,11 @@ function _suppWirePricingPage(){
   if(!mainEl) return;
   mainEl.addEventListener('click',function(e){
     var tab=e.target.closest('.supp-price-tab');
-    if(tab){ window._suppPricingTrade=tab.dataset.tradeid; mainEl.innerHTML='<div style="padding:24px clamp(20px,5vw,80px) 48px;width:100%;box-sizing:border-box;">'+_suppBuildPricingPage()+'</div>'; _suppWirePricingPage(); return; }
+    if(tab){
+      window._suppPricingTrade=tab.dataset.tradeid;
+      mainEl.innerHTML='<div style="padding:24px clamp(20px,5vw,80px) 48px;width:100%;box-sizing:border-box;">'+_suppBuildPricingPage()+'</div>';
+      _suppWirePricingPage(); return;
+    }
     var cfgBtn=e.target.closest('.supp-cfg-btn');
     if(cfgBtn){ _suppOpenPricingModal(cfgBtn.dataset.sid,cfgBtn.dataset.slbl); return; }
     var gsvBtn=e.target.closest('.supp-goto-svcs');
