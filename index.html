@@ -17263,6 +17263,20 @@ function _areaRegionState(region, cov) {
 // ── Render: page ────────────────────────────────────────────────
 function _suppBuildServiceAreaPage() {
   var st = _areaInitState();
+
+  // Always refresh availSectors from current onboarding state so sector cards
+  // appear correctly even if _suppArea was initialised before sector was set.
+  var so = window._suppOnboard || {};
+  // Default to 'both' when sector is unset — a real user sets this during onboarding
+  var effectiveSector = so.sector || 'both';
+  var freshSectors = (effectiveSector === 'both') ? ['residential','commercial']
+                   : (effectiveSector === 'commercial') ? ['commercial']
+                   : ['residential'];
+  // If the available sectors changed, reset the active sector too if needed
+  if (JSON.stringify(freshSectors) !== JSON.stringify(st.availSectors)) {
+    st.availSectors = freshSectors;
+    if (freshSectors.indexOf(st.sector) < 0) st.sector = freshSectors[0];
+  }
   var showSectorTabs = st.availSectors.length > 1;
 
   // Header
@@ -17328,7 +17342,7 @@ function _suppBuildAreaDefaultPanel(showSectorTabs) {
           + '<div style="font-size:14px;font-weight:700;color:'+col+';">'+label+'</div>'
           + '<div style="font-size:11.5px;color:'+sub+';margin-top:1px;">'+count+' district'+(count===1?'':'s')+' selected</div>'
         + '</div>'
-        + (active ? '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="2.2" style="flex-shrink:0;"><circle cx="9" cy="9" r="7"/><path d="M5.5 9l2.5 2.5L12.5 6.5"/></svg>' : '<span style="font-size:10.5px;font-weight:700;background:'+bCol+';color:'+bTxt+';border-radius:999px;padding:3px 9px;letter-spacing:0.03em;flex-shrink:0;">INACTIVE</span>')
+        + (active ? '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="2.2" style="flex-shrink:0;"><circle cx="9" cy="9" r="7"/><path d="M5.5 9l2.5 2.5L12.5 6.5"/></svg>' : '')
       + '</button>';
     }
     var resIcon = '<path d="M2 8l7-6 7 6M4 7v8h10V7"/><path d="M7.5 15v-4h3v4"/>';
