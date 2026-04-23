@@ -17526,15 +17526,50 @@ function _suppTradeCatLabel(tradeId) {
 
 function _suppBuildAreaPerCatPanel() {
   var st = window._suppArea;
-  // Read selected trades from the services state (same source as Pricing page)
+  // Primary source: trades added via the Services tab
   var tradeObjs = (window._suppState && window._suppState.trades) || [];
+
+  // Fallback: if no trades in suppState yet, synthesise from _suppOnboard trade fields
+  // (set during onboarding) so the per-cat tab is populated even before Services is visited
+  if (!tradeObjs.length) {
+    var ob = window._suppOnboard || {};
+    var fallback = [];
+    if (ob.primaryTrade) {
+      // Find the trade object by label match
+      for (var ci = 0; ci < (window._SUPP_TRADES||[]).length; ci++) {
+        var cat = window._SUPP_TRADES[ci];
+        for (var ti = 0; ti < cat.trades.length; ti++) {
+          var t = cat.trades[ti];
+          if (t.label === ob.primaryTrade) {
+            fallback.push({id: t.id, label: t.label, isPrimary: true});
+          }
+        }
+      }
+    }
+    if (ob.secondaryTrades && ob.secondaryTrades.length) {
+      ob.secondaryTrades.forEach(function(st_label){
+        for (var ci = 0; ci < (window._SUPP_TRADES||[]).length; ci++) {
+          var cat = window._SUPP_TRADES[ci];
+          for (var ti = 0; ti < cat.trades.length; ti++) {
+            var t = cat.trades[ti];
+            if (t.label === st_label && !fallback.find(function(f){return f.id===t.id;})) {
+              fallback.push({id: t.id, label: t.label, isPrimary: false});
+            }
+          }
+        }
+      });
+    }
+    tradeObjs = fallback;
+  }
+
   if (!tradeObjs.length) {
     return '<div style="background:#fff;border:1.5px dashed #e2e8f0;border-radius:14px;padding:48px 20px;text-align:center;">'
       + '<div style="width:48px;height:48px;border-radius:50%;background:#EEF4FD;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">'
         + '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M14 3l5 5-9 9H5v-5z"/></svg>'
       + '</div>'
       + '<div style="font-size:14.5px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;margin-bottom:4px;">No service categories yet</div>'
-      + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;">Add services in the Services tab to set per-category area overrides.</div>'
+      + '<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-bottom:16px;">Add your trades in the Services tab — they\'ll appear here automatically.</div>'
+      + '<button onclick="_suppNavTo(\'svcs\')" style="background:#1A5FC8;color:#fff;border:none;border-radius:9px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Go to Services</button>'
     + '</div>';
   }
 
