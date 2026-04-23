@@ -19048,23 +19048,6 @@ function _suppBuildProfilePage(){
       +'<div style="flex:1;min-width:0;">'
         +'<div style="font-size:16px;font-weight:700;color:#0f172a;font-family:Inter,sans-serif;">'+(nm||'—')+'</div>'
         +'<div style="font-size:13px;color:#64748b;font-family:Inter,sans-serif;margin-top:2px;">'+(em||'—')+'</div>'
-        +'<div style="display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap;">'
-          +'<span style="font-size:11.5px;font-weight:700;background:'+(isCo?'#eff6ff':'#f0fdf4')+';color:'+(isCo?'#1A5FC8':'#16a34a')+';border-radius:6px;padding:2px 10px;font-family:Inter,sans-serif;">'+(isCo?'Company':'Sole Trader')+'</span>'
-          + (function(){
-              var u = window._user || {};
-              if (!em) return '';
-              if (u._emailVerified) {
-                return '<div style="display:inline-flex;align-items:center;gap:5px;background:#d1fae5;border:1px solid #a7f3d0;border-radius:999px;padding:3px 10px;">'
-                  + '<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#10b981" stroke-width="2"><path d="M1.5 5.5l3 3 5-5"/></svg>'
-                  + '<span style="font-size:11.5px;font-weight:600;color:#065f46;font-family:Inter,sans-serif;">Email verified</span>'
-                + '</div>';
-              }
-              return '<div style="display:inline-flex;align-items:center;gap:5px;background:#fefce8;border:1px solid #fde047;border-radius:999px;padding:3px 10px;">'
-                + '<span style="width:6px;height:6px;border-radius:50%;background:#eab308;"></span>'
-                + '<span style="font-size:11.5px;font-weight:600;color:#854d0e;font-family:Inter,sans-serif;">Email not verified</span>'
-              + '</div>';
-            })()
-        +'</div>'
       +'</div>'
       +'<button class="supp-prof-save" data-msg="Profile saved" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;flex-shrink:0;">Save changes</button>'
     +'</div>'
