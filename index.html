@@ -18968,11 +18968,22 @@ function _pDefaults(existing){
       {name:'Afternoon', start:'13:00', end:'18:00'},
       {name:'Evening',   start:'18:00', end:'22:00'}
     ],
-    pricingMode: 'single', // 'single' | 'day' | 'matrix'
-    cells: {},             // Model A: key → {price, avail}
-    hCells: {},            // Model B: key → {callout, perHour, per30, dayRate, avail}
+    pricingMode: 'single',
+    cells: {},
+    hCells: {},
+    // Model C
+    bandVariable: '',   // 'bedrooms' | 'windows' | 'circuits' | 'appliances' | 'rooms'
+    bandDefs: [         // [{name, from, to}]  — user-defined bands
+      {name:'Studio / 1 bed', from:'1',  to:'1'},
+      {name:'2 bedrooms',     from:'2',  to:'2'},
+      {name:'3 bedrooms',     from:'3',  to:'3'},
+      {name:'4 bedrooms',     from:'4',  to:'4'},
+      {name:'5+ bedrooms',    from:'5',  to:''}
+    ],
+    bCells: {},         // key: 'bandIdx:dayType' → {price:'', avail:true}
+    addOns: [],         // [{name, price}]
     uplifts: {appliance:'', bedroom:'', bathroom:'', floor:''},
-    materials: 'included', // 'included' | 'separate' | 'capped'
+    materials: 'included',
     materialsCap: '',
     materialsMarkup: '',
     minCharge: '',
@@ -19012,6 +19023,9 @@ function _suppOpenPricingModal(svcId, svcLabel){
       } else if(_screen === 'config' && p.modelId === 'B'){
         hBadge.style.display = 'inline-flex';
         hBadge.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#1A5FC8" stroke-width="1.8"><circle cx="6" cy="6" r="4.5"/><path d="M6 3.5V6l2 1.2"/></svg> Model B — Hourly rate';
+      } else if(_screen === 'config' && p.modelId === 'C'){
+        hBadge.style.display = 'inline-flex';
+        hBadge.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#1A5FC8" stroke-width="1.8"><rect x="1" y="8" width="2.5" height="3" rx="0.4"/><rect x="4.75" y="5" width="2.5" height="6" rx="0.4"/><rect x="8.5" y="2" width="2.5" height="9" rx="0.4"/></svg> Model C — Tiered / Banded';
       } else {
         hBadge.style.display = 'none';
       }
@@ -19067,6 +19081,7 @@ function _suppOpenPricingModal(svcId, svcLabel){
     var body = overlay.querySelector('.sp-body');
     if(_screen === 'config' && p.modelId === 'A')      body.innerHTML = renderModelA();
     else if(_screen === 'config' && p.modelId === 'B') body.innerHTML = renderModelB();
+    else if(_screen === 'config' && p.modelId === 'C') body.innerHTML = renderModelC();
     else                                                body.innerHTML = renderModelSelect();
     updateHeader();
     updateFooter();
@@ -19078,7 +19093,7 @@ function _suppOpenPricingModal(svcId, svcLabel){
       + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;">'
       + _PRICING_MODELS.map(function(m){
           var isAct = p.modelId === m.id;
-          var avail = m.id === 'A' || m.id === 'B';
+          var avail = m.id === 'A' || m.id === 'B' || m.id === 'C';
           var iconColor = isAct ? '#1A5FC8' : (avail ? '#64748b' : '#cbd5e1');
           return '<div class="sp-model-card" data-mid="'+m.id+'" style="position:relative;display:flex;flex-direction:column;gap:10px;border:1.5px solid '+(isAct?'#1A5FC8':'#e2e8f0')+';border-radius:12px;padding:14px 16px;cursor:'+(avail?'pointer':'default')+';background:'+(isAct?'#EEF4FD':'#fff')+';transition:all .12s;opacity:'+(avail?'1':'0.5')+';">'
             + (!avail?'<span style="position:absolute;top:10px;right:10px;font-size:10px;font-weight:700;background:#f1f5f9;color:#94a3b8;border-radius:4px;padding:2px 7px;">Soon</span>':'')
@@ -19502,6 +19517,184 @@ function _suppOpenPricingModal(svcId, svcLabel){
     // PM preview
     return slotsHtml + modeHtml + gridHtml + matsHtml + optionsHtml;
   }
+  // ── Model C: Tiered / Banded ────────────────────────────────
+  function renderModelC(){
+    var BAND_VARS = [
+      {id:'bedrooms',   label:'Bedrooms',       example:'Studio/1 bed, 2 bed, 3 bed, 4 bed, 5+'},
+      {id:'windows',    label:'Window count',   example:'1–5, 6–10, 11–20, 21+'},
+      {id:'circuits',   label:'Circuits',       example:'1–10, 11–20, 21–40, 40+'},
+      {id:'appliances', label:'Appliances',     example:'1–3, 4–6, 7–10, 11+'},
+      {id:'rooms',      label:'Rooms / Areas',  example:'1–3, 4–6, 7–9, 10+'}
+    ];
+    var days = _DAY_TYPES;
+    var bands = p.bandDefs && p.bandDefs.length ? p.bandDefs : [];
+
+    // ── Band variable card ──────────────────────────────────
+    var varHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:14px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#EEF4FD;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M2.5 12V5l4-4 4 4v7H9V9H6v3z"/></svg>'
+        + '</div>'
+        + '<div>'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">Band variable</div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;line-height:1.4;">What measurable property attribute defines each pricing tier?</div>'
+        + '</div>'
+      + '</div>'
+      + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;">'
+        + BAND_VARS.map(function(bv){
+            var sel = p.bandVariable === bv.id;
+            return '<div class="sp-bandvar-btn" data-bvid="'+bv.id+'" style="border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:9px;padding:11px 13px;cursor:pointer;background:'+(sel?'#EEF4FD':'#f8fafc')+';transition:all .12s;position:relative;">'
+              + (sel?'<span style="position:absolute;top:7px;right:7px;width:14px;height:14px;background:#1A5FC8;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="#fff" stroke-width="2"><path d="M1 4l2 2 4-4"/></svg></span>':'')
+              + '<div style="font-size:13px;font-weight:700;color:'+(sel?'#1A5FC8':'#0f172a')+';">'+bv.label+'</div>'
+              + '<div style="font-size:11px;color:#94a3b8;margin-top:3px;line-height:1.3;">'+bv.example+'</div>'
+            + '</div>';
+          }).join('')
+      + '</div>'
+    + '</div>';
+
+    // ── Band definitions ────────────────────────────────────
+    var selectedVar = BAND_VARS.find(function(bv){return bv.id===p.bandVariable;});
+    var bandsHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:14px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#EEF4FD;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><rect x="1" y="8.5" width="4" height="5" rx="0.6"/><rect x="5.5" y="5" width="4" height="8.5" rx="0.6"/><rect x="10" y="1.5" width="4" height="12" rx="0.6"/></svg>'
+        + '</div>'
+        + '<div style="flex:1;">'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">Define bands</div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;line-height:1.4;">Name each tier and set its range'+(selectedVar?' for '+selectedVar.label.toLowerCase():'')+'. The system matches the PM\'s property to the right band.</div>'
+        + '</div>'
+      + '</div>'
+      + '<div id="sp-band-list">'
+        + bands.map(function(b, i){
+            return '<div class="sp-band-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+              + '<span style="font-size:11px;font-weight:700;color:#94a3b8;width:20px;text-align:center;flex-shrink:0;">'+(i+1)+'</span>'
+              + '<input class="sp-band-name" data-idx="'+i+'" value="'+b.name+'" placeholder="e.g. 3 bedrooms" style="flex:2;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:Inter,sans-serif;outline:none;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+              + '<input class="sp-band-from" data-idx="'+i+'" value="'+b.from+'" placeholder="From" style="width:70px;flex-shrink:0;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 8px;font-size:13px;font-family:Inter,sans-serif;outline:none;text-align:center;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+              + '<span style="font-size:11.5px;color:#94a3b8;flex-shrink:0;">–</span>'
+              + '<input class="sp-band-to" data-idx="'+i+'" value="'+b.to+'" placeholder="To / +" style="width:70px;flex-shrink:0;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 8px;font-size:13px;font-family:Inter,sans-serif;outline:none;text-align:center;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+              + (bands.length>1?'<button class="sp-del-band" data-idx="'+i+'" style="background:none;border:1.5px solid #fecaca;border-radius:7px;width:32px;height:32px;cursor:pointer;color:#ef4444;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l9 9M10 1l-9 9"/></svg></button>':'<div style="width:32px;flex-shrink:0;"></div>')
+            + '</div>';
+          }).join('')
+      + '</div>'
+      + '<button class="sp-add-band" style="background:none;border:1.5px dashed #d1d5db;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:600;color:#64748b;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:6px;margin-top:4px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><path d="M5.5 1v9M1 5.5h9"/></svg>Add band</button>'
+    + '</div>';
+
+    // ── Price grid: bands × day types ──────────────────────
+    function bCellKey(idx, day){ return idx+':'+day; }
+    function getBCell(idx, day){
+      var k = bCellKey(idx, day);
+      if(!p.bCells[k]) p.bCells[k] = {price:'', avail:true};
+      return p.bCells[k];
+    }
+    var gridHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:14px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#EEF4FD;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><circle cx="7.5" cy="7.5" r="6"/><path d="M7.5 5v1.5a1.5 1.5 0 010 3V11M6 5h2M6 11h2"/></svg>'
+        + '</div>'
+        + '<div>'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">Set prices per band</div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;line-height:1.4;">One price per band and day type. Click the <span style="background:#f1f5f9;border-radius:4px;padding:1px 5px;font-size:11px;color:#374151;">−</span> to mark a day unavailable.</div>'
+        + '</div>'
+      + '</div>'
+      + '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">'
+        + '<table style="border-collapse:separate;border-spacing:0;min-width:100%;">'
+          + '<thead><tr>'
+            + '<th style="font-size:11px;font-weight:700;color:#94a3b8;padding:4px 8px 10px 0;text-align:left;white-space:nowrap;min-width:120px;">Band</th>'
+            + days.map(function(d){
+                // Check if all bands for this day are N/A
+                var allNA = bands.length > 0 && bands.every(function(b, i){ var c=p.bCells[bCellKey(i,d)]; return c&&c.avail===false; });
+                return '<th style="font-size:11px;font-weight:700;color:'+(allNA?'#ef4444':'#374151')+';padding:4px 4px 10px;text-align:center;white-space:nowrap;min-width:100px;">'
+                  + d
+                  + '<button class="sp-day-na-btn" data-day="'+d+'" title="Toggle whole day" style="background:none;border:none;cursor:pointer;color:#d1d5db;padding:2px 4px;vertical-align:middle;display:inline-flex;align-items:center;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="5" r="4"/><path d="M2.5 5h5"/></svg></button>'
+                + '</th>';
+              }).join('')
+          + '</tr></thead>'
+          + '<tbody>'
+            + bands.map(function(b, i){
+                return '<tr>'
+                  + '<td style="padding:4px 8px 4px 0;font-size:12.5px;font-weight:600;color:#374151;white-space:nowrap;vertical-align:middle;">'+b.name+'<div style="font-size:10.5px;color:#94a3b8;font-weight:400;">'+(b.from?b.from+(b.to?'–'+b.to:'+'):'')+'</div></td>'
+                  + days.map(function(d){
+                      var k = bCellKey(i, d);
+                      var cell = p.bCells[k] || {avail:true};
+                      if(cell.avail===false){
+                        return '<td style="padding:4px 4px;text-align:center;"><div class="sp-cell-na" data-idx="'+i+'" data-day="'+d+'" style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:7px;padding:9px 6px;font-size:12px;color:#94a3b8;cursor:pointer;text-align:center;white-space:nowrap;">N/A</div></td>';
+                      }
+                      return '<td style="padding:4px 4px;">'
+                        + '<div style="position:relative;">'
+                          + '<span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:12px;color:#64748b;font-weight:600;pointer-events:none;">£</span>'
+                          + '<input class="sp-band-price" data-idx="'+i+'" data-day="'+d+'" value="'+(cell.price||'')+'" placeholder="0" style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:7px;padding:8px 8px 8px 20px;font-size:13px;font-family:Inter,sans-serif;outline:none;text-align:center;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+                          + '<button class="sp-na-btn" data-idx="'+i+'" data-day="'+d+'" title="Mark unavailable" style="position:absolute;right:-1px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#d1d5db;padding:4px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="5" r="4"/><path d="M2.5 5h5"/></svg></button>'
+                        + '</div>'
+                      + '</td>';
+                    }).join('')
+                + '</tr>';
+              }).join('')
+          + '</tbody>'
+        + '</table>'
+      + '</div>'
+    + '</div>';
+
+    // ── Add-on modifiers ────────────────────────────────────
+    var addOns = p.addOns || [];
+    var addOnsHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:14px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#EEF4FD;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M7.5 1v13M1 7.5h13"/></svg>'
+        + '</div>'
+        + '<div>'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">Add-on modifiers <span style="font-size:11.5px;font-weight:400;color:#94a3b8;">— optional</span></div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;line-height:1.4;">Fixed amounts added on top of the band price. PMs opt in at booking.</div>'
+        + '</div>'
+      + '</div>'
+      + '<div id="sp-addon-list">'
+        + (addOns.length===0?'<div style="font-size:12.5px;color:#94a3b8;margin-bottom:10px;font-style:italic;">No add-ons yet — click below to add one.</div>':'')
+        + addOns.map(function(ao, i){
+            return '<div class="sp-addon-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+              + '<input class="sp-addon-name" data-idx="'+i+'" value="'+ao.name+'" placeholder="e.g. Oven clean" style="flex:1;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:Inter,sans-serif;outline:none;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+              + '<div style="position:relative;width:110px;flex-shrink:0;">'
+                + '<span style="position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:12px;color:#64748b;font-weight:700;">£</span>'
+                + '<input class="sp-addon-price" data-idx="'+i+'" value="'+ao.price+'" placeholder="0" style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 8px 8px 22px;font-size:13.5px;font-weight:700;font-family:Inter,sans-serif;outline:none;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+              + '</div>'
+              + '<button class="sp-del-addon" data-idx="'+i+'" style="background:none;border:1.5px solid #fecaca;border-radius:7px;width:32px;height:32px;cursor:pointer;color:#ef4444;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l9 9M10 1l-9 9"/></svg></button>'
+            + '</div>';
+          }).join('')
+      + '</div>'
+      + '<button class="sp-add-addon" style="background:none;border:1.5px dashed #d1d5db;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:600;color:#64748b;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:6px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><path d="M5.5 1v9M1 5.5h9"/></svg>Add modifier</button>'
+    + '</div>';
+
+    // ── Pricing rules card (shared) ─────────────────────────
+    var optionsHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:20px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#16a34a" stroke-width="1.6"><path d="M7.5 1.5v12M3.5 5.5c0-1.1.9-2 2-2h3a2 2 0 010 4h-2a2 2 0 000 4h3a2 2 0 002-2"/></svg>'
+        + '</div>'
+        + '<div>'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">Pricing rules</div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;">Minimum charge and VAT configuration.</div>'
+        + '</div>'
+      + '</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">'
+        + '<div>'
+          + '<label style="font-size:11.5px;font-weight:700;color:#64748b;display:block;margin-bottom:6px;">Minimum charge <span style="font-weight:400;">(optional)</span></label>'
+          + '<div style="position:relative;">'
+            + '<span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#64748b;font-size:12px;font-weight:700;">£</span>'
+            + '<input id="sp-min-charge" value="'+(p.minCharge||'')+'" placeholder="e.g. 50" style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 10px 9px 22px;font-size:13px;font-family:Inter,sans-serif;outline:none;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+          + '</div>'
+          + '<div style="font-size:10.5px;color:#94a3b8;margin-top:4px;">If total falls below this, price rounds up to minimum.</div>'
+        + '</div>'
+        + '<div>'
+          + '<label style="font-size:11.5px;font-weight:700;color:#64748b;display:block;margin-bottom:6px;">VAT applicable</label>'
+          + '<div style="display:flex;gap:8px;">'
+            + '<button class="sp-vat-btn" data-val="yes" style="flex:1;border:1.5px solid '+(p.vat?'#1A5FC8':'#e2e8f0')+';border-radius:8px;padding:9px;font-size:13px;font-weight:600;color:'+(p.vat?'#1A5FC8':'#64748b')+';cursor:pointer;background:'+(p.vat?'#EEF4FD':'#f8fafc')+';transition:all .12s;">Yes</button>'
+            + '<button class="sp-vat-btn" data-val="no" style="flex:1;border:1.5px solid '+(!p.vat?'#1A5FC8':'#e2e8f0')+';border-radius:8px;padding:9px;font-size:13px;font-weight:600;color:'+(!p.vat?'#1A5FC8':'#64748b')+';cursor:pointer;background:'+(!p.vat?'#EEF4FD':'#f8fafc')+';transition:all .12s;">No</button>'
+          + '</div>'
+        + '</div>'
+      + '</div>'
+    + '</div>';
+
+    return varHtml + bandsHtml + gridHtml + addOnsHtml + optionsHtml;
+  }
+
   function collectState(){
     var body = overlay.querySelector('.sp-body');
     if(!body) return;
@@ -19523,6 +19716,31 @@ function _suppOpenPricingModal(svcId, svcLabel){
       if(!p.cells[k]) p.cells[k] = {avail:true};
       p.cells[k].price = inp.value.trim();
     });
+    // Model C: band prices
+    body.querySelectorAll('.sp-band-price').forEach(function(inp){
+      var idx = inp.dataset.idx, day = inp.dataset.day;
+      var k = idx+':'+day;
+      if(!p.bCells[k]) p.bCells[k] = {avail:true};
+      p.bCells[k].price = inp.value.trim();
+    });
+    // Model C: band definitions
+    body.querySelectorAll('.sp-band-row').forEach(function(row, i){
+      if(!p.bandDefs[i]) return;
+      var nameEl = row.querySelector('.sp-band-name');
+      var fromEl = row.querySelector('.sp-band-from');
+      var toEl   = row.querySelector('.sp-band-to');
+      if(nameEl) p.bandDefs[i].name = nameEl.value.trim();
+      if(fromEl) p.bandDefs[i].from = fromEl.value.trim();
+      if(toEl)   p.bandDefs[i].to   = toEl.value.trim();
+    });
+    // Model C: add-on modifiers
+    var newAddOns = [];
+    body.querySelectorAll('.sp-addon-row').forEach(function(row){
+      var n = row.querySelector('.sp-addon-name');
+      var pr = row.querySelector('.sp-addon-price');
+      if(n && pr) newAddOns.push({name: n.value.trim(), price: pr.value.trim()});
+    });
+    if(newAddOns.length) p.addOns = newAddOns;
     // Model B hourly rate cells
     body.querySelectorAll('.sp-hrate-inp').forEach(function(inp){
       var slot = inp.dataset.slot, day = inp.dataset.day, field = inp.dataset.field;
@@ -19549,10 +19767,14 @@ function _suppOpenPricingModal(svcId, svcLabel){
       var firstH = vals.find(function(c){return c.callout && c.avail!==false;});
       p.price = firstH ? firstH.callout : '';
       p.model = 'Hourly rate';
+    } else if(p.modelId === 'C'){
+      var firstB = Object.values(p.bCells).find(function(c){return c.price&&c.avail!==false;});
+      p.price = firstB ? firstB.price : '';
+      p.model = 'Banded price';
     } else {
-      var firstPrice = p.cells['single'] && p.cells['single'].price
+      var firstPrice = (p.cells['single'] && p.cells['single'].price)
         ? p.cells['single'].price
-        : (Object.values(p.cells).find(function(c){return c.price&&c.avail!==false;}) || {}).price || '';
+        : ((Object.values(p.cells).find(function(c){return c.price&&c.avail!==false;}) || {}).price || '');
       p.price = firstPrice;
       p.model = 'Fixed price';
     }
@@ -19571,7 +19793,7 @@ function _suppOpenPricingModal(svcId, svcLabel){
     // Model cards — click to SELECT only; footer "Configure prices" navigates to config
     body.querySelectorAll('.sp-model-card').forEach(function(card){
       card.onclick = function(){
-        if(card.dataset.mid !== 'A' && card.dataset.mid !== 'B') return;
+        if(card.dataset.mid !== 'A' && card.dataset.mid !== 'B' && card.dataset.mid !== 'C') return;
         collectState();
         p.modelId = card.dataset.mid;
         // Stay on select screen — just re-render with updated selection
@@ -19611,37 +19833,121 @@ function _suppOpenPricingModal(svcId, svcLabel){
       };
     });
 
-    // Mark cell unavailable (works for both Model A and Model B)
+    // Model C: band variable selection
+    body.querySelectorAll('.sp-bandvar-btn').forEach(function(btn){
+      btn.onclick = function(){
+        collectState();
+        p.bandVariable = btn.dataset.bvid;
+        renderModal();
+      };
+    });
+
+    // Model C: add band
+    var addBandBtn = body.querySelector('.sp-add-band');
+    if(addBandBtn) addBandBtn.onclick = function(){
+      collectState();
+      if(!p.bandDefs) p.bandDefs = [];
+      p.bandDefs.push({name:'', from:'', to:''});
+      renderModal();
+    };
+
+    // Model C: delete band
+    body.querySelectorAll('.sp-del-band').forEach(function(btn){
+      btn.onclick = function(e){
+        e.stopPropagation();
+        collectState();
+        var idx = parseInt(btn.dataset.idx);
+        p.bandDefs.splice(idx, 1);
+        // Clear bCells for deleted row
+        Object.keys(p.bCells).forEach(function(k){
+          if(k.split(':')[0] === String(idx)) delete p.bCells[k];
+        });
+        renderModal();
+      };
+    });
+
+    // Model C: add add-on
+    var addAddonBtn = body.querySelector('.sp-add-addon');
+    if(addAddonBtn) addAddonBtn.onclick = function(){
+      collectState();
+      if(!p.addOns) p.addOns = [];
+      p.addOns.push({name:'', price:''});
+      renderModal();
+    };
+
+    // Model C: delete add-on
+    body.querySelectorAll('.sp-del-addon').forEach(function(btn){
+      btn.onclick = function(e){
+        e.stopPropagation();
+        collectState();
+        var idx = parseInt(btn.dataset.idx);
+        p.addOns.splice(idx, 1);
+        renderModal();
+      };
+    });
+
+    // Model C: toggle whole day column N/A
+    body.querySelectorAll('.sp-day-na-btn').forEach(function(btn){
+      btn.onclick = function(e){
+        e.stopPropagation();
+        collectState();
+        var day = btn.dataset.day;
+        var bands2 = p.bandDefs || [];
+        var allNA = bands2.length>0 && bands2.every(function(b,i){
+          var c = p.bCells[i+':'+day]; return c && c.avail===false;
+        });
+        bands2.forEach(function(b, i){
+          var k = i+':'+day;
+          if(!p.bCells[k]) p.bCells[k]={};
+          p.bCells[k].avail = allNA ? true : false;
+        });
+        renderModal();
+      };
+    });
+
+    // Shared N/A button (works for A, B, C via data-idx or data-slot)
     body.querySelectorAll('.sp-na-btn').forEach(function(btn){
       btn.onclick = function(e){
         e.stopPropagation();
         collectState();
-        var slot = btn.dataset.slot, day = btn.dataset.day;
-        if(p.modelId === 'B'){
-          var k = slot+':'+day;
-          if(!p.hCells[k]) p.hCells[k] = {};
-          p.hCells[k].avail = false;
+        if(btn.dataset.idx !== undefined && p.modelId === 'C'){
+          var k2 = btn.dataset.idx+':'+btn.dataset.day;
+          if(!p.bCells[k2]) p.bCells[k2]={};
+          p.bCells[k2].avail = false;
         } else {
-          var k2 = _pCellKey(slot, day);
-          if(!p.cells[k2]) p.cells[k2] = {};
-          p.cells[k2].avail = false;
+          var slot = btn.dataset.slot, day2 = btn.dataset.day;
+          if(p.modelId === 'B'){
+            var hk = slot+':'+day2;
+            if(!p.hCells[hk]) p.hCells[hk]={};
+            p.hCells[hk].avail = false;
+          } else {
+            var ck = _pCellKey(slot, day2);
+            if(!p.cells[ck]) p.cells[ck]={};
+            p.cells[ck].avail = false;
+          }
         }
         renderModal();
       };
     });
 
-    // Re-enable N/A cell
+    // Shared N/A cell re-enable
     body.querySelectorAll('.sp-cell-na').forEach(function(el){
       el.onclick = function(){
-        var slot = el.dataset.slot, day = el.dataset.day;
-        if(p.modelId === 'B'){
-          var k = slot+':'+day;
-          if(!p.hCells[k]) p.hCells[k] = {};
-          p.hCells[k].avail = true;
+        if(el.dataset.idx !== undefined && p.modelId === 'C'){
+          var k2 = el.dataset.idx+':'+el.dataset.day;
+          if(!p.bCells[k2]) p.bCells[k2]={};
+          p.bCells[k2].avail = true;
         } else {
-          var k2 = _pCellKey(slot, day);
-          if(!p.cells[k2]) p.cells[k2] = {};
-          p.cells[k2].avail = true;
+          var slot = el.dataset.slot, day2 = el.dataset.day;
+          if(p.modelId === 'B'){
+            var hk = slot+':'+day2;
+            if(!p.hCells[hk]) p.hCells[hk]={};
+            p.hCells[hk].avail = true;
+          } else {
+            var ck = _pCellKey(slot, day2);
+            if(!p.cells[ck]) p.cells[ck]={};
+            p.cells[ck].avail = true;
+          }
         }
         renderModal();
       };
