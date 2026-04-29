@@ -18806,22 +18806,27 @@ function _suppBuildPricingPage(){
   function buildServiceRow(svc){
     var pricing=st.pricing[svc.id]||{};
     var model=pricing.model||''; var price=pricing.price||'';
+    var modelId=pricing.modelId||'';
     var hasPricing=!!(model||price);
     var compColor=svc.comp==='mandatory'?'#ef4444':svc.comp==='certified'?'#f97316':svc.comp==='recommended'?'#eab308':'#22c55e';
+    // Model chip — short label e.g. "Model A" in blue pill
+    var modelChip = modelId
+      ? '<span style="background:#EEF4FD;color:#1A5FC8;border-radius:5px;padding:1px 7px;font-size:11px;font-weight:700;font-family:Inter,sans-serif;white-space:nowrap;">Model '+modelId+'</span>'
+      : (model ? '<span style="background:#f1f5f9;color:#374151;border-radius:4px;padding:1px 7px;font-size:11.5px;font-weight:600;font-family:Inter,sans-serif;">'+model+'</span>' : '');
     return '<div class="pricing-svc-row" data-svcid="'+svc.id+'" style="display:flex;align-items:center;gap:14px;padding:13px 20px;border-bottom:1px solid #f8fafc;transition:background 0.1s;" onmouseover="this.style.background=\'#fafbff\'" onmouseout="this.style.background=\'\'">'
       +'<div style="width:38px;height:38px;border-radius:10px;background:'+(hasPricing?'#E6EEFB':'#f1f5f9')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.15s;">'
         +'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="'+(hasPricing?'#1A5FC8':'#94a3b8')+'" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5v1M8 10v.5M5.5 7a2.5 2.5 0 015 0c0 1-1 1.5-2.5 2s-2.5.5-2.5 2a2.5 2.5 0 005 0"/></svg>'
       +'</div>'
       +'<div style="flex:1;min-width:0;">'
         +'<div style="font-size:13.5px;font-weight:600;color:#0f172a;font-family:Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+svc.l+'</div>'
-        +'<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:2px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+        +'<div style="font-size:12px;color:#94a3b8;font-family:Inter,sans-serif;margin-top:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">'
           +(svc.comp?'<span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:'+compColor+';flex-shrink:0;"></span>'+svc.comp.charAt(0).toUpperCase()+svc.comp.slice(1)+'</span>':'')
-          +(model?'<span style="background:#f1f5f9;color:#374151;border-radius:4px;padding:1px 7px;font-size:11.5px;font-weight:600;font-family:Inter,sans-serif;">'+model+'</span>':'')
+          +modelChip
           +(price?'<span style="color:#0f172a;font-weight:700;font-size:12.5px;">£'+price+'</span>':'')
           +(!hasPricing?'<span style="color:#f59e0b;font-size:11.5px;font-weight:600;">Not priced yet</span>':'')
         +'</div>'
       +'</div>'
-      +(hasPricing?'<div style="font-size:13px;font-weight:700;color:#1A5FC8;font-family:Inter,sans-serif;flex-shrink:0;min-width:52px;text-align:right;">£'+price+'</div>':'')
+      +(hasPricing&&price?'<div style="font-size:13px;font-weight:700;color:#1A5FC8;font-family:Inter,sans-serif;flex-shrink:0;min-width:52px;text-align:right;">£'+price+'</div>':'')
       +'<button class="supp-cfg-btn" data-sid="'+svc.id+'" data-slbl="'+_suppEsc(svc.l)+'" style="border:1.5px solid '+(hasPricing?'#1A5FC8':'#e2e8f0')+';border-radius:9px;padding:7px 14px;font-size:12.5px;font-weight:600;color:'+(hasPricing?'#1A5FC8':'#374151')+';cursor:pointer;background:#fff;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;flex-shrink:0;transition:all 0.15s;">'
         +(hasPricing?'Edit':'Configure')+' <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.5 5.5h4M6.5 3.5l2 2-2 2"/></svg>'
       +'</button>'
@@ -18991,16 +18996,20 @@ function _suppOpenPricingModal(svcId, svcLabel){
   if(!st.pricing[svcId]) st.pricing[svcId] = {};
   var p = _pDefaults(st.pricing[svcId]);
 
+  // Track which step is visible — independent of p.modelId (which persists from previous saves)
+  // 'select' = model selection screen, 'config' = model config screen
+  var _screen = 'select';
+
   // ── Render helpers ───────────────────────────────────────────
   function updateHeader(){
-    var hTitle  = modal.querySelector('.sp-h-title');
-    var hBadge  = modal.querySelector('.sp-h-badge');
+    var hTitle = modal.querySelector('.sp-h-title');
+    var hBadge = modal.querySelector('.sp-h-badge');
     if(hTitle) hTitle.textContent = 'Configure pricing';
     if(hBadge){
-      if(p.modelId === 'A'){
+      if(_screen === 'config' && p.modelId === 'A'){
         hBadge.style.display = 'inline-flex';
         hBadge.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M2 2h7l1.5 1.5v7H2z"/><path d="M3.5 2v3h4V2M2 6.5h8"/></svg> Model A — Fixed price';
-      } else if(p.modelId === 'B'){
+      } else if(_screen === 'config' && p.modelId === 'B'){
         hBadge.style.display = 'inline-flex';
         hBadge.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#1A5FC8" stroke-width="1.8"><circle cx="6" cy="6" r="4.5"/><path d="M6 3.5V6l2 1.2"/></svg> Model B — Hourly rate';
       } else {
@@ -19010,23 +19019,55 @@ function _suppOpenPricingModal(svcId, svcLabel){
   }
 
   function updateFooter(){
-    var leftZone = modal.querySelector('.sp-footer-left');
-    if(!leftZone) return;
-    if(p.modelId === 'A' || p.modelId === 'B'){
-      leftZone.innerHTML = '<button class="sp-back-footer-btn" style="border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer;background:#fff;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:7px;">'
-        + '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2L4 6l4 4"/></svg>Back</button>';
+    var leftZone  = modal.querySelector('.sp-footer-left');
+    var midZone   = modal.querySelector('.sp-footer-mid');
+    var rightZone = modal.querySelector('.sp-footer-right');
+    if(!leftZone || !rightZone) return;
+
+    if(_screen === 'config'){
+      // Config screen: Back (left) | Cancel + Save pricing (right)
+      leftZone.innerHTML = '<button class="sp-back-footer-btn" style="border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer;background:#fff;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:7px;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2L4 6l4 4"/></svg>Back</button>';
       var backBtn = leftZone.querySelector('.sp-back-footer-btn');
-      if(backBtn) backBtn.onclick = function(){ collectState(); p.modelId = ''; renderModal(); };
-    } else {
+      if(backBtn) backBtn.onclick = function(){ collectState(); _screen = 'select'; renderModal(); };
+
+      if(midZone) midZone.innerHTML = '<button onclick="document.getElementById(\'suppPricingModal\').remove()" style="border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 18px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer;background:#fff;font-family:Inter,sans-serif;">Cancel</button>';
+
+      rightZone.innerHTML = '<button class="sp-save-btn" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 24px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:8px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#fff" stroke-width="1.8"><path d="M1.5 1.5h8l2 2v8H1.5z"/><path d="M3.5 1.5v3.5h5V1.5M2 8h9"/></svg>Save pricing</button>';
+      var saveBtn = rightZone.querySelector('.sp-save-btn');
+      if(saveBtn) saveBtn.onclick = function(){
+        collectState();
+        st.pricing[svcId] = p;
+        overlay.remove();
+        var mainEl = document.getElementById('suppMain') || window._suppMain;
+        if(mainEl){
+          var saved = mainEl.scrollTop;
+          mainEl.innerHTML = '<div style="padding:24px 0 48px;width:100%;box-sizing:border-box;">'+_suppBuildPricingPage()+'</div>';
+          _suppWirePricingPage();
+          mainEl.scrollTop = saved;
+        }
+      };
+
+    } else if(p.modelId){
+      // Model selected on selection screen: Cancel + Configure prices
       leftZone.innerHTML = '';
+      if(midZone) midZone.innerHTML = '<button onclick="document.getElementById(\'suppPricingModal\').remove()" style="border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 18px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer;background:#fff;font-family:Inter,sans-serif;">Cancel</button>';
+      rightZone.innerHTML = '<button class="sp-next-btn" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 24px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:8px;">Configure prices<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 6.5h8M7 3l3.5 3.5L7 10"/></svg></button>';
+      var nextBtn = rightZone.querySelector('.sp-next-btn');
+      if(nextBtn) nextBtn.onclick = function(){ _screen = 'config'; renderModal(); };
+
+    } else {
+      // No model selected — footer empty
+      leftZone.innerHTML = '';
+      if(midZone) midZone.innerHTML = '';
+      rightZone.innerHTML = '';
     }
   }
 
   function renderModal(){
     var body = overlay.querySelector('.sp-body');
-    if(p.modelId === 'A')      body.innerHTML = renderModelA();
-    else if(p.modelId === 'B') body.innerHTML = renderModelB();
-    else                        body.innerHTML = renderModelSelect();
+    if(_screen === 'config' && p.modelId === 'A')      body.innerHTML = renderModelA();
+    else if(_screen === 'config' && p.modelId === 'B') body.innerHTML = renderModelB();
+    else                                                body.innerHTML = renderModelSelect();
     updateHeader();
     updateFooter();
     wireModal();
@@ -19046,18 +19087,11 @@ function _suppOpenPricingModal(svcId, svcLabel){
               + m.icon.replace('stroke="currentColor"','stroke="'+(isAct?'#fff':iconColor)+'"')
             + '</div>'
             + '<div>'
-              + '<div style="font-size:13.5px;font-weight:700;color:'+(isAct?'#1A5FC8':'#0f172a')+';">'+m.label+'</div>'
+              + '<div style="font-size:13.5px;font-weight:700;color:'+(isAct?'#1A5FC8':'#0f172a')+';"><span style="opacity:0.55;font-weight:600;">Model '+m.id+' — </span>'+m.label+'</div>'
               + '<div style="font-size:12px;color:#64748b;margin-top:3px;line-height:1.45;">'+m.sub+'</div>'
             + '</div>'
           + '</div>';
         }).join('')
-      + '</div>'
-      + '<div style="display:flex;justify-content:flex-end;">'
-        + '<button class="sp-next-btn" '+(p.modelId?'':'disabled')
-          +' style="background:'+(p.modelId?'linear-gradient(90deg,#1A5FC8,#0FA3D0)':'#f1f5f9')+';color:'+(p.modelId?'#fff':'#94a3b8')+';border:none;border-radius:10px;padding:11px 24px;font-size:14px;font-weight:700;cursor:'+(p.modelId?'pointer':'not-allowed')+';font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:8px;transition:all .15s;">'
-          + 'Configure prices'
-          + '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 6.5h8M7 3l3.5 3.5L7 10"/></svg>'
-        + '</button>'
       + '</div>';
   }
 
@@ -19253,7 +19287,7 @@ function _suppOpenPricingModal(svcId, svcLabel){
       + '<div style="font-size:12.5px;color:#374151;font-family:Inter,sans-serif;"><strong>How the PM sees it:</strong> "£90.00 — Tuesday Morning (08:00–13:00)" — exact price, no uncertainty.</div>'
     + '</div>';
 
-    return breadcrumb + slotsHtml + modeHtml + gridHtml + upliftsHtml + optionsHtml + previewHtml;
+    return breadcrumb + slotsHtml + modeHtml + gridHtml + upliftsHtml + optionsHtml;
   }
 
   // ── Model B: Hourly rate ────────────────────────────────────
@@ -19466,12 +19500,7 @@ function _suppOpenPricingModal(svcId, svcLabel){
     + '</div>';
 
     // PM preview
-    var previewHtml = '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:4px;display:flex;align-items:center;gap:12px;">'
-      + '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1A5FC8" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3.5M8 11v.2"/></svg>'
-      + '<div style="font-size:12.5px;color:#374151;line-height:1.5;"><strong>How the PM sees it:</strong> "£95 call-out + £55/hr — Saturday Morning (08:00–13:00)" — transparent hourly pricing.</div>'
-    + '</div>';
-
-    return slotsHtml + modeHtml + gridHtml + matsHtml + optionsHtml + previewHtml;
+    return slotsHtml + modeHtml + gridHtml + matsHtml + optionsHtml;
   }
   function collectState(){
     var body = overlay.querySelector('.sp-body');
@@ -19536,22 +19565,23 @@ function _suppOpenPricingModal(svcId, svcLabel){
 
     // Back button (in-body — kept for compat)
     body.querySelectorAll('.sp-back-btn').forEach(function(btn){
-      btn.onclick = function(){ collectState(); p.modelId = ''; renderModal(); };
+      btn.onclick = function(){ collectState(); _screen = 'select'; renderModal(); };
     });
 
-    // Model cards
+    // Model cards — click to SELECT only; footer "Configure prices" navigates to config
     body.querySelectorAll('.sp-model-card').forEach(function(card){
       card.onclick = function(){
-        if(card.dataset.mid !== 'A') return; // others not available yet
+        if(card.dataset.mid !== 'A' && card.dataset.mid !== 'B') return;
         collectState();
         p.modelId = card.dataset.mid;
-        renderModal();
+        // Stay on select screen — just re-render with updated selection
+        var b = overlay.querySelector('.sp-body');
+        if(b) b.innerHTML = renderModelSelect();
+        updateHeader();
+        updateFooter();
+        wireModal();
       };
     });
-
-    // Next button (model select → Model A config)
-    var nextBtn = body.querySelector('.sp-next-btn');
-    if(nextBtn) nextBtn.onclick = function(){ renderModal(); };
 
     // Pricing mode cards
     body.querySelectorAll('.sp-mode-card').forEach(function(card){
@@ -19635,21 +19665,6 @@ function _suppOpenPricingModal(svcId, svcLabel){
       };
     });
 
-    // Save
-    var saveBtn = overlay.querySelector('.sp-save-btn');
-    if(saveBtn) saveBtn.onclick = function(){
-      collectState();
-      st.pricing[svcId] = p;
-      overlay.remove();
-      // Refresh pricing page without scroll jump
-      var mainEl = document.getElementById('suppMain') || window._suppMain;
-      if(mainEl){
-        var saved = mainEl.scrollTop;
-        mainEl.innerHTML = '<div style="padding:24px 0 48px;width:100%;box-sizing:border-box;">'+_suppBuildPricingPage()+'</div>';
-        _suppWirePricingPage();
-        mainEl.scrollTop = saved;
-      }
-    };
   }
 
   // ── Build overlay ───────────────────────────────────────────
@@ -19674,12 +19689,12 @@ function _suppOpenPricingModal(svcId, svcLabel){
     + '</div>'
   + '</div>';
 
-  // Footer — left zone for Back button, right zone for Cancel/Save
+  // Footer — all three zones fully dynamic (managed by updateFooter)
   var footer = '<div style="padding:14px 24px;border-top:1px solid #e2e8f0;border-radius:0 0 16px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;">'
     + '<div class="sp-footer-left"></div>'
-    + '<div style="display:flex;gap:10px;">'
-      + '<button onclick="document.getElementById(\'suppPricingModal\').remove()" style="border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 18px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer;background:#fff;font-family:Inter,sans-serif;">Cancel</button>'
-      + '<button class="sp-save-btn" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 24px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:8px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#fff" stroke-width="1.8"><path d="M1.5 1.5h8l2 2v8H1.5z"/><path d="M3.5 1.5v3.5h5V1.5M2 8h9"/></svg>Save pricing</button>'
+    + '<div style="display:flex;gap:10px;align-items:center;">'
+      + '<div class="sp-footer-mid"></div>'
+      + '<div class="sp-footer-right"></div>'
     + '</div>'
   + '</div>';
 
