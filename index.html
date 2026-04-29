@@ -971,22 +971,17 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 /* ── Nav item hover ── */
 .supp-nav-item{transition:background .14s,color .14s;}
 .supp-nav-item:hover{background:rgba(26,95,200,.07);}
-/* ── Collapse button — always dark/visible ── */
-.supp-collapse-btn{
-  background:none;
-  border:1.5px solid #c8cdd6;
-  cursor:pointer;
-  padding:5px;border-radius:7px;
-  display:flex;align-items:center;
-  color:#000000;
-  transition:background .14s,color .14s,border-color .14s,transform .2s;
-  flex-shrink:0;
-}
-.supp-collapse-btn:hover{background:#e2e6ef;border-color:#a0a8b8;color:#0f172a;}
-.supp-dark .supp-collapse-btn{color:#d1d9e0;border-color:#3d4452;}
-.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#5a6475;color:#f0f4f8;}
-/* ── Sidebar slide animation ── */
-#suppSidebar{transition:width .22s cubic-bezier(.4,0,.2,1);}
+/* ── Sidebar transitions & animations ── */
+@keyframes suppFadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes suppSlideIn{from{opacity:0;transform:translateX(-6px);}to{opacity:1;transform:translateX(0);}}
+@keyframes suppFadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.supp-main-inner{animation:suppFadeIn 0.2s ease;}
+#suppPricingModal{animation:suppFadeIn 0.18s ease;}
+#suppSidebar nav div[data-navid]{animation:suppSlideIn 0.16s ease both;}
+#suppSidebar nav div[data-navid]:nth-child(1){animation-delay:.02s;}#suppSidebar nav div[data-navid]:nth-child(2){animation-delay:.04s;}
+#suppSidebar nav div[data-navid]:nth-child(3){animation-delay:.06s;}#suppSidebar nav div[data-navid]:nth-child(4){animation-delay:.08s;}
+#suppSidebar nav div[data-navid]:nth-child(5){animation-delay:.10s;}#suppSidebar nav div[data-navid]:nth-child(6){animation-delay:.12s;}
+#suppSidebar{transition:width .25s cubic-bezier(.4,0,.2,1),min-width .25s cubic-bezier(.4,0,.2,1);}
 #suppSidebar .sb-label{transition:opacity .15s ease,max-width .22s ease;overflow:hidden;white-space:nowrap;}
 #suppSidebar.supp-collapsed .sb-label{opacity:0;max-width:0;}
 /* ── Q wizard card no background ── */
@@ -1029,22 +1024,6 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 /* ── Nav item hover ── */
 .supp-nav-item{transition:background .14s,color .14s;}
 .supp-nav-item:hover{background:rgba(26,95,200,.07);}
-/* ── Collapse button — always dark/visible ── */
-.supp-collapse-btn{
-  background:none;
-  border:1.5px solid #c8cdd6;
-  cursor:pointer;
-  padding:5px;border-radius:7px;
-  display:flex;align-items:center;
-  color:#000000;
-  transition:background .14s,color .14s,border-color .14s,transform .2s;
-  flex-shrink:0;
-}
-.supp-collapse-btn:hover{background:#e2e6ef;border-color:#a0a8b8;color:#0f172a;}
-.supp-dark .supp-collapse-btn{color:#d1d9e0;border-color:#3d4452;}
-.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#5a6475;color:#f0f4f8;}
-/* ── Sidebar slide animation ── */
-#suppSidebar{transition:width .22s cubic-bezier(.4,0,.2,1);}
 #suppSidebar .sb-label{transition:opacity .15s ease,max-width .22s ease;overflow:hidden;white-space:nowrap;}
 #suppSidebar.supp-collapsed .sb-label{opacity:0;max-width:0;}
 /* ── Q wizard card no background ── */
@@ -1080,22 +1059,6 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 /* ── Nav item hover ── */
 .supp-nav-item{transition:background .14s,color .14s;}
 .supp-nav-item:hover{background:rgba(26,95,200,.07);}
-/* ── Collapse button — always dark/visible ── */
-.supp-collapse-btn{
-  background:none;
-  border:1.5px solid #c8cdd6;
-  cursor:pointer;
-  padding:5px;border-radius:7px;
-  display:flex;align-items:center;
-  color:#000000;
-  transition:background .14s,color .14s,border-color .14s,transform .2s;
-  flex-shrink:0;
-}
-.supp-collapse-btn:hover{background:#e2e6ef;border-color:#a0a8b8;color:#0f172a;}
-.supp-dark .supp-collapse-btn{color:#d1d9e0;border-color:#3d4452;}
-.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#5a6475;color:#f0f4f8;}
-/* ── Sidebar slide animation ── */
-#suppSidebar{transition:width .22s cubic-bezier(.4,0,.2,1);}
 #suppSidebar .sb-label{transition:opacity .15s ease,max-width .22s ease;overflow:hidden;white-space:nowrap;}
 #suppSidebar.supp-collapsed .sb-label{opacity:0;max-width:0;}
 /* ── Q wizard card no background ── */
@@ -1131,22 +1094,6 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 /* ── Nav item hover ── */
 .supp-nav-item{transition:background .14s,color .14s;}
 .supp-nav-item:hover{background:rgba(26,95,200,.07);}
-/* ── Collapse button — always dark/visible ── */
-.supp-collapse-btn{
-  background:none;
-  border:1.5px solid #c8cdd6;
-  cursor:pointer;
-  padding:5px;border-radius:7px;
-  display:flex;align-items:center;
-  color:#000000;
-  transition:background .14s,color .14s,border-color .14s,transform .2s;
-  flex-shrink:0;
-}
-.supp-collapse-btn:hover{background:#e2e6ef;border-color:#a0a8b8;color:#0f172a;}
-.supp-dark .supp-collapse-btn{color:#d1d9e0;border-color:#3d4452;}
-.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#5a6475;color:#f0f4f8;}
-/* ── Sidebar slide animation ── */
-#suppSidebar{transition:width .22s cubic-bezier(.4,0,.2,1);}
 #suppSidebar .sb-label{transition:opacity .15s ease,max-width .22s ease;overflow:hidden;white-space:nowrap;}
 #suppSidebar.supp-collapsed .sb-label{opacity:0;max-width:0;}
 /* ── Q wizard card no background ── */
@@ -1182,22 +1129,6 @@ body{margin:0;min-height:100%;font-family:var(--font-b);color:var(--navy);backgr
 /* ── Nav item hover ── */
 .supp-nav-item{transition:background .14s,color .14s;}
 .supp-nav-item:hover{background:rgba(26,95,200,.07);}
-/* ── Collapse button — always dark/visible ── */
-.supp-collapse-btn{
-  background:none;
-  border:1.5px solid #c8cdd6;
-  cursor:pointer;
-  padding:5px;border-radius:7px;
-  display:flex;align-items:center;
-  color:#000000;
-  transition:background .14s,color .14s,border-color .14s,transform .2s;
-  flex-shrink:0;
-}
-.supp-collapse-btn:hover{background:#e2e6ef;border-color:#a0a8b8;color:#0f172a;}
-.supp-dark .supp-collapse-btn{color:#d1d9e0;border-color:#3d4452;}
-.supp-dark .supp-collapse-btn:hover{background:#1f2937;border-color:#5a6475;color:#f0f4f8;}
-/* ── Sidebar slide animation ── */
-#suppSidebar{transition:width .22s cubic-bezier(.4,0,.2,1);}
 #suppSidebar .sb-label{transition:opacity .15s ease,max-width .22s ease;overflow:hidden;white-space:nowrap;}
 #suppSidebar.supp-collapsed .sb-label{opacity:0;max-width:0;}
 /* ── Q wizard card no background ── */
@@ -18743,7 +18674,9 @@ function _suppBuildPricingPage(){
     if(p.model) modelCounts[p.model]=(modelCounts[p.model]||0)+1;
     if(p.price){var n=parseFloat(p.price);if(minPrice===null||n<minPrice) minPrice=n;}
   });
+  var MODEL_SHORT = {'Fixed price':'Model A','Hourly rate':'Model B','Banded price':'Model C','Estimated range':'Model D','Quote required':'Model E','Subscription':'Model F'};
   var topModel=Object.keys(modelCounts).sort(function(a,b){return modelCounts[b]-modelCounts[a];})[0]||'—';
+  topModel = MODEL_SHORT[topModel] || topModel;
   var cheapestStr=minPrice!==null?'£'+minPrice.toFixed(2):'—';
 
   var header='<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px;flex-wrap:wrap;">'
@@ -18756,7 +18689,7 @@ function _suppBuildPricingPage(){
       +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 2h8l2 2v8a1 1 0 01-1 1H3a1 1 0 01-1-1V2z"/><path d="M4 2v4h5V2M3 8h8"/></svg>Save all pricing</button>'
   +'</div>';
 
-  var stats='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:20px;">'
+  var stats='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;">'
     +[{l:'SERVICES',v:String(totalSvcs)},
       {l:'PRICED',v:pricedSvcs+'/'+totalSvcs},
       {l:'CHEAPEST',v:cheapestStr},
@@ -18812,7 +18745,7 @@ function _suppBuildPricingPage(){
     // Model chip — short label e.g. "Model A" in blue pill
     var modelChip = modelId
       ? '<span style="background:#EEF4FD;color:#1A5FC8;border-radius:5px;padding:1px 7px;font-size:11px;font-weight:700;font-family:Inter,sans-serif;white-space:nowrap;">Model '+modelId+'</span>'
-      : (model ? '<span style="background:#f1f5f9;color:#374151;border-radius:4px;padding:1px 7px;font-size:11.5px;font-weight:600;font-family:Inter,sans-serif;">'+model+'</span>' : '');
+      : '';
     return '<div class="pricing-svc-row" data-svcid="'+svc.id+'" style="display:flex;align-items:center;gap:14px;padding:13px 20px;border-bottom:1px solid #f8fafc;transition:background 0.1s;" onmouseover="this.style.background=\'#fafbff\'" onmouseout="this.style.background=\'\'">'
       +'<div style="width:38px;height:38px;border-radius:10px;background:'+(hasPricing?'#E6EEFB':'#f1f5f9')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.15s;">'
         +'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="'+(hasPricing?'#1A5FC8':'#94a3b8')+'" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5v1M8 10v.5M5.5 7a2.5 2.5 0 015 0c0 1-1 1.5-2.5 2s-2.5.5-2.5 2a2.5 2.5 0 005 0"/></svg>'
@@ -21459,7 +21392,9 @@ function _showSupplierDashboard(){
   document.body.appendChild(screen);
 
   var KEYLR_LOGO = '<svg width="82" height="15" viewBox="0 0 852 151" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.16 144.91C0.04 141.58 0 107.67 0 69.53L0.08 0.21L18.62 0.09L37.12 0.01V75.47V150.93H18.74H0.36L0.16 144.91Z" fill="#0f172a"/><path d="M111 148.19C108.62 145.58 63.58 96.97 50.75 83.19C46.99 79.15 43.54 75.35 43.07 74.75C42.2 73.64 42.2 73.64 42.95 72.77C43.39 72.29 47.55 67.78 52.22 62.79C56.89 57.76 62.48 51.7 64.66 49.32C66.84 46.94 75.24 37.83 83.28 29.12C91.36 20.37 100.67 10.26 104.04 6.62L110.14 0H134.11H158.12L156.54 1.7C155.67 2.61 151.03 7.64 146.24 12.87C135.7 24.4 122.2 39.09 110.98 51.29C90.9 73.12 86.66 77.83 86.74 78.11C86.82 78.27 90.7 82.39 95.38 87.22C104.02 96.21 146.92 140.58 153.37 147.27L156.94 150.91L135.15 150.87L113.4 150.83L111.02 148.18L111 148.19Z" fill="#0f172a"/><path d="M190.03 133.89V116.86H257.17H324.31V133.89V150.92H257.17H190.03V133.89Z" fill="#0f172a"/><path d="M415.03 121.65V92.38L413.52 90.44C412.69 89.41 405.44 79.82 397.4 69.13C389.36 58.47 374.46 38.63 364.24 25.08C354.06 11.53 345.7 0.36 345.7 0.24C345.7 0.12 354.14 0 364.48 0H383.26L407.54 32.48C420.93 50.31 432.06 64.88 432.26 64.8C432.7 64.68 438.24 57.08 466.88 17.03C473.06 8.43 478.41 1.07 478.76 0.67C479.39 0.04 480.7 0 497.73 0.08L516.03 0.2L512.5 4.95C510.6 7.56 501.37 20.08 492.02 32.72C482.67 45.4 472.45 59.3 469.28 63.58C466.11 67.9 459.85 76.37 455.34 82.48L447.1 93.53V122.21V150.93H431.06H415.02V121.66L415.03 121.65Z" fill="#0f172a"/><path d="M566.75 150.17C556.77 148.03 548.49 141.61 544.53 132.86C541.84 126.92 541.99 131.67 541.99 62.59V0.2L558.94 0.08L575.85 0V50.39C575.85 80.22 576.05 102.01 576.25 103.75C577.08 110.05 580.29 114.01 586.35 116.23C587.18 116.51 600.77 116.71 630.91 116.86L674.29 117.06L674.41 134.01L674.49 150.92L622.32 150.88C573.6 150.88 569.87 150.8 566.74 150.17H566.75Z" fill="#0f172a"/><path d="M699.65 150.45C699.53 150.17 699.49 132.31 699.53 110.72L699.65 71.5L748.18 71.3C787.04 71.14 797.02 70.98 798.29 70.55C801.3 69.56 804.63 67.54 806.81 65.36C817.7 54.43 811.56 35.81 796.11 33.04C793.73 32.6 783.75 32.53 746.28 32.49H699.46L699.54 16.37L699.66 0.21L741.45 0.09C794.17 -0.03 799.96 0.21 809.11 3.22C813.35 4.57 820.16 8.09 824.24 10.98C828.91 14.31 835.69 21 838.38 24.96C846.9 37.52 849.63 53.32 845.87 68.3C843.73 76.58 840.05 82.88 833.39 89.57C827.65 95.27 821.39 99.28 814.53 101.65C812.79 102.24 811.2 102.84 811.04 103C810.68 103.32 814.21 107.52 832.15 128.15C837.06 133.81 843.2 140.94 845.78 144C848.39 147.05 850.77 149.86 851.09 150.26C851.64 150.89 850.65 150.93 830.85 150.93H809.97L807.63 148.08C806.36 146.5 798.12 136.35 789.37 125.58C780.58 114.81 772.97 105.5 772.42 104.86L771.39 103.79L753.96 103.87L736.49 103.99V127.48V150.93H718.15C703.85 150.93 699.77 150.81 699.65 150.45Z" fill="#0f172a"/><path d="M190.03 74.87V57.84H248.66H307.29V74.87V91.9H248.66H190.03V74.87Z" fill="#0f172a"/><path d="M190.03 17.04V0.01L257.09 0.09L324.11 0.21L324.23 17.16L324.31 34.07H257.17H190.03V17.04Z" fill="#0f172a"/></svg>';
-  var _sbCollapsed = false;
+  var _sbCollapsed = window._suppSidebarCollapsed !== undefined
+    ? window._suppSidebarCollapsed
+    : (window.innerWidth < 1024);
 
   // ensure profile page can be navigated to
   var navItems = [
@@ -21479,33 +21414,45 @@ function _showSupplierDashboard(){
      svg:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v1.5M8 13.5V15M15 8h-1.5M2.5 8H1M12.2 3.8l-1.1 1.1M4.9 11.1l-1.1 1.1M12.2 12.2l-1.1-1.1M4.9 4.9L3.8 3.8"/></svg>'},
   ];
 
+  // ── Supplier sidebar responsive collapse ──────────────────────
+  // Auto-collapse when viewport < 1024px (mirrors PM sidebar behaviour)
+  var _suppCollapsed = window._suppSidebarCollapsed !== undefined
+    ? window._suppSidebarCollapsed
+    : (window.innerWidth < 1024);
+  window._suppSidebarCollapsed = _suppCollapsed;
+
   function buildSidebar(collapsed) {
     var isMobile = window.innerWidth < 768;
-    if (isMobile) collapsed = false; // always full on mobile (overlay)
+    if (isMobile) collapsed = false;
     var w = (isMobile && !_mobileOpen) ? '0px' : (collapsed ? '64px' : '240px');
     var sb = document.createElement('div');
     sb.id = 'suppSidebar';
-    var sbBg = window._suppDark ? '#1C2438' : '#F7FBFC';
+    var sbBg     = window._suppDark ? '#1C2438' : '#F7FBFC';
     var sbBorder = window._suppDark ? '#2A3450' : '#E0E2E8';
-    sb.style.cssText = 'width:'+w+';min-width:'+w+';background:'+sbBg+';border-right:1px solid '+sbBorder+';display:flex;flex-direction:column;flex-shrink:0;transition:width 0.25s ease,min-width 0.25s ease;overflow:hidden;height:100%;'+(isMobile?'position:fixed;top:0;left:0;z-index:100;box-shadow:4px 0 24px rgba(0,0,0,0.12);':'');
+    sb.style.cssText = 'width:'+w+';min-width:'+w+';background:'+sbBg+';border-right:1px solid '+sbBorder+';display:flex;flex-direction:column;flex-shrink:0;'
+      +'transition:width 0.25s cubic-bezier(.4,0,.2,1),min-width 0.25s cubic-bezier(.4,0,.2,1);overflow:hidden;height:100%;'
+      +(isMobile?'position:fixed;top:0;left:0;z-index:100;box-shadow:4px 0 24px rgba(0,0,0,0.12);':'');
 
-    // Logo row
+    // ── Logo row ──
     var logoRow = document.createElement('div');
-    logoRow.style.cssText = 'padding:0 12px;height:56px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid '+(window._suppDark?'#2A3450':'#E0E2E8')+';flex-shrink:0;';
-    if (!collapsed) {
-      var logoWrap = document.createElement('div');
-      logoWrap.style.cssText = 'display:flex;align-items:center;gap:8px;overflow:hidden;min-width:0;';
-      logoWrap.innerHTML = '<div style="flex-shrink:0;">' + KEYLR_LOGO + '</div>';
-      logoRow.appendChild(logoWrap);
-    } else {
-      logoRow.appendChild(document.createElement('div'));
-    }
+    logoRow.style.cssText = 'padding:0 14px;height:56px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid '+(window._suppDark?'#2A3450':'#E0E2E8')+';flex-shrink:0;';
+
+    var logoWrap = document.createElement('div');
+    logoWrap.style.cssText = 'display:flex;align-items:center;gap:8px;overflow:hidden;min-width:0;flex:1;'
+      +'transition:opacity 0.2s,max-width 0.25s;'+(collapsed?'opacity:0;max-width:0;pointer-events:none;':'opacity:1;max-width:200px;');
+    logoWrap.innerHTML = '<div style="flex-shrink:0;">'+KEYLR_LOGO+'</div>';
+    logoRow.appendChild(logoWrap);
+
+    // Collapse button — styled exactly like PM's .sidebar-collapse-btn
     var toggleBtn = document.createElement('button');
-    toggleBtn.className = 'supp-collapse-btn';
-    toggleBtn.style.color = window._suppDark ? '#d1d9e0' : '#000000';
-    toggleBtn.style.borderColor = window._suppDark ? '#3d4452' : '#c8cdd6';
-    toggleBtn.title = collapsed ? 'Expand' : 'Collapse';
-    toggleBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="'+(collapsed?'5 2l4 5-4 5':'9 2L5 7l4 5')+'"/></svg>';
+    toggleBtn.title = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+    toggleBtn.style.cssText = 'display:flex;align-items:center;justify-content:center;'
+      +'width:28px;height:28px;border-radius:7px;background:transparent;border:none;cursor:pointer;'
+      +'color:'+(window._suppDark?'#8b949e':'#5E6674')+';'
+      +'transition:background 0.12s,color 0.12s,transform 0.22s;flex-shrink:0;';
+    toggleBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.25s cubic-bezier(.4,0,.2,1);transform:'+(collapsed?'rotate(180deg)':'rotate(0deg)')+'"><path d="M9 2L5 7l4 5"/></svg>';
+    toggleBtn.onmouseover = function(){ this.style.background = window._suppDark ? 'rgba(255,255,255,0.08)' : '#EDEEF1'; this.style.color='#0f172a'; };
+    toggleBtn.onmouseout  = function(){ this.style.background='transparent'; this.style.color = window._suppDark?'#8b949e':'#5E6674'; };
     toggleBtn.onclick = toggleSidebar;
     logoRow.appendChild(toggleBtn);
     sb.appendChild(logoRow);
@@ -21612,46 +21559,61 @@ function _showSupplierDashboard(){
           document.getElementById('suppDashScreen').appendChild(overlay);
           requestAnimationFrame(function(){ overlay.style.opacity='1'; });
         }
+        var sb = document.getElementById('suppSidebar');
+        if(sb){ sb.style.width='240px'; sb.style.minWidth='240px'; }
       } else {
         if (overlay) { overlay.style.opacity='0'; setTimeout(function(){overlay.remove();},220); }
+        var sb2 = document.getElementById('suppSidebar');
+        if(sb2){ sb2.style.width='0px'; sb2.style.minWidth='0px'; }
       }
-    } else {
-      _sbCollapsed = !_sbCollapsed;
+      return;
     }
-    // Animate out
-    var old = document.getElementById('suppSidebar');
-    if (!old) return;
-    old.style.transition = 'opacity .15s ease, transform .18s ease';
-    old.style.opacity = '0';
-    old.style.transform = 'translateX(-4px)';
-    var parent = old.parentNode;
-    var next   = old.nextSibling;
-    setTimeout(function(){
-      old.remove();
-      var newSb = buildSidebar(_sbCollapsed);
-      newSb.style.opacity = '0';
-      newSb.style.transform = 'translateX(-4px)';
-      if (next) parent.insertBefore(newSb, next);
-      else      parent.appendChild(newSb);
-      requestAnimationFrame(function(){
-        newSb.style.transition = 'opacity .18s ease, transform .2s ease';
-        newSb.style.opacity = '1';
-        newSb.style.transform = 'translateX(0)';
-        setTimeout(function(){ newSb.style.transition=''; newSb.style.transform=''; newSb.style.opacity=''; }, 200);
-      });
-    }, 150);
-  }
 
-  // Responsive: auto-collapse on resize
-  window.addEventListener('resize', function() {
+    // Desktop — animate width in-place, then rebuild content
+    _sbCollapsed = !_sbCollapsed;
+    window._suppSidebarCollapsed = _sbCollapsed;
+    window._suppSidebarManuallyCollapsed = _sbCollapsed; // user override — prevent auto-resize fighting
     var sb = document.getElementById('suppSidebar');
     if (!sb) return;
-    var parent = sb.parentNode;
-    var next   = sb.nextSibling;
-    sb.remove();
-    var newSb = buildSidebar(_sbCollapsed);
-    if (next) parent.insertBefore(newSb, next);
-    else parent.appendChild(newSb);
+    var targetW = _sbCollapsed ? '64px' : '240px';
+    sb.style.transition = 'width 0.25s cubic-bezier(.4,0,.2,1),min-width 0.25s cubic-bezier(.4,0,.2,1)';
+    sb.style.width = targetW;
+    sb.style.minWidth = targetW;
+
+    // After width settles, rebuild content
+    setTimeout(function(){
+      var parent = sb.parentNode;
+      var next   = sb.nextSibling;
+      sb.remove();
+      var newSb = buildSidebar(_sbCollapsed);
+      if (next) parent.insertBefore(newSb, next);
+      else      parent.appendChild(newSb);
+    }, 260);
+  }
+
+  // Responsive: auto-collapse below 1024px, expand above 1200px
+  var _resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(function(){
+      var sb = document.getElementById('suppSidebar');
+      if (!sb) return;
+      var w = window.innerWidth;
+      // Auto-collapse below 1024, auto-expand above 1200 (only if not manually set)
+      if (w < 1024 && !_sbCollapsed) {
+        _sbCollapsed = true;
+        window._suppSidebarCollapsed = true;
+      } else if (w >= 1200 && _sbCollapsed && !window._suppSidebarManuallyCollapsed) {
+        _sbCollapsed = false;
+        window._suppSidebarCollapsed = false;
+      }
+      var parent = sb.parentNode;
+      var next   = sb.nextSibling;
+      sb.remove();
+      var newSb = buildSidebar(_sbCollapsed);
+      if (next) parent.insertBefore(newSb, next);
+      else parent.appendChild(newSb);
+    }, 120);
   });
 
   window._suppShowLogout = function(){ _doLogout(); };
@@ -21665,7 +21627,7 @@ function _showSupplierDashboard(){
   _suppRenderDashboard(mainEl);
 
   // Assemble: sidebar left, content right
-  screen.appendChild(buildSidebar(false));
+  screen.appendChild(buildSidebar(_sbCollapsed));
   screen.appendChild(mainEl);
 }
 
