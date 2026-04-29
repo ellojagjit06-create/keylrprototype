@@ -18929,62 +18929,767 @@ function _suppWirePricingPage(){
   });
 }
 
+// ── Pricing model definitions ────────────────────────────────────
+var _PRICING_MODELS = [
+  {id:'A', label:'Fixed price',
+   icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="4" width="16" height="12" rx="2"/><path d="M2 8h16"/><circle cx="10" cy="12" r="2"/></svg>',
+   sub:'Set one price per service — vary by time slot and day type. PM sees an exact price upfront, no surprises.'},
+  {id:'B', label:'Hourly rate',
+   icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="7.5"/><path d="M10 5.5V10l3 2"/></svg>',
+   sub:'Charge by the hour. Set your rate and minimum hours. PM sees an estimated total based on job scope.'},
+  {id:'C', label:'Banded price',
+   icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="14" width="4" height="4" rx="0.5"/><rect x="8" y="9" width="4" height="9" rx="0.5"/><rect x="14" y="5" width="4" height="13" rx="0.5"/></svg>',
+   sub:'Define price bands by property size, appliances, or rooms. PM picks their band and gets an exact price.'},
+  {id:'D', label:'Estimated range',
+   icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 10h14M3 10l4-4M3 10l4 4M17 10l-4-4M17 10l-4 4"/></svg>',
+   sub:'A min–max range when exact cost depends on complexity. PM sees "from £X" and you finalise after survey.'},
+  {id:'E', label:'Quote required',
+   icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="2" width="12" height="16" rx="1.5"/><path d="M7 7h6M7 10h6M7 13h4"/></svg>',
+   sub:'For complex or bespoke jobs requiring a site visit. PM requests a visit and you send a formal quote.'},
+  {id:'F', label:'Subscription',
+   icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 10a6 6 0 016-6 6 6 0 014.24 1.76"/><path d="M16 10a6 6 0 01-6 6 6 6 0 01-4.24-1.76"/><path d="M16 4v4h-4M4 16v-4h4"/></svg>',
+   sub:'Offer recurring services on a fixed monthly rate. PM sets up a recurring booking automatically.'}
+];
+
+var _DAY_TYPES = ['Weekday','Saturday','Sunday','Bank Holiday'];
+
+// ── Pricing state per service ────────────────────────────────────
+// Stored in window._suppState.pricing[svcId] = { modelId, slots, pricingMode, cells, uplifts, minCharge, vat }
+function _pDefaults(existing){
+  return Object.assign({
+    modelId: '',
+    slots: [
+      {name:'Morning',   start:'08:00', end:'13:00'},
+      {name:'Afternoon', start:'13:00', end:'18:00'},
+      {name:'Evening',   start:'18:00', end:'22:00'}
+    ],
+    pricingMode: 'single', // 'single' | 'day' | 'matrix'
+    cells: {},             // Model A: key → {price, avail}
+    hCells: {},            // Model B: key → {callout, perHour, per30, dayRate, avail}
+    uplifts: {appliance:'', bedroom:'', bathroom:'', floor:''},
+    materials: 'included', // 'included' | 'separate' | 'capped'
+    materialsCap: '',
+    materialsMarkup: '',
+    minCharge: '',
+    vat: false
+  }, existing || {});
+}
+
+function _pCellKey(slot, day){ return slot+':'+day; }
+
+function _pGetCell(p, slot, day){
+  var k = _pCellKey(slot, day);
+  if(!p.cells[k]) p.cells[k] = {price:'', avail:true};
+  return p.cells[k];
+}
+
 function _suppOpenPricingModal(svcId, svcLabel){
-  var existing=document.getElementById('suppPricingModal'); if(existing) existing.remove();
-  var st=window._suppState;
-  var pricing=st.pricing[svcId]||{model:'Model A - Fixed',price:''};
-  var overlay=document.createElement('div');
-  overlay.id='suppPricingModal';
-  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
-  var modal=document.createElement('div');
-  modal.style.cssText='background:#fff;border-radius:16px;width:100%;max-width:560px;max-height:88vh;overflow-y:auto;font-family:Inter,sans-serif;padding:24px;';
-  modal.innerHTML=''
-    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">'
-      +'<div><div style="font-size:16px;font-weight:700;color:#0f172a;">Configure pricing</div>'
-        +'<div style="font-size:13px;color:#64748b;margin-top:2px;">'+svcLabel+'</div></div>'
-      +'<button class="supp-modal-close" data-modal="suppPricingModal" style="background:none;border:1.5px solid #e2e8f0;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:18px;color:#64748b;">&times;</button>'
-    +'</div>'
-    +'<div style="margin-bottom:16px;">'
-      +'<div style="font-size:12px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Pricing Model</div>'
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="pricingModelGrid">'
-        +['Model A — Fixed price','Model B — Hourly rate','Model C — Banded price','Model D — Estimated range','Model E — Quote required','Model F — Subscription'].map(function(m){
-          var isAct=pricing.model===m;
-          return '<div class="supp-model-card" data-svcid="'+svcId+'" data-model="'+m+'" style="border:1.5px solid '+(isAct?'#1A5FC8':'#e2e8f0')+';border-radius:9px;padding:10px 12px;cursor:pointer;background:'+(isAct?'#eff6ff':'#fff')+';font-size:12.5px;font-weight:'+(isAct?'700':'500')+';color:'+(isAct?'#1A5FC8':'#374151')+';transition:all .12s;">'+m+'</div>';
+  var existing = document.getElementById('suppPricingModal');
+  if(existing) existing.remove();
+
+  var st = window._suppState;
+  if(!st.pricing[svcId]) st.pricing[svcId] = {};
+  var p = _pDefaults(st.pricing[svcId]);
+
+  // ── Render helpers ───────────────────────────────────────────
+  function updateHeader(){
+    var hTitle  = modal.querySelector('.sp-h-title');
+    var hBadge  = modal.querySelector('.sp-h-badge');
+    if(hTitle) hTitle.textContent = 'Configure pricing';
+    if(hBadge){
+      if(p.modelId === 'A'){
+        hBadge.style.display = 'inline-flex';
+        hBadge.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M2 2h7l1.5 1.5v7H2z"/><path d="M3.5 2v3h4V2M2 6.5h8"/></svg> Model A — Fixed price';
+      } else if(p.modelId === 'B'){
+        hBadge.style.display = 'inline-flex';
+        hBadge.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#1A5FC8" stroke-width="1.8"><circle cx="6" cy="6" r="4.5"/><path d="M6 3.5V6l2 1.2"/></svg> Model B — Hourly rate';
+      } else {
+        hBadge.style.display = 'none';
+      }
+    }
+  }
+
+  function updateFooter(){
+    var leftZone = modal.querySelector('.sp-footer-left');
+    if(!leftZone) return;
+    if(p.modelId === 'A' || p.modelId === 'B'){
+      leftZone.innerHTML = '<button class="sp-back-footer-btn" style="border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer;background:#fff;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:7px;">'
+        + '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2L4 6l4 4"/></svg>Back</button>';
+      var backBtn = leftZone.querySelector('.sp-back-footer-btn');
+      if(backBtn) backBtn.onclick = function(){ collectState(); p.modelId = ''; renderModal(); };
+    } else {
+      leftZone.innerHTML = '';
+    }
+  }
+
+  function renderModal(){
+    var body = overlay.querySelector('.sp-body');
+    if(p.modelId === 'A')      body.innerHTML = renderModelA();
+    else if(p.modelId === 'B') body.innerHTML = renderModelB();
+    else                        body.innerHTML = renderModelSelect();
+    updateHeader();
+    updateFooter();
+    wireModal();
+  }
+
+  function renderModelSelect(){
+    return '<div style="font-size:11px;font-weight:700;color:#94a3b8;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px;">Choose a pricing model</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;">'
+      + _PRICING_MODELS.map(function(m){
+          var isAct = p.modelId === m.id;
+          var avail = m.id === 'A' || m.id === 'B';
+          var iconColor = isAct ? '#1A5FC8' : (avail ? '#64748b' : '#cbd5e1');
+          return '<div class="sp-model-card" data-mid="'+m.id+'" style="position:relative;display:flex;flex-direction:column;gap:10px;border:1.5px solid '+(isAct?'#1A5FC8':'#e2e8f0')+';border-radius:12px;padding:14px 16px;cursor:'+(avail?'pointer':'default')+';background:'+(isAct?'#EEF4FD':'#fff')+';transition:all .12s;opacity:'+(avail?'1':'0.5')+';">'
+            + (!avail?'<span style="position:absolute;top:10px;right:10px;font-size:10px;font-weight:700;background:#f1f5f9;color:#94a3b8;border-radius:4px;padding:2px 7px;">Soon</span>':'')
+            + (isAct?'<span style="position:absolute;top:10px;right:10px;display:flex;align-items:center;justify-content:center;width:20px;height:20px;background:#1A5FC8;border-radius:50%;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 5.5l2.5 2.5 4.5-4.5"/></svg></span>':'')
+            + '<div style="width:36px;height:36px;border-radius:9px;background:'+(isAct?'#1A5FC8':'#f1f5f9')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;color:'+iconColor+';transition:all .12s;">'
+              + m.icon.replace('stroke="currentColor"','stroke="'+(isAct?'#fff':iconColor)+'"')
+            + '</div>'
+            + '<div>'
+              + '<div style="font-size:13.5px;font-weight:700;color:'+(isAct?'#1A5FC8':'#0f172a')+';">'+m.label+'</div>'
+              + '<div style="font-size:12px;color:#64748b;margin-top:3px;line-height:1.45;">'+m.sub+'</div>'
+            + '</div>'
+          + '</div>';
         }).join('')
-      +'</div>'
-    +'</div>'
-    +'<div style="margin-bottom:16px;">'
-      +'<div style="font-size:12px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Base Price</div>'
-      +'<div style="position:relative;">'
-        +'<span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#64748b;font-weight:600;">£</span>'
-        +'<input id="pricingPriceInput" value="'+(pricing.price||'')+'" placeholder="0.00" style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:9px;padding:10px 12px 10px 26px;font-size:14px;font-family:Inter,sans-serif;outline:none;">'
-      +'</div>'
-    +'</div>'
-    +'<div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">'
-      +'<button class="supp-modal-close" data-modal="suppPricingModal" style="border:1.5px solid #e2e8f0;border-radius:9px;padding:9px 18px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer;background:#fff;">Cancel</button>'
-      +'<button class="supp-save-pricing-btn" style="background:#1A5FC8;color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13.5px;font-weight:700;cursor:pointer;">Save pricing</button>'
-    +'</div>';
-  window._suppSelectPModel=function(sid,m){
-    if(!st.pricing[sid]) st.pricing[sid]={};
-    st.pricing[sid].model=m;
-    modal.querySelectorAll('#pricingModelGrid > div').forEach(function(d){ var isA=d.textContent.trim()===m; d.style.border='1.5px solid '+(isA?'#1A5FC8':'#e2e8f0'); d.style.background=isA?'#eff6ff':'#fff'; d.style.color=isA?'#1A5FC8':'#374151'; d.style.fontWeight=isA?'700':'500'; });
-  };
-  window._suppSavePricing=function(sid){
-    var inp=document.getElementById('pricingPriceInput');
-    if(!st.pricing[sid]) st.pricing[sid]={};
-    st.pricing[sid].price=inp?inp.value:'';
-    document.getElementById('suppPricingModal').remove();
-    var mainEl=document.getElementById('suppMain'); if(mainEl){mainEl.innerHTML='<div style="padding:24px clamp(20px,5vw,80px) 48px;width:100%;box-sizing:border-box;">'+_suppBuildPricingPage()+'</div>';}
-  };
-  overlay.onclick=function(e){if(e.target===overlay)overlay.remove();};
-  modal.addEventListener('click',function(e){
-    var mc=e.target.closest('.supp-model-card');
-    if(mc){window._suppSelectPModel(mc.dataset.svcid,mc.dataset.model);return;}
-    var sp=e.target.closest('.supp-save-pricing-btn');
-    if(sp){window._suppSavePricing(svcId);return;}
-  });
+      + '</div>'
+      + '<div style="display:flex;justify-content:flex-end;">'
+        + '<button class="sp-next-btn" '+(p.modelId?'':'disabled')
+          +' style="background:'+(p.modelId?'linear-gradient(90deg,#1A5FC8,#0FA3D0)':'#f1f5f9')+';color:'+(p.modelId?'#fff':'#94a3b8')+';border:none;border-radius:10px;padding:11px 24px;font-size:14px;font-weight:700;cursor:'+(p.modelId?'pointer':'not-allowed')+';font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:8px;transition:all .15s;">'
+          + 'Configure prices'
+          + '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 6.5h8M7 3l3.5 3.5L7 10"/></svg>'
+        + '</button>'
+      + '</div>';
+  }
+
+  function renderModelA(){
+    var mode = p.pricingMode;
+    var slots = p.slots;
+
+    // ── Step indicator ──
+    var breadcrumb = '';
+
+    // ── 1. Time slots card ──
+    var slotsHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:14px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#EEF4FD;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><circle cx="7.5" cy="7.5" r="6"/><path d="M7.5 4.5V7.5l2.5 1.5"/></svg>'
+        + '</div>'
+        + '<div style="flex:1;min-width:0;">'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">Define time slots</div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;line-height:1.4;">Name each working window. Use fewer slots for simpler pricing — e.g. just one "Daytime" slot.</div>'
+        + '</div>'
+
+      + '</div>'
+      + '<div id="sp-slots-list">'
+        + slots.map(function(sl,i){
+            return '<div class="sp-slot-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+              + '<input class="sp-slot-name" data-idx="'+i+'" value="'+sl.name+'" placeholder="e.g. Morning" style="flex:1;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 11px;font-size:13px;font-family:Inter,sans-serif;outline:none;min-width:0;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+              + '<input class="sp-slot-start" data-idx="'+i+'" type="time" value="'+sl.start+'" style="border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:Inter,sans-serif;outline:none;width:112px;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+              + '<span style="font-size:12px;color:#94a3b8;flex-shrink:0;">to</span>'
+              + '<input class="sp-slot-end" data-idx="'+i+'" type="time" value="'+sl.end+'" style="border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:Inter,sans-serif;outline:none;width:112px;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+              + (slots.length>1?'<button class="sp-del-slot" data-idx="'+i+'" style="background:none;border:1.5px solid #fecaca;border-radius:7px;width:32px;height:32px;cursor:pointer;color:#ef4444;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l9 9M10 1l-9 9"/></svg></button>':'')
+            + '</div>';
+          }).join('')
+      + '</div>'
+      + '<button class="sp-add-slot" style="background:none;border:1.5px dashed #d1d5db;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:600;color:#64748b;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:6px;margin-top:4px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><path d="M5.5 1v9M1 5.5h9"/></svg>Add slot</button>'
+    + '</div>';
+
+    // ── 2. Pricing mode card ──
+    function modeCard(val, label, desc){
+      var sel = mode===val;
+      return '<div class="sp-mode-card" data-mode="'+val+'" style="border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;padding:12px 14px;cursor:pointer;background:'+(sel?'#EEF4FD':'#f8fafc')+';flex:1;min-width:0;transition:all .12s;position:relative;">'
+        + (sel?'<span style="position:absolute;top:8px;right:8px;width:16px;height:16px;background:#1A5FC8;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#fff" stroke-width="2.2"><path d="M1.5 4.5l2 2 4-4"/></svg></span>':'')
+        + '<div style="font-size:13px;font-weight:700;color:'+(sel?'#1A5FC8':'#0f172a')+';">'+label+'</div>'
+        + '<div style="font-size:11.5px;color:'+(sel?'#3b82f6':'#64748b')+';margin-top:3px;line-height:1.4;">'+desc+'</div>'
+      + '</div>';
+    }
+    var modeHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:14px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#EEF4FD;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><rect x="1.5" y="3" width="12" height="9" rx="1"/><path d="M4.5 3V2M10.5 3V2M1.5 6.5h12"/></svg>'
+        + '</div>'
+        + '<div style="flex:1;min-width:0;">'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">Pricing mode</div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;line-height:1.4;">How should your price vary? Start simple — you can always increase complexity later.</div>'
+        + '</div>'
+
+      + '</div>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+        + modeCard('single','Single price','One price for all slots &amp; days — simplest.')
+        + modeCard('day','Day-based','Different price per day type — weekday, weekend, bank holiday.')
+        + modeCard('matrix','Full matrix','Different price per slot and day — maximum control.')
+      + '</div>'
+    + '</div>';
+
+    // ── 3. Price grid card ──
+    function cellInput(slotName, dayType){
+      var k = _pCellKey(slotName, dayType);
+      var cell = p.cells[k] || {price:'', avail:true};
+      var avail = cell.avail !== false;
+      if(!avail){
+        return '<td style="padding:5px 4px;text-align:center;">'
+          + '<div class="sp-cell-na" data-slot="'+slotName+'" data-day="'+dayType+'" style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 6px;font-size:12px;color:#94a3b8;cursor:pointer;text-align:center;white-space:nowrap;">N/A</div>'
+        + '</td>';
+      }
+      return '<td style="padding:5px 4px;">'
+        + '<div style="position:relative;">'
+          + '<span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:12px;color:#64748b;font-weight:600;pointer-events:none;">£</span>'
+          + '<input class="sp-price-inp" data-slot="'+slotName+'" data-day="'+dayType+'" value="'+(cell.price||'')+'" placeholder="0" style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 8px 7px 20px;font-size:13px;font-family:Inter,sans-serif;outline:none;text-align:center;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+          + '<button class="sp-na-btn" title="Mark unavailable" data-slot="'+slotName+'" data-day="'+dayType+'" style="position:absolute;right:-1px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#d1d5db;padding:4px;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="5" r="4"/><path d="M2.5 5h5"/></svg></button>'
+        + '</div>'
+      + '</td>';
+    }
+
+    var gridInner = '';
+    if(mode==='single'){
+      var singleCell = p.cells['single'] || {price:'', avail:true};
+      gridInner = '<div style="display:flex;align-items:center;gap:14px;">'
+        + '<div style="position:relative;max-width:180px;">'
+          + '<span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;color:#64748b;font-weight:700;pointer-events:none;">£</span>'
+          + '<input id="sp-single-price" class="sp-price-inp" data-slot="single" data-day="all" value="'+(singleCell.price||'')+'" placeholder="0.00" style="width:100%;box-sizing:border-box;border:2px solid #e2e8f0;border-radius:10px;padding:12px 14px 12px 30px;font-size:18px;font-weight:700;font-family:Inter,sans-serif;outline:none;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+        + '</div>'
+        + '<div style="font-size:13px;color:#64748b;">applies to all slots and days</div>'
+      + '</div>';
+    } else {
+      var days2 = _DAY_TYPES;
+      gridInner = '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table style="border-collapse:separate;border-spacing:0;min-width:100%;">'
+        + '<thead><tr>'
+          + '<th style="font-size:11px;font-weight:700;color:#94a3b8;padding:4px 4px 10px;text-align:left;white-space:nowrap;min-width:80px;">'+(mode==='matrix'?'Slot':'')+'</th>'
+          + days2.map(function(d){return '<th style="font-size:11px;font-weight:700;color:#374151;padding:4px 4px 10px;text-align:center;white-space:nowrap;min-width:88px;">'+d+'</th>';}).join('')
+        + '</tr></thead>'
+        + '<tbody>'
+          + (mode==='day'
+            ? '<tr><td style="padding:5px 8px 5px 0;font-size:12px;font-weight:600;color:#374151;white-space:nowrap;">Base price</td>'
+              + days2.map(function(d){return cellInput('single',d);}).join('')+'</tr>'
+            : slots.map(function(sl){
+                return '<tr>'
+                  + '<td style="padding:5px 8px 5px 0;font-size:12px;font-weight:600;color:#374151;white-space:nowrap;">'+sl.name+'<div style="font-size:10px;color:#94a3b8;font-weight:400;">'+sl.start+'–'+sl.end+'</div></td>'
+                  + days2.map(function(d){return cellInput(sl.name,d);}).join('')
+                + '</tr>';
+              }).join('')
+          )
+        + '</tbody></table></div>';
+    }
+
+    var gridHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:14px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#EEF4FD;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><circle cx="7.5" cy="7.5" r="6"/><path d="M7.5 5v1.5a1.5 1.5 0 010 3V11M6 5h2M6 11h2"/></svg>'
+        + '</div>'
+        + '<div style="flex:1;min-width:0;">'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">Set prices</div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;line-height:1.4;">Enter one price per cell. Hit the <span style="background:#f1f5f9;border-radius:4px;padding:1px 5px;font-size:11px;color:#374151;">−</span> button to mark a slot unavailable. Click N/A to re-enable.</div>'
+        + '</div>'
+
+      + '</div>'
+      + gridInner
+    + '</div>';
+
+    // ── 4. Variable uplifts — wrapped in its own card ──
+    var uplifts = p.uplifts || {};
+    var upliftDefined = ['appliance','bedroom','bathroom','floor'].some(function(k){return uplifts[k];});
+    var upliftsHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:14px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#EEF4FD;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M7.5 1v13M1 7.5h13M3.5 4L7.5 1l4 3M3.5 11L7.5 14l4-3"/></svg>'
+        + '</div>'
+        + '<div>'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">Variable uplifts <span style="font-size:11.5px;font-weight:500;color:#94a3b8;">— optional</span></div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;line-height:1.4;">A fixed £ amount added per unit on top of the base price based on the PM\'s property. Leave blank to skip any.</div>'
+        + '</div>'
+      + '</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
+        + [['appliance','Per appliance','e.g. +£8 per extra appliance'],
+           ['bedroom',  'Per bedroom',  'e.g. +£15 per extra bedroom'],
+           ['bathroom', 'Per bathroom', 'e.g. +£12 per extra bathroom'],
+           ['floor',    'Per floor / storey','e.g. +£10 per floor']].map(function(u){
+            var hasVal = !!(uplifts[u[0]]);
+            return '<div style="background:#f8fafc;border:1.5px solid '+(hasVal?'#bfdbfe':'#e2e8f0')+';border-radius:9px;padding:10px 12px;transition:border-color .12s;">'
+              + '<label style="font-size:11.5px;font-weight:700;color:'+(hasVal?'#1A5FC8':'#64748b')+';display:block;margin-bottom:6px;">'+u[1]+'</label>'
+              + '<div style="position:relative;">'
+                + '<span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#64748b;font-size:12px;font-weight:700;">£</span>'
+                + '<input class="sp-uplift" data-type="'+u[0]+'" value="'+(uplifts[u[0]]||'')+'" placeholder="0.00" style="width:100%;box-sizing:border-box;border:1.5px solid '+(hasVal?'#1A5FC8':'#e2e8f0')+';border-radius:7px;padding:7px 8px 7px 22px;font-size:13.5px;font-weight:'+(hasVal?'700':'400')+';font-family:Inter,sans-serif;outline:none;background:#fff;" onfocus="this.style.borderColor=\'#1A5FC8\'" onblur="this.style.borderColor=\''+(hasVal?'#1A5FC8':'#e2e8f0')+'\'">'
+              + '</div>'
+              + '<div style="font-size:10.5px;color:#94a3b8;margin-top:4px;">'+u[2]+'</div>'
+            + '</div>';
+          }).join('')
+      + '</div>'
+    + '</div>';
+
+    // ── 5. Minimum charge + VAT — their own separate card ──
+    var optionsHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:20px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#16a34a" stroke-width="1.6"><path d="M7.5 1.5v12M3.5 5.5c0-1.1.9-2 2-2h3a2 2 0 010 4h-2a2 2 0 000 4h3a2 2 0 002-2"/></svg>'
+        + '</div>'
+        + '<div>'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">Pricing rules</div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;">Set a safety net minimum and configure VAT.</div>'
+        + '</div>'
+      + '</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">'
+        + '<div>'
+          + '<label style="font-size:11.5px;font-weight:700;color:#64748b;display:block;margin-bottom:6px;">Minimum charge <span style="font-weight:400;">(optional)</span></label>'
+          + '<div style="position:relative;">'
+            + '<span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#64748b;font-size:12px;font-weight:700;">£</span>'
+            + '<input id="sp-min-charge" value="'+(p.minCharge||'')+'" placeholder="e.g. 50" style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 10px 9px 22px;font-size:13px;font-family:Inter,sans-serif;outline:none;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+          + '</div>'
+          + '<div style="font-size:10.5px;color:#94a3b8;margin-top:4px;line-height:1.4;">If the calculated total falls below this, price rounds up to the minimum.</div>'
+        + '</div>'
+        + '<div>'
+          + '<label style="font-size:11.5px;font-weight:700;color:#64748b;display:block;margin-bottom:6px;">VAT applicable</label>'
+          + '<div style="display:flex;gap:8px;margin-bottom:4px;">'
+            + '<button class="sp-vat-btn" data-val="yes" style="flex:1;border:1.5px solid '+(p.vat?'#1A5FC8':'#e2e8f0')+';border-radius:8px;padding:9px;font-size:13px;font-weight:600;color:'+(p.vat?'#1A5FC8':'#64748b')+';cursor:pointer;background:'+(p.vat?'#EEF4FD':'#f8fafc')+';transition:all .12s;">Yes</button>'
+            + '<button class="sp-vat-btn" data-val="no"  style="flex:1;border:1.5px solid '+(!p.vat?'#1A5FC8':'#e2e8f0')+';border-radius:8px;padding:9px;font-size:13px;font-weight:600;color:'+(!p.vat?'#1A5FC8':'#64748b')+';cursor:pointer;background:'+(!p.vat?'#EEF4FD':'#f8fafc')+';transition:all .12s;">No</button>'
+          + '</div>'
+          + '<div style="font-size:10.5px;color:#94a3b8;line-height:1.4;">'+(p.vat?'VAT will be shown separately on invoices and displayed to PMs.':'No VAT — price shown is the final amount.')+'</div>'
+        + '</div>'
+      + '</div>'
+    + '</div>';
+
+    // ── Preview ──
+    var previewHtml = '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">'
+      + '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1A5FC8" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3.5M8 11v.2"/></svg>'
+      + '<div style="font-size:12.5px;color:#374151;font-family:Inter,sans-serif;"><strong>How the PM sees it:</strong> "£90.00 — Tuesday Morning (08:00–13:00)" — exact price, no uncertainty.</div>'
+    + '</div>';
+
+    return breadcrumb + slotsHtml + modeHtml + gridHtml + upliftsHtml + optionsHtml + previewHtml;
+  }
+
+  // ── Model B: Hourly rate ────────────────────────────────────
+  function renderModelB(){
+    var mode  = p.pricingMode === 'single' ? 'day' : p.pricingMode; // B only has day / matrix
+    var slots = p.slots;
+    var mats  = p.materials || 'included';
+
+    // Shared slot card (reuses same structure as Model A)
+    var slotsHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:14px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#EEF4FD;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><circle cx="7.5" cy="7.5" r="6"/><path d="M7.5 4.5V7.5l2.5 1.5"/></svg>'
+        + '</div>'
+        + '<div>'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">Define time slots</div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;line-height:1.4;">Name each working window with start and end times.</div>'
+        + '</div>'
+      + '</div>'
+      + '<div id="sp-slots-list">'
+        + slots.map(function(sl,i){
+            return '<div class="sp-slot-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+              + '<input class="sp-slot-name" data-idx="'+i+'" value="'+sl.name+'" placeholder="e.g. Morning" style="flex:1;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 11px;font-size:13px;font-family:Inter,sans-serif;outline:none;min-width:0;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+              + '<input class="sp-slot-start" data-idx="'+i+'" type="time" value="'+sl.start+'" style="border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:Inter,sans-serif;outline:none;width:112px;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+              + '<span style="font-size:12px;color:#94a3b8;flex-shrink:0;">to</span>'
+              + '<input class="sp-slot-end" data-idx="'+i+'" type="time" value="'+sl.end+'" style="border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:Inter,sans-serif;outline:none;width:112px;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+              + (slots.length>1?'<button class="sp-del-slot" data-idx="'+i+'" style="background:none;border:1.5px solid #fecaca;border-radius:7px;width:32px;height:32px;cursor:pointer;color:#ef4444;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l9 9M10 1l-9 9"/></svg></button>':'')
+            + '</div>';
+          }).join('')
+      + '</div>'
+      + '<button class="sp-add-slot" style="background:none;border:1.5px dashed #d1d5db;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:600;color:#64748b;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:6px;margin-top:4px;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><path d="M5.5 1v9M1 5.5h9"/></svg>Add slot</button>'
+    + '</div>';
+
+    // Pricing mode — day or matrix only (no "single" for hourly)
+    function modeCard2(val, label, desc){
+      var sel = mode===val;
+      return '<div class="sp-mode-card" data-mode="'+val+'" style="border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;padding:12px 14px;cursor:pointer;background:'+(sel?'#EEF4FD':'#f8fafc')+';flex:1;min-width:0;transition:all .12s;position:relative;">'
+        + (sel?'<span style="position:absolute;top:8px;right:8px;width:16px;height:16px;background:#1A5FC8;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="#fff" stroke-width="2.2"><path d="M1.5 4.5l2 2 4-4"/></svg></span>':'')
+        + '<div style="font-size:13px;font-weight:700;color:'+(sel?'#1A5FC8':'#0f172a')+';">'+label+'</div>'
+        + '<div style="font-size:11.5px;color:'+(sel?'#3b82f6':'#64748b')+';margin-top:3px;line-height:1.4;">'+desc+'</div>'
+      + '</div>';
+    }
+    var modeHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:14px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#EEF4FD;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><rect x="1.5" y="3" width="12" height="9" rx="1"/><path d="M4.5 3V2M10.5 3V2M1.5 6.5h12"/></svg>'
+        + '</div>'
+        + '<div>'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">Pricing mode</div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;line-height:1.4;">How do rates vary? Day-based for most suppliers, full matrix for maximum control.</div>'
+        + '</div>'
+      + '</div>'
+      + '<div style="display:flex;gap:8px;">'
+        + modeCard2('day',    'Day-based',    'Different rates per day type — weekday, Saturday, Sunday, bank holiday.')
+        + modeCard2('matrix', 'Full matrix',  'Different rates per time slot and day combination — maximum control.')
+      + '</div>'
+    + '</div>';
+
+    // Rate grid — 4 fields per cell
+    var RATE_FIELDS = [
+      {key:'callout', label:'Call-out fee',       hint:'Covers first hour', placeholder:'e.g. 95', required:true},
+      {key:'perHour', label:'Per additional hour', hint:'After first hour',   placeholder:'e.g. 55', required:true},
+      {key:'per30',   label:'Per 30 min',          hint:'Optional',           placeholder:'e.g. 30', required:false},
+      {key:'dayRate', label:'Full day rate',        hint:'Optional — 8 hrs',  placeholder:'e.g. 350',required:false}
+    ];
+
+    function hCellKey(slot, day){ return slot+':'+day; }
+    function getHCell(slot, day){
+      var k = hCellKey(slot, day);
+      if(!p.hCells[k]) p.hCells[k] = {callout:'', perHour:'', per30:'', dayRate:'', avail:true};
+      return p.hCells[k];
+    }
+
+    function buildHCell(slotName, dayType){
+      var k = hCellKey(slotName, dayType);
+      var cell = p.hCells[k] || {avail:true};
+      if(cell.avail === false){
+        return '<td style="padding:4px 3px;vertical-align:top;">'
+          + '<div class="sp-cell-na" data-slot="'+slotName+'" data-day="'+dayType+'" style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:7px;padding:32px 8px;font-size:12px;color:#94a3b8;cursor:pointer;text-align:center;white-space:nowrap;">N/A<div style="font-size:10px;color:#cbd5e1;margin-top:2px;">click to enable</div></div>'
+        + '</td>';
+      }
+      var fields = RATE_FIELDS.map(function(rf){
+        return '<div style="margin-bottom:5px;">'
+          + '<div style="font-size:10px;font-weight:600;color:#94a3b8;margin-bottom:2px;white-space:nowrap;">'+rf.label+(rf.required?'':' <span style="opacity:0.6;">(opt)</span>')+'</div>'
+          + '<div style="position:relative;">'
+            + '<span style="position:absolute;left:7px;top:50%;transform:translateY(-50%);font-size:11px;color:#64748b;font-weight:600;pointer-events:none;">£</span>'
+            + '<input class="sp-hrate-inp" data-slot="'+slotName+'" data-day="'+dayType+'" data-field="'+rf.key+'" value="'+(cell[rf.key]||'')+'" placeholder="'+rf.placeholder+'" style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:6px;padding:5px 6px 5px 18px;font-size:12px;font-family:Inter,sans-serif;outline:none;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+          + '</div>'
+        + '</div>';
+      }).join('');
+      return '<td style="padding:4px 3px;vertical-align:top;position:relative;">'
+        + '<div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 10px;min-width:120px;">'
+          + '<div style="display:flex;justify-content:flex-end;margin-bottom:4px;">'
+            + '<button class="sp-na-btn" data-slot="'+slotName+'" data-day="'+dayType+'" title="Mark unavailable" style="background:none;border:none;cursor:pointer;color:#d1d5db;padding:2px;display:flex;align-items:center;" title="Mark unavailable"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5.5" cy="5.5" r="4.5"/><path d="M3 5.5h5"/></svg></button>'
+          + '</div>'
+          + fields
+        + '</div>'
+      + '</td>';
+    }
+
+    var days3 = _DAY_TYPES;
+    var gridRows = mode === 'day'
+      ? '<tr><td style="padding:4px 8px 4px 0;font-size:12px;font-weight:600;color:#374151;white-space:nowrap;vertical-align:top;padding-top:12px;">Base rates</td>'
+          + days3.map(function(d){return buildHCell('base',d);}).join('') + '</tr>'
+      : slots.map(function(sl){
+          return '<tr>'
+            + '<td style="padding:4px 8px 4px 0;font-size:12px;font-weight:600;color:#374151;white-space:nowrap;vertical-align:top;padding-top:12px;">'+sl.name+'<div style="font-size:10px;color:#94a3b8;font-weight:400;">'+sl.start+'–'+sl.end+'</div></td>'
+            + days3.map(function(d){return buildHCell(sl.name,d);}).join('')
+          + '</tr>';
+        }).join('');
+
+    var gridHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:14px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#EEF4FD;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><circle cx="7.5" cy="7.5" r="6"/><path d="M7.5 5v1.5a1.5 1.5 0 010 3V11M6 5h2M6 11h2"/></svg>'
+        + '</div>'
+        + '<div style="flex:1;min-width:0;">'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">Set rates</div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;line-height:1.4;">Fill call-out and hourly rates per cell. Click the <span style="background:#f1f5f9;border-radius:4px;padding:1px 5px;font-size:11px;color:#374151;">−</span> to mark a slot N/A. Click N/A to re-enable.</div>'
+        + '</div>'
+      + '</div>'
+      + '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">'
+        + '<table style="border-collapse:separate;border-spacing:0;min-width:100%;">'
+          + '<thead><tr>'
+            + '<th style="font-size:11px;font-weight:700;color:#94a3b8;padding:4px 4px 10px;text-align:left;white-space:nowrap;min-width:72px;"></th>'
+            + days3.map(function(d){return '<th style="font-size:11px;font-weight:700;color:#374151;padding:4px 4px 10px;text-align:center;white-space:nowrap;min-width:128px;">'+d+'</th>';}).join('')
+          + '</tr></thead>'
+          + '<tbody>'+gridRows+'</tbody>'
+        + '</table>'
+      + '</div>'
+    + '</div>';
+
+    // Materials card
+    function matBtn(val, label, desc){
+      var sel = mats===val;
+      return '<div class="sp-mat-btn" data-mat="'+val+'" style="border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:10px;padding:11px 14px;cursor:pointer;background:'+(sel?'#EEF4FD':'#f8fafc')+';flex:1;transition:all .12s;position:relative;">'
+        + (sel?'<span style="position:absolute;top:8px;right:8px;width:14px;height:14px;background:#1A5FC8;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="#fff" stroke-width="2"><path d="M1 4l2 2 4-4"/></svg></span>':'')
+        + '<div style="font-size:12.5px;font-weight:700;color:'+(sel?'#1A5FC8':'#0f172a')+';">'+label+'</div>'
+        + '<div style="font-size:11px;color:#64748b;margin-top:3px;line-height:1.4;">'+desc+'</div>'
+      + '</div>';
+    }
+
+    var extraMatsHtml = mats === 'separate'
+      ? '<div style="display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;">'
+          + '<div style="font-size:12.5px;font-weight:600;color:#374151;white-space:nowrap;">Handling markup</div>'
+          + '<div style="position:relative;width:130px;">'
+            + '<input id="sp-mat-markup" value="'+(p.materialsMarkup||'')+'" placeholder="e.g. 15" style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 28px 8px 10px;font-size:13px;font-family:Inter,sans-serif;outline:none;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+            + '<span style="position:absolute;right:9px;top:50%;transform:translateY(-50%);font-size:12px;color:#64748b;font-weight:600;">%</span>'
+          + '</div>'
+          + '<div style="font-size:11.5px;color:#64748b;">Optional — added on top of actual material cost.</div>'
+        + '</div>'
+      : mats === 'capped'
+        ? '<div style="display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;">'
+            + '<div style="font-size:12.5px;font-weight:600;color:#374151;white-space:nowrap;">Included up to</div>'
+            + '<div style="position:relative;width:130px;">'
+              + '<span style="position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:12px;color:#64748b;font-weight:600;">£</span>'
+              + '<input id="sp-mat-cap" value="'+(p.materialsCap||'')+'" placeholder="e.g. 50" style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 10px 8px 22px;font-size:13px;font-family:Inter,sans-serif;outline:none;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+            + '</div>'
+            + '<div style="font-size:11.5px;color:#64748b;">Anything above this cap is billed at actual cost.</div>'
+          + '</div>'
+        : '';
+
+    var matsHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:14px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#fef3c7;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#d97706" stroke-width="1.6"><path d="M2 12l2-4 3 2 2-6 2 4 2-2"/></svg>'
+        + '</div>'
+        + '<div>'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">Materials billing</div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;line-height:1.4;">How do you handle materials costs — bundled in your rate, or charged separately?</div>'
+        + '</div>'
+      + '</div>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+        + matBtn('included', 'Included',  'Materials bundled in the hourly rate — no extra charges.')
+        + matBtn('separate', 'Separate',  'Charged at actual cost on top of labour. Optional markup %.')
+        + matBtn('capped',   'Capped',    'Included up to £X — anything above billed at actual cost.')
+      + '</div>'
+      + extraMatsHtml
+    + '</div>';
+
+    // Min charge + VAT
+    var optionsHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:20px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#16a34a" stroke-width="1.6"><path d="M7.5 1.5v12M3.5 5.5c0-1.1.9-2 2-2h3a2 2 0 010 4h-2a2 2 0 000 4h3a2 2 0 002-2"/></svg>'
+        + '</div>'
+        + '<div>'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">Pricing rules</div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;line-height:1.4;">Set a minimum charge and configure VAT.</div>'
+        + '</div>'
+      + '</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">'
+        + '<div>'
+          + '<label style="font-size:11.5px;font-weight:700;color:#64748b;display:block;margin-bottom:6px;">Minimum charge <span style="font-weight:400;">(optional)</span></label>'
+          + '<div style="position:relative;">'
+            + '<span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#64748b;font-size:12px;font-weight:700;">£</span>'
+            + '<input id="sp-min-charge" value="'+(p.minCharge||'')+'" placeholder="e.g. 75" style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 10px 9px 22px;font-size:13px;font-family:Inter,sans-serif;outline:none;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+          + '</div>'
+          + '<div style="font-size:10.5px;color:#94a3b8;margin-top:4px;">If total falls below this, price rounds up to the minimum.</div>'
+        + '</div>'
+        + '<div>'
+          + '<label style="font-size:11.5px;font-weight:700;color:#64748b;display:block;margin-bottom:6px;">VAT applicable</label>'
+          + '<div style="display:flex;gap:8px;">'
+            + '<button class="sp-vat-btn" data-val="yes" style="flex:1;border:1.5px solid '+(p.vat?'#1A5FC8':'#e2e8f0')+';border-radius:8px;padding:9px;font-size:13px;font-weight:600;color:'+(p.vat?'#1A5FC8':'#64748b')+';cursor:pointer;background:'+(p.vat?'#EEF4FD':'#f8fafc')+';transition:all .12s;">Yes</button>'
+            + '<button class="sp-vat-btn" data-val="no"  style="flex:1;border:1.5px solid '+(!p.vat?'#1A5FC8':'#e2e8f0')+';border-radius:8px;padding:9px;font-size:13px;font-weight:600;color:'+(!p.vat?'#1A5FC8':'#64748b')+';cursor:pointer;background:'+(!p.vat?'#EEF4FD':'#f8fafc')+';transition:all .12s;">No</button>'
+          + '</div>'
+          + '<div style="font-size:10.5px;color:#94a3b8;margin-top:4px;">'+(p.vat?'VAT shown separately on invoices.':'Price shown is the final amount.')+'</div>'
+        + '</div>'
+      + '</div>'
+    + '</div>';
+
+    // PM preview
+    var previewHtml = '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:4px;display:flex;align-items:center;gap:12px;">'
+      + '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1A5FC8" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3.5M8 11v.2"/></svg>'
+      + '<div style="font-size:12.5px;color:#374151;line-height:1.5;"><strong>How the PM sees it:</strong> "£95 call-out + £55/hr — Saturday Morning (08:00–13:00)" — transparent hourly pricing.</div>'
+    + '</div>';
+
+    return slotsHtml + modeHtml + gridHtml + matsHtml + optionsHtml + previewHtml;
+  }
+  function collectState(){
+    var body = overlay.querySelector('.sp-body');
+    if(!body) return;
+    // Slots
+    body.querySelectorAll('.sp-slot-row').forEach(function(row, i){
+      var name  = row.querySelector('.sp-slot-name');
+      var start = row.querySelector('.sp-slot-start');
+      var end   = row.querySelector('.sp-slot-end');
+      if(p.slots[i]){
+        if(name)  p.slots[i].name  = name.value.trim()  || p.slots[i].name;
+        if(start) p.slots[i].start = start.value || p.slots[i].start;
+        if(end)   p.slots[i].end   = end.value   || p.slots[i].end;
+      }
+    });
+    // Model A price cells
+    body.querySelectorAll('.sp-price-inp').forEach(function(inp){
+      var slot = inp.dataset.slot, day = inp.dataset.day;
+      var k = slot==='single'&&day==='all' ? 'single' : _pCellKey(slot, day);
+      if(!p.cells[k]) p.cells[k] = {avail:true};
+      p.cells[k].price = inp.value.trim();
+    });
+    // Model B hourly rate cells
+    body.querySelectorAll('.sp-hrate-inp').forEach(function(inp){
+      var slot = inp.dataset.slot, day = inp.dataset.day, field = inp.dataset.field;
+      var k = slot+':'+day;
+      if(!p.hCells[k]) p.hCells[k] = {avail:true};
+      p.hCells[k][field] = inp.value.trim();
+    });
+    // Materials
+    var matMarkup = body.querySelector('#sp-mat-markup');
+    if(matMarkup) p.materialsMarkup = matMarkup.value.trim();
+    var matCap = body.querySelector('#sp-mat-cap');
+    if(matCap) p.materialsCap = matCap.value.trim();
+    // Uplifts
+    body.querySelectorAll('.sp-uplift').forEach(function(inp){
+      if(!p.uplifts) p.uplifts = {};
+      p.uplifts[inp.dataset.type] = inp.value.trim();
+    });
+    // Min charge
+    var mc = body.querySelector('#sp-min-charge');
+    if(mc) p.minCharge = mc.value.trim();
+    // Summary display price
+    if(p.modelId === 'B'){
+      var vals = Object.values(p.hCells);
+      var firstH = vals.find(function(c){return c.callout && c.avail!==false;});
+      p.price = firstH ? firstH.callout : '';
+      p.model = 'Hourly rate';
+    } else {
+      var firstPrice = p.cells['single'] && p.cells['single'].price
+        ? p.cells['single'].price
+        : (Object.values(p.cells).find(function(c){return c.price&&c.avail!==false;}) || {}).price || '';
+      p.price = firstPrice;
+      p.model = 'Fixed price';
+    }
+  }
+
+  // ── Wire events ─────────────────────────────────────────────
+  function wireModal(){
+    var body = overlay.querySelector('.sp-body');
+    if(!body) return;
+
+    // Back button (in-body — kept for compat)
+    body.querySelectorAll('.sp-back-btn').forEach(function(btn){
+      btn.onclick = function(){ collectState(); p.modelId = ''; renderModal(); };
+    });
+
+    // Model cards
+    body.querySelectorAll('.sp-model-card').forEach(function(card){
+      card.onclick = function(){
+        if(card.dataset.mid !== 'A') return; // others not available yet
+        collectState();
+        p.modelId = card.dataset.mid;
+        renderModal();
+      };
+    });
+
+    // Next button (model select → Model A config)
+    var nextBtn = body.querySelector('.sp-next-btn');
+    if(nextBtn) nextBtn.onclick = function(){ renderModal(); };
+
+    // Pricing mode cards
+    body.querySelectorAll('.sp-mode-card').forEach(function(card){
+      card.onclick = function(){
+        collectState();
+        p.pricingMode = card.dataset.mode;
+        renderModal();
+      };
+    });
+
+    // Add slot
+    var addSlot = body.querySelector('.sp-add-slot');
+    if(addSlot) addSlot.onclick = function(){
+      collectState();
+      p.slots.push({name:'', start:'09:00', end:'17:00'});
+      renderModal();
+    };
+
+    // Delete slot
+    body.querySelectorAll('.sp-del-slot').forEach(function(btn){
+      btn.onclick = function(e){
+        e.stopPropagation();
+        collectState();
+        var idx = parseInt(btn.dataset.idx);
+        p.slots.splice(idx, 1);
+        renderModal();
+      };
+    });
+
+    // Mark cell unavailable (works for both Model A and Model B)
+    body.querySelectorAll('.sp-na-btn').forEach(function(btn){
+      btn.onclick = function(e){
+        e.stopPropagation();
+        collectState();
+        var slot = btn.dataset.slot, day = btn.dataset.day;
+        if(p.modelId === 'B'){
+          var k = slot+':'+day;
+          if(!p.hCells[k]) p.hCells[k] = {};
+          p.hCells[k].avail = false;
+        } else {
+          var k2 = _pCellKey(slot, day);
+          if(!p.cells[k2]) p.cells[k2] = {};
+          p.cells[k2].avail = false;
+        }
+        renderModal();
+      };
+    });
+
+    // Re-enable N/A cell
+    body.querySelectorAll('.sp-cell-na').forEach(function(el){
+      el.onclick = function(){
+        var slot = el.dataset.slot, day = el.dataset.day;
+        if(p.modelId === 'B'){
+          var k = slot+':'+day;
+          if(!p.hCells[k]) p.hCells[k] = {};
+          p.hCells[k].avail = true;
+        } else {
+          var k2 = _pCellKey(slot, day);
+          if(!p.cells[k2]) p.cells[k2] = {};
+          p.cells[k2].avail = true;
+        }
+        renderModal();
+      };
+    });
+
+    // VAT buttons
+    body.querySelectorAll('.sp-vat-btn').forEach(function(btn){
+      btn.onclick = function(){
+        collectState();
+        p.vat = btn.dataset.val === 'yes';
+        renderModal();
+      };
+    });
+
+    // Materials buttons (Model B)
+    body.querySelectorAll('.sp-mat-btn').forEach(function(btn){
+      btn.onclick = function(){
+        collectState();
+        p.materials = btn.dataset.mat;
+        renderModal();
+      };
+    });
+
+    // Save
+    var saveBtn = overlay.querySelector('.sp-save-btn');
+    if(saveBtn) saveBtn.onclick = function(){
+      collectState();
+      st.pricing[svcId] = p;
+      overlay.remove();
+      // Refresh pricing page without scroll jump
+      var mainEl = document.getElementById('suppMain') || window._suppMain;
+      if(mainEl){
+        var saved = mainEl.scrollTop;
+        mainEl.innerHTML = '<div style="padding:24px 0 48px;width:100%;box-sizing:border-box;">'+_suppBuildPricingPage()+'</div>';
+        _suppWirePricingPage();
+        mainEl.scrollTop = saved;
+      }
+    };
+  }
+
+  // ── Build overlay ───────────────────────────────────────────
+  var overlay = document.createElement('div');
+  overlay.id = 'suppPricingModal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,0.5);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto;';
+
+  var modal = document.createElement('div');
+  modal.style.cssText = 'background:#fff;border-radius:16px;width:100%;max-width:680px;font-family:Inter,sans-serif;box-shadow:0 24px 60px rgba(0,0,0,0.22);display:flex;flex-direction:column;';
+
+  // Header — static wrapper; content updated by updateHeader()
+  var header = '<div style="padding:18px 24px;border-bottom:1px solid #e2e8f0;border-radius:16px 16px 0 0;flex-shrink:0;">'
+    + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">'
+      + '<div style="min-width:0;flex:1;">'
+        + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+          + '<div class="sp-h-title" style="font-size:16px;font-weight:700;color:#0f172a;">Configure pricing</div>'
+          + '<span class="sp-h-badge" style="display:none;background:#EEF4FD;color:#1A5FC8;font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 10px;font-family:Inter,sans-serif;align-items:center;gap:5px;"></span>'
+        + '</div>'
+        + '<div style="font-size:13px;color:#64748b;margin-top:3px;">'+svcLabel+'</div>'
+      + '</div>'
+      + '<button onclick="document.getElementById(\'suppPricingModal\').remove()" style="background:none;border:1.5px solid #e2e8f0;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:18px;color:#64748b;display:flex;align-items:center;justify-content:center;flex-shrink:0;">&times;</button>'
+    + '</div>'
+  + '</div>';
+
+  // Footer — left zone for Back button, right zone for Cancel/Save
+  var footer = '<div style="padding:14px 24px;border-top:1px solid #e2e8f0;border-radius:0 0 16px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;">'
+    + '<div class="sp-footer-left"></div>'
+    + '<div style="display:flex;gap:10px;">'
+      + '<button onclick="document.getElementById(\'suppPricingModal\').remove()" style="border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 18px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer;background:#fff;font-family:Inter,sans-serif;">Cancel</button>'
+      + '<button class="sp-save-btn" style="background:linear-gradient(90deg,#1A5FC8,#0FA3D0);color:#fff;border:none;border-radius:10px;padding:10px 24px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:8px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#fff" stroke-width="1.8"><path d="M1.5 1.5h8l2 2v8H1.5z"/><path d="M3.5 1.5v3.5h5V1.5M2 8h9"/></svg>Save pricing</button>'
+    + '</div>'
+  + '</div>';
+
+  modal.innerHTML = header + '<div class="sp-body" style="padding:24px;overflow-y:auto;max-height:calc(90vh - 120px);"></div>' + footer;
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
+
+  overlay.onclick = function(e){ if(e.target===overlay) overlay.remove(); };
+
+  renderModal();
 }
 
 // ══ SUPPLIER PROFILE PAGE ══
