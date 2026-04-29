@@ -18981,7 +18981,12 @@ function _pDefaults(existing){
       {name:'5+ bedrooms',    from:'5',  to:''}
     ],
     bCells: {},         // key: 'bandIdx:dayType' → {price:'', avail:true}
-    addOns: [],         // [{name, price}]
+    // Model D
+    dCells: {},         // key: dayType → {min:'', max:'', avail:true}
+    assessFee: '',
+    assessDeductible: true,
+    estimateValid: '30',
+    scopeFactors: '',
     uplifts: {appliance:'', bedroom:'', bathroom:'', floor:''},
     materials: 'included',
     materialsCap: '',
@@ -19023,7 +19028,9 @@ function _suppOpenPricingModal(svcId, svcLabel){
       } else if(_screen === 'config' && p.modelId === 'B'){
         hBadge.style.display = 'inline-flex';
         hBadge.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#1A5FC8" stroke-width="1.8"><circle cx="6" cy="6" r="4.5"/><path d="M6 3.5V6l2 1.2"/></svg> Model B — Hourly rate';
-      } else if(_screen === 'config' && p.modelId === 'C'){
+      } else if(_screen === 'config' && p.modelId === 'D'){
+        hBadge.style.display = 'inline-flex';
+        hBadge.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#1A5FC8" stroke-width="1.8"><path d="M1.5 6h9M1.5 6l3-3M1.5 6l3 3M10.5 6l-3-3M10.5 6l-3 3"/></svg> Model D — Estimated range';
         hBadge.style.display = 'inline-flex';
         hBadge.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#1A5FC8" stroke-width="1.8"><rect x="1" y="8" width="2.5" height="3" rx="0.4"/><rect x="4.75" y="5" width="2.5" height="6" rx="0.4"/><rect x="8.5" y="2" width="2.5" height="9" rx="0.4"/></svg> Model C — Tiered / Banded';
       } else {
@@ -19082,6 +19089,7 @@ function _suppOpenPricingModal(svcId, svcLabel){
     if(_screen === 'config' && p.modelId === 'A')      body.innerHTML = renderModelA();
     else if(_screen === 'config' && p.modelId === 'B') body.innerHTML = renderModelB();
     else if(_screen === 'config' && p.modelId === 'C') body.innerHTML = renderModelC();
+    else if(_screen === 'config' && p.modelId === 'D') body.innerHTML = renderModelD();
     else                                                body.innerHTML = renderModelSelect();
     updateHeader();
     updateFooter();
@@ -19093,7 +19101,7 @@ function _suppOpenPricingModal(svcId, svcLabel){
       + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;">'
       + _PRICING_MODELS.map(function(m){
           var isAct = p.modelId === m.id;
-          var avail = m.id === 'A' || m.id === 'B' || m.id === 'C';
+          var avail = m.id === 'A' || m.id === 'B' || m.id === 'C' || m.id === 'D';
           var iconColor = isAct ? '#1A5FC8' : (avail ? '#64748b' : '#cbd5e1');
           return '<div class="sp-model-card" data-mid="'+m.id+'" style="position:relative;display:flex;flex-direction:column;gap:10px;border:1.5px solid '+(isAct?'#1A5FC8':'#e2e8f0')+';border-radius:12px;padding:14px 16px;cursor:'+(avail?'pointer':'default')+';background:'+(isAct?'#EEF4FD':'#fff')+';transition:all .12s;opacity:'+(avail?'1':'0.5')+';">'
             + (!avail?'<span style="position:absolute;top:10px;right:10px;font-size:10px;font-weight:700;background:#f1f5f9;color:#94a3b8;border-radius:4px;padding:2px 7px;">Soon</span>':'')
@@ -19695,6 +19703,137 @@ function _suppOpenPricingModal(svcId, svcLabel){
     return varHtml + bandsHtml + gridHtml + addOnsHtml + optionsHtml;
   }
 
+  // ── Model D: Estimated Range ─────────────────────────────────
+  function renderModelD(){
+    var days = _DAY_TYPES;
+
+    // ── Range per day card ──────────────────────────────────
+    function dayRow(day){
+      var cell = p.dCells[day] || {avail:true};
+      var avail = cell.avail !== false;
+      if(!avail){
+        return '<div class="sp-drange-row" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f8fafc;">'
+          + '<div style="font-size:13px;font-weight:600;color:#374151;width:120px;flex-shrink:0;">'+day+'</div>'
+          + '<div class="sp-cell-na" data-day="'+day+'" style="flex:1;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:12px;color:#94a3b8;cursor:pointer;text-align:center;">Unavailable — click to enable</div>'
+        + '</div>';
+      }
+      return '<div class="sp-drange-row" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f8fafc;">'
+        + '<div style="font-size:13px;font-weight:600;color:#374151;width:120px;flex-shrink:0;">'+day+'</div>'
+        + '<div style="flex:1;display:flex;align-items:center;gap:8px;">'
+          + '<div style="flex:1;position:relative;">'
+            + '<span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:#64748b;font-weight:700;pointer-events:none;">£</span>'
+            + '<input class="sp-dmin-inp" data-day="'+day+'" value="'+(cell.min||'')+'" placeholder="Min" style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 8px 9px 22px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+          + '</div>'
+          + '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" stroke-width="1.6" style="flex-shrink:0;"><path d="M2 7h10"/></svg>'
+          + '<div style="flex:1;position:relative;">'
+            + '<span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:#64748b;font-weight:700;pointer-events:none;">£</span>'
+            + '<input class="sp-dmax-inp" data-day="'+day+'" value="'+(cell.max||'')+'" placeholder="Max" style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 8px 9px 22px;font-size:13.5px;font-family:Inter,sans-serif;outline:none;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+          + '</div>'
+          + '<button class="sp-na-btn" data-day="'+day+'" title="Mark unavailable" style="background:none;border:1.5px solid #fecaca;border-radius:7px;width:32px;height:32px;cursor:pointer;color:#ef4444;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l9 9M10 1l-9 9"/></svg></button>'
+        + '</div>'
+      + '</div>';
+    }
+
+    var rangeHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:14px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#EEF4FD;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><path d="M1 7.5h13M1 7.5l3-3M1 7.5l3 3M14 7.5l-3-3M14 7.5l-3 3"/></svg>'
+        + '</div>'
+        + '<div>'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">Set price range per day</div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;line-height:1.4;">Set a minimum and maximum for each day type. The PM sees this range until you confirm the final price after the assessment visit.</div>'
+        + '</div>'
+      + '</div>'
+      + '<div style="display:flex;align-items:center;gap:10px;padding:0 0 8px;border-bottom:1px solid #f1f5f9;margin-bottom:4px;">'
+        + '<div style="font-size:11px;font-weight:700;color:#94a3b8;width:120px;flex-shrink:0;letter-spacing:.04em;">DAY TYPE</div>'
+        + '<div style="flex:1;font-size:11px;font-weight:700;color:#94a3b8;text-align:center;letter-spacing:.04em;">MINIMUM</div>'
+        + '<div style="width:30px;flex-shrink:0;"></div>'
+        + '<div style="flex:1;font-size:11px;font-weight:700;color:#94a3b8;text-align:center;letter-spacing:.04em;">MAXIMUM</div>'
+        + '<div style="width:32px;flex-shrink:0;"></div>'
+      + '</div>'
+      + days.map(dayRow).join('')
+    + '</div>';
+
+    // ── Assessment fee card ─────────────────────────────────
+    var ded = p.assessDeductible !== false;
+    var assessHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:14px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#fef3c7;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#d97706" stroke-width="1.6"><circle cx="7.5" cy="7.5" r="6"/><path d="M7.5 4.5v1M7.5 9v.5M5 7a2.5 2.5 0 015 0c0 1-.8 1.5-2.5 2S5 10 5 11a2.5 2.5 0 005 0"/></svg>'
+        + '</div>'
+        + '<div>'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">Assessment visit fee</div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;line-height:1.4;">The cost of the initial site visit to scope the job. Can be £0 if you assess for free.</div>'
+        + '</div>'
+      + '</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">'
+        + '<div>'
+          + '<label style="font-size:11.5px;font-weight:700;color:#64748b;display:block;margin-bottom:6px;">Assessment fee</label>'
+          + '<div style="position:relative;">'
+            + '<span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;color:#64748b;font-weight:700;">£</span>'
+            + '<input id="sp-assess-fee" value="'+(p.assessFee||'')+'" placeholder="0" style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 10px 10px 24px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;outline:none;background:#f8fafc;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'
+          + '</div>'
+          + '<div style="font-size:10.5px;color:#94a3b8;margin-top:4px;">Enter 0 if the assessment visit is free.</div>'
+        + '</div>'
+        + '<div>'
+          + '<label style="font-size:11.5px;font-weight:700;color:#64748b;display:block;margin-bottom:6px;">Deductible if job proceeds?</label>'
+          + '<div style="display:flex;gap:8px;">'
+            + '<button class="sp-ded-btn" data-val="yes" style="flex:1;border:1.5px solid '+(ded?'#1A5FC8':'#e2e8f0')+';border-radius:8px;padding:9px;font-size:13px;font-weight:600;color:'+(ded?'#1A5FC8':'#64748b')+';cursor:pointer;background:'+(ded?'#EEF4FD':'#f8fafc')+';transition:all .12s;">Yes</button>'
+            + '<button class="sp-ded-btn" data-val="no"  style="flex:1;border:1.5px solid '+(!ded?'#1A5FC8':'#e2e8f0')+';border-radius:8px;padding:9px;font-size:13px;font-weight:600;color:'+(!ded?'#1A5FC8':'#64748b')+';cursor:pointer;background:'+(!ded?'#EEF4FD':'#f8fafc')+';transition:all .12s;">No</button>'
+          + '</div>'
+          + '<div style="font-size:10.5px;color:#94a3b8;margin-top:4px;">'+(ded?'Fee is subtracted from the final invoice when job goes ahead.':'Fee is charged separately regardless of outcome.')+'</div>'
+        + '</div>'
+      + '</div>'
+    + '</div>';
+
+    // ── Estimate validity + scope factors ───────────────────
+    var valid = p.estimateValid || '30';
+    var detailsHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:14px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#EEF4FD;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1A5FC8" stroke-width="1.6"><rect x="1.5" y="2" width="12" height="11" rx="1.5"/><path d="M4 2V0.5M11 2V0.5M1.5 6h12"/></svg>'
+        + '</div>'
+        + '<div>'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">Estimate details</div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;line-height:1.4;">How long is your estimate valid, and what factors might move the final price?</div>'
+        + '</div>'
+      + '</div>'
+      + '<div style="margin-bottom:16px;">'
+        + '<label style="font-size:11.5px;font-weight:700;color:#64748b;display:block;margin-bottom:8px;">Estimate valid for</label>'
+        + '<div style="display:flex;gap:8px;">'
+          + ['14','30','60'].map(function(d){
+              var sel = valid===d;
+              return '<button class="sp-valid-btn" data-days="'+d+'" style="flex:1;border:1.5px solid '+(sel?'#1A5FC8':'#e2e8f0')+';border-radius:9px;padding:10px;font-size:13.5px;font-weight:700;color:'+(sel?'#1A5FC8':'#374151')+';cursor:pointer;background:'+(sel?'#EEF4FD':'#f8fafc')+';transition:all .12s;">'+d+' days</button>';
+            }).join('')
+        + '</div>'
+      + '</div>'
+      + '<div>'
+        + '<label style="font-size:11.5px;font-weight:700;color:#64748b;display:block;margin-bottom:6px;">Scope factors <span style="font-weight:400;color:#94a3b8;">— optional</span></label>'
+        + '<div style="font-size:11.5px;color:#64748b;margin-bottom:8px;">Explain what might move the price within (or outside) your range. PMs see this to understand the variability.</div>'
+        + '<textarea id="sp-scope-factors" rows="3" placeholder="e.g. Price depends on extent of damp penetration, access difficulty, and number of affected walls. Severe cases may require specialist drying equipment billed at cost." style="width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:9px;padding:10px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;resize:vertical;background:#f8fafc;line-height:1.5;" onfocus="this.style.borderColor=\'#1A5FC8\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#f8fafc\'">'+(p.scopeFactors||'')+'<\/textarea>'
+      + '</div>'
+    + '</div>';
+
+    // ── VAT card ────────────────────────────────────────────
+    var vatHtml = '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:20px;">'
+      + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">'
+        + '<div style="width:32px;height:32px;border-radius:8px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#16a34a" stroke-width="1.6"><path d="M7.5 1.5v12M3.5 5.5c0-1.1.9-2 2-2h3a2 2 0 010 4h-2a2 2 0 000 4h3a2 2 0 002-2"/></svg>'
+        + '</div>'
+        + '<div>'
+          + '<div style="font-size:13.5px;font-weight:700;color:#0f172a;">VAT</div>'
+          + '<div style="font-size:12px;color:#64748b;margin-top:2px;line-height:1.4;">Does VAT apply to your quoted range and assessment fee?</div>'
+        + '</div>'
+      + '</div>'
+      + '<div style="display:flex;gap:8px;max-width:260px;">'
+        + '<button class="sp-vat-btn" data-val="yes" style="flex:1;border:1.5px solid '+(p.vat?'#1A5FC8':'#e2e8f0')+';border-radius:8px;padding:9px;font-size:13px;font-weight:600;color:'+(p.vat?'#1A5FC8':'#64748b')+';cursor:pointer;background:'+(p.vat?'#EEF4FD':'#f8fafc')+';transition:all .12s;">Yes</button>'
+        + '<button class="sp-vat-btn" data-val="no"  style="flex:1;border:1.5px solid '+(!p.vat?'#1A5FC8':'#e2e8f0')+';border-radius:8px;padding:9px;font-size:13px;font-weight:600;color:'+(!p.vat?'#1A5FC8':'#64748b')+';cursor:pointer;background:'+(!p.vat?'#EEF4FD':'#f8fafc')+';transition:all .12s;">No</button>'
+      + '</div>'
+    + '</div>';
+
+    return rangeHtml + assessHtml + detailsHtml + vatHtml;
+  }
+
   function collectState(){
     var body = overlay.querySelector('.sp-body');
     if(!body) return;
@@ -19761,6 +19900,16 @@ function _suppOpenPricingModal(svcId, svcLabel){
     // Min charge
     var mc = body.querySelector('#sp-min-charge');
     if(mc) p.minCharge = mc.value.trim();
+    // Model D: range cells + assessment fields
+    body.querySelectorAll('.sp-dmin-inp,.sp-dmax-inp').forEach(function(inp){
+      var day = inp.dataset.day;
+      if(!p.dCells[day]) p.dCells[day] = {avail:true};
+      if(inp.classList.contains('sp-dmin-inp')) p.dCells[day].min = inp.value.trim();
+      else p.dCells[day].max = inp.value.trim();
+    });
+    var af = body.querySelector('#sp-assess-fee'); if(af) p.assessFee = af.value.trim();
+    var ev = body.querySelector('#sp-est-valid');  if(ev) p.estimateValid = ev.value;
+    var sf = body.querySelector('#sp-scope-factors'); if(sf) p.scopeFactors = sf.value.trim();
     // Summary display price
     if(p.modelId === 'B'){
       var vals = Object.values(p.hCells);
@@ -19771,6 +19920,10 @@ function _suppOpenPricingModal(svcId, svcLabel){
       var firstB = Object.values(p.bCells).find(function(c){return c.price&&c.avail!==false;});
       p.price = firstB ? firstB.price : '';
       p.model = 'Banded price';
+    } else if(p.modelId === 'D'){
+      var firstD = Object.values(p.dCells).find(function(c){return c.min&&c.avail!==false;});
+      p.price = firstD ? firstD.min : '';
+      p.model = 'Estimated range';
     } else {
       var firstPrice = (p.cells['single'] && p.cells['single'].price)
         ? p.cells['single'].price
@@ -19793,7 +19946,7 @@ function _suppOpenPricingModal(svcId, svcLabel){
     // Model cards — click to SELECT only; footer "Configure prices" navigates to config
     body.querySelectorAll('.sp-model-card').forEach(function(card){
       card.onclick = function(){
-        if(card.dataset.mid !== 'A' && card.dataset.mid !== 'B' && card.dataset.mid !== 'C') return;
+        if(card.dataset.mid !== 'A' && card.dataset.mid !== 'B' && card.dataset.mid !== 'C' && card.dataset.mid !== 'D') return;
         collectState();
         p.modelId = card.dataset.mid;
         // Stay on select screen — just re-render with updated selection
@@ -19833,7 +19986,26 @@ function _suppOpenPricingModal(svcId, svcLabel){
       };
     });
 
-    // Model C: band variable selection
+    // Model D: deductible toggle
+    body.querySelectorAll('.sp-ded-btn').forEach(function(btn){
+      btn.onclick = function(){
+        collectState();
+        p.assessDeductible = btn.dataset.val === 'yes';
+        renderModal();
+      };
+    });
+
+    // Model D: estimate validity
+    body.querySelectorAll('.sp-valid-btn').forEach(function(btn){
+      btn.onclick = function(){
+        collectState();
+        p.estimateValid = btn.dataset.days;
+        renderModal();
+      };
+    });
+
+    // Model D N/A per day (sp-na-btn with data-day but no data-slot)
+    // Handled in shared N/A block below, detected by p.modelId === 'D'
     body.querySelectorAll('.sp-bandvar-btn').forEach(function(btn){
       btn.onclick = function(){
         collectState();
@@ -19905,17 +20077,21 @@ function _suppOpenPricingModal(svcId, svcLabel){
       };
     });
 
-    // Shared N/A button (works for A, B, C via data-idx or data-slot)
+    // Shared N/A button (works for A, B, C, D via data-idx or data-slot or data-day)
     body.querySelectorAll('.sp-na-btn').forEach(function(btn){
       btn.onclick = function(e){
         e.stopPropagation();
         collectState();
-        if(btn.dataset.idx !== undefined && p.modelId === 'C'){
-          var k2 = btn.dataset.idx+':'+btn.dataset.day;
+        var day2 = btn.dataset.day;
+        if(p.modelId === 'D'){
+          if(!p.dCells[day2]) p.dCells[day2]={};
+          p.dCells[day2].avail = false;
+        } else if(btn.dataset.idx !== undefined && p.modelId === 'C'){
+          var k2 = btn.dataset.idx+':'+day2;
           if(!p.bCells[k2]) p.bCells[k2]={};
           p.bCells[k2].avail = false;
         } else {
-          var slot = btn.dataset.slot, day2 = btn.dataset.day;
+          var slot = btn.dataset.slot;
           if(p.modelId === 'B'){
             var hk = slot+':'+day2;
             if(!p.hCells[hk]) p.hCells[hk]={};
@@ -19933,12 +20109,16 @@ function _suppOpenPricingModal(svcId, svcLabel){
     // Shared N/A cell re-enable
     body.querySelectorAll('.sp-cell-na').forEach(function(el){
       el.onclick = function(){
-        if(el.dataset.idx !== undefined && p.modelId === 'C'){
-          var k2 = el.dataset.idx+':'+el.dataset.day;
+        var day2 = el.dataset.day;
+        if(p.modelId === 'D'){
+          if(!p.dCells[day2]) p.dCells[day2]={};
+          p.dCells[day2].avail = true;
+        } else if(el.dataset.idx !== undefined && p.modelId === 'C'){
+          var k2 = el.dataset.idx+':'+day2;
           if(!p.bCells[k2]) p.bCells[k2]={};
           p.bCells[k2].avail = true;
         } else {
-          var slot = el.dataset.slot, day2 = el.dataset.day;
+          var slot = el.dataset.slot;
           if(p.modelId === 'B'){
             var hk = slot+':'+day2;
             if(!p.hCells[hk]) p.hCells[hk]={};
